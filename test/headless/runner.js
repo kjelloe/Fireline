@@ -1,10 +1,10 @@
 // test/headless/runner.js
-// Headless primitive soak and seed-batch reporter.
-// Generates pinnable sfc32 vectors and PRNG soak diagnostics.
+// Headless primitive soak, seed-batch reporter, and map generation preview.
 // Run: node test/headless/runner.js
 
 import { mix32, seedSfc32, sfc32Next } from "../../shared/prng.js";
 import { computeFnv1a64, hashToHex64, createByteWriter } from "../../shared/canonical.js";
+import { generateMap, mapToString } from "../../engine/mapgen.js";
 
 const SEEDS = [0, 1, 42, 0xDEADBEEF >>> 0, 4294967295];
 const STEPS = 8;
@@ -16,12 +16,8 @@ for (const seed of SEEDS) {
   const outputs = [];
   let s = state0;
   for (let i = 0; i < STEPS; i++) {
-    const r = sfc32Next(s);
-    outputs.push(r.value);
-    s = r.nextState;
+    const r = sfc32Next(s); outputs.push(r.value); s = r.nextState;
   }
-
-  // Hash the output sequence for a compact cross-language anchor
   const w = createByteWriter();
   for (const v of outputs) w.writeU32LE(v);
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
@@ -39,4 +35,13 @@ for (const seed of [0, 1, 4294967295]) {
   console.log(`  mix32(${seed}) = ${mix32(seed)}`);
 }
 
-console.log("\nPaste the above into test/fixtures/0D_sfc32_vectors.json to pin the contract.");
+console.log("\n=== Map Generation Preview (8x8) ===");
+console.log("Legend: . open  = road  F forest  ~ rough  # blocking\n");
+for (const seed of [0, 1, 42]) {
+  const result = generateMap(seed, 8, 8);
+  const { hashHi, hashLo } = computeFnv1a64(result.cells);
+  const mapHash = hashToHex64(hashHi, hashLo);
+  console.log(`Seed ${seed} — hash: ${mapHash}`);
+  console.log(mapToString(result));
+  console.log();
+}

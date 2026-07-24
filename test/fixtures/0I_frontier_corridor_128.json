@@ -1,0 +1,187 @@
+{
+  "fixtureVersion": 1,
+  "id": "0I_frontier_corridor_128",
+  "purpose": "Compact deterministic parity contract for the 128x128 named profile. Does not store the 16,384-cell array.",
+  "profile": {
+    "id": "frontier_corridor",
+    "width": 128,
+    "height": 128
+  },
+  "terrainIds": {
+    "0": "open",
+    "1": "road",
+    "2": "forest",
+    "3": "rough",
+    "4": "blocking"
+  },
+  "cases": [
+    {
+      "id": "seed_42",
+      "rootSeed": 42,
+      "expectedHashFnv1a64": "a040fb3b7fe53838",
+      "expectedTerrainCounts": [
+        13917,
+        640,
+        848,
+        979,
+        0
+      ],
+      "probes": [
+        {
+          "x": 0,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 63,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 127,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 0,
+          "y": 62,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 63,
+          "y": 62,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 127,
+          "y": 65,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 6,
+          "y": 54,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 23,
+          "y": 73,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 56,
+          "y": 56,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 71,
+          "y": 71,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 104,
+          "y": 54,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 121,
+          "y": 73,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 32,
+          "y": 32,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 96,
+          "y": 96,
+          "expectedTerrain": 0
+        }
+      ]
+    },
+    {
+      "id": "seed_3735928559",
+      "rootSeed": 3735928559,
+      "expectedHashFnv1a64": "d5714a40cccbf738",
+      "expectedTerrainCounts": [
+        13917,
+        640,
+        848,
+        979,
+        0
+      ],
+      "probes": [
+        {
+          "x": 0,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 63,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 127,
+          "y": 0,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 0,
+          "y": 62,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 63,
+          "y": 62,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 127,
+          "y": 65,
+          "expectedTerrain": 1
+        },
+        {
+          "x": 6,
+          "y": 54,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 23,
+          "y": 73,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 56,
+          "y": 56,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 71,
+          "y": 71,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 104,
+          "y": 54,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 121,
+          "y": 73,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 32,
+          "y": 32,
+          "expectedTerrain": 0
+        },
+        {
+          "x": 96,
+          "y": 96,
+          "expectedTerrain": 0
+        }
+      ]
+    }
+  ]
+}
