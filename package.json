@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "express": "^4.19.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "sim1c": "node test/headless/sim1c.js"
+    "start": "node test/headless/sim1e.js",
+    "test": "node --test test/*.test.js"
   }
 }
