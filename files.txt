@@ -1,0 +1,15 @@
+All Milestone 0 files created:
+  package.json
+  .gitignore
+  data/rules.json
+  shared/canonical.js
+  shared/prng.js
+  shared/fixedmath.js
+  test/fixtures/0A_byte_writer_primitives.json
+  test/fixtures/0B_fnv1a64_vectors.json
+  test/fixtures/0C_mix32_vectors.json
+  test/fixtures/0D_sfc32_vectors.json
+  test/fixtures/0E_fixedmath_vectors.json
+  test/milestone0.test.js
+  test/headless/runner.js
+  RUNNING.md

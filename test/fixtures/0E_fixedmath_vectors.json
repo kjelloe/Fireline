@@ -1,0 +1,200 @@
+{
+  "fixtureVersion": 1,
+  "id": "0E_fixedmath_vectors",
+  "purpose": "Verify fixed-point helpers including negative and boundary cases.",
+  "cases": [
+    {
+      "id": "clamp_mid",
+      "op": "clampI32",
+      "args": [
+        50,
+        0,
+        100
+      ],
+      "expected": 50
+    },
+    {
+      "id": "clamp_lo",
+      "op": "clampI32",
+      "args": [
+        -5,
+        0,
+        100
+      ],
+      "expected": 0
+    },
+    {
+      "id": "clamp_hi",
+      "op": "clampI32",
+      "args": [
+        200,
+        0,
+        100
+      ],
+      "expected": 100
+    },
+    {
+      "id": "floorDiv_pos",
+      "op": "floorDivI32",
+      "args": [
+        7,
+        2
+      ],
+      "expected": 3
+    },
+    {
+      "id": "floorDiv_neg",
+      "op": "floorDivI32",
+      "args": [
+        -7,
+        2
+      ],
+      "expected": -4
+    },
+    {
+      "id": "floorDiv_neg2",
+      "op": "floorDivI32",
+      "args": [
+        7,
+        -2
+      ],
+      "expected": -4
+    },
+    {
+      "id": "floorDiv_exact",
+      "op": "floorDivI32",
+      "args": [
+        -6,
+        2
+      ],
+      "expected": -3
+    },
+    {
+      "id": "cellToWorld_0",
+      "op": "cellToWorld",
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "id": "cellToWorld_1",
+      "op": "cellToWorld",
+      "args": [
+        1
+      ],
+      "expected": 256
+    },
+    {
+      "id": "cellToWorld_n",
+      "op": "cellToWorld",
+      "args": [
+        -1
+      ],
+      "expected": -256
+    },
+    {
+      "id": "worldToCell_0",
+      "op": "worldToCellFloor",
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "id": "worldToCell_255",
+      "op": "worldToCellFloor",
+      "args": [
+        255
+      ],
+      "expected": 0
+    },
+    {
+      "id": "worldToCell_256",
+      "op": "worldToCellFloor",
+      "args": [
+        256
+      ],
+      "expected": 1
+    },
+    {
+      "id": "worldToCell_neg",
+      "op": "worldToCellFloor",
+      "args": [
+        -1
+      ],
+      "expected": -1
+    },
+    {
+      "id": "worldToCell_neg256",
+      "op": "worldToCellFloor",
+      "args": [
+        -256
+      ],
+      "expected": -1
+    },
+    {
+      "id": "worldToCell_neg257",
+      "op": "worldToCellFloor",
+      "args": [
+        -257
+      ],
+      "expected": -2
+    },
+    {
+      "id": "absI32_pos",
+      "op": "absI32",
+      "args": [
+        42
+      ],
+      "expected": 42
+    },
+    {
+      "id": "absI32_neg",
+      "op": "absI32",
+      "args": [
+        -42
+      ],
+      "expected": 42
+    },
+    {
+      "id": "absI32_zero",
+      "op": "absI32",
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "id": "absI32_min",
+      "op": "absI32",
+      "args": [
+        -2147483648
+      ],
+      "expected": -2147483648,
+      "note": "i32 minimum has no positive i32 representation; returns self"
+    },
+    {
+      "id": "manhattan_1",
+      "op": "manhattanDistanceI32",
+      "args": [
+        0,
+        0,
+        3,
+        4
+      ],
+      "expected": 7
+    },
+    {
+      "id": "manhattan_neg",
+      "op": "manhattanDistanceI32",
+      "args": [
+        -1,
+        -1,
+        1,
+        1
+      ],
+      "expected": 4
+    }
+  ]
+}

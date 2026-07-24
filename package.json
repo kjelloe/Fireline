@@ -1,0 +1,15 @@
+{
+  "name": "tactical-lan-game",
+  "version": "0.1.0",
+  "description": "Milestone 0 \u2014 deterministic parity spike",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "node --test test/milestone0.test.js",
+    "headless": "node test/headless/runner.js"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,211 @@
+{
+  "fixtureVersion": 1,
+  "id": "0A_byte_writer_primitives",
+  "purpose": "Verify canonical byte writer emits exact little-endian bytes for every primitive.",
+  "cases": [
+    {
+      "id": "u8_min",
+      "op": "writeU8",
+      "input": 0,
+      "expectedBytes": [
+        0
+      ]
+    },
+    {
+      "id": "u8_mid",
+      "op": "writeU8",
+      "input": 127,
+      "expectedBytes": [
+        127
+      ]
+    },
+    {
+      "id": "u8_max",
+      "op": "writeU8",
+      "input": 255,
+      "expectedBytes": [
+        255
+      ]
+    },
+    {
+      "id": "u16_zero",
+      "op": "writeU16LE",
+      "input": 0,
+      "expectedBytes": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "u16_order",
+      "op": "writeU16LE",
+      "input": 258,
+      "expectedBytes": [
+        2,
+        1
+      ]
+    },
+    {
+      "id": "u16_max",
+      "op": "writeU16LE",
+      "input": 65535,
+      "expectedBytes": [
+        255,
+        255
+      ]
+    },
+    {
+      "id": "u32_zero",
+      "op": "writeU32LE",
+      "input": 0,
+      "expectedBytes": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "u32_order",
+      "op": "writeU32LE",
+      "input": 16909060,
+      "expectedBytes": [
+        4,
+        3,
+        2,
+        1
+      ]
+    },
+    {
+      "id": "u32_max",
+      "op": "writeU32LE",
+      "input": 4294967295,
+      "expectedBytes": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "id": "i32_zero",
+      "op": "writeI32LE",
+      "input": 0,
+      "expectedBytes": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "i32_one",
+      "op": "writeI32LE",
+      "input": 1,
+      "expectedBytes": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "i32_neg1",
+      "op": "writeI32LE",
+      "input": -1,
+      "expectedBytes": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "id": "i32_min",
+      "op": "writeI32LE",
+      "input": -2147483648,
+      "expectedBytes": [
+        0,
+        0,
+        0,
+        128
+      ]
+    },
+    {
+      "id": "i32_max",
+      "op": "writeI32LE",
+      "input": 2147483647,
+      "expectedBytes": [
+        255,
+        255,
+        255,
+        127
+      ]
+    },
+    {
+      "id": "bool_false",
+      "op": "writeBool",
+      "input": false,
+      "expectedBytes": [
+        0
+      ]
+    },
+    {
+      "id": "bool_true",
+      "op": "writeBool",
+      "input": true,
+      "expectedBytes": [
+        1
+      ]
+    },
+    {
+      "id": "opt_absent",
+      "op": "writeOptionalU32",
+      "isPresent": false,
+      "value": 0,
+      "expectedBytes": [
+        0
+      ]
+    },
+    {
+      "id": "opt_present",
+      "op": "writeOptionalU32",
+      "isPresent": true,
+      "value": 256,
+      "expectedBytes": [
+        1,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "bytes_append",
+      "op": "writeBytes",
+      "input": [
+        222,
+        173,
+        190,
+        239
+      ],
+      "expectedBytes": [
+        222,
+        173,
+        190,
+        239
+      ]
+    },
+    {
+      "id": "utf8_hello",
+      "op": "writeUtf8U16",
+      "input": "Hi",
+      "expectedBytes": [
+        2,
+        0,
+        72,
+        105
+      ]
+    }
+  ]
+}

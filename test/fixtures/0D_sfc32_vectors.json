@@ -1,0 +1,20 @@
+{
+  "fixtureVersion": 1,
+  "id": "0D_sfc32_vectors",
+  "purpose": "Verify sfc32 seed expansion and first outputs with state-after-output.",
+  "cases": [
+    {
+      "id": "seed_1",
+      "rootSeed": 1,
+      "expectedInitialState": {
+        "note": "Computed by seedSfc32(1): a=mix32(2), b=mix32(3), c=mix32(4), d=mix32(5)",
+        "a": "run_to_verify",
+        "b": "run_to_verify",
+        "c": "run_to_verify",
+        "d": "run_to_verify"
+      },
+      "note": "Run node test/headless/runner.js --seed 1 --steps 8 to generate and pin these values after first run."
+    }
+  ],
+  "instruction": "After first headless run, replace run_to_verify values with actual outputs and commit as pinned contract."
+}

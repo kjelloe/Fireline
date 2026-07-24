@@ -1,0 +1,59 @@
+{
+  "protocolVersion": 1,
+  "rulesetVersion": 1,
+  "constants": {
+    "tickRateHz": 10,
+    "gridCellUnits": 256,
+    "mapSizeDefault": 128,
+    "maxPlayers": 16,
+    "maxEntities": 32
+  },
+  "terrain": {
+    "0": {
+      "name": "open",
+      "moveMultNum": 10,
+      "moveMultDen": 10,
+      "blocksVision": 0
+    },
+    "1": {
+      "name": "road",
+      "moveMultNum": 14,
+      "moveMultDen": 10,
+      "blocksVision": 0
+    },
+    "2": {
+      "name": "forest",
+      "moveMultNum": 7,
+      "moveMultDen": 10,
+      "blocksVision": 1
+    },
+    "3": {
+      "name": "rough",
+      "moveMultNum": 7,
+      "moveMultDen": 10,
+      "blocksVision": 0
+    },
+    "4": {
+      "name": "blocking",
+      "moveMultNum": 0,
+      "moveMultDen": 10,
+      "blocksVision": 1
+    }
+  },
+  "assetTemplates": {
+    "scout_buggy": {
+      "typeId": 1,
+      "hpMax": 400,
+      "speedUnitsPerTick": 384,
+      "visionCells": 12,
+      "mobility": "wheeled_light"
+    },
+    "assault_vehicle": {
+      "typeId": 2,
+      "hpMax": 1000,
+      "speedUnitsPerTick": 256,
+      "visionCells": 8,
+      "mobility": "tracked_heavy"
+    }
+  }
+}
