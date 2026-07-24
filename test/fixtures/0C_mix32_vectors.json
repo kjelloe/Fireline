@@ -2,22 +2,23 @@
   "fixtureVersion": 1,
   "id": "0C_mix32_vectors",
   "purpose": "Verify mix32 seed expansion produces exact unsigned 32-bit outputs.",
-  "algorithm": "v ^ (v>>>16); v *= 0x45d9f3b; v ^ (v>>>16); v *= 0x45d9f3b; v ^ (v>>>16)",
+  "algorithm": "v ^= v>>>16; v *= 0x45d9f3b; v ^= v>>>16; v *= 0x45d9f3b; v ^= v>>>16 (all mod 2^32)",
+  "note": "mix32(0)=0 is correct: all operations on 0 produce 0. Verified by Python reference.",
   "cases": [
     {
       "id": "seed_0",
       "input": 0,
-      "expectedU32": 2654435769
+      "expectedU32": 0
     },
     {
       "id": "seed_1",
       "input": 1,
-      "expectedU32": 1750499623
+      "expectedU32": 824515495
     },
     {
       "id": "seed_max",
       "input": 4294967295,
-      "expectedU32": 2654435768
+      "expectedU32": 539527247
     }
   ]
 }
