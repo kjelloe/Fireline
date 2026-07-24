@@ -1,13 +1,14 @@
 // engine/server.js
 // Headless authoritative server shell.
-// Queue order is authoritative: queued commands resolve FIFO, then one 10 Hz tick.
-// Networking should only call enqueue() and distribute the returned snapshots.
+// Queue order is authoritative: client commands resolve FIFO, then AI Regency,
+// then one server-owned 10 Hz tick. Networking only calls enqueue()/uses snapshots.
 
 import { createInitialState } from "./state.js";
 import { apply } from "./reducer.js";
 import { CMD_ADVANCE_TICK } from "./commands.js";
 import { createSnapshot } from "./snapshot.js";
 import { TickClock } from "./clock.js";
+import { AIRegency } from "./ai_regency.js";
 
 export class GameServer {
   constructor(options = {}) {
@@ -20,10 +21,10 @@ export class GameServer {
     this.nextSequence = 0;
     this.snapshots = [];
     this.clock = null;
+    this.ai = options.enableAi === true ? new AIRegency() : null;
   }
 
   enqueue(command) {
-    // The clock exclusively advances time. This prevents clients from injecting ticks.
     if (command?.type === CMD_ADVANCE_TICK) {
       return { accepted: false, reason: "advance_tick is server-owned" };
     }
@@ -33,6 +34,8 @@ export class GameServer {
   }
 
   step() {
+    // Copy and clear first, so commands enqueued from external callbacks always
+    // wait for the next tick. Client FIFO commands always precede AI commands.
     const queued = this.queue;
     this.queue = [];
     const events = [];
@@ -41,9 +44,14 @@ export class GameServer {
       this.state = apply(this.state, entry.command);
       events.push(...this.state.events);
     }
+    if (this.ai) {
+      for (const command of this.ai.plan(this.state)) {
+        this.state = apply(this.state, command);
+        events.push(...this.state.events);
+      }
+    }
     this.state = apply(this.state, { type: CMD_ADVANCE_TICK });
     events.push(...this.state.events);
-    // Preserve the complete event batch for this snapshot tick.
     this.state.events = events;
 
     const snapshot = createSnapshot(this.state);
@@ -55,8 +63,12 @@ export class GameServer {
   getLatestSnapshot() { return this.snapshots.at(-1) ?? null; }
 
   start(options = {}) {
+    const { onSnapshot, ...clockOptions } = options;
     if (!this.clock) {
-      this.clock = new TickClock(() => this.step(), options);
+      this.clock = new TickClock(() => {
+        const snapshot = this.step();
+        if (typeof onSnapshot === "function") onSnapshot(snapshot);
+      }, clockOptions);
     }
     return this.clock.start();
   }
