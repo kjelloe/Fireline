@@ -274,3 +274,45 @@ movement/combat/capture, rejects further orders ("war is over"), emits
 `game_over`. All bookkeeping hashed; 1A fixture → v8.
 
 155/155 green. **Phase 3 complete.**
+
+---
+
+## marker-0016..0020 — Phase 4, 5A, v1 pull-ins, 32-scale, acceptance (2026-07-25)
+
+**Phase 4 (marker-0016)** Pure client modules with thin three.js wiring:
+4A `overlay_model.js` (supply rings for own bases/relays, weapon-range ring
+with min-range, health bars — enemy hp stays fogged), 4B `audio_cues.js` +
+synth placeholder tones, 4C `vfx_cues.js` (muzzle/explosion/capture pulse
+with ttl aging), 4D interpolator headings + mesh rotation, 4E Dockerfile,
+.dockerignore, enriched `/health`.
+
+**5A (marker-0017)** `server/replay_store.js`: content-hash replay ids,
+`replay_index.json`, `GET /replays` + `GET /replay/:id`, archive-once on
+game over; loaded replays reproduce the archived final hash byte-exactly.
+
+**32-scale (marker-0018)** 32 field assets (ids 0-7 keep the pinned original
+arrangement; 8-19 / 20-31 are team reserves in the base garages), 16 fixed AI
+regents (ops 16-31). 32 operator slots = up to 16 humans + 16 AI. 1A fixture
+→ v9.
+
+**Pull-ins (marker-0019)** decided per user mandate to scan phases 5-7:
+- 5B slim: persistent `playerId` → reconnect reattaches your operator slot
+  and releases AI regency; live duplicates refused.
+- 6A slim: terrain ships once per session (`s_map`); per-tick snapshots are
+  stripped of mapCells (the dominant payload).
+- 6D: AI difficulty 0/1/2 (easy = half fire rate; hard = relay pushes instead
+  of patrols). `AI_DIFFICULTY` env.
+- 7E slim: graceful shutdown (`s_server_closing`, war archived even
+  unfinished, SIGTERM/SIGINT hooks).
+Deferred to post-v1: 5C biomes/rotation, 5D campaign, 5E lobbies (contradicts
+no-lobby v1), 6B telemetry, 6C mobile, 6E modding, 7A i18n, 7B accessibility,
+7C achievements, 7D tutorial.
+
+**Acceptance (marker-0020)** `soak_v1.js`: 16 scripted view-driven human
+operators + 16 AI regents = 32 active operators crewing all 32 assets.
+Measured: relays change hands (3 captures), 20 disablements, supply floors
+hold, byte-exact replay of the full 32-participant war, ~7,800 ticks/sec
+(≈780× real-time). Suite: **182/182 green.**
+
+**Remaining manual acceptance (user):** browser playthrough vs AI, and the
+2-human LAN session (see RUNNING.md → LAN play).

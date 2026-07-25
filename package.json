@@ -1,6 +1,6 @@
 {
   "name": "more-firepower",
-  "version": "0.2.6",
+  "version": "0.9.0",
   "type": "module",
   "dependencies": {
     "express": "^4.19.0",
@@ -12,6 +12,7 @@
     "sim1f": "node test/headless/sim1f.js",
     "sim1g": "node test/headless/sim1g.js",
     "sim2a": "node test/headless/sim2a.js",
+    "simv1": "node -e \"import('./test/headless/soak_v1.js').then(({runV1Soak})=>{const r=runV1Soak(2026,3000);console.log(JSON.stringify({activeOperators:r.activeOperators,captures:r.captures,disables:r.disables,replayOk:r.liveHash===r.replayHash,ticksPerSecond:r.ticksPerSecond,scores:r.server.state.teamScores},null,1))})\"",
     "test": "node --test test/*.test.js"
   }
 }
