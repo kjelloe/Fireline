@@ -1,0 +1,35 @@
+{
+  "note": "Generated mirror of engine/units.js UNIT_STATS — modding-facing; engine never reads files. Pinned equal by milestone3a.",
+  "units": {
+    "0": {
+      "id": 0,
+      "name": "tank",
+      "speed": 16,
+      "range": 1280,
+      "minRange": 0,
+      "hp": 100,
+      "damage": 20,
+      "indirect": false
+    },
+    "1": {
+      "id": 1,
+      "name": "scout",
+      "speed": 28,
+      "range": 1024,
+      "minRange": 0,
+      "hp": 60,
+      "damage": 10,
+      "indirect": false
+    },
+    "2": {
+      "id": 2,
+      "name": "artillery",
+      "speed": 8,
+      "range": 3072,
+      "minRange": 768,
+      "hp": 80,
+      "damage": 30,
+      "indirect": true
+    }
+  }
+}

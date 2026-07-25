@@ -7,6 +7,7 @@
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
+import { getUnitStats } from "./units.js";
 
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
@@ -30,7 +31,10 @@ const MAP_PROFILES = {
 };
 
 // Spawn columns sit inside each base zone; rows are shared by both teams.
+// Chassis mix per team: two tanks, a scout, an artillery piece (3A).
+// Assets 0 and 4 stay tanks — their speed is pinned by 1B/1D movement tests.
 const SPAWN_ROWS = [56, 58, 60, 62];
+const SPAWN_TYPES = [0, 0, 1, 2];
 const TEAM_A_SPAWN_X = 7;
 const TEAM_B_SPAWN_X = 117;
 
@@ -47,13 +51,14 @@ function createFieldAssets() {
   let id = 0;
   for (let team = 0; team < TEAM_COUNT; team++) {
     const spawnX = team === 0 ? TEAM_A_SPAWN_X : TEAM_B_SPAWN_X;
-    for (const row of SPAWN_ROWS) {
+    for (let slot = 0; slot < SPAWN_ROWS.length; slot++) {
       const x = cellToWorld(spawnX);
-      const y = cellToWorld(row);
+      const y = cellToWorld(SPAWN_ROWS[slot]);
+      const type = SPAWN_TYPES[slot];
       assets.push({
-        id, type: 0, team, state: ASSET_IDLE,
+        id, type, team, state: ASSET_IDLE,
         x, y, targetX: x, targetY: y,
-        hp: 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
+        hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
         ammo: AMMO_MAX, fuel: FUEL_MAX,
       });
       id++;

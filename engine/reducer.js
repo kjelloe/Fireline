@@ -15,12 +15,14 @@ import {
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
 import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt } from "./supply.js";
+import { getUnitStats } from "./units.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
 export { createInitialState } from "./state.js";
 
-// Base movement speed in fixed world units per tick before terrain multiplier.
+// Tank movement speed in fixed world units per tick before terrain multiplier.
+// Kept as the historical export name; per-unit speeds come from units.js (3A).
 export const BASE_SPEED = 16;
 
 function copyState(state) {
@@ -129,7 +131,7 @@ function stepAsset(asset, map) {
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
 
   const terrain = map.cells[cellY * map.width + cellX];
-  const step = floorDivI32(BASE_SPEED * speedMultiplier(terrain), 256);
+  const step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
   if (step <= 0) return;
 
   const dx = asset.targetX - asset.x;
