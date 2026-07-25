@@ -14,6 +14,7 @@ export function buildView(state, team) {
       x: a.x, y: a.y, targetX: a.targetX, targetY: a.targetY,
       hp: a.hp, operatorId: a.operatorId,
       ammo: a.ammo, fuel: a.fuel,
+      towedBy: a.towedBy, recoverTimer: a.recoverTimer,
     }));
 
   const visible = computeVisible(state, team);

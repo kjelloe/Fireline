@@ -20,6 +20,7 @@ export function makeAsset(id, spec) {
     hp: spec.hp ?? 100, operatorId: spec.operatorId ?? -1,
     moveProgress: 0, suppressedTimer: spec.suppressedTimer ?? 0,
     ammo: spec.ammo ?? AMMO_MAX, fuel: spec.fuel ?? FUEL_MAX,
+    towedBy: spec.towedBy ?? -1, recoverTimer: spec.recoverTimer ?? 0,
   };
 }
 

@@ -8,6 +8,7 @@ export const CMD_JOIN_OPERATOR  = "join_operator";
 export const CMD_SELECT_ASSET   = "select_asset";
 export const CMD_MOVE_ORDER     = "move_order";
 export const CMD_FIRE_ORDER     = "fire_order";
+export const CMD_TOW_ORDER      = "tow_order";
 export const CMD_CALL_MEDIC     = "call_medic";
 export const CMD_RESPAWN        = "respawn";
 
@@ -43,6 +44,11 @@ export function validate(cmd) {
     case CMD_FIRE_ORDER:
       if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
       if (!isUint(cmd.targetAssetId, 63))  return { ok: false, reason: "invalid targetAssetId" };
+      return { ok: true };
+
+    case CMD_TOW_ORDER:
+      if (!isUint(cmd.operatorId, 31))    return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.wreckAssetId, 63))  return { ok: false, reason: "invalid wreckAssetId" };
       return { ok: true };
 
     case CMD_CALL_MEDIC:

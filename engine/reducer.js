@@ -10,8 +10,12 @@ import {
 } from "./state.js";
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
-  CMD_FIRE_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
+  CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
+import {
+  towRejection, towedWreck, restoredHp, TOW_SPEED_NUM, TOW_SPEED_DEN, REPAIR_TICKS,
+} from "./recovery.js";
+import { inOwnBase } from "./supply.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
 import {
@@ -147,6 +151,9 @@ function applyFireOrder(next, command) {
     target.state = ASSET_DISABLED;
     next.teamScores[attacker.team] += SCORE_DISABLE;
     next.events.push({ type: "asset_disabled", assetId: target.id });
+    // 8D: a disabled tower releases anything it was towing.
+    const inTow = towedWreck(next, target.id);
+    if (inTow) inTow.towedBy = -1;
     // 8B: a disabled carrier drops the standard where it died.
     const carried = assetCarries(next, target.id);
     if (carried) {
@@ -160,7 +167,25 @@ function applyFireOrder(next, command) {
   return next;
 }
 
-function stepAsset(asset, map, supplied, carrying) {
+function applyTowOrder(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const tower = next.assets[operator.assetId];
+  if (!tower || tower.operatorId !== operator.id) return reject(next, command, "no asset selected");
+  if (tower.state === ASSET_DISABLED || tower.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const wreck = next.assets[command.wreckAssetId];
+  const why = towRejection(next, tower, wreck);
+  if (why) return reject(next, command, why);
+
+  wreck.towedBy = tower.id;
+  next.events.push({ type: "tow_started", assetId: wreck.id, by: tower.id });
+  return next;
+}
+
+function stepAsset(asset, map, supplied, carrying, towing) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
@@ -169,6 +194,7 @@ function stepAsset(asset, map, supplied, carrying) {
   let step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
   if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN); // 8B
+  if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN); // 8D
   if (step <= 0) return;
 
   const dx = asset.targetX - asset.x;
@@ -205,14 +231,23 @@ function applyAdvanceTick(next) {
     if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
     const beforeX = asset.x;
     const beforeY = asset.y;
-    stepAsset(asset, next.map, inSupply(next, asset), assetCarries(next, asset.id) !== null);
+    stepAsset(
+      asset, next.map, inSupply(next, asset),
+      assetCarries(next, asset.id) !== null,
+      towedWreck(next, asset.id) !== null
+    );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
-  // Carried standards ride with their carriers (8B).
+  // Carried standards ride with their carriers (8B); towed wrecks follow (8D).
   for (const st of next.standards) {
     if (st.status !== STD_CARRIED) continue;
     const carrier = next.assets[st.carrierAssetId];
     if (carrier) { st.x = carrier.x; st.y = carrier.y; }
+  }
+  for (const wreck of next.assets) {
+    if (wreck.towedBy === -1) continue;
+    const tower = next.assets[wreck.towedBy];
+    if (tower) { wreck.x = tower.x; wreck.y = tower.y; }
   }
   // Capture pass: stable asset order decides same-tick contests.
   for (const asset of next.assets) {
@@ -251,6 +286,26 @@ function applyAdvanceTick(next) {
       st.status = STD_SCORED;
       st.carrierAssetId = -1;
       next.events.push({ type: "standard_scored", standardId: st.id, byTeam: carrier.team });
+    }
+  }
+
+  // Recovery pass (8D): a towed wreck reaching its own base enters the
+  // repair bay; timers count down; repaired assets return at half hull.
+  for (const wreck of next.assets) {
+    if (wreck.towedBy !== -1 && inOwnBase(next, wreck)) {
+      wreck.towedBy = -1;
+      wreck.recoverTimer = REPAIR_TICKS;
+      next.events.push({ type: "recovery_started", assetId: wreck.id });
+    }
+    if (wreck.recoverTimer > 0) {
+      wreck.recoverTimer -= 1;
+      if (wreck.recoverTimer === 0) {
+        wreck.state = ASSET_IDLE;
+        wreck.hp = restoredHp(wreck.type);
+        wreck.targetX = wreck.x;
+        wreck.targetY = wreck.y;
+        next.events.push({ type: "asset_restored", assetId: wreck.id });
+      }
     }
   }
 
@@ -302,6 +357,7 @@ export function apply(state, command) {
     case CMD_SELECT_ASSET: return applySelectAsset(next, command);
     case CMD_MOVE_ORDER: return applyMoveOrder(next, command);
     case CMD_FIRE_ORDER: return applyFireOrder(next, command);
+    case CMD_TOW_ORDER: return applyTowOrder(next, command);
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
     case CMD_RESPAWN:
       return next;
