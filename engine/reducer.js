@@ -1,138 +1,71 @@
-// engine/reducer.js
-// Pure deterministic apply(state, command) -> nextState.
-// Never mutates input state. Returns a new state object.
-// All branching is deterministic; no Date, Math.random, or I/O.
+// engine/reducer.js — deterministic reducer with terrain speed (1F)
 
-import { cloneState, MAX_OPERATORS, MAX_ASSETS, CELL_SCALE,
-         OP_ABSENT, OP_ACTIVE, OP_DOWN,
-         ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED } from "./state.js";
-import { validate,
-         CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET,
-         CMD_MOVE_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN } from "./commands.js";
+import { speedMultiplier } from './terrain.js';
+import { ASSET_ACTIVE } from './state.js';
 
-const MOVE_SPEED   = 16;   // fixed-point units per tick (at 10 Hz ≈ 0.625 cells/s)
-const DOWN_TIMER   = 100;  // ticks before auto-respawn (10 s at 10 Hz)
-const RESPAWN_WAIT = 10;   // ticks for manual early respawn
-
-function emit(state, event) { state.events.push(event); }
-
-function applyAdvanceTick(s) {
-  s.tick += 1;
-
-  // Advance asset movement
-  for (const a of s.assets) {
-    if (a.state !== ASSET_MOVING) continue;
-    const dx = a.targetX - a.x;
-    const dy = a.targetY - a.y;
-    const dist = Math.abs(dx) + Math.abs(dy);
-    if (dist <= MOVE_SPEED) {
-      a.x = a.targetX; a.y = a.targetY;
-      a.state = ASSET_IDLE; a.targetX = -1; a.targetY = -1; a.moveProgress = 0;
-      emit(s, { type: "asset_arrived", assetId: a.id, x: a.x, y: a.y });
-    } else {
-      // Manhattan step toward target
-      if (Math.abs(dx) >= Math.abs(dy)) {
-        a.x += dx > 0 ? MOVE_SPEED : -MOVE_SPEED;
-      } else {
-        a.y += dy > 0 ? MOVE_SPEED : -MOVE_SPEED;
-      }
-      a.moveProgress = Math.min(255, a.moveProgress + 4);
-    }
-  }
-
-  // Advance operator down timers
-  for (const o of s.operators) {
-    if (o.state !== OP_DOWN) continue;
-    o.downTimer -= 1;
-    if (o.downTimer <= 0) {
-      o.state = OP_ACTIVE; o.downTimer = 0;
-      emit(s, { type: "operator_respawned", operatorId: o.id });
-    }
-  }
-}
-
-function applyJoinOperator(s, cmd) {
-  const o = s.operators[cmd.operatorId];
-  if (o.state !== OP_ABSENT) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "operator already active" }); return;
-  }
-  o.state = OP_ACTIVE; o.team = cmd.team; o.score = 0; o.assetId = -1;
-  emit(s, { type: "operator_joined", operatorId: o.id, team: o.team });
-}
-
-function applySelectAsset(s, cmd) {
-  const o = s.operators[cmd.operatorId];
-  if (o.state !== OP_ACTIVE) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "operator not active" }); return;
-  }
-  const a = s.assets[cmd.assetId];
-  if (a.team !== o.team) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "asset belongs to other team" }); return;
-  }
-  if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "asset not available" }); return;
-  }
-  if (a.operatorId !== -1 && a.operatorId !== cmd.operatorId) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "asset already operated" }); return;
-  }
-  // Release previous asset
-  if (o.assetId !== -1 && o.assetId !== cmd.assetId) {
-    s.assets[o.assetId].operatorId = -1;
-  }
-  o.assetId = a.id; a.operatorId = o.id;
-  emit(s, { type: "asset_selected", operatorId: o.id, assetId: a.id });
-}
-
-function applyMoveOrder(s, cmd) {
-  const o = s.operators[cmd.operatorId];
-  if (o.state !== OP_ACTIVE || o.assetId === -1) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "no active asset" }); return;
-  }
-  const a = s.assets[o.assetId];
-  if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "asset not operable" }); return;
-  }
-  a.targetX = (cmd.targetCellX * CELL_SCALE) >>> 0;
-  a.targetY = (cmd.targetCellY * CELL_SCALE) >>> 0;
-  a.state = ASSET_MOVING;
-  emit(s, { type: "move_ordered", assetId: a.id, targetX: a.targetX, targetY: a.targetY });
-}
-
-function applyCallMedic(s, cmd) {
-  const o = s.operators[cmd.operatorId];
-  if (o.state !== OP_DOWN) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "operator not down" }); return;
-  }
-  emit(s, { type: "medic_called", operatorId: o.id });
-}
-
-function applyRespawn(s, cmd) {
-  const o = s.operators[cmd.operatorId];
-  if (o.state !== OP_DOWN) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "operator not down" }); return;
-  }
-  if (o.downTimer > DOWN_TIMER - RESPAWN_WAIT) {
-    emit(s, { type: "rejected", cmd: cmd.type, reason: "respawn not yet available" }); return;
-  }
-  o.state = OP_ACTIVE; o.downTimer = 0;
-  emit(s, { type: "operator_respawned", operatorId: o.id });
+export function createInitialState(seed, map) {
+  return {
+    seed: seed >>> 0,
+    tick: 0,
+    map,
+    assets: [],
+    operators: [],
+    nextAssetId: 0,
+    nextOperatorId: 0,
+    sites: [],
+    commands: [],
+  };
 }
 
 export function apply(state, command) {
-  const v = validate(command);
-  if (!v.ok) {
-    const next = cloneState(state);
-    emit(next, { type: "rejected", cmd: command?.type, reason: v.reason });
-    return next;
+  // Shallow copy + deep copy of mutable arrays
+  const next = {
+    ...state,
+    assets: state.assets.map(a => ({ ...a })),
+    operators: state.operators.map(o => ({ ...o })),
+    sites: state.sites.map(s => ({ ...s })),
+    commands: [...state.commands],
+  };
+
+  if (command.type === 'tick') {
+    next.tick = state.tick + 1;
+
+    for (const asset of next.assets) {
+      if (asset.status !== ASSET_ACTIVE) continue;
+      if (!asset.speed) continue;
+
+      const cellX = Math.floor(asset.x / 256);
+      const cellY = Math.floor(asset.y / 256);
+      if (cellX < 0 || cellX >= state.map.width || cellY < 0 || cellY >= state.map.height) {
+        continue;
+      }
+
+      const cellIdx = cellY * state.map.width + cellX;
+      const terrain = state.map.cells[cellIdx];
+      const mult = speedMultiplier(terrain);
+      const step = ((asset.speed * mult) / 256) | 0;
+
+      if (asset.targetX !== undefined && asset.targetY !== undefined) {
+        const dx = asset.targetX - asset.x;
+        const dy = asset.targetY - asset.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > step) {
+          const nx = dx / dist;
+          const ny = dy / dist;
+          asset.x = (asset.x + nx * step) | 0;
+          asset.y = (asset.y + ny * step) | 0;
+        } else {
+          asset.x = asset.targetX;
+          asset.y = asset.targetY;
+          asset.targetX = undefined;
+          asset.targetY = undefined;
+        }
+      } else {
+        // Default: move right if no target
+        asset.x = (asset.x + step) | 0;
+      }
+    }
   }
-  const next = cloneState(state);
-  switch (command.type) {
-    case CMD_ADVANCE_TICK:   applyAdvanceTick(next);          break;
-    case CMD_JOIN_OPERATOR:  applyJoinOperator(next, command); break;
-    case CMD_SELECT_ASSET:   applySelectAsset(next, command);  break;
-    case CMD_MOVE_ORDER:     applyMoveOrder(next, command);    break;
-    case CMD_CALL_MEDIC:     applyCallMedic(next, command);    break;
-    case CMD_RESPAWN:        applyRespawn(next, command);      break;
-  }
+
   return next;
 }

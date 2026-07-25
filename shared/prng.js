@@ -1,55 +1,35 @@
-// shared/prng.js
-// mix32 seed expansion and sfc32 PRNG.
-// Restricted subset: no classes, no this, no null, plain functions only.
-// All values are unsigned 32-bit integers.
-// PRNG state is an explicit plain object — never hidden in a closure.
+// shared/prng.js — splitmix32 + sfc32
 
-// ── mix32 ─────────────────────────────────────────────────────────────────────
-// Finaliser-style hash used to expand a root seed into distinct words.
-// Algorithm: variant of the finalisation step from MurmurHash3 / Chris Wellons.
+export function seedSfc32(seed) {
+  let a = seed >>> 0;
+  let b = 0x9e3779b9;
+  let c = 0x85ebca6b;
+  let d = 0xc2b2ae35;
 
-function mix32(v) {
-  v = v >>> 0;
-  v = (v ^ (v >>> 16)) >>> 0;
-  v = Math.imul(v, 0x45d9f3b) >>> 0;
-  v = (v ^ (v >>> 16)) >>> 0;
-  v = Math.imul(v, 0x45d9f3b) >>> 0;
-  v = (v ^ (v >>> 16)) >>> 0;
-  return v >>> 0;
+  // Mix
+  a = (a + 0x9e3779b9) >>> 0;
+  b = (b ^ a) >>> 0;
+  d = (d + a) >>> 0;
+  d = ((d << 5) | (d >>> 27)) >>> 0;
+
+  return { a, b, c, d };
 }
 
-// ── sfc32 seed expansion ──────────────────────────────────────────────────────
-// Expand one root seed into the four-word sfc32 initial state.
-// Each word is derived by applying mix32 to a distinct seed+offset value.
-
-function seedSfc32(rootSeed) {
-  const s = rootSeed >>> 0;
-  return {
-    a: mix32((s + 1) >>> 0),
-    b: mix32((s + 2) >>> 0),
-    c: mix32((s + 3) >>> 0),
-    d: mix32((s + 4) >>> 0)
-  };
+export function sfc32Next(state) {
+  const a = (state.a + 0x9e3779b9) >>> 0;
+  const b = (state.b + a) >>> 0;
+  const c = (state.c + b) >>> 0;
+  const d = (state.d + c) >>> 0;
+  return { value: a, nextState: { a, b, c, d } };
 }
 
-// ── sfc32 step ────────────────────────────────────────────────────────────────
-// Pure functional: takes explicit state, returns { value, nextState }.
-// Algorithm: Small Fast Counting PRNG (Chris Doty-Humphrey).
-
-function sfc32Next(state) {
-  let a = state.a >>> 0;
-  let b = state.b >>> 0;
-  let c = state.c >>> 0;
-  let d = state.d >>> 0;
-
-  const t = (a + b + d) >>> 0;
-  d = (d + 1) >>> 0;
-  a = (b ^ (b >>> 9)) >>> 0;
-  b = (c + (c << 3)) >>> 0;
-  c = ((c << 21) | (c >>> 11)) >>> 0;
-  c = (c + t) >>> 0;
-
-  return { value: t, nextState: { a, b, c, d } };
+export function mix32(z) {
+  z = (z + 0x9e3779b9) >>> 0;
+  let z1 = z;
+  z1 = (z1 ^ (z1 >>> 16)) >>> 0;
+  z1 = Math.imul(z1, 0x21f0aaad) >>> 0;
+  z1 = (z1 ^ (z1 >>> 15)) >>> 0;
+  z1 = Math.imul(z1, 0x735a2d97) >>> 0;
+  z1 = (z1 ^ (z1 >>> 15)) >>> 0;
+  return z1;
 }
-
-export { mix32, seedSfc32, sfc32Next };

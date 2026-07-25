@@ -1,13 +1,13 @@
 {
   "name": "more-firepower",
-  "version": "1.0.0",
+  "version": "0.1.7",
   "type": "module",
   "dependencies": {
     "ws": "^8.18.0",
     "express": "^4.19.0"
   },
   "scripts": {
-    "start": "node test/headless/sim1e.js",
+    "start": "node test/headless/sim1f.js",
     "test": "node --test test/*.test.js"
   }
 }

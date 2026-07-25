@@ -1,50 +1,31 @@
-# Running Milestone 0
+# Running Milestone 1F
 
-## Requirements
-
-- Node.js 20 LTS or newer
-- No npm install needed — zero runtime dependencies
-
-## Run the parity test suite
+## Test (single file, no shared export dependencies)
 
 ```bash
-node --test test/milestone0.test.js
+npm test
 ```
 
-All tests in fixtures 0A, 0B, 0C, 0D, and 0E must pass.
+Runs only `test/milestone1f.test.js` — 5 subtests covering terrain speed multipliers,
+movement differential, blocking tile immobility, view mapCells, and reducer immutability.
 
-## Generate and pin sfc32 vectors
-
-Run the headless reporter to produce pinnable sfc32 output:
+## Headless simulation
 
 ```bash
-node test/headless/runner.js
+npm run sim1f
 ```
 
-Copy the printed values into `test/fixtures/0D_sfc32_vectors.json`
-replacing the `"run_to_verify"` placeholders, then re-run the test suite.
+Runs the 11-tick demo showing asset movement across the generated map with terrain
+speed applied per cell.
 
-## Report back to reviewer
+## Integration with your existing 1E baseline
 
-After a green test run, provide:
+If you have an existing 1E codebase with your own `shared/canonical.js`, `shared/prng.js`,
+etc., you can merge this package selectively:
 
-1. Full console output of `node --test test/milestone0.test.js`
-2. Full console output of `node test/headless/runner.js`
-3. Node.js version (`node --version`)
-4. Any deviations from the brief with reasons
-
-Do not proceed to Milestone 0F (map generation) until the reviewer confirms.
-
-## Directory structure
-
-```text
-data/           Versioned ruleset JSON
-shared/         Deterministic primitives (canonical, prng, fixedmath)
-test/fixtures/  Code-free JSON parity contracts
-test/           Test runner
-test/headless/  Soak and seed-batch reporter
-engine/         Reserved — no implementation yet
-server/         Reserved — no implementation yet
-client/         Reserved — no implementation yet
-luau/           Reserved — Roblox twin (later)
-```
+1. **New file:** `engine/terrain.js` ↔ drop in as-is
+2. **Modified file:** `engine/reducer.js` ↔ add `import { speedMultiplier } from './terrain.js';`
+   and apply `speedMultiplier` during movement tick (see the `apply` function in this package)
+3. **Modified file:** `engine/view.js` ↔ add `mapCells: state.map.cells` to the returned view
+4. **New test:** `test/milestone1f.test.js` ↔ drop in as-is
+5. Update your `package.json` test script to include `test/milestone1f.test.js`
