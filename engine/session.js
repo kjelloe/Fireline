@@ -9,6 +9,7 @@ export class Session {
         this.team = -1;
         this.authenticated = false;
         this.connectedAt = Date.now();
+        this.lastSeenMs = Date.now(); // 8I heartbeat bookkeeping (operational)
     }
 
     send(type, payload) {

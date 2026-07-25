@@ -20,7 +20,26 @@ export class NetworkTransport {
         this.wss.on("connection", (ws) => {
             ws.on("message", (raw) => this.handleMessage(ws, raw));
             ws.on("close", () => this.handleDisconnect(ws));
+            ws.on("pong", () => {
+                const session = this.sessions.get(ws);
+                if (session) session.lastSeenMs = Date.now();
+            });
         });
+    }
+
+    // 8I: ping live sessions; terminate the silent ones. Termination triggers
+    // the normal close path (reservation release + AI regency takeover).
+    checkHeartbeats(nowMs, timeoutMs = 5000) {
+        const dropped = [];
+        for (const [ws, session] of this.sessions.entries()) {
+            if (nowMs - session.lastSeenMs > timeoutMs) {
+                dropped.push(session.operatorId);
+                ws.terminate();
+            } else if (ws.readyState === 1 && typeof ws.ping === "function") {
+                ws.ping();
+            }
+        }
+        return dropped;
     }
 
     pickOperatorId(requested) {
@@ -44,6 +63,7 @@ export class NetworkTransport {
         try {
             const msg = JSON.parse(raw);
             let session = this.sessions.get(ws);
+            if (session) session.lastSeenMs = Date.now(); // 8I
 
             // Handle Join Handshake
             if (msg.type === "c_join") {

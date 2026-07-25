@@ -13,6 +13,7 @@ import { NetworkTransport } from "../engine/transport.js";
 import { PHASE_OVER } from "../engine/victory.js";
 import { mix32 } from "../shared/prng.js";
 import { createReplayStore } from "./replay_store.js";
+import { createMetrics } from "./metrics.js";
 
 const CLIENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "client");
 const NODE_MODULES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "node_modules");
@@ -66,13 +67,18 @@ export function createAppServer(options = {}) {
   // The clock keeps ticking through postgame; after postgameTicks the seed
   // rotates deterministically (mix32) and connected players carry over.
   const postgameTicks = options.postgameTicks ?? 300;
+  const metrics = createMetrics(); // 8I balance instrumentation
   let gameOverTick = -1;
   let warsStarted = 1;
   function pump(snapshot) {
     transport.broadcastSnapshots(snapshot);
+    metrics.consumeEvents(snapshot.views[0]?.events, snapshot.tick);
     if (gameServer.state.phase === PHASE_OVER) {
       archiveIfOver();
-      if (gameOverTick === -1) gameOverTick = gameServer.state.tick;
+      if (gameOverTick === -1) {
+        gameOverTick = gameServer.state.tick;
+        metrics.warCompleted(gameOverTick);
+      }
       if (gameServer.state.tick - gameOverTick >= postgameTicks) {
         const nextSeed = mix32(gameServer.state.mapSeed);
         gameServer.resetWar(nextSeed);
@@ -84,6 +90,7 @@ export function createAppServer(options = {}) {
     }
     return snapshot;
   }
+  app.get("/metrics", (req, res) => res.json(metrics.snapshot()));
 
   app.get("/replays", (req, res) => res.json({ replays: replayStore.list() }));
   app.get("/replay/:id", (req, res) => {
@@ -101,15 +108,25 @@ export function createAppServer(options = {}) {
     archiveIfOver,
     pump,
     get warsStarted() { return warsStarted; },
+    metrics,
     start(port = 8080, clockOptions = {}) {
       gameServer.start({
         onSnapshot: (snapshot) => pump(snapshot),
         ...clockOptions,
       });
+      // 8I: heartbeat sweep (real timer in production; injectable in tests).
+      const hb = options.heartbeat ?? {};
+      const setIntervalFn = clockOptions.setIntervalFn ?? setInterval;
+      this.clearHeartbeat = () => (clockOptions.clearIntervalFn ?? clearInterval)(this.heartbeatTimer);
+      this.heartbeatTimer = setIntervalFn(
+        () => transport.checkHeartbeats(Date.now(), hb.timeoutMs ?? 5000),
+        hb.intervalMs ?? 2000
+      );
       return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));
     },
     async stop() {
       gameServer.stop();
+      this.clearHeartbeat?.();
       for (const client of wss.clients) client.terminate();
       wss.close();
       // Keep-alive sockets (e.g. fetch connection pools) would otherwise hold

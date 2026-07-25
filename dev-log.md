@@ -385,3 +385,34 @@ meaningless under reload. Updated: 1G double-shot test, sim1g, 2F volleys,
 6D pull-in test window, data/units.json mirror.
 
 Suite: 229/229. **P0 complete — the game now has its core fantasy.**
+
+---
+
+## marker-0027 — Phase 8 P1: legibility + robustness (8F-8I) (2026-07-26)
+
+**8F Minimap** — `client/js/minimap_model.js` (pure, fog-mirroring: can only
+plot what the view contains; standards always shown per the 8A exception) +
+canvas renderer, zones/relays/dots/standards/viewport, click-to-jump.
+
+**8G Free camera + click-select** — `client/js/camera_model.js` (pan/zoom
+clamps, follow toggle, jump targets) wired to WASD/arrows, wheel zoom,
+F follow, Home = own zone, X = enemy standard, minimap click. Click mapping
+extended with priority select-free-friendly > fire-enemy > tow-wreck > move
+(input_mapper; recovering/towed wrecks excluded; teammates' assets excluded).
+
+**8H Order feedback + end screen** — `client/js/feedback_model.js`: every
+reducer rejection reason has human text (pinned by a source-sweep test),
+team-perspective event lines ("WE HAVE THEIR STANDARD!"), end-of-war overlay
+(VICTORY/DEFEAT/DRAW, reason, scores, next-war countdown) shown on game_over
+and cleared on s_war_reset; terrain rebuilt on new-war s_map.
+
+**8I Heartbeats + instrumentation** — transport ping/pong with lastSeen
+bookkeeping, `checkHeartbeats(now, timeout)` terminates silent sessions
+(→ normal close path → AI regency), production sweep timer (injectable,
+cleared on stop). `server/metrics.js`: war durations, standard activity,
+relay captures, disables, tows/recoveries, rejection frequencies, first
+contact tick; `GET /metrics`.
+
+Suite: 247/247. **Phase 8 complete — designer's P0+P1 retrofit delivered.**
+v0.10.0. Remaining human acceptance: browser + LAN sessions (now with the
+Command Standard loop to actually playtest).

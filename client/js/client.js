@@ -10,6 +10,9 @@ import { diffVisibleEnemies, visibleEnemyIds } from "./fog_culler.js";
 import { supplyOverlays, weaponRangeOverlay, healthBars } from "./overlay_model.js";
 import { mapEventsToCues } from "./audio_cues.js";
 import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
+import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
+import { createCamera, panForKey } from "./camera_model.js";
+import { describeEvent, summarizeGameOver } from "./feedback_model.js";
 
 const CELL = 256; // fixed world units per cell
 const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33];
@@ -24,7 +27,8 @@ const siteMeshes = new Map(); // id -> Mesh
 let renderedEnemyIds = new Set();
 const interpolator = createInterpolator({ delayMs: 150 });
 let mySelectedAssetId = null;
-let cameraFollow = true;
+const freeCam = createCamera({ mapSize: 128 }); // 8G
+const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -82,8 +86,37 @@ function init() {
 
   window.addEventListener("resize", onWindowResize);
   renderer.domElement.addEventListener("pointerdown", onPointerDown);
-  document.getElementById("btn-recenter").onclick = () => { cameraFollow = true; };
+  document.getElementById("btn-recenter").onclick = () => freeCam.followMode(true);
   document.getElementById("btn-next-asset").onclick = selectNextAsset;
+
+  // 8G: free camera controls.
+  window.addEventListener("keydown", (e) => {
+    const pan = panForKey(e.key);
+    if (pan) { freeCam.pan(pan.dx, pan.dy); return; }
+    if (e.key === "f" || e.key === "F") freeCam.followMode(true);
+    if (e.key === "Home") {
+      const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
+      if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
+    }
+    if (e.key === "x" || e.key === "X") {
+      const enemyStd = interpolator.latest()?.standards?.find((st) => st.team !== joined?.team);
+      if (enemyStd) freeCam.jumpTo(enemyStd.x / CELL, enemyStd.y / CELL);
+    }
+  });
+  renderer.domElement.addEventListener("wheel", (e) => {
+    freeCam.zoomBy(e.deltaY > 0 ? 1.15 : 1 / 1.15);
+    e.preventDefault();
+  }, { passive: false });
+
+  // 8F: minimap click jumps the camera.
+  const minimap = document.getElementById("minimap");
+  minimap.addEventListener("pointerdown", (e) => {
+    const rect = minimap.getBoundingClientRect();
+    const { cellX, cellY } = minimapClickToCell(
+      e.clientX - rect.left, e.clientY - rect.top, rect.width, 128
+    );
+    freeCam.jumpTo(cellX, cellY);
+  });
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
 
@@ -110,6 +143,11 @@ function connect() {
     const msg = JSON.parse(event.data);
     if (msg.type === "s_map") {
       cachedMap = { width: msg.width, height: msg.height, cells: Uint8Array.from(msg.mapCells) };
+      if (terrainMesh) { scene.remove(terrainMesh); terrainMesh = null; } // new war terrain
+    } else if (msg.type === "s_war_reset") {
+      hideEndScreen();
+      mySelectedAssetId = null;
+      pushEvent("A new war has begun — take an asset!");
     } else if (msg.type === "s_server_closing") {
       pushEvent("server shutting down");
     } else if (msg.type === "s_joined") {
@@ -167,21 +205,36 @@ function onPointerDown(event) {
 
   const view = interpolator.latest();
   const { cellX, cellY } = scenePointToCell(target.x, target.z);
-  const cmd = buildCommandForClick(view, cellX, cellY, { fireRadiusCells: 1 });
+  const cmd = buildCommandForClick(view, cellX, cellY, {
+    fireRadiusCells: 1, myOperatorId: joined.operatorId,
+  });
+  if (cmd.type === "select_asset") mySelectedAssetId = cmd.assetId;
   send(cmd);
 }
 
 function handleEvents(events) {
   for (const e of events) {
-    if (e.type === "site_captured") pushEvent(`relay ${e.siteId} captured by team ${e.team === 0 ? "A" : "B"}`);
-    if (e.type === "asset_disabled") pushEvent(`asset ${e.assetId} disabled`);
-    if (e.type === "resupplied") pushEvent(`asset ${e.assetId} resupplied`);
-    if (e.type === "rejected") pushEvent(`order rejected: ${e.reason}`);
-    if (e.type === "game_over") {
-      const who = e.winner === -1 ? "DRAW" : e.winner === joined?.team ? "VICTORY" : "DEFEAT";
-      pushEvent(`WAR OVER — ${who}`);
-    }
+    const line = describeEvent(e, joined?.team);
+    if (line) pushEvent(line);
+    if (e.type === "game_over") showEndScreen();
   }
+}
+
+function showEndScreen() {
+  const view = interpolator.latest();
+  const summary = summarizeGameOver(view, joined?.team);
+  if (!summary) return;
+  const el = document.getElementById("end-overlay");
+  document.getElementById("end-title").innerText = summary.title;
+  document.getElementById("end-reason").innerText = summary.reason;
+  document.getElementById("end-scores").innerText =
+    `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
+  document.getElementById("end-next").innerText = summary.nextWarText;
+  el.style.display = "flex";
+}
+
+function hideEndScreen() {
+  document.getElementById("end-overlay").style.display = "none";
 }
 
 function pushEvent(text) {
@@ -345,6 +398,71 @@ function updateVfx(nowMs) {
   }
 }
 
+function upsertStandardMesh(st) {
+  let mesh = standardMeshes.get(st.team);
+  if (!mesh) {
+    mesh = new THREE.Mesh(
+      new THREE.ConeGeometry(0.45, 1.6, 4),
+      new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x222222 })
+    );
+    scene.add(mesh);
+    standardMeshes.set(st.team, mesh);
+  }
+  const ours = st.team === joined?.team;
+  mesh.material.color.setHex(ours ? 0x66ff66 : 0xff6666);
+  if (st.status === 3) mesh.material.color.setHex(0xffd700); // scored
+  mesh.position.set(st.x / CELL + 0.5, 1.1, st.y / CELL + 0.5);
+  // Carried or dropped standards pulse for attention.
+  const hot = st.status === 1 || st.status === 2;
+  const pulse = hot ? 1 + 0.25 * Math.sin(performance.now() / 150) : 1;
+  mesh.scale.set(pulse, pulse, pulse);
+  mesh.rotation.y = performance.now() / 800;
+}
+
+function renderMinimap(view) {
+  const canvas = document.getElementById("minimap");
+  const ctx = canvas.getContext("2d");
+  const size = canvas.width;
+  const k = size / 128;
+  ctx.fillStyle = "#0a0a10";
+  ctx.fillRect(0, 0, size, size);
+
+  const cam = freeCam.state;
+  const aspect = window.innerWidth / window.innerHeight;
+  const model = buildMinimapModel(
+    { ...view, myOperatorId: joined?.operatorId },
+    128,
+    { x: cam.x, y: cam.y, halfW: cam.zoom * aspect, halfH: cam.zoom }
+  );
+
+  for (const z of model.zones) {
+    ctx.fillStyle = z.team === joined?.team ? "rgba(60,180,60,0.25)" : "rgba(190,60,60,0.25)";
+    ctx.fillRect(z.x * k, z.y * k, z.width * k, z.height * k);
+  }
+  for (const r of model.relays) {
+    ctx.fillStyle = r.owner === -1 ? "#888"
+      : r.owner === joined?.team ? "#4c4" : "#c44";
+    ctx.fillRect(r.x * k - 2, r.y * k - 2, 4, 4);
+  }
+  for (const d of model.dots) {
+    ctx.fillStyle = d.kind === "wreck" ? "#555"
+      : d.kind === "friendly" ? (d.mine ? "#aaffaa" : "#3a3") : "#d33";
+    ctx.fillRect(d.x * k - 1.5, d.y * k - 1.5, d.mine ? 4 : 3, d.mine ? 4 : 3);
+  }
+  for (const st of model.standards) {
+    ctx.fillStyle = st.team === joined?.team ? "#8f8" : "#f88";
+    if (st.status === 1 || st.status === 2) ctx.fillStyle = "#fd0"; // hot standard
+    ctx.beginPath();
+    ctx.arc(st.x * k, st.y * k, 3.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (model.viewport) {
+    ctx.strokeStyle = "rgba(255,255,255,0.5)";
+    ctx.strokeRect(model.viewport.x * k, model.viewport.y * k,
+      model.viewport.width * k, model.viewport.height * k);
+  }
+}
+
 function upsertSiteMesh(site) {
   let mesh = siteMeshes.get(site.id);
   if (!mesh) {
@@ -386,20 +504,27 @@ function renderBattlefield() {
     if (!seen.has(id)) { scene.remove(mesh); assetMeshes.delete(id); }
   }
   for (const site of view.sites ?? []) upsertSiteMesh(site);
+  for (const st of view.standards ?? []) upsertStandardMesh(st);
   updateOverlays(view);
   updateHealthBars(view);
   updateVfx(performance.now());
+  renderMinimap(interpolator.latest());
 
-  if (cameraFollow && joined) {
+  // 8G: follow tracks your asset; manual pan/zoom takes over seamlessly.
+  if (joined) {
     const own = view.friendlyAssets.find((a) => a.operatorId === joined.operatorId)
       ?? view.friendlyAssets[0];
-    if (own) {
-      const cx = own.x / CELL;
-      const cz = own.y / CELL;
-      camera.position.set(cx + 18, 26, cz + 18);
-      camera.lookAt(cx, 0, cz);
-    }
+    if (own) freeCam.trackIfFollowing(own.x / CELL, own.y / CELL);
   }
+  const cam = freeCam.state;
+  const aspect = window.innerWidth / window.innerHeight;
+  camera.left = -cam.zoom * aspect;
+  camera.right = cam.zoom * aspect;
+  camera.top = cam.zoom;
+  camera.bottom = -cam.zoom;
+  camera.updateProjectionMatrix();
+  camera.position.set(cam.x + 18, 26, cam.y + 18);
+  camera.lookAt(cam.x, 0, cam.y);
 }
 
 function onWindowResize() {
