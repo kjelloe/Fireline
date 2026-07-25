@@ -21,18 +21,23 @@ export function buildView(state, team) {
     .filter((a) => visible.has(a.id))
     .map((a) => ({ id: a.id, type: a.type, team: a.team, state: a.state, x: a.x, y: a.y }));
 
-  // Relay infrastructure is public knowledge (position/type/owner only).
+  // Relay infrastructure and base zones are public knowledge.
   const sites = state.sites.map((s) => ({
     id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
   }));
+  const bases = state.bases.map((b) => ({ ...b }));
 
   return {
     tick: state.tick,
     team,
+    phase: state.phase,
+    winner: state.winner,
+    teamScores: [...state.teamScores],
     events: state.events,
     mapCells: state.map.cells,
     friendlyAssets,
     visibleEnemies,
     sites,
+    bases,
   };
 }

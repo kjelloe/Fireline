@@ -18,8 +18,17 @@ export function createAppServer(options = {}) {
   const app = express();
   app.use(express.static(options.clientDir ?? CLIENT_DIR));
   app.use("/vendor", express.static(NODE_MODULES_DIR));
+  const startedAt = Date.now(); // operational metric only — never game logic
   app.get("/health", (req, res) => {
-    res.json({ status: "ok", tick: gameServer.state.tick, version: options.version ?? "dev" });
+    res.json({
+      status: "ok",
+      tick: gameServer.state.tick,
+      phase: gameServer.state.phase,
+      winner: gameServer.state.winner,
+      players: transport.sessions.size,
+      uptimeMs: Date.now() - startedAt,
+      version: options.version ?? "dev",
+    });
   });
 
   const httpServer = http.createServer(app);

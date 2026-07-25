@@ -7,6 +7,9 @@ import * as THREE from "three";
 import { createInterpolator } from "./interpolator.js";
 import { scenePointToCell, buildCommandForClick, buildSelectCommand } from "./input_mapper.js";
 import { diffVisibleEnemies, visibleEnemyIds } from "./fog_culler.js";
+import { supplyOverlays, weaponRangeOverlay, healthBars } from "./overlay_model.js";
+import { mapEventsToCues } from "./audio_cues.js";
+import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
 
 const CELL = 256; // fixed world units per cell
 const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33];
@@ -23,6 +26,38 @@ const interpolator = createInterpolator({ delayMs: 150 });
 let mySelectedAssetId = null;
 let cameraFollow = true;
 const eventFeed = [];
+let liveVfx = [];
+const vfxMeshes = new Map(); // effect object -> Mesh
+const barMeshes = new Map(); // asset id -> Sprite
+let overlayGroup = null;
+let overlayKey = "";
+let audioCtx = null;
+
+const CUE_TONES = {
+  fire_cannon: { freq: 110, ms: 90, type: "square", gain: 0.12 },
+  explosion: { freq: 55, ms: 350, type: "sawtooth", gain: 0.2 },
+  capture: { freq: 660, ms: 250, type: "sine", gain: 0.12 },
+  resupply: { freq: 440, ms: 120, type: "triangle", gain: 0.08 },
+  war_over: { freq: 330, ms: 900, type: "sine", gain: 0.15 },
+};
+
+// Placeholder synth cues until an art/audio direction is chosen.
+function playCue(cue) {
+  const tone = CUE_TONES[cue];
+  if (!tone) return;
+  try {
+    audioCtx ??= new (window.AudioContext ?? window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = tone.type;
+    osc.frequency.value = tone.freq;
+    gain.gain.setValueAtTime(tone.gain, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + tone.ms / 1000);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + tone.ms / 1000);
+  } catch { /* audio unavailable */ }
+}
 
 function init() {
   scene = new THREE.Scene();
@@ -68,6 +103,8 @@ function connect() {
     } else if (msg.type === "s_snapshot") {
       interpolator.push(msg.view, performance.now());
       handleEvents(msg.view.events ?? []);
+      for (const cue of mapEventsToCues(msg.view.events, msg.view)) playCue(cue.cue);
+      liveVfx.push(...mapEventsToVfx(msg.view.events, msg.view, performance.now()));
       updateOpInfo(msg);
     } else if (msg.type === "s_rejected") {
       pushEvent(`rejected: ${msg.reason}`);
@@ -124,6 +161,10 @@ function handleEvents(events) {
     if (e.type === "asset_disabled") pushEvent(`asset ${e.assetId} disabled`);
     if (e.type === "resupplied") pushEvent(`asset ${e.assetId} resupplied`);
     if (e.type === "rejected") pushEvent(`order rejected: ${e.reason}`);
+    if (e.type === "game_over") {
+      const who = e.winner === -1 ? "DRAW" : e.winner === joined?.team ? "VICTORY" : "DEFEAT";
+      pushEvent(`WAR OVER — ${who}`);
+    }
   }
 }
 
@@ -202,12 +243,92 @@ function upsertAssetMesh(a, friendly) {
   }
   mesh.material.color.setHex(assetColor(a, friendly));
   mesh.position.set(a.x / CELL + 0.5, a.state === STATE_DISABLED ? 0.15 : 0.35, a.y / CELL + 0.5);
+  if (typeof a.heading === "number") mesh.rotation.y = -a.heading; // 4D: face motion
   if (friendly && a.operatorId === joined?.operatorId) {
     mesh.scale.set(1.2, 1.2, 1.2);
   } else {
     mesh.scale.set(1, 1, 1);
   }
   return mesh;
+}
+
+function updateOverlays(view) {
+  // 4A: supply rings + weapon range ring, rebuilt only when ownership changes.
+  const key = JSON.stringify([
+    view.sites?.map((s) => s.owner), joined?.operatorId,
+    view.friendlyAssets.find((a) => a.operatorId === joined?.operatorId)?.id ?? -1,
+  ]);
+  if (key === overlayKey) return;
+  overlayKey = key;
+  if (overlayGroup) scene.remove(overlayGroup);
+  overlayGroup = new THREE.Group();
+  const ringMat = (color, opacity) =>
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide });
+  for (const o of supplyOverlays(view)) {
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(o.radiusCells - 0.15, o.radiusCells, 48),
+      ringMat(0x4488ff, 0.35)
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(o.centerX, 0.05, o.centerY);
+    overlayGroup.add(ring);
+  }
+  const range = weaponRangeOverlay(view, joined?.operatorId);
+  if (range) {
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(Math.max(0.2, range.radiusCells - 0.1), range.radiusCells, 48),
+      ringMat(0xffcc44, 0.4)
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(range.centerX, 0.06, range.centerY);
+    overlayGroup.add(ring);
+  }
+  scene.add(overlayGroup);
+}
+
+function updateHealthBars(view) {
+  const seen = new Set();
+  for (const bar of healthBars(view)) {
+    if (bar.fraction === null) continue;
+    seen.add(bar.id);
+    let sprite = barMeshes.get(bar.id);
+    if (!sprite) {
+      sprite = new THREE.Sprite(new THREE.SpriteMaterial({ color: 0x44ff44 }));
+      scene.add(sprite);
+      barMeshes.set(bar.id, sprite);
+    }
+    sprite.scale.set(Math.max(0.05, bar.fraction), 0.08, 1);
+    sprite.material.color.setHex(bar.fraction > 0.5 ? 0x44ff44 : bar.fraction > 0.25 ? 0xffcc44 : 0xff4444);
+    sprite.position.set(bar.x, 0.9, bar.y);
+  }
+  for (const [id, sprite] of barMeshes) {
+    if (!seen.has(id)) { scene.remove(sprite); barMeshes.delete(id); }
+  }
+}
+
+function updateVfx(nowMs) {
+  liveVfx = pruneVfx(liveVfx, nowMs);
+  const alive = new Set(liveVfx);
+  for (const [fx, mesh] of vfxMeshes) {
+    if (!alive.has(fx)) { scene.remove(mesh); vfxMeshes.delete(fx); }
+  }
+  for (const fx of liveVfx) {
+    let mesh = vfxMeshes.get(fx);
+    if (!mesh) {
+      const color = fx.kind === "muzzle_flash" ? 0xffee88 : fx.kind === "explosion" ? 0xff6622 : 0x66ffcc;
+      mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.3, 8, 8),
+        new THREE.MeshBasicMaterial({ color, transparent: true })
+      );
+      mesh.position.set(fx.at.x, 0.6, fx.at.y);
+      scene.add(mesh);
+      vfxMeshes.set(fx, mesh);
+    }
+    const age = vfxAge(fx, nowMs);
+    const grow = fx.kind === "capture_pulse" ? 1 + age * 3 : 1 + age * 1.5;
+    mesh.scale.set(grow, grow, grow);
+    mesh.material.opacity = 1 - age;
+  }
 }
 
 function upsertSiteMesh(site) {
@@ -251,6 +372,9 @@ function renderBattlefield() {
     if (!seen.has(id)) { scene.remove(mesh); assetMeshes.delete(id); }
   }
   for (const site of view.sites ?? []) upsertSiteMesh(site);
+  updateOverlays(view);
+  updateHealthBars(view);
+  updateVfx(performance.now());
 
   if (cameraFollow && joined) {
     const own = view.friendlyAssets.find((a) => a.operatorId === joined.operatorId)

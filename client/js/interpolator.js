@@ -17,15 +17,21 @@ export function createInterpolator({ delayMs = 100, capacity = 30 } = {}) {
     return { older, newer };
   }
 
+  // 4D: besides position, expose a heading (radians, screen convention:
+  // 0 = +x, y grows south) so the renderer can face units along their motion.
+  // Stationary entities keep heading null; renderers retain the last one.
   function lerpEntities(oldList, newList, t) {
     const oldById = new Map((oldList ?? []).map((e) => [e.id, e]));
     return (newList ?? []).map((e) => {
       const prev = oldById.get(e.id);
-      if (!prev) return { ...e };
+      if (!prev) return { ...e, heading: null };
+      const dx = e.x - prev.x;
+      const dy = e.y - prev.y;
       return {
         ...e,
-        x: prev.x + (e.x - prev.x) * t,
-        y: prev.y + (e.y - prev.y) * t,
+        x: prev.x + dx * t,
+        y: prev.y + dy * t,
+        heading: dx !== 0 || dy !== 0 ? Math.atan2(dy, dx) : null,
       };
     });
   }

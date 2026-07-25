@@ -1,0 +1,7 @@
+node_modules
+phases
+specs
+test
+*.md
+debug.log
+.git
