@@ -183,3 +183,36 @@ fixtureVersion 6 (hashes only).
 **Tests:** `milestone2a.test.js` — 6 plan criteria (soak completes, run-to-run
 hash stability, replay match, ≥1 capture, ≥1 disablement, supply floors ≥ 0).
 `sim2a` npm script. 100/100 green.
+
+---
+
+## marker-0008 — Slice 2B: WebSocket server + app entry (2026-07-25)
+
+**Added:** `server/index.js` — `createAppServer` (express static client,
+`/vendor` for local libs, `/health`, WS bridge, 10Hz clock with injectable
+timers) + `npm start` production entry (PORT/MAP_SEED env, fixed default seed
+2026 — no wall-clock seeding). Transport gained no-lobby slot assignment:
+server picks the lowest free human slot (0–15) when the client doesn't claim
+one, rejects duplicate claims, frees reservations on disconnect. (Final's
+`server/ws.js` was rejected as reference: JOIN_INTERNAL bypassed validation.)
+
+**Tests:** `milestone2b.test.js` — 7: assigned slots, duplicate rejection,
+ws command dispatch + per-team snapshot broadcast, advance_tick refusal,
+malformed JSON resilience, reservation release, /health. 107/107 green.
+
+---
+
+## marker-0009 — Slices 2C–2E: pure client modules (2026-07-25)
+
+**Added (all node-testable, zero three.js dependency):**
+- `client/js/interpolator.js` (2C) — 10Hz snapshot buffer, 100ms-behind
+  linear sampling, out-of-order drop, capacity bound. Authority rule pinned:
+  the newest view decides existence — interpolation never resurrects fogged
+  entities, and new entities snap (never lerp from nothing).
+- `client/js/input_mapper.js` (2D) — scene→cell mapping with clamping;
+  click semantics: visible live enemy → fire_order (lowest id ties), wreck or
+  ground → move_order; select command builder.
+- `client/js/fog_culler.js` (2E) — exact add/remove/keep diffing against the
+  server's visibility mask, verified against a live GameServer fog cycle.
+
+**Tests:** milestone2c/2d/2e — 16 subtests. 123/123 green.
