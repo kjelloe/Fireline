@@ -148,3 +148,18 @@ joinSelectMove) so schema growth touches one builder; 1F–1J tests migrated.
 **Tests:** `milestone1j.test.js` — 6 plan criteria + 5 self-tests (stranded
 at fuel 0, no transit resupply, enemy base refuses, no repeat event,
 ammo-cycle back to combat-ready). 87/87 green.
+
+---
+
+## marker-0006 — Slice 1K: command log + replay reconstruction (2026-07-25)
+
+**Added:** `engine/replay.js` (`recordCommand` with non-decreasing tick
+enforcement, `replayLog` = plain fold of apply over the log);
+`GameServer.commandLog` records every applied command — client FIFO, AI
+regency, and the server-owned advance_tick — in authoritative order, making
+replay an exact reproduction.
+
+**Tests:** `milestone1k.test.js` — 5 plan criteria (incl. 50-tick live-vs-
+replay hash equality with AI + human commands) + 2 self-tests (log ordering
+contract, replay leaves initial state untouched). 94/94 green.
+**Phase 1 complete.**

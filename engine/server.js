@@ -9,6 +9,7 @@ import { CMD_ADVANCE_TICK } from "./commands.js";
 import { createSnapshot } from "./snapshot.js";
 import { TickClock } from "./clock.js";
 import { AIRegency } from "./ai_regency.js";
+import { recordCommand } from "./replay.js";
 
 export class GameServer {
   constructor(options = {}) {
@@ -22,6 +23,8 @@ export class GameServer {
     this.snapshots = [];
     this.clock = null;
     this.ai = options.enableAi === true ? new AIRegency() : null;
+    // 1K: authoritative command log (client + AI + advance_tick, in order).
+    this.commandLog = [];
   }
 
   enqueue(command) {
@@ -41,15 +44,18 @@ export class GameServer {
     const events = [];
 
     for (const entry of queued) {
+      recordCommand(this.commandLog, this.state.tick, entry.command);
       this.state = apply(this.state, entry.command);
       events.push(...this.state.events);
     }
     if (this.ai) {
       for (const command of this.ai.plan(this.state)) {
+        recordCommand(this.commandLog, this.state.tick, command);
         this.state = apply(this.state, command);
         events.push(...this.state.events);
       }
     }
+    recordCommand(this.commandLog, this.state.tick, { type: CMD_ADVANCE_TICK });
     this.state = apply(this.state, { type: CMD_ADVANCE_TICK });
     events.push(...this.state.events);
     this.state.events = events;
