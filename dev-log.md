@@ -474,7 +474,24 @@ no-hardcoded-paths sweep, HTTP serving of metadata/icons.
 
 **Next art slices (see PIPELINE.md):** painted GLBs drop into
 `client/assets/models/` and are auto-preferred — B: standard + capture VFX,
-C: unit kit GLBs, D: order/selection markers, E: canvas sprite renderer. `phase8_gaps.test.js` —
+C: unit kit GLBs, D: order/selection markers, E: canvas sprite renderer.
+
+---
+
+## PLAYTEST RESULT — first 2-human LAN session (2026-07-26)
+
+**User verdict: "Two human players could move on the map. Other than that
+the game made little sense in current form."**
+
+Technical acceptance passed (join, seats, movement, sync over LAN). The
+EXPERIENCE failed: the game does not communicate itself. Working hypotheses
+(to confirm with the user before fixing): no onboarding beyond a small hint
+bar; no auto-assigned asset on join; objective (enemy standard) is ~100
+cells away and effectively invisible; at tank pace (1/16 cell/tick) nothing
+happens for many minutes; supply/relay logic is invisible until it punishes
+you; feed lines lack context. This is the designer's predicted P1-G reality
+check — pacing and first-five-minutes legibility, not systems, are the gap.
+Next: targeted questions to the user, then a "make it make sense" slice. `phase8_gaps.test.js` —
 penalty stacking 16→12→6 (which caught that whole-map sandbox bases
 auto-repair towed wrecks — test design issue, mechanics correct),
 same-tick contested grab (lowest id), tower-carrier death drops flag AND
