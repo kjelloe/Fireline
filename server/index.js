@@ -45,7 +45,11 @@ export function createAppServer(options = {}) {
     },
     async stop() {
       gameServer.stop();
+      for (const client of wss.clients) client.terminate();
       wss.close();
+      // Keep-alive sockets (e.g. fetch connection pools) would otherwise hold
+      // close() open indefinitely.
+      httpServer.closeAllConnections?.();
       await new Promise((resolve) => httpServer.close(resolve));
     },
   };
