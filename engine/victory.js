@@ -6,6 +6,7 @@ export const WIN_NONE = 0;
 export const WIN_ELIMINATION = 1;
 export const WIN_DOMINATION = 2;
 export const WIN_TIME_LIMIT = 3;
+export const WIN_STANDARD = 4; // 8C: the primary victory — flag captured
 
 export const PHASE_RUNNING = 0;
 export const PHASE_OVER = 1;
@@ -24,7 +25,14 @@ function teamEliminated(state, team) {
 }
 
 // Returns null while the war continues, else {winner: 0|1|-1, reason}.
+// Command Standard capture is checked FIRST — it is the primary condition;
+// elimination, domination and the clock are secondary/fallback paths.
 export function checkVictory(state) {
+  const scored = state.standards.find((st) => st.status === 3 /* STD_SCORED */);
+  if (scored) {
+    return { winner: scored.team === 0 ? 1 : 0, reason: WIN_STANDARD };
+  }
+
   const aDown = teamEliminated(state, 0);
   const bDown = teamEliminated(state, 1);
   if (aDown && bDown) return { winner: -1, reason: WIN_ELIMINATION };

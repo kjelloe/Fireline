@@ -10,6 +10,8 @@ import express from "express";
 import { WebSocketServer } from "ws";
 import { GameServer } from "../engine/server.js";
 import { NetworkTransport } from "../engine/transport.js";
+import { PHASE_OVER } from "../engine/victory.js";
+import { mix32 } from "../shared/prng.js";
 import { createReplayStore } from "./replay_store.js";
 
 const CLIENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "client");
@@ -48,7 +50,7 @@ export function createAppServer(options = {}) {
   );
   let archived = false;
   function archiveIfOver() {
-    if (archived || gameServer.state.phase !== 1) return null;
+    if (archived || gameServer.state.phase !== PHASE_OVER) return null;
     archived = true;
     return replayStore.save({
       mapSeed: gameServer.state.mapSeed,
@@ -58,6 +60,29 @@ export function createAppServer(options = {}) {
       finalHash: gameServer.getLatestSnapshot()?.stateHash ?? null,
       finishedAt: new Date().toISOString(), // operational metadata only
     }, gameServer.commandLog);
+  }
+
+  // 8C: war lifecycle — active → game_over → postgame → resetting → active.
+  // The clock keeps ticking through postgame; after postgameTicks the seed
+  // rotates deterministically (mix32) and connected players carry over.
+  const postgameTicks = options.postgameTicks ?? 300;
+  let gameOverTick = -1;
+  let warsStarted = 1;
+  function pump(snapshot) {
+    transport.broadcastSnapshots(snapshot);
+    if (gameServer.state.phase === PHASE_OVER) {
+      archiveIfOver();
+      if (gameOverTick === -1) gameOverTick = gameServer.state.tick;
+      if (gameServer.state.tick - gameOverTick >= postgameTicks) {
+        const nextSeed = mix32(gameServer.state.mapSeed);
+        gameServer.resetWar(nextSeed);
+        archived = false;
+        gameOverTick = -1;
+        warsStarted += 1;
+        transport.onWarReset(nextSeed);
+      }
+    }
+    return snapshot;
   }
 
   app.get("/replays", (req, res) => res.json({ replays: replayStore.list() }));
@@ -74,12 +99,11 @@ export function createAppServer(options = {}) {
     transport,
     replayStore,
     archiveIfOver,
+    pump,
+    get warsStarted() { return warsStarted; },
     start(port = 8080, clockOptions = {}) {
       gameServer.start({
-        onSnapshot: (snapshot) => {
-          transport.broadcastSnapshots(snapshot);
-          archiveIfOver();
-        },
+        onSnapshot: (snapshot) => pump(snapshot),
         ...clockOptions,
       });
       return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));

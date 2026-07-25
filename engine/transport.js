@@ -127,6 +127,19 @@ export class NetworkTransport {
         this.sessions.delete(ws);
     }
 
+    // 8C: a new war began. Connected players stay connected: re-join their
+    // operator slots into the fresh state and re-ship the new terrain.
+    onWarReset(mapSeed) {
+        for (const session of this.sessions.values()) {
+            if (!session.authenticated) continue;
+            this.server.enqueue({
+                type: "join_operator", operatorId: session.operatorId, team: session.team,
+            });
+            session.send("s_war_reset", { mapSeed });
+            this.sendMap(session);
+        }
+    }
+
     // 6A: terrain is immutable — ship it once per session, not per snapshot.
     sendMap(session) {
         const map = this.server.state.map;

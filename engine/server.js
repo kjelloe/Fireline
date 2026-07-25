@@ -83,6 +83,16 @@ export class GameServer {
     this.ai?.release(operatorId);
   }
 
+  // 8C: begin a fresh war in place. Networking, sessions, and archives are
+  // the app layer's concern; regency pairings re-claim on the next step.
+  resetWar(mapSeed) {
+    this.state = createInitialState(mapSeed >>> 0, "frontier_corridor");
+    this.queue = [];
+    this.commandLog = [];
+    this.snapshots = [];
+    this.ai?.regented.clear();
+  }
+
   start(options = {}) {
     const { onSnapshot, ...clockOptions } = options;
     if (!this.clock) {
