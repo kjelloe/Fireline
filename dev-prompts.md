@@ -58,3 +58,17 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 2. Add missing unit/component/integration tests (test/unit_gaps, component_gaps, integration_gaps — 199/199).
 3. `plan-version1.md` written: P0 = Command Standard flag mechanic, war rotation, wreck recovery, fire cooldown; P1 = legibility kit, order feedback, balance pass, session robustness.
 4. Next major topic after this: art asset building.
+
+### Prompt 6 — Designer ally's Phase 8 plan (Core Fantasy Retrofit)
+
+> Thanks, before art, your questions on game design, from designer ally: [full designer response — archived verbatim in `specs/phase8_core_fantasy_retrofit.md`]
+
+**Decisions captured (designer-confirmed):**
+1. Phase 8 "Core Fantasy Retrofit" before any art/content: P0 slices 8A–8E, P1 slices 8F–8I, milestone test files per slice.
+2. Command Standard is a PHYSICAL deterministic state object (position, carrier, dropped state, home zone), not a score variable.
+3. Scoring rule: enemy standard into friendly command zone AND own standard AT_BASE → first successful capture wins the war (sudden-capture mode for v1).
+4. War lifecycle: active → game_over → postgame → resetting → active; connected players persist across wars; no server restart.
+5. Wreck recovery = tow-back rescue (no menu respawns): wreck → towed by friendly → repair at depot/base → returns to service.
+6. Fire cooldowns enforced by the reducer (never the client), with visible reload feedback.
+7. P1 legibility (minimap, free camera, click-select, order feedback, end screen, heartbeats, balance instrumentation) is gameplay, not polish.
+8. Updated vision: "...players drop into active miniature wars and fight over physical Command Standards."

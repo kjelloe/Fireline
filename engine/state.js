@@ -8,6 +8,7 @@ import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { getUnitStats } from "./units.js";
+import { createStandards } from "./standards.js";
 
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
@@ -116,6 +117,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
   let assets;
   let sites;
   let bases;
+  let standards;
   if (typeof mapArg === "string") {
     const profile = MAP_PROFILES[mapArg];
     if (!profile) throw new RangeError(`unknown map profile: ${mapArg}`);
@@ -123,11 +125,13 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     assets = createFieldAssets();
     sites = createSites();
     bases = createBases();
+    standards = createStandards();
   } else if (mapArg && typeof mapArg === "object") {
     map = mapArg;
     assets = [];
     sites = [];
     bases = [];
+    standards = [];
   } else {
     throw new RangeError("mapArg must be a profile name or map object");
   }
@@ -141,6 +145,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     assets,
     sites,
     bases,
+    standards, // 8A: physical Command Standards
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

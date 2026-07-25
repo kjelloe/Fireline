@@ -26,6 +26,9 @@ export function buildView(state, team) {
     id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
   }));
   const bases = state.bases.map((b) => ({ ...b }));
+  // 8A: Command Standards are a deliberate fog exception — both teams always
+  // know both standards' position and status. The stolen flag IS the drama.
+  const standards = state.standards.map((st) => ({ ...st }));
 
   return {
     tick: state.tick,
@@ -39,5 +42,6 @@ export function buildView(state, team) {
     visibleEnemies,
     sites,
     bases,
+    standards,
   };
 }

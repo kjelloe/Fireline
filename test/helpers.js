@@ -41,6 +41,16 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
     { team: 0, x: 0, y: 0, width: map.width, height: map.height },
     { team: 1, x: 0, y: 0, width: map.width, height: map.height },
   ];
+  // 8A: standards only when a test asks for them.
+  if (opts.standards) {
+    state.standards = opts.standards.map((spec, id) => ({
+      id, team: spec.team ?? id,
+      x: cellToWorld(spec.cellX), y: cellToWorld(spec.cellY ?? 0),
+      homeCellX: spec.homeCellX ?? spec.cellX, homeCellY: spec.homeCellY ?? spec.cellY ?? 0,
+      carrierAssetId: spec.carrierAssetId ?? -1,
+      status: spec.status ?? 0,
+    }));
+  }
   return state;
 }
 

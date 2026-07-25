@@ -40,6 +40,7 @@ function copyState(state) {
     operators: state.operators.map((o) => ({ ...o })),
     assets: state.assets.map((a) => ({ ...a })),
     sites: state.sites.map((s) => ({ ...s })),
+    standards: state.standards.map((st) => ({ ...st })),
     events: [],
   };
 }
