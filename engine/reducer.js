@@ -14,6 +14,11 @@ import {
 } from "./commands.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
+import {
+  assetCarries, standardTakeableBy, standardReturnableBy, canScore,
+  STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
+  CARRIER_SPEED_NUM, CARRIER_SPEED_DEN,
+} from "./standards.js";
 import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
@@ -142,11 +147,20 @@ function applyFireOrder(next, command) {
     target.state = ASSET_DISABLED;
     next.teamScores[attacker.team] += SCORE_DISABLE;
     next.events.push({ type: "asset_disabled", assetId: target.id });
+    // 8B: a disabled carrier drops the standard where it died.
+    const carried = assetCarries(next, target.id);
+    if (carried) {
+      carried.status = STD_DROPPED;
+      carried.carrierAssetId = -1;
+      carried.x = target.x;
+      carried.y = target.y;
+      next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
+    }
   }
   return next;
 }
 
-function stepAsset(asset, map, supplied) {
+function stepAsset(asset, map, supplied, carrying) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
@@ -154,6 +168,7 @@ function stepAsset(asset, map, supplied) {
   const terrain = map.cells[cellY * map.width + cellX];
   let step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
   if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
+  if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN); // 8B
   if (step <= 0) return;
 
   const dx = asset.targetX - asset.x;
@@ -190,8 +205,14 @@ function applyAdvanceTick(next) {
     if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
     const beforeX = asset.x;
     const beforeY = asset.y;
-    stepAsset(asset, next.map, inSupply(next, asset));
+    stepAsset(asset, next.map, inSupply(next, asset), assetCarries(next, asset.id) !== null);
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
+  }
+  // Carried standards ride with their carriers (8B).
+  for (const st of next.standards) {
+    if (st.status !== STD_CARRIED) continue;
+    const carrier = next.assets[st.carrierAssetId];
+    if (carrier) { st.x = carrier.x; st.y = carrier.y; }
   }
   // Capture pass: stable asset order decides same-tick contests.
   for (const asset of next.assets) {
@@ -202,6 +223,37 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "site_captured", siteId: site.id, team: asset.team });
     }
   }
+  // Standard pass (8B): pickups, returns, then scoring — stable asset order.
+  for (const asset of next.assets) {
+    const takeable = standardTakeableBy(next, asset);
+    if (takeable) {
+      takeable.status = STD_CARRIED;
+      takeable.carrierAssetId = asset.id;
+      takeable.x = asset.x;
+      takeable.y = asset.y;
+      next.events.push({
+        type: "standard_taken", standardId: takeable.id, assetId: asset.id, byTeam: asset.team,
+      });
+    }
+    const returnable = standardReturnableBy(next, asset);
+    if (returnable) {
+      returnable.status = STD_AT_BASE;
+      returnable.carrierAssetId = -1;
+      returnable.x = cellToWorld(returnable.homeCellX);
+      returnable.y = cellToWorld(returnable.homeCellY);
+      next.events.push({ type: "standard_returned", standardId: returnable.id, team: asset.team });
+    }
+  }
+  for (const st of next.standards) {
+    if (st.status !== STD_CARRIED) continue;
+    const carrier = next.assets[st.carrierAssetId];
+    if (carrier && canScore(next, carrier)) {
+      st.status = STD_SCORED;
+      st.carrierAssetId = -1;
+      next.events.push({ type: "standard_scored", standardId: st.id, byTeam: carrier.team });
+    }
+  }
+
   // Resupply pass: standing in your own base restores ammo and fuel.
   for (const asset of next.assets) {
     const restored = resupplyAt(next, asset.id);
