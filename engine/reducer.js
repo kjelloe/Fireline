@@ -12,7 +12,7 @@ import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
-import { resolveShot, inFireRange } from "./combat.js";
+import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -103,6 +103,7 @@ function applyFireOrder(next, command) {
 
   const shot = resolveShot(attacker, target);
   target.hp = Math.max(0, target.hp - shot.hpDelta);
+  if (shot.suppressed && target.hp > 0) target.suppressedTimer = SUPPRESSION_TICKS;
   next.events.push({
     type: "fire_resolved",
     attackerId: attacker.id,
@@ -153,6 +154,7 @@ function stepAsset(asset, map) {
 function applyAdvanceTick(next) {
   next.tick += 1;
   for (const asset of next.assets) {
+    if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.state !== ASSET_MOVING) continue;
     stepAsset(asset, next.map);
   }

@@ -20,7 +20,7 @@ function sandbox(assetSpecs) {
     id, type: 0, team: spec.team, state: spec.state ?? ASSET_IDLE,
     x: cellToWorld(spec.cellX), y: cellToWorld(spec.cellY ?? 0),
     targetX: cellToWorld(spec.cellX), targetY: cellToWorld(spec.cellY ?? 0),
-    hp: spec.hp ?? 100, operatorId: -1, moveProgress: 0,
+    hp: spec.hp ?? 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
   }));
   return state;
 }

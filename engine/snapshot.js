@@ -19,6 +19,7 @@ export function hashState(state) {
     w.writeI32LE(a.state); w.writeI32LE(a.x); w.writeI32LE(a.y);
     w.writeI32LE(a.targetX); w.writeI32LE(a.targetY);
     w.writeI32LE(a.hp); w.writeI32LE(a.operatorId); w.writeU8(a.moveProgress);
+    w.writeU8(a.suppressedTimer); // added 1H
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

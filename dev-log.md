@@ -88,3 +88,21 @@ to the command-authority flow.
 - `test/headless/sim1g.js` + `sim1g` npm script.
 
 **Result:** `npm test` 59/59.
+
+---
+
+## marker-0003 — Slice 1H: fog LOS + suppression visibility (2026-07-25)
+
+**Added:** `engine/los.js` (`computeVisible(state, team)`, `sensorRadius`,
+radii 12 / 6-when-suppressed); `view.js` now delegates visibility to it.
+Suppression implemented as `suppressedTimer` on assets (30 ticks, set by a
+non-lethal hit, decremented each advance_tick) — deliberately NOT an asset
+state, since it must coexist with IDLE/MOVING; plan's `ASSET_SUPPRESSED`
+constant replaced by `isSuppressed(asset)` helper (deviation logged).
+Wrecks (disabled/salvaged) are always visible and never act as sensors.
+
+**Schema:** `suppressedTimer` added to asset hash (snapshot.js + 1A test
+hash fn); `1A_reducer.json` → fixtureVersion 3 (hashes only, events verbatim).
+
+**Tests:** `milestone1h.test.js` — 6 plan criteria + 3 self-tests (suppress →
+recover cycle, no timer on wrecks, wrecked sensors blind). 68/68 green.

@@ -9,6 +9,9 @@ export const DEFAULT_RULES = Object.freeze({
   range: 1280,
 });
 
+// Ticks of degraded sensor radius after taking a hit (1H). 30 ticks = 3s at 10Hz.
+export const SUPPRESSION_TICKS = 30;
+
 export function resolveShot(attacker, target, rules = DEFAULT_RULES) {
   return {
     hpDelta: rules.damage,

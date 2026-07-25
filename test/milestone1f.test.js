@@ -14,7 +14,7 @@ function testAsset(id, team, x, y, targetX, targetY) {
   return {
     id, type: 0, team, state: ASSET_MOVING,
     x, y, targetX, targetY,
-    hp: 100, operatorId: -1, moveProgress: 0,
+    hp: 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
   };
 }
 

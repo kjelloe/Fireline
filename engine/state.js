@@ -16,6 +16,11 @@ export const ASSET_MOVING = 1;
 export const ASSET_DISABLED = 2;
 export const ASSET_SALVAGED = 3;
 
+// Suppression is a timer, not an asset state: it coexists with IDLE/MOVING.
+export function isSuppressed(asset) {
+  return asset.suppressedTimer > 0;
+}
+
 export const OPERATOR_COUNT = 32;
 export const TEAM_COUNT = 2;
 
@@ -47,7 +52,7 @@ function createFieldAssets() {
       assets.push({
         id, type: 0, team, state: ASSET_IDLE,
         x, y, targetX: x, targetY: y,
-        hp: 100, operatorId: -1, moveProgress: 0,
+        hp: 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
       });
       id++;
     }
