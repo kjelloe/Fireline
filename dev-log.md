@@ -316,3 +316,28 @@ hold, byte-exact replay of the full 32-participant war, ~7,800 ticks/sec
 
 **Remaining manual acceptance (user):** browser playthrough vs AI, and the
 2-human LAN session (see RUNNING.md → LAN play).
+
+---
+
+## marker-0021 — Consolidation: docs, gap tests, v1 plan (2026-07-25)
+
+**Docs:** root `README.md` (repo orientation; flags `phases/` +
+`initial-prompt.md` as historical reference), project `CLAUDE.md` (working
+rules: determinism, fixture regen policy, marker commits, layer map),
+historical-note preface on `specs/PROJECT_RETROSPECTIVE.md`, and
+`plan-version1.md` — the v1 gap plan (P0: Command Standard flag mechanic,
+war lifecycle/rotation, wreck recovery, fire cooldown; P1: legibility kit,
+order feedback, balance pass, session robustness; P2 + art track).
+
+**Gap tests added (17 subtests → 199/199):**
+- `unit_gaps.test.js` — optional-u32 encoding, hex padding, terrain/unit
+  table fallbacks + frozen-ness, contested domination, captureCheck edges,
+  command validation boundaries.
+- `component_gaps.test.js` — call_medic/respawn pinned as validated inert
+  no-ops, view score/phase exposure with defensive copies, snapshot leak
+  audit, AI never drives wrecks, AI holds fire out of supply, suppression
+  timer cadence.
+- `integration_gaps.test.js` — post-rejoin control of the same asset,
+  ws-level game-over delivery + post-war join refusal, crash recovery
+  (rebuild from command log, then continue in lockstep), 4000-tick invariant
+  sweep (integer fields, bounds, link symmetry, non-negative pools, replay).

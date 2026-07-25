@@ -48,3 +48,13 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 3. Acceptance for the 5A delivery includes a second-human check over LAN, in addition to headless soak + browser play vs AI.
 4. Claude reviews phase 5/6/7 plans and proposes any features worth pulling into v1.
 5. Claude commits locally in git (local only, no push — explicit override of the global no-commit rule for this project), using `marker-NNNN` in commit messages to link commits to reports.
+
+### Prompt 5 — Consolidation: docs, test gaps, v1 plan
+
+> Thanks. Does any docs, MD files or memories need updates with the latest discoveries? And please add unit, component and integration tests that are missing or needed. And can you write up a ./plan-version1.md on what is missing for a fully playable game? And then we should afterwards look at art asset building
+
+**Decisions captured:**
+1. Refresh docs/memories with the rebuild's discoveries (root README.md and project CLAUDE.md created; historical note prefixed to specs/PROJECT_RETROSPECTIVE.md).
+2. Add missing unit/component/integration tests (test/unit_gaps, component_gaps, integration_gaps — 199/199).
+3. `plan-version1.md` written: P0 = Command Standard flag mechanic, war rotation, wreck recovery, fire cooldown; P1 = legibility kit, order feedback, balance pass, session robustness.
+4. Next major topic after this: art asset building.

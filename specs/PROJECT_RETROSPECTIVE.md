@@ -1,5 +1,12 @@
 # More Firepower: Project Retrospective (v0.7.0)
 
+> **HISTORICAL NOTE (2026-07-25):** this document describes the original
+> prototype hand-off and overstates its condition. The "v0.7.0 /
+> feature-complete / 198 verified tests" assembly had lost its core 1E engine
+> layer, and its 1G+ code descends from a degraded fork. The verified
+> implementation is the rebuilt repository root (see `dev-log.md`,
+> markers 0001-0020). Kept unchanged below as design reference.
+
 **Date:** 2026-07-25  
 **Status:** Feature-Complete / Launch-Ready  
 **Total Verified Tests:** 198 (191 Phase 0–7 + 7 Milestone 1E)
