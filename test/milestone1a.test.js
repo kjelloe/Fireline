@@ -17,6 +17,8 @@ function stateHash(s) {
   w.writeU32LE(s.tick);
   w.writeU32LE(s.mapSeed);
   for (const sc of s.teamScores) w.writeI32LE(sc);
+  w.writeI32LE(s.phase); w.writeI32LE(s.winner); w.writeI32LE(s.winReason); // added 3E
+  w.writeI32LE(s.dominationTeam); w.writeI32LE(s.dominationTicks);
   for (const o of s.operators) {
     w.writeI32LE(o.id); w.writeI32LE(o.team); w.writeI32LE(o.state);
     w.writeI32LE(o.assetId); w.writeI32LE(o.score); w.writeI32LE(o.downTimer);

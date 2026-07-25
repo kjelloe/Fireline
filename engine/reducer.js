@@ -17,6 +17,13 @@ import { captureCheck } from "./sites.js";
 import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
+import {
+  checkVictory, dominatingTeam, PHASE_RUNNING, PHASE_OVER,
+} from "./victory.js";
+
+// Scoring (3E): what a capture or a kill is worth on the war clock scoreboard.
+export const SCORE_CAPTURE = 10;
+export const SCORE_DISABLE = 5;
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -132,6 +139,7 @@ function applyFireOrder(next, command) {
   });
   if (target.hp === 0) {
     target.state = ASSET_DISABLED;
+    next.teamScores[attacker.team] += SCORE_DISABLE;
     next.events.push({ type: "asset_disabled", assetId: target.id });
   }
   return next;
@@ -173,6 +181,8 @@ function stepAsset(asset, map, supplied) {
 
 function applyAdvanceTick(next) {
   next.tick += 1;
+  // A finished war only counts time; nothing moves, fights, or captures.
+  if (next.phase === PHASE_OVER) return next;
   for (const asset of next.assets) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.state !== ASSET_MOVING) continue;
@@ -187,6 +197,7 @@ function applyAdvanceTick(next) {
     const site = captureCheck(next, asset.id);
     if (site && site.owner !== asset.team) {
       site.owner = asset.team;
+      next.teamScores[asset.team] += SCORE_CAPTURE;
       next.events.push({ type: "site_captured", siteId: site.id, team: asset.team });
     }
   }
@@ -199,6 +210,24 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "resupplied", assetId: asset.id });
     }
   }
+  // Victory pass (3E): track domination hold, then check every condition.
+  const dominator = dominatingTeam(next);
+  if (dominator === -1) {
+    next.dominationTeam = -1;
+    next.dominationTicks = 0;
+  } else if (dominator === next.dominationTeam) {
+    next.dominationTicks += 1;
+  } else {
+    next.dominationTeam = dominator;
+    next.dominationTicks = 1;
+  }
+  const verdict = checkVictory(next);
+  if (verdict) {
+    next.phase = PHASE_OVER;
+    next.winner = verdict.winner;
+    next.winReason = verdict.reason;
+    next.events.push({ type: "game_over", winner: verdict.winner, reason: verdict.reason });
+  }
   return next;
 }
 
@@ -208,6 +237,10 @@ export function apply(state, command) {
   if (!verdict.ok) {
     next.events.push({ type: "rejected", cmd: command?.type ?? "?", reason: verdict.reason });
     return next;
+  }
+
+  if (next.phase === PHASE_OVER && command.type !== CMD_ADVANCE_TICK) {
+    return reject(next, command, "war is over");
   }
 
   switch (command.type) {

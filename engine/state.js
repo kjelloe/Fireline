@@ -122,6 +122,12 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     assets,
     sites,
     bases,
+    // 3E: victory bookkeeping (all hashed).
+    phase: 0, // PHASE_RUNNING
+    winner: -1,
+    winReason: 0, // WIN_NONE
+    dominationTeam: -1,
+    dominationTicks: 0,
     events: [],
   };
 }

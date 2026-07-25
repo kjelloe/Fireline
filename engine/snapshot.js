@@ -10,6 +10,9 @@ export function hashState(state) {
   w.writeU32LE(state.tick);
   w.writeU32LE(state.mapSeed);
   for (const score of state.teamScores) w.writeI32LE(score);
+  // 3E victory bookkeeping
+  w.writeI32LE(state.phase); w.writeI32LE(state.winner); w.writeI32LE(state.winReason);
+  w.writeI32LE(state.dominationTeam); w.writeI32LE(state.dominationTicks);
   for (const o of state.operators) {
     w.writeI32LE(o.id); w.writeI32LE(o.team); w.writeI32LE(o.state);
     w.writeI32LE(o.assetId); w.writeI32LE(o.score); w.writeI32LE(o.downTimer);
