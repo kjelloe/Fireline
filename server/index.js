@@ -10,6 +10,7 @@ import express from "express";
 import { WebSocketServer } from "ws";
 import { GameServer } from "../engine/server.js";
 import { NetworkTransport } from "../engine/transport.js";
+import { createReplayStore } from "./replay_store.js";
 
 const CLIENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "client");
 const NODE_MODULES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "node_modules");
@@ -40,14 +41,44 @@ export function createAppServer(options = {}) {
   });
   const transport = new NetworkTransport(gameServer, wss);
 
+  // 5A: match history. A finished war is archived exactly once.
+  const replayStore = createReplayStore(
+    options.replayDir ?? path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "data", "replays")
+  );
+  let archived = false;
+  function archiveIfOver() {
+    if (archived || gameServer.state.phase !== 1) return null;
+    archived = true;
+    return replayStore.save({
+      mapSeed: gameServer.state.mapSeed,
+      ticks: gameServer.state.tick,
+      winner: gameServer.state.winner,
+      reason: gameServer.state.winReason,
+      finalHash: gameServer.getLatestSnapshot()?.stateHash ?? null,
+      finishedAt: new Date().toISOString(), // operational metadata only
+    }, gameServer.commandLog);
+  }
+
+  app.get("/replays", (req, res) => res.json({ replays: replayStore.list() }));
+  app.get("/replay/:id", (req, res) => {
+    const record = replayStore.load(req.params.id);
+    if (!record) { res.status(404).json({ error: "no such replay" }); return; }
+    res.json(record);
+  });
+
   return {
     app,
     httpServer,
     gameServer,
     transport,
+    replayStore,
+    archiveIfOver,
     start(port = 8080, clockOptions = {}) {
       gameServer.start({
-        onSnapshot: (snapshot) => transport.broadcastSnapshots(snapshot),
+        onSnapshot: (snapshot) => {
+          transport.broadcastSnapshots(snapshot);
+          archiveIfOver();
+        },
         ...clockOptions,
       });
       return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));
