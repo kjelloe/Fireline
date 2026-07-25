@@ -14,7 +14,7 @@ import {
 } from "./commands.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
-import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt } from "./supply.js";
+import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
@@ -105,6 +105,7 @@ function applyFireOrder(next, command) {
     return reject(next, command, "target not operable");
   }
   if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+  if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
   if (!inFireRange(attacker, target)) return reject(next, command, "target out of range");
 
   attacker.ammo -= SUPPLY_FIRE_COST;
@@ -125,13 +126,14 @@ function applyFireOrder(next, command) {
   return next;
 }
 
-function stepAsset(asset, map) {
+function stepAsset(asset, map, supplied) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
 
   const terrain = map.cells[cellY * map.width + cellX];
-  const step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
+  let step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
+  if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
   if (step <= 0) return;
 
   const dx = asset.targetX - asset.x;
@@ -166,7 +168,7 @@ function applyAdvanceTick(next) {
     if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
     const beforeX = asset.x;
     const beforeY = asset.y;
-    stepAsset(asset, next.map);
+    stepAsset(asset, next.map, inSupply(next, asset));
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
   // Capture pass: stable asset order decides same-tick contests.

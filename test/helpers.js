@@ -35,7 +35,12 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
     id, type: spec.type ?? SITE_RELAY, owner: spec.owner ?? SITE_NEUTRAL,
     cellX: spec.cellX, cellY: spec.cellY ?? 0,
   }));
-  if (opts.bases) state.bases = opts.bases;
+  // Default: whole-map bases for both teams so supply rules (3B) stay neutral
+  // in tests that aren't about supply. Pass opts.bases to exercise them.
+  state.bases = opts.bases ?? [
+    { team: 0, x: 0, y: 0, width: map.width, height: map.height },
+    { team: 1, x: 0, y: 0, width: map.width, height: map.height },
+  ];
   return state;
 }
 

@@ -47,11 +47,11 @@ test("2F full loop: join, select, converge, fire, wreck visible to both", async 
     assert.equal(lastSnapshot(a).view.visibleEnemies.length, 0, "A starts fogged");
     assert.equal(lastSnapshot(b).view.visibleEnemies.length, 0, "B starts fogged");
 
-    // Teleport the duelists near each other (test shortcut server-side),
-    // then drive everything else through the client protocol.
-    appServer.gameServer.state.assets[0].x = 60 * 256;
+    // Teleport the duelists near each other (test shortcut server-side) inside
+    // team A's supply umbrella, then drive everything through the protocol.
+    appServer.gameServer.state.assets[0].x = 20 * 256;
     appServer.gameServer.state.assets[0].y = 60 * 256;
-    appServer.gameServer.state.assets[4].x = 63 * 256;
+    appServer.gameServer.state.assets[4].x = 23 * 256;
     appServer.gameServer.state.assets[4].y = 60 * 256;
     await step();
 
@@ -59,7 +59,7 @@ test("2F full loop: join, select, converge, fire, wreck visible to both", async 
     assert.equal(viewA.visibleEnemies.length, 1, "A sees the enemy now");
 
     // Client-side input mapping decides fire vs move — exactly as the browser does.
-    const cmd = buildCommandForClick(viewA, 63, 60, { fireRadiusCells: 1 });
+    const cmd = buildCommandForClick(viewA, 23, 60, { fireRadiusCells: 1 });
     assert.equal(cmd.type, "fire_order");
     for (let volley = 0; volley < 5; volley++) {
       a.ws.send(JSON.stringify(cmd));

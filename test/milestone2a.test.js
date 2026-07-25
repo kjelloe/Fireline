@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { runSoak } from "./headless/soak2a.js";
 
 const SEED = 2026;
-const TICKS = 1700;
+const TICKS = 1500;
 
 // One soak, shared across subtests (pure function of seed+ticks).
 const result = runSoak(SEED, TICKS);

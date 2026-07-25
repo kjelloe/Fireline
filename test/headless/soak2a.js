@@ -10,9 +10,12 @@ import { hashState } from "../../engine/snapshot.js";
 import { DEFAULT_RULES } from "../../engine/combat.js";
 import { ASSET_DISABLED, ASSET_SALVAGED } from "../../engine/state.js";
 
+// Both race for the centre relay: under 3B supply projection, holding it is
+// what lets a tank fight this deep in the corridor. Team B's route is shorter,
+// so B captures, gains supply, and defeats the out-of-supply attacker.
 const OPS = [
-  { operatorId: 0, team: 0, assetId: 0, goal: { cellX: 95, cellY: 63 } }, // east relay
-  { operatorId: 1, team: 1, assetId: 4, goal: { cellX: 32, cellY: 63 } }, // west relay
+  { operatorId: 0, team: 0, assetId: 0, goal: { cellX: 63, cellY: 63 } },
+  { operatorId: 1, team: 1, assetId: 4, goal: { cellX: 63, cellY: 63 } },
 ];
 
 function operable(state) {

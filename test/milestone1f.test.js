@@ -9,14 +9,14 @@ import { speedMultiplier, TERRAIN_SPEED } from "../engine/terrain.js";
 import { apply, createInitialState, BASE_SPEED } from "../engine/reducer.js";
 import { ASSET_MOVING } from "../engine/state.js";
 import { buildView } from "../engine/view.js";
-import { makeAsset } from "./helpers.js";
+import { makeAsset, sandbox } from "./helpers.js";
 
 function testAsset(id, team, x, y, targetX, targetY) {
   return makeAsset(id, { team, x, y, targetX, targetY, state: ASSET_MOVING });
 }
 
-function openMap(width, height) {
-  return { width, height, cells: new Uint8Array(width * height).fill(T_OPEN), seed: 12345 };
+function openState(width, height) {
+  return sandbox([], [], { size: width, seed: 12345 });
 }
 
 test("1F terrain speed table has correct values", () => {
@@ -29,10 +29,8 @@ test("1F terrain speed table has correct values", () => {
 });
 
 test("1F asset on road tile moves faster than on open tile", () => {
-  const map = openMap(8, 8);
-  map.cells[0] = T_ROAD; // (0,0) is road
-
-  const state = createInitialState(12345, map);
+  const state = openState(8, 8);
+  state.map.cells[0] = T_ROAD; // (0,0) is road
   state.assets = [
     testAsset(0, 0, 0, 0, 2048, 0),
     testAsset(1, 0, 0, 256, 2048, 256),
@@ -50,10 +48,8 @@ test("1F asset on road tile moves faster than on open tile", () => {
 });
 
 test("1F asset on blocking tile does not move", () => {
-  const map = openMap(8, 8);
-  map.cells[0] = T_BLOCKING; // (0,0) is blocking
-
-  const state = createInitialState(12345, map);
+  const state = openState(8, 8);
+  state.map.cells[0] = T_BLOCKING; // (0,0) is blocking
   state.assets = [testAsset(0, 0, 0, 0, 2048, 0)];
 
   const after = apply(state, { type: "advance_tick" });
@@ -70,8 +66,7 @@ test("1F view includes mapCells for client terrain rendering", () => {
 });
 
 test("1F reducer does not mutate input state with map argument", () => {
-  const map = generateMap(12345, 8, 8);
-  const state = createInitialState(12345, map);
+  const state = sandbox([], [], { map: generateMap(12345, 8, 8), seed: 12345 });
   state.assets = [testAsset(0, 0, 0, 0, 2048, 0)];
 
   const stateBefore = JSON.stringify(state);

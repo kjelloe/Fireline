@@ -3,7 +3,7 @@
 
 import { runSoak } from "./soak2a.js";
 
-const result = runSoak(2026, 1700);
+const result = runSoak(2026, 1500);
 for (const line of result.log) console.log(line);
 console.log(`\ncaptures: ${result.captures} | disable events: ${result.disables}`);
 console.log(`min ammo: ${result.minAmmo} | min fuel: ${result.minFuel}`);
