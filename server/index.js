@@ -37,6 +37,7 @@ export function createAppServer(options = {}) {
   const gameServer = new GameServer({
     mapSeed: options.mapSeed ?? 2026,
     enableAi: options.enableAi ?? true,
+    aiDifficulty: options.aiDifficulty ?? 1,
     snapshotCapacity: options.snapshotCapacity ?? 30,
   });
   const transport = new NetworkTransport(gameServer, wss);
@@ -92,6 +93,25 @@ export function createAppServer(options = {}) {
       httpServer.closeAllConnections?.();
       await new Promise((resolve) => httpServer.close(resolve));
     },
+    // 7E: graceful shutdown — warn clients, archive the war, then close.
+    async shutdown() {
+      for (const session of transport.sessions.values()) {
+        session.send("s_server_closing", {});
+      }
+      archiveIfOver();
+      if (!archived && gameServer.state.tick > 0) {
+        archived = true;
+        replayStore.save({
+          mapSeed: gameServer.state.mapSeed,
+          ticks: gameServer.state.tick,
+          winner: -1,
+          reason: 0, // unfinished
+          finalHash: gameServer.getLatestSnapshot()?.stateHash ?? null,
+          finishedAt: new Date().toISOString(),
+        }, gameServer.commandLog);
+      }
+      await this.stop();
+    },
   };
 }
 
@@ -99,8 +119,15 @@ const isMain = process.argv[1] && fileURLToPath(import.meta.url) === path.resolv
 if (isMain) {
   const port = Number(process.env.PORT ?? 8080);
   const mapSeed = Number(process.env.MAP_SEED ?? 2026);
-  const appServer = createAppServer({ mapSeed });
+  const aiDifficulty = Number(process.env.AI_DIFFICULTY ?? 1);
+  const appServer = createAppServer({ mapSeed, aiDifficulty });
   appServer.start(port).then((addr) => {
-    console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed})`);
+    console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty})`);
   });
+  for (const signal of ["SIGTERM", "SIGINT"]) {
+    process.once(signal, () => {
+      console.log(`${signal}: graceful shutdown`);
+      appServer.shutdown().then(() => process.exit(0));
+    });
+  }
 }

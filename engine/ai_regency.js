@@ -92,10 +92,16 @@ function pickFireTarget(state, asset, visibleSet) {
   return best;
 }
 
+export const AI_EASY = 0;
+export const AI_NORMAL = 1;
+export const AI_HARD = 2;
+
 export class AIRegency {
   constructor(options = {}) {
     this.fixedAgents = options.fixedAgents === false ? [] : AGENTS;
     this.regented = new Set(); // human operator slots under takeover (3C)
+    // 6D: easy fires every other tick; hard swaps patrols for relay pushes.
+    this.difficulty = options.difficulty ?? AI_NORMAL;
   }
 
   assume(operatorId) {
@@ -133,7 +139,9 @@ export class AIRegency {
       if (!asset || asset.operatorId !== operatorId || isWreck(asset)) continue;
 
       // Fire doctrine: engage the nearest visible enemy in range when able.
-      if (asset.ammo > 0 && inSupply(state, asset)) {
+      // Easy regents only squeeze the trigger on even ticks (6D).
+      const mayFire = this.difficulty !== AI_EASY || (state.tick & 1) === 0;
+      if (mayFire && asset.ammo > 0 && inSupply(state, asset)) {
         const target = pickFireTarget(state, asset, visibleByTeam[asset.team]);
         if (target) {
           commands.push({ type: CMD_FIRE_ORDER, operatorId, targetAssetId: target.id });
@@ -141,15 +149,16 @@ export class AIRegency {
         }
       }
 
-      // Movement doctrine: fixed agents patrol; regented assets push for the
-      // nearest relay their team does not own, else hold position.
+      // Movement doctrine: fixed agents patrol (hard difficulty pushes for
+      // relays instead); regented assets seek the nearest unowned relay.
       if (asset.state !== ASSET_IDLE) continue;
       let target = null;
-      if (agent) {
+      if (agent && this.difficulty !== AI_HARD) {
         target = patrolTarget(agent, state.tick);
       } else {
         const relay = nearestUnownedRelay(state, asset);
         if (relay) target = [relay.cellX, relay.cellY];
+        else if (agent) target = patrolTarget(agent, state.tick);
       }
       if (!target) continue;
       const currentCellX = worldToCellFloor(asset.x);

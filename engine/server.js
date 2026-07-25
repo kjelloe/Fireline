@@ -22,7 +22,10 @@ export class GameServer {
     this.nextSequence = 0;
     this.snapshots = [];
     this.clock = null;
-    this.ai = options.enableAi === true ? new AIRegency() : null;
+    this.aiDifficulty = options.aiDifficulty ?? 1;
+    this.ai = options.enableAi === true
+      ? new AIRegency({ difficulty: this.aiDifficulty })
+      : null;
     // 1K: authoritative command log (client + AI + advance_tick, in order).
     this.commandLog = [];
   }
@@ -72,7 +75,7 @@ export class GameServer {
   // keeps moving. Lazily creates a regency without fixed agents when the
   // server runs AI-less.
   assumeRegency(operatorId) {
-    if (!this.ai) this.ai = new AIRegency({ fixedAgents: false });
+    if (!this.ai) this.ai = new AIRegency({ fixedAgents: false, difficulty: this.aiDifficulty });
     this.ai.assume(operatorId);
   }
 

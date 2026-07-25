@@ -15,6 +15,7 @@ export class NetworkTransport {
         this.wss = wsServer;
         this.sessions = new Map(); // socket -> Session
         this.reserved = new Set(); // operator ids held by live connections
+        this.players = new Map(); // persistent playerId -> operatorId (5B)
 
         this.wss.on("connection", (ws) => {
             ws.on("message", (raw) => this.handleMessage(ws, raw));
@@ -52,6 +53,32 @@ export class NetworkTransport {
                     ws.send(JSON.stringify({ type: "s_rejected", reason: "invalid team" }));
                     return;
                 }
+
+                // 5B: a returning playerId reattaches to its operator slot and
+                // takes it back from AI regency.
+                const playerId = typeof msg.playerId === "string" && msg.playerId.length <= 64
+                    ? msg.playerId : null;
+                const knownOperator = playerId != null ? this.players.get(playerId) : undefined;
+                if (knownOperator !== undefined) {
+                    if (this.reserved.has(knownOperator)) {
+                        ws.send(JSON.stringify({ type: "s_rejected", reason: "player already connected" }));
+                        return;
+                    }
+                    const operator = this.server.state.operators[knownOperator];
+                    this.reserved.add(knownOperator);
+                    this.server.releaseRegency(knownOperator);
+                    session = new Session(ws, knownOperator);
+                    session.team = operator.team;
+                    session.playerId = playerId;
+                    session.authenticated = true;
+                    this.sessions.set(ws, session);
+                    session.send("s_joined", {
+                        operatorId: knownOperator, team: operator.team, rejoined: true, sequence: null,
+                    });
+                    this.sendMap(session);
+                    return;
+                }
+
                 const picked = this.pickOperatorId(msg.operatorId);
                 if (picked.error) {
                     ws.send(JSON.stringify({ type: "s_rejected", reason: picked.error }));
@@ -61,11 +88,14 @@ export class NetworkTransport {
                 const result = this.server.enqueue({ type: "join_operator", operatorId, team });
                 if (result.accepted) {
                     this.reserved.add(operatorId);
+                    if (playerId != null) this.players.set(playerId, operatorId);
                     session = new Session(ws, operatorId);
                     session.team = team;
+                    session.playerId = playerId;
                     session.authenticated = true;
                     this.sessions.set(ws, session);
                     session.send("s_joined", { operatorId, team, sequence: result.sequence });
+                    this.sendMap(session);
                 } else {
                     ws.send(JSON.stringify({ type: "s_rejected", reason: result.reason }));
                 }
@@ -97,11 +127,21 @@ export class NetworkTransport {
         this.sessions.delete(ws);
     }
 
+    // 6A: terrain is immutable — ship it once per session, not per snapshot.
+    sendMap(session) {
+        const map = this.server.state.map;
+        session.send("s_map", {
+            width: map.width,
+            height: map.height,
+            mapCells: Array.from(map.cells),
+        });
+    }
+
     broadcastSnapshots(snapshot) {
-        // Differential snapshots / per-team views
         for (const session of this.sessions.values()) {
             if (!session.authenticated || session.team === -1) continue;
-            const view = snapshot.views[session.team];
+            // 6A: strip the static mapCells from the per-tick payload.
+            const { mapCells, ...view } = snapshot.views[session.team];
             session.send("s_snapshot", {
                 tick: snapshot.tick,
                 stateHash: snapshot.stateHash,

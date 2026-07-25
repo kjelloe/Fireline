@@ -91,12 +91,28 @@ function init() {
   animate();
 }
 
+// 5B: stable per-browser identity so a refresh reattaches to your operator.
+function myPlayerId() {
+  let id = localStorage.getItem("mf_player_id");
+  if (!id) {
+    id = `p-${Math.random().toString(36).slice(2, 12)}`; // identity only, never game logic
+    localStorage.setItem("mf_player_id", id);
+  }
+  return id;
+}
+
+let cachedMap = null; // 6A: terrain arrives once via s_map
+
 function connect() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   socket = new WebSocket(`${protocol}//${window.location.host}`);
   socket.onmessage = (event) => {
     const msg = JSON.parse(event.data);
-    if (msg.type === "s_joined") {
+    if (msg.type === "s_map") {
+      cachedMap = { width: msg.width, height: msg.height, cells: Uint8Array.from(msg.mapCells) };
+    } else if (msg.type === "s_server_closing") {
+      pushEvent("server shutting down");
+    } else if (msg.type === "s_joined") {
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
       updateOpInfo(null);
@@ -117,7 +133,7 @@ function connect() {
 
 function joinTeam(team) {
   if (!socket || socket.readyState !== 1) return;
-  socket.send(JSON.stringify({ type: "c_join", team }));
+  socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId() }));
 }
 
 function send(cmd) {
@@ -191,12 +207,10 @@ function updateSupplyBar(view) {
   el.innerText = `Asset ${own.id} | HP ${own.hp} | Ammo ${own.ammo} | Fuel ${own.fuel}`;
 }
 
-function buildTerrain(view) {
-  if (terrainMesh || !view.mapCells) return;
-  const size = Math.sqrt(view.mapCells.length ?? Object.keys(view.mapCells).length);
-  const cells = view.mapCells instanceof Uint8Array
-    ? view.mapCells
-    : Uint8Array.from(Object.values(view.mapCells));
+function buildTerrain() {
+  if (terrainMesh || !cachedMap) return;
+  const size = cachedMap.width;
+  const cells = cachedMap.cells;
   const group = new THREE.Group();
   const geometries = new Map();
   for (let terrain = 0; terrain < TERRAIN_COLORS.length; terrain++) {
@@ -349,7 +363,7 @@ function upsertSiteMesh(site) {
 function renderBattlefield() {
   const view = interpolator.sample(performance.now());
   if (!view) return;
-  buildTerrain(view);
+  buildTerrain();
   updateSupplyBar(view);
 
   const seen = new Set();
