@@ -237,3 +237,40 @@ settle-before-step.
 spawn, converge, 5-shot duel, wreck visible to both sides), interpolator
 over a real command-driven run, client + vendored three.js served. 126/126.
 **Phase 2 complete — the game is playable in a browser.**
+
+---
+
+## marker-0011..0015 — Phase 3: content & gameplay depth (2026-07-25)
+
+**3A (marker-0011)** `engine/units.js`: tank (speed 16 / range 1280 / hp 100 /
+dmg 20 — pins the historical constants), scout (28/1024/60/10), artillery
+(8/3072 + minRange 768 / 80/30, indirect). Spawn mix per team:
+tank/tank/scout/artillery (assets 0/4 stay tanks for the 1B/1D pins).
+`data/units.json` is a generated mirror pinned equal by test (engine does no
+file I/O). 1A fixture → v7.
+
+**3B (marker-0012)** Supply projection: bases (radius 20) and OWNED relays
+(radius 12) project supply; out-of-supply units move half speed and cannot
+fire ("out of supply"). This makes relays the operational spine of the map.
+2A soak regoaled to the centre-relay race: B's shorter route wins the relay,
+gains supply, and defeats the unsupplied attacker. Sandbox helper defaults to
+whole-map bases so unrelated tests stay supply-neutral.
+
+**3C (marker-0013)** AI regency rewrite: fire doctrine (nearest team-visible
+enemy in range, only when supplied and stocked — same rules as humans), and
+takeover of disconnected human slots (ws disconnect → `assumeRegency`;
+regented assets push for the nearest unowned relay, hold when none). Fixed
+1D behaviors preserved. AI wars now contest relays and shoot.
+
+**3D (marker-0014)** Spotter doctrine: every shot needs the target visible
+to the attacker's team; direct-fire chassis additionally need it inside
+their own sensor radius; artillery (indirect) fires on any team-spotted
+target. Wrecked spotters don't spot; min range enforced.
+
+**3E (marker-0015)** `engine/victory.js`: elimination (fielded team fully
+wrecked), domination (hold ALL relays 300 ticks), time limit (18000 ticks →
+points, tie = draw). Scoring: capture +10, disable +5. War end freezes
+movement/combat/capture, rejects further orders ("war is over"), emits
+`game_over`. All bookkeeping hashed; 1A fixture → v8.
+
+155/155 green. **Phase 3 complete.**
