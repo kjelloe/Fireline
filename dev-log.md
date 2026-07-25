@@ -491,7 +491,38 @@ cells away and effectively invisible; at tank pace (1/16 cell/tick) nothing
 happens for many minutes; supply/relay logic is invisible until it punishes
 you; feed lines lack context. This is the designer's predicted P1-G reality
 check — pacing and first-five-minutes legibility, not systems, are the gap.
-Next: targeted questions to the user, then a "make it make sense" slice. `phase8_gaps.test.js` —
+Next: targeted questions to the user, then a "make it make sense" slice.
+
+**Debrief answers:** enemy standard was visible (by design — but nothing said
+so); shots WERE fired; relays were anonymous polygons ("no text on screen");
+10 minutes played; tank pace felt slow.
+
+---
+
+## marker-0034/0035 — Playtest response: pace x2 + legibility kit (2026-07-26)
+
+**Pace (marker-0034):** global x2 — tank 32 / scout 56 / artillery 16
+units/tick (designer-sanctioned P1-G lever). Reload unchanged (combat pace
+in seconds holds); fuel now covers two crossings; every speed pin updated;
+1A fixture → v13.
+
+**Legibility (marker-0035):** new pure `client/js/objective_model.js`
+(status lines, relay tally, ONE prioritized hint, briefing text, auto-crew
+picker) + wiring:
+- Auto-crew on join: lowest free operable asset selected automatically,
+  feed line tells you what you drive. Re-crews after war rotation; rejoin
+  keeps the old seat.
+- Mission briefing overlay on join (win condition, relays/supply, fog,
+  click controls) — dismiss with Enter/Escape/button.
+- Persistent objective strip (top centre): prioritized hint ("Capture RELAY
+  masts — they project the supply you need to fight forward" → "ESCORT the
+  carrier into your command zone to WIN"), both standard status lines,
+  relay tally.
+- Floating world labels: "RELAY — YOURS/ENEMY/NEUTRAL" above every mast,
+  "ENEMY STANDARD — STEAL IT" / "YOUR STANDARD" above the banners.
+
+Tests: `legibility.test.js` (+6 → 272/272): hint priority order, status
+line coverage, briefing content, auto-crew rules, pace pin. `phase8_gaps.test.js` —
 penalty stacking 16→12→6 (which caught that whole-map sandbox bases
 auto-repair towed wrecks — test design issue, mechanics correct),
 same-tick contested grab (lowest id), tower-carrier death drops flag AND

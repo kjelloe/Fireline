@@ -15,6 +15,9 @@ import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver } from "./feedback_model.js";
 import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
+import {
+  ownStandardLine, enemyStandardLine, relayTally, currentHint, briefingText, autoSelectTarget,
+} from "./objective_model.js";
 
 const CELL = 256; // fixed world units per cell
 const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33];
@@ -29,6 +32,8 @@ const siteMeshes = new Map(); // id -> Mesh
 let renderedEnemyIds = new Set();
 const interpolator = createInterpolator({ delayMs: 150 });
 let mySelectedAssetId = null;
+let autoSelectSent = false; // post-playtest: crew a unit automatically on join
+const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const eventFeed = [];
@@ -163,15 +168,29 @@ function connect() {
     } else if (msg.type === "s_war_reset") {
       hideEndScreen();
       mySelectedAssetId = null;
-      pushEvent("A new war has begun — take an asset!");
+      autoSelectSent = false; // re-crew automatically in the new war
+      pushEvent("A new war has begun!");
     } else if (msg.type === "s_server_closing") {
       pushEvent("server shutting down");
     } else if (msg.type === "s_joined") {
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
+      showBriefing();
       updateOpInfo(null);
     } else if (msg.type === "s_snapshot") {
       interpolator.push(msg.view, performance.now());
+      if (!autoSelectSent && joined) {
+        const target = autoSelectTarget(msg.view, joined.operatorId);
+        if (target !== null) {
+          autoSelectSent = true;
+          mySelectedAssetId = target;
+          send(buildSelectCommand(target));
+          pushEvent(`You are crewing asset ${target} — click ground to move`);
+        } else if ((msg.view.friendlyAssets ?? []).some((a) => a.operatorId === joined.operatorId)) {
+          autoSelectSent = true; // rejoin case: already crewed
+        }
+      }
+      updateObjectiveStrip(msg.view);
       handleEvents(msg.view.events ?? []);
       for (const cue of mapEventsToCues(msg.view.events, msg.view)) playCue(cue.cue);
       liveVfx.push(...mapEventsToVfx(msg.view.events, msg.view, performance.now()));
@@ -473,6 +492,75 @@ function upsertStandardMesh(st) {
   mesh.rotation.y = performance.now() / 900;
 }
 
+function showBriefing() {
+  const el = document.getElementById("briefing-overlay");
+  document.getElementById("briefing-text").innerText = briefingText(joined?.team);
+  el.style.display = "flex";
+  const close = () => { el.style.display = "none"; window.removeEventListener("keydown", onKey); };
+  const onKey = (e) => { if (e.key === "Enter" || e.key === "Escape") close(); };
+  document.getElementById("btn-briefing-ok").onclick = close;
+  window.addEventListener("keydown", onKey);
+}
+
+function updateObjectiveStrip(view) {
+  if (!joined) return;
+  document.getElementById("obj-hint").innerText = currentHint(view, joined.team);
+  document.getElementById("obj-standards").innerText =
+    `${ownStandardLine(view, joined.team)}  ·  ${enemyStandardLine(view, joined.team)}`;
+  const relays = relayTally(view, joined.team);
+  document.getElementById("obj-relays").innerText =
+    `Relays ${relays.yours}/${relays.total}`;
+}
+
+// Floating world labels so objectives stop being anonymous polygons
+// (playtest: "did not understand what was relay").
+function makeTextSprite(text, colorHex) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512; canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  ctx.font = "bold 52px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(0,0,0,0.55)";
+  const w = ctx.measureText(text).width + 40;
+  ctx.fillRect((512 - w) / 2, 8, w, 72);
+  ctx.fillStyle = colorHex;
+  ctx.fillText(text, 256, 62);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(canvas), transparent: true, depthTest: false,
+  }));
+  sprite.scale.set(4.4, 0.85, 1);
+  return sprite;
+}
+
+function upsertWorldLabel(key, text, colorHex, x, y, z) {
+  let entry = worldLabels.get(key);
+  if (!entry || entry.text !== text) {
+    if (entry) scene.remove(entry.sprite);
+    const sprite = makeTextSprite(text, colorHex);
+    entry = { sprite, text };
+    scene.add(sprite);
+    worldLabels.set(key, entry);
+  }
+  entry.sprite.position.set(x, y, z);
+}
+
+function updateWorldLabels(view) {
+  for (const site of view.sites ?? []) {
+    const who = site.owner === -1 ? "NEUTRAL" : site.owner === joined?.team ? "YOURS" : "ENEMY";
+    const color = site.owner === -1 ? "#cccccc"
+      : site.owner === joined?.team ? "#9fe89f" : "#f0a0a0";
+    upsertWorldLabel(`site${site.id}`, `RELAY — ${who}`, color,
+      site.cellX + 0.5, 2.1, site.cellY + 0.5);
+  }
+  for (const st of view.standards ?? []) {
+    const mine = st.team === joined?.team;
+    upsertWorldLabel(`std${st.team}`,
+      mine ? "YOUR STANDARD" : "ENEMY STANDARD — STEAL IT",
+      mine ? "#9fe89f" : "#ffd75e",
+      st.x / CELL + 0.5, 2.6, st.y / CELL + 0.5);
+  }
+}
+
 function renderMinimap(view) {
   const canvas = document.getElementById("minimap");
   const ctx = canvas.getContext("2d");
@@ -559,6 +647,7 @@ function renderBattlefield() {
   }
   for (const site of view.sites ?? []) upsertSiteMesh(site);
   for (const st of view.standards ?? []) upsertStandardMesh(st);
+  updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);
   updateVfx(performance.now());

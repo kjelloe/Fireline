@@ -35,6 +35,16 @@
             <button class="btn team-b" id="btn-join-b">Join Team B (red, east)</button>
         </div>
     </div>
+    <div id="briefing-overlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.82); z-index:8; flex-direction:column; align-items:center; justify-content:center; gap:14px;">
+        <h2 style="margin:0; letter-spacing:2px;">MISSION BRIEFING</h2>
+        <pre id="briefing-text" style="color:#cdc; font-family:sans-serif; font-size:15px; line-height:1.6; white-space:pre-wrap; max-width:560px; text-align:center;"></pre>
+        <button class="btn" id="btn-briefing-ok">Move out (Enter)</button>
+    </div>
+    <div id="objective-strip" style="position:absolute; top:40px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.65); padding:5px 14px; border-radius:6px; font-size:13px; text-align:center; pointer-events:none;">
+        <span id="obj-hint" style="color:#f5e96b;"></span><br>
+        <span id="obj-standards" style="color:#bcc;"></span>
+        <span id="obj-relays" style="color:#8ab; margin-left:12px;"></span>
+    </div>
     <div id="hud-top">
         <div class="hud-group" id="op-info">Not joined</div>
         <div class="hud-group">
