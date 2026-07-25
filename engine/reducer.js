@@ -16,6 +16,7 @@ import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
 import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
+import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -107,6 +108,16 @@ function applyFireOrder(next, command) {
   if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
   if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
   if (!inFireRange(attacker, target)) return reject(next, command, "target out of range");
+  // 3D: shots need the target spotted by the team; direct-fire chassis also
+  // need it inside their own sensor radius. Indirect (artillery) fires on any
+  // team-spotted target — the spotter doctrine.
+  if (!computeVisible(next, attacker.team).has(target.id)) {
+    return reject(next, command, "target not spotted");
+  }
+  if (!getUnitStats(attacker.type).indirect &&
+      chebyshevCells(attacker, target) > sensorRadius(attacker)) {
+    return reject(next, command, "no line of sight");
+  }
 
   attacker.ammo -= SUPPLY_FIRE_COST;
   const shot = resolveShot(attacker, target);

@@ -14,7 +14,7 @@ export function sensorRadius(asset) {
   return isSuppressed(asset) ? SUPPRESSED_RADIUS_CELLS : FOG_RADIUS_CELLS;
 }
 
-function chebyshevCells(a, b) {
+export function chebyshevCells(a, b) {
   const dx = absI32(worldToCellFloor(a.x) - worldToCellFloor(b.x));
   const dy = absI32(worldToCellFloor(a.y) - worldToCellFloor(b.y));
   return dx > dy ? dx : dy;
