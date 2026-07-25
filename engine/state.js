@@ -30,13 +30,18 @@ const MAP_PROFILES = {
   frontier_corridor: generateFrontierCorridor,
 };
 
-// Spawn columns sit inside each base zone; rows are shared by both teams.
-// Chassis mix per team: two tanks, a scout, an artillery piece (3A).
-// Assets 0 and 4 stay tanks — their speed is pinned by 1B/1D movement tests.
+// Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
+// original 4v4 arrangement (0-3 team A col 7, 4-7 team B col 117 — positions
+// and chassis pinned by 1A/1B/1D tests). Ids 8-19 are team A reserves and
+// 20-31 team B reserves (32 field assets total — the v1 "32 players" scale).
+// Chassis mix everywhere: tank, tank, scout, artillery.
 const SPAWN_ROWS = [56, 58, 60, 62];
 const SPAWN_TYPES = [0, 0, 1, 2];
 const TEAM_A_SPAWN_X = 7;
 const TEAM_B_SPAWN_X = 117;
+const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
+const TEAM_A_RESERVE_COLS = [8, 9];
+const TEAM_B_RESERVE_COLS = [116, 115];
 
 function createOperators() {
   const operators = [];
@@ -46,22 +51,36 @@ function createOperators() {
   return operators;
 }
 
+function makeFieldAsset(id, type, team, cellX, cellY) {
+  const x = cellToWorld(cellX);
+  const y = cellToWorld(cellY);
+  return {
+    id, type, team, state: ASSET_IDLE,
+    x, y, targetX: x, targetY: y,
+    hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
+    ammo: AMMO_MAX, fuel: FUEL_MAX,
+  };
+}
+
 function createFieldAssets() {
   const assets = [];
   let id = 0;
   for (let team = 0; team < TEAM_COUNT; team++) {
     const spawnX = team === 0 ? TEAM_A_SPAWN_X : TEAM_B_SPAWN_X;
     for (let slot = 0; slot < SPAWN_ROWS.length; slot++) {
-      const x = cellToWorld(spawnX);
-      const y = cellToWorld(SPAWN_ROWS[slot]);
-      const type = SPAWN_TYPES[slot];
-      assets.push({
-        id, type, team, state: ASSET_IDLE,
-        x, y, targetX: x, targetY: y,
-        hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
-        ammo: AMMO_MAX, fuel: FUEL_MAX,
-      });
+      assets.push(makeFieldAsset(id, SPAWN_TYPES[slot], team, spawnX, SPAWN_ROWS[slot]));
       id++;
+    }
+  }
+  for (let team = 0; team < TEAM_COUNT; team++) {
+    const cols = team === 0 ? TEAM_A_RESERVE_COLS : TEAM_B_RESERVE_COLS;
+    let slot = 0;
+    for (const col of cols) {
+      for (const row of RESERVE_ROWS) {
+        assets.push(makeFieldAsset(id, SPAWN_TYPES[slot % 4], team, col, row));
+        id++;
+        slot++;
+      }
     }
   }
   return assets;

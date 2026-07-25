@@ -22,12 +22,18 @@ function tempDir() {
 function playShortWar(mapSeed) {
   const server = new GameServer({ mapSeed, enableAi: true });
   server.step();
-  for (const id of [4, 5, 6, 7]) {
-    server.state.assets[id].x = server.state.assets[0].x + 512 + id * 16;
-    server.state.assets[id].y = server.state.assets[0].y;
-    server.state.assets[id].hp = 20;
+  for (const a of server.state.assets) {
+    if (a.team !== 1) continue;
+    if (a.id <= 7) { // active B assets: drag them into A's guns, weakened
+      a.x = server.state.assets[0].x + 512 + a.id * 16;
+      a.y = server.state.assets[0].y;
+      a.hp = 20;
+    } else { // B reserves start wrecked so elimination can land
+      a.hp = 0;
+      a.state = 2;
+    }
   }
-  for (let i = 0; i < 120 && server.state.phase === 0; i++) server.step();
+  for (let i = 0; i < 200 && server.state.phase === 0; i++) server.step();
   assert.equal(server.state.phase, 1, "war must finish");
   return server;
 }
@@ -101,12 +107,18 @@ test("5A HTTP: /replays lists and /replay/:id streams an archived war", async ()
   try {
     const server = appServer.gameServer;
     server.step();
-    for (const id of [4, 5, 6, 7]) {
-      server.state.assets[id].x = server.state.assets[0].x + 512 + id * 16;
-      server.state.assets[id].y = server.state.assets[0].y;
-      server.state.assets[id].hp = 20;
+    for (const a of server.state.assets) {
+      if (a.team !== 1) continue;
+      if (a.id <= 7) {
+        a.x = server.state.assets[0].x + 512 + a.id * 16;
+        a.y = server.state.assets[0].y;
+        a.hp = 20;
+      } else {
+        a.hp = 0;
+        a.state = 2;
+      }
     }
-    for (let i = 0; i < 120 && server.state.phase === 0; i++) server.step();
+    for (let i = 0; i < 200 && server.state.phase === 0; i++) server.step();
     const savedId = appServer.archiveIfOver();
     assert.ok(savedId, "war archived");
     assert.equal(appServer.archiveIfOver(), null, "archived exactly once");

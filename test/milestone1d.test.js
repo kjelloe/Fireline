@@ -16,8 +16,9 @@ test("1D AI Regency claims initial unoccupied assets deterministically", () => {
     assert.equal(server.state.operators[operatorId].assetId, assetId);
     assert.equal(server.state.assets[assetId].operatorId, operatorId);
   }
-  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 8);
-  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 8);
+  // 16 fixed regents since the 32-asset expansion (ops 16-31).
+  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 16);
+  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 16);
 });
 
 test("1D AI issues normal move_order commands on its next decision pass", () => {

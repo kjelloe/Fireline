@@ -26,9 +26,18 @@ test("3A stat table is pinned", () => {
   assert.equal(BASE_SPEED, getUnitStats(UNIT_TANK).speed);
 });
 
-test("3A frontier spawn mix is tank/tank/scout/artillery per team", () => {
+test("3A frontier spawn mix cycles tank/tank/scout/artillery per team", () => {
   const s = createInitialState(42, "frontier_corridor");
-  assert.deepEqual(s.assets.map((a) => a.type), [0, 0, 1, 2, 0, 0, 1, 2]);
+  assert.equal(s.assets.length, 32, "v1 scale: 32 field assets");
+  assert.deepEqual(s.assets.slice(0, 8).map((a) => a.type), [0, 0, 1, 2, 0, 0, 1, 2],
+    "original eight unchanged");
+  for (const team of [0, 1]) {
+    const teamAssets = s.assets.filter((a) => a.team === team);
+    assert.equal(teamAssets.length, 16);
+    assert.equal(teamAssets.filter((a) => a.type === 0).length, 8, "8 tanks");
+    assert.equal(teamAssets.filter((a) => a.type === 1).length, 4, "4 scouts");
+    assert.equal(teamAssets.filter((a) => a.type === 2).length, 4, "4 artillery");
+  }
   assert.equal(s.assets[2].hp, 60, "scout spawns with scout hp");
   assert.equal(s.assets[3].hp, 80, "artillery spawns with artillery hp");
 });

@@ -15,10 +15,12 @@ import { inSupply } from "./supply.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
 export const AI_OPERATOR_FIRST = 16;
-export const AI_OPERATOR_COUNT = 8;
+export const AI_OPERATOR_COUNT = 16;
 
-// One AI regent is permanently paired with each initial field asset. This keeps
-// identity and decisions stable for replays, server restarts, and test harnesses.
+// One AI regent is permanently paired with a field asset. Operators 16-23 keep
+// their original pairing with assets 0-7 (pinned by 1D); operators 24-27 crew
+// team A reserves 8-11 and 28-31 crew team B reserves 20-23. The remaining
+// reserves are garage stock for humans and regency takeovers.
 const AGENTS = Object.freeze([
   { operatorId: 16, assetId: 0, team: 0 },
   { operatorId: 17, assetId: 1, team: 0 },
@@ -28,6 +30,14 @@ const AGENTS = Object.freeze([
   { operatorId: 21, assetId: 5, team: 1 },
   { operatorId: 22, assetId: 6, team: 1 },
   { operatorId: 23, assetId: 7, team: 1 },
+  { operatorId: 24, assetId: 8, team: 0 },
+  { operatorId: 25, assetId: 9, team: 0 },
+  { operatorId: 26, assetId: 10, team: 0 },
+  { operatorId: 27, assetId: 11, team: 0 },
+  { operatorId: 28, assetId: 20, team: 1 },
+  { operatorId: 29, assetId: 21, team: 1 },
+  { operatorId: 30, assetId: 22, team: 1 },
+  { operatorId: 31, assetId: 23, team: 1 },
 ]);
 
 // Legible doctrine: advance from both base areas toward the corridor, then
