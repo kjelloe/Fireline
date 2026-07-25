@@ -7,10 +7,14 @@ relay sites that project the supply lines both teams live on. AI regents keep
 the war moving when humans leave; every war replays byte-exactly from its
 command log.
 
-**Status: v0.9.0 — feature-complete for v1, 199/199 tests green.**
-Remaining before v1: manual browser/LAN acceptance and the gaps listed in
-[`plan-version1.md`](plan-version1.md). Art direction is deliberately still
-open (placeholder meshes and synth audio).
+**Status: v0.10.0 — core fantasy complete, 247/247 tests green.**
+Phase 8 delivered the designer's Core Fantasy Retrofit: physical Command
+Standards (steal, escort, drop, rescue, score), automatic war rotation,
+wreck tow-back recovery, fire cooldowns, minimap, free camera, click orders,
+readable feedback, and an end-of-war screen. Remaining before v1: the human
+acceptance passes (browser + LAN) and the balance tuning they feed
+([`plan-version1.md`](plan-version1.md)). Art direction is deliberately
+still open (placeholder meshes and synth audio).
 
 ## Quick start
 

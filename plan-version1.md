@@ -1,5 +1,14 @@
 # Plan: from v0.9.0 to a fully playable Version 1
 
+> **STATUS UPDATE (2026-07-26): P0 AND P1 ARE IMPLEMENTED** (v0.10.0,
+> 247/247 tests) as Phase 8 slices 8A-8I per the designer-approved plan in
+> `specs/phase8_core_fantasy_retrofit.md` — Command Standards, war lifecycle,
+> tow-back recovery, fire cooldowns, minimap, free camera, click-select,
+> order feedback, end-of-war screen, heartbeats, and balance metrics
+> (`/metrics`). What remains before calling v1 done: the human acceptance
+> passes (browser + 2-human LAN) and the P1-G balance pass they feed.
+> Original analysis kept below for the record.
+
 What exists today (v0.9.0, 199/199 tests): a deterministic 32-participant war
 over relay supply lines — combat, fog, supply, capture, victory, AI regency,
 reconnect, replays, a browser client — verified headlessly end-to-end.
