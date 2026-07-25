@@ -4,8 +4,9 @@
 // 32 operator slots: 0..15 humans, 16..23 AI regency, 24..31 reserved.
 // 8 field assets: 0..3 team A (west base), 4..7 team B (east base).
 
-import { generateFrontierCorridor } from "./frontier_corridor.js";
+import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { cellToWorld } from "../shared/fixedmath.js";
+import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
@@ -53,6 +54,7 @@ function createFieldAssets() {
         id, type: 0, team, state: ASSET_IDLE,
         x, y, targetX: x, targetY: y,
         hp: 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
+        ammo: AMMO_MAX, fuel: FUEL_MAX,
       });
       id++;
     }
@@ -74,22 +76,34 @@ function createSites() {
   }));
 }
 
+function createBases() {
+  const a = FRONTIER_CORRIDOR.teamABase;
+  const b = FRONTIER_CORRIDOR.teamBBase;
+  return [
+    { team: 0, x: a.x, y: a.y, width: a.width, height: a.height },
+    { team: 1, x: b.x, y: b.y, width: b.width, height: b.height },
+  ];
+}
+
 // mapArg: profile name string (standard scenario with field assets),
 // a prebuilt map object (empty sandbox for tests), or undefined (default profile).
 export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
   let map;
   let assets;
   let sites;
+  let bases;
   if (typeof mapArg === "string") {
     const profile = MAP_PROFILES[mapArg];
     if (!profile) throw new RangeError(`unknown map profile: ${mapArg}`);
     map = profile(mapSeed >>> 0);
     assets = createFieldAssets();
     sites = createSites();
+    bases = createBases();
   } else if (mapArg && typeof mapArg === "object") {
     map = mapArg;
     assets = [];
     sites = [];
+    bases = [];
   } else {
     throw new RangeError("mapArg must be a profile name or map object");
   }
@@ -102,6 +116,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     operators: createOperators(),
     assets,
     sites,
+    bases,
     events: [],
   };
 }

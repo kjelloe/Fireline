@@ -9,34 +9,9 @@ import { apply, createInitialState } from "../engine/reducer.js";
 import { SITE_RELAY, SITE_NEUTRAL, RELAY_FOG_CELLS, captureCheck } from "../engine/sites.js";
 import { ASSET_IDLE, ASSET_DISABLED } from "../engine/state.js";
 import { buildView } from "../engine/view.js";
-import { T_OPEN } from "../engine/mapgen.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { hashState } from "../engine/snapshot.js";
-
-function sandbox(assetSpecs, siteSpecs = []) {
-  const size = 64;
-  const map = { width: size, height: size, cells: new Uint8Array(size * size).fill(T_OPEN), seed: 1 };
-  const state = createInitialState(1, map);
-  state.assets = assetSpecs.map((spec, id) => ({
-    id, type: 0, team: spec.team, state: spec.state ?? ASSET_IDLE,
-    x: cellToWorld(spec.cellX), y: cellToWorld(spec.cellY ?? 0),
-    targetX: cellToWorld(spec.cellX), targetY: cellToWorld(spec.cellY ?? 0),
-    hp: spec.hp ?? 100, operatorId: -1, moveProgress: 0,
-    suppressedTimer: 0,
-  }));
-  state.sites = siteSpecs.map((spec, id) => ({
-    id, type: SITE_RELAY, owner: spec.owner ?? SITE_NEUTRAL,
-    cellX: spec.cellX, cellY: spec.cellY ?? 0,
-  }));
-  return state;
-}
-
-function joinSelectMove(state, operatorId, team, assetId, cellX, cellY) {
-  let s = apply(state, { type: "join_operator", operatorId, team });
-  s = apply(s, { type: "select_asset", operatorId, assetId });
-  s = apply(s, { type: "move_order", operatorId, targetCellX: cellX, targetCellY: cellY });
-  return s;
-}
+import { sandbox, joinSelectMove } from "./helpers.js";
 
 test("1I neutral relay has no owner in initial state", () => {
   const s = createInitialState(42, "frontier_corridor");

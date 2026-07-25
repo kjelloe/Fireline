@@ -14,6 +14,7 @@ import {
 } from "./commands.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import { captureCheck } from "./sites.js";
+import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt } from "./supply.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -101,8 +102,10 @@ function applyFireOrder(next, command) {
   if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
     return reject(next, command, "target not operable");
   }
+  if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
   if (!inFireRange(attacker, target)) return reject(next, command, "target out of range");
 
+  attacker.ammo -= SUPPLY_FIRE_COST;
   const shot = resolveShot(attacker, target);
   target.hp = Math.max(0, target.hp - shot.hpDelta);
   if (shot.suppressed && target.hp > 0) target.suppressedTimer = SUPPRESSION_TICKS;
@@ -158,7 +161,11 @@ function applyAdvanceTick(next) {
   for (const asset of next.assets) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.state !== ASSET_MOVING) continue;
+    if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
+    const beforeX = asset.x;
+    const beforeY = asset.y;
     stepAsset(asset, next.map);
+    if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
   // Capture pass: stable asset order decides same-tick contests.
   for (const asset of next.assets) {
@@ -166,6 +173,15 @@ function applyAdvanceTick(next) {
     if (site && site.owner !== asset.team) {
       site.owner = asset.team;
       next.events.push({ type: "site_captured", siteId: site.id, team: asset.team });
+    }
+  }
+  // Resupply pass: standing in your own base restores ammo and fuel.
+  for (const asset of next.assets) {
+    const restored = resupplyAt(next, asset.id);
+    if (restored) {
+      asset.ammo = restored.ammo;
+      asset.fuel = restored.fuel;
+      next.events.push({ type: "resupplied", assetId: asset.id });
     }
   }
   return next;

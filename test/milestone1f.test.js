@@ -9,13 +9,10 @@ import { speedMultiplier, TERRAIN_SPEED } from "../engine/terrain.js";
 import { apply, createInitialState, BASE_SPEED } from "../engine/reducer.js";
 import { ASSET_MOVING } from "../engine/state.js";
 import { buildView } from "../engine/view.js";
+import { makeAsset } from "./helpers.js";
 
 function testAsset(id, team, x, y, targetX, targetY) {
-  return {
-    id, type: 0, team, state: ASSET_MOVING,
-    x, y, targetX, targetY,
-    hp: 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
-  };
+  return makeAsset(id, { team, x, y, targetX, targetY, state: ASSET_MOVING });
 }
 
 function openMap(width, height) {

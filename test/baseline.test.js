@@ -15,6 +15,7 @@ import { buildView, FOG_RADIUS_CELLS } from "../engine/view.js";
 import { hashState } from "../engine/snapshot.js";
 import { GameServer } from "../engine/server.js";
 import { T_OPEN } from "../engine/mapgen.js";
+import { makeAsset } from "./helpers.js";
 
 // ── shared layer units ────────────────────────────────────────────────────────
 
@@ -117,11 +118,9 @@ test("invalid command emits rejected event and leaves state untouched", () => {
 test("moving asset arrives exactly on target and returns to idle", () => {
   const map = { width: 16, height: 16, cells: new Uint8Array(256).fill(T_OPEN), seed: 1 };
   const s0 = createInitialState(1, map);
-  s0.assets = [{
-    id: 0, type: 0, team: 0, state: ASSET_MOVING,
-    x: 0, y: 0, targetX: BASE_SPEED + 4, targetY: 0,
-    hp: 100, operatorId: -1, moveProgress: 0,
-  }];
+  s0.assets = [
+    makeAsset(0, { team: 0, x: 0, y: 0, targetX: BASE_SPEED + 4, targetY: 0, state: ASSET_MOVING }),
+  ];
   const s1 = apply(s0, { type: "advance_tick" });
   assert.equal(s1.assets[0].x, BASE_SPEED, "first tick moves base speed");
   assert.equal(s1.assets[0].state, ASSET_MOVING);
@@ -135,11 +134,7 @@ test("moving asset arrives exactly on target and returns to idle", () => {
 test("fog boundary: enemy visible at radius, hidden one cell beyond", () => {
   const size = 64;
   const map = { width: size, height: size, cells: new Uint8Array(size * size).fill(T_OPEN), seed: 1 };
-  const mk = (id, team, cellX) => ({
-    id, type: 0, team, state: ASSET_IDLE,
-    x: cellToWorld(cellX), y: 0, targetX: cellToWorld(cellX), targetY: 0,
-    hp: 100, operatorId: -1, moveProgress: 0,
-  });
+  const mk = (id, team, cellX) => makeAsset(id, { team, cellX });
 
   const atRadius = createInitialState(1, map);
   atRadius.assets = [mk(0, 0, 0), mk(1, 1, FOG_RADIUS_CELLS)];

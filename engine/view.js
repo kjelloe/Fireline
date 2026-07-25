@@ -13,6 +13,7 @@ export function buildView(state, team) {
       id: a.id, type: a.type, team: a.team, state: a.state,
       x: a.x, y: a.y, targetX: a.targetX, targetY: a.targetY,
       hp: a.hp, operatorId: a.operatorId,
+      ammo: a.ammo, fuel: a.fuel,
     }));
 
   const visible = computeVisible(state, team);

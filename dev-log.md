@@ -124,3 +124,27 @@ sites array (id/type/owner/cell only).
 **Tests:** `milestone1i.test.js` — 6 plan criteria + 3 self-tests
 (captureCheck purity + wreck exclusion, no repeat capture events, sites
 affect state hash). 76/76 green.
+
+---
+
+## marker-0005 — Slice 1J: ammo/fuel supply + base resupply (2026-07-25)
+
+**Added:** `engine/supply.js` (AMMO_MAX 12, FUEL_MAX 600, fire cost 1,
+move cost 1/tick, `inOwnBase`, pure `resupplyAt`); firing checks/deducts
+ammo ("out of ammo" rejection); movement burns fuel only when it actually
+moved; fuel 0 = stranded (stays MOVING, goes nowhere); resupply pass after
+capture pass restores idle assets in their own base (event `resupplied`).
+Design call: only IDLE assets resupply — transiting the base does not, which
+keeps advance_tick event streams quiet and preserves the 1A event contract.
+Base zones are hashed state (`state.bases`, from FRONTIER_CORRIDOR for the
+profile, injectable in sandbox).
+
+**Schema:** ammo/fuel per asset + bases array hashed; `1A_reducer.json` →
+fixtureVersion 5 (hashes only, events verbatim).
+
+**Refactor:** shared `test/helpers.js` (makeAsset/sandbox/joinAndSelect/
+joinSelectMove) so schema growth touches one builder; 1F–1J tests migrated.
+
+**Tests:** `milestone1j.test.js` — 6 plan criteria + 5 self-tests (stranded
+at fuel 0, no transit resupply, enemy base refuses, no repeat event,
+ammo-cycle back to combat-ready). 87/87 green.

@@ -20,10 +20,15 @@ export function hashState(state) {
     w.writeI32LE(a.targetX); w.writeI32LE(a.targetY);
     w.writeI32LE(a.hp); w.writeI32LE(a.operatorId); w.writeU8(a.moveProgress);
     w.writeU8(a.suppressedTimer); // added 1H
+    w.writeI32LE(a.ammo); w.writeI32LE(a.fuel); // added 1J
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
     w.writeI32LE(s.cellX); w.writeI32LE(s.cellY);
+  }
+  for (const b of state.bases) { // added 1J
+    w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);
+    w.writeI32LE(b.width); w.writeI32LE(b.height);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

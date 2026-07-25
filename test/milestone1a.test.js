@@ -28,10 +28,15 @@ function stateHash(s) {
     w.writeI32LE(a.hp); w.writeI32LE(a.operatorId);
     w.writeU8(a.moveProgress);
     w.writeU8(a.suppressedTimer); // added 1H
+    w.writeI32LE(a.ammo); w.writeI32LE(a.fuel); // added 1J
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
     w.writeI32LE(site.cellX); w.writeI32LE(site.cellY);
+  }
+  for (const b of s.bases) { // added 1J
+    w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);
+    w.writeI32LE(b.width); w.writeI32LE(b.height);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

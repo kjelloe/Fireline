@@ -9,27 +9,8 @@ import { apply, createInitialState } from "../engine/reducer.js";
 import { resolveShot, inFireRange, DEFAULT_RULES } from "../engine/combat.js";
 import { ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED } from "../engine/state.js";
 import { buildView } from "../engine/view.js";
-import { T_OPEN } from "../engine/mapgen.js";
 import { cellToWorld } from "../shared/fixedmath.js";
-
-function sandbox(assetSpecs) {
-  const size = 64;
-  const map = { width: size, height: size, cells: new Uint8Array(size * size).fill(T_OPEN), seed: 1 };
-  const state = createInitialState(1, map);
-  state.assets = assetSpecs.map((spec, id) => ({
-    id, type: 0, team: spec.team, state: spec.state ?? ASSET_IDLE,
-    x: cellToWorld(spec.cellX), y: cellToWorld(spec.cellY ?? 0),
-    targetX: cellToWorld(spec.cellX), targetY: cellToWorld(spec.cellY ?? 0),
-    hp: spec.hp ?? 100, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
-  }));
-  return state;
-}
-
-function joinAndSelect(state, operatorId, team, assetId) {
-  let s = apply(state, { type: "join_operator", operatorId, team });
-  s = apply(s, { type: "select_asset", operatorId, assetId });
-  return s;
-}
+import { sandbox, joinAndSelect } from "./helpers.js";
 
 test("1G resolveShot reduces HP by expected delta", () => {
   const result = resolveShot({}, {});
