@@ -1,0 +1,112 @@
+{
+  "fixtureVersion": 1,
+  "id": "0D_sfc32_vectors",
+  "purpose": "Verify sfc32 seed expansion and first 8 outputs. Pinned from Python reference implementation.",
+  "cases": [
+    {
+      "id": "seed_0",
+      "rootSeed": 0,
+      "expectedInitialState": {
+        "a": 824515495,
+        "b": 1722258072,
+        "c": 3753300549,
+        "d": 3444516145
+      },
+      "expectedFirst8": [
+        1696322416,
+        290540272,
+        3337163948,
+        432452089,
+        2714744268,
+        407235618,
+        989142099,
+        926873087
+      ],
+      "expectedSequenceHashFnv1a64": "ff490294b2379357"
+    },
+    {
+      "id": "seed_1",
+      "rootSeed": 1,
+      "expectedInitialState": {
+        "a": 1722258072,
+        "b": 3753300549,
+        "c": 3444516145,
+        "d": 592649042
+      },
+      "expectedFirst8": [
+        1773240367,
+        989098808,
+        3932897437,
+        442558832,
+        2055426968,
+        3636358764,
+        2679064745,
+        440917609
+      ],
+      "expectedSequenceHashFnv1a64": "be9c5adc341834bb"
+    },
+    {
+      "id": "seed_42",
+      "rootSeed": 42,
+      "expectedInitialState": {
+        "a": 1543550320,
+        "b": 892999675,
+        "c": 3874031360,
+        "d": 2834992226
+      },
+      "expectedFirst8": [
+        976574925,
+        4232861267,
+        3021775448,
+        1056756072,
+        1414103621,
+        945165768,
+        493291407,
+        663932053
+      ],
+      "expectedSequenceHashFnv1a64": "01f239518d3d06d9"
+    },
+    {
+      "id": "seed_deadbeef",
+      "rootSeed": 3735928559,
+      "expectedInitialState": {
+        "a": 1188150777,
+        "b": 1346096641,
+        "c": 2987963626,
+        "d": 3432937851
+      },
+      "expectedFirst8": [
+        1672217973,
+        1603316124,
+        414333300,
+        3458570544,
+        3305943029,
+        2337540870,
+        1513470371,
+        3214609166
+      ],
+      "expectedSequenceHashFnv1a64": "dedac142f0841abe"
+    },
+    {
+      "id": "seed_max",
+      "rootSeed": 4294967295,
+      "expectedInitialState": {
+        "a": 0,
+        "b": 824515495,
+        "c": 1722258072,
+        "d": 3753300549
+      },
+      "expectedFirst8": [
+        282848748,
+        2899870408,
+        4270817632,
+        2968723402,
+        4239798495,
+        2813305435,
+        3541556892,
+        3521040449
+      ],
+      "expectedSequenceHashFnv1a64": "ed50ca1a95e25f5b"
+    }
+  ]
+}

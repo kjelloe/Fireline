@@ -1,0 +1,251 @@
+{
+  "fixtureVersion": 1,
+  "id": "1A_reducer",
+  "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
+  "mapSeed": 42,
+  "mapProfile": "frontier_corridor",
+  "initialStateHash": "5fdd0db34833d15b",
+  "steps": [
+    {
+      "command": {
+        "type": "join_operator",
+        "operatorId": 0,
+        "team": 0
+      },
+      "events": [
+        {
+          "type": "operator_joined",
+          "operatorId": 0,
+          "team": 0
+        }
+      ],
+      "stateHashAfter": "c57eae170e1f23ee",
+      "tick": 0
+    },
+    {
+      "command": {
+        "type": "join_operator",
+        "operatorId": 1,
+        "team": 1
+      },
+      "events": [
+        {
+          "type": "operator_joined",
+          "operatorId": 1,
+          "team": 1
+        }
+      ],
+      "stateHashAfter": "0529b92a8603da4a",
+      "tick": 0
+    },
+    {
+      "command": {
+        "type": "select_asset",
+        "operatorId": 0,
+        "assetId": 0
+      },
+      "events": [
+        {
+          "type": "asset_selected",
+          "operatorId": 0,
+          "assetId": 0
+        }
+      ],
+      "stateHashAfter": "9ada829e94c6d6b2",
+      "tick": 0
+    },
+    {
+      "command": {
+        "type": "select_asset",
+        "operatorId": 1,
+        "assetId": 4
+      },
+      "events": [
+        {
+          "type": "asset_selected",
+          "operatorId": 1,
+          "assetId": 4
+        }
+      ],
+      "stateHashAfter": "886feb90f92d1287",
+      "tick": 0
+    },
+    {
+      "command": {
+        "type": "move_order",
+        "operatorId": 0,
+        "targetCellX": 63,
+        "targetCellY": 63
+      },
+      "events": [
+        {
+          "type": "move_ordered",
+          "assetId": 0,
+          "targetX": 16128,
+          "targetY": 16128
+        }
+      ],
+      "stateHashAfter": "bea4ca2641d990f6",
+      "tick": 0
+    },
+    {
+      "command": {
+        "type": "advance_tick"
+      },
+      "events": [],
+      "stateHashAfter": "a81a6e11711fe5a3",
+      "tick": 1
+    },
+    {
+      "command": {
+        "type": "advance_tick"
+      },
+      "events": [],
+      "stateHashAfter": "d27469e337e16fd4",
+      "tick": 2
+    },
+    {
+      "command": {
+        "type": "advance_tick"
+      },
+      "events": [],
+      "stateHashAfter": "ce12f8ca5c3fc3b9",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "join_operator",
+        "operatorId": 0,
+        "team": 0
+      },
+      "events": [
+        {
+          "type": "rejected",
+          "cmd": "join_operator",
+          "reason": "operator already active"
+        }
+      ],
+      "stateHashAfter": "ce12f8ca5c3fc3b9",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "select_asset",
+        "operatorId": 0,
+        "assetId": 4
+      },
+      "events": [
+        {
+          "type": "rejected",
+          "cmd": "select_asset",
+          "reason": "asset belongs to other team"
+        }
+      ],
+      "stateHashAfter": "ce12f8ca5c3fc3b9",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "move_order",
+        "operatorId": 1,
+        "targetCellX": 63,
+        "targetCellY": 63
+      },
+      "events": [
+        {
+          "type": "move_ordered",
+          "assetId": 4,
+          "targetX": 16128,
+          "targetY": 16128
+        }
+      ],
+      "stateHashAfter": "04cc759983d48f04",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "select_asset",
+        "operatorId": 1,
+        "assetId": 4
+      },
+      "events": [
+        {
+          "type": "asset_selected",
+          "operatorId": 1,
+          "assetId": 4
+        }
+      ],
+      "stateHashAfter": "04cc759983d48f04",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "move_order",
+        "operatorId": 1,
+        "targetCellX": 64,
+        "targetCellY": 63
+      },
+      "events": [
+        {
+          "type": "move_ordered",
+          "assetId": 4,
+          "targetX": 16384,
+          "targetY": 16128
+        }
+      ],
+      "stateHashAfter": "6373f992222bc275",
+      "tick": 3
+    },
+    {
+      "command": {
+        "type": "advance_tick"
+      },
+      "events": [],
+      "stateHashAfter": "74b591dbe816f465",
+      "tick": 4
+    }
+  ],
+  "finalStateHash": "74b591dbe816f465",
+  "rejectionCases": [
+    {
+      "id": "bad_type",
+      "command": {
+        "type": "fire_laser"
+      },
+      "expectedReason": "unknown command type: fire_laser"
+    },
+    {
+      "id": "missing_type",
+      "command": {},
+      "expectedReason": "missing type"
+    },
+    {
+      "id": "bad_operatorId",
+      "command": {
+        "type": "join_operator",
+        "operatorId": 999,
+        "team": 0
+      },
+      "expectedReason": "invalid operatorId"
+    },
+    {
+      "id": "bad_team",
+      "command": {
+        "type": "join_operator",
+        "operatorId": 5,
+        "team": 9
+      },
+      "expectedReason": "invalid team"
+    },
+    {
+      "id": "bad_cell",
+      "command": {
+        "type": "move_order",
+        "operatorId": 0,
+        "targetCellX": 200,
+        "targetCellY": 0
+      },
+      "expectedReason": "invalid targetCellX"
+    }
+  ]
+}

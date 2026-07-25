@@ -1,0 +1,49 @@
+{
+  "fixtureVersion": 1,
+  "id": "0B_fnv1a64_vectors",
+  "purpose": "Verify FNV-1a 64-bit hash against standard known vectors.",
+  "note": "Standard vectors from http://www.isthe.com/chongo/tech/comp/fnv/index.html \u2014 verified by Python reference implementation.",
+  "cases": [
+    {
+      "id": "empty",
+      "inputBytes": [],
+      "expectedHex": "cbf29ce484222325"
+    },
+    {
+      "id": "a",
+      "inputBytes": [
+        97
+      ],
+      "expectedHex": "af63dc4c8601ec8c"
+    },
+    {
+      "id": "foobar",
+      "inputBytes": [
+        102,
+        111,
+        111,
+        98,
+        97,
+        114
+      ],
+      "expectedHex": "85944171f73967e8"
+    },
+    {
+      "id": "u8_255",
+      "inputBytes": [
+        255
+      ],
+      "expectedHex": "af64724c8602eb6e"
+    },
+    {
+      "id": "u32_le",
+      "inputBytes": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "expectedHex": "b345225e3644edb5"
+    }
+  ]
+}

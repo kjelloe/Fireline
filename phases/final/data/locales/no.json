@@ -1,0 +1,9 @@
+{
+  "unit_destroyed": "Enhet \u00f8delagt",
+  "units_remaining": "{count} enheter gjenst\u00e5r",
+  "units_remaining_one": "1 enhet gjenst\u00e5r",
+  "victory": "Seier!",
+  "defeat": "Nederlag.",
+  "turn": "Runde {n}",
+  "welcome": "Velkommen, {name}!"
+}

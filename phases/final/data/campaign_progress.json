@@ -1,0 +1,12 @@
+{
+  "soldier_1": {
+    "playerId": "soldier_1",
+    "unlocked": [
+      "m1",
+      "m2"
+    ],
+    "completed": [
+      "m1"
+    ]
+  }
+}

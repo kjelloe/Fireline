@@ -1,0 +1,23 @@
+{
+  "player_1": {
+    "playerId": "player_1",
+    "wins": 1,
+    "losses": 1,
+    "matchesPlayed": 2,
+    "lastSeen": "2026-07-25T16:19:16.129Z"
+  },
+  "noob": {
+    "playerId": "noob",
+    "wins": 0,
+    "losses": 1,
+    "matchesPlayed": 1,
+    "lastSeen": "2026-07-25T16:19:16.130Z"
+  },
+  "pro": {
+    "playerId": "pro",
+    "wins": 2,
+    "losses": 0,
+    "matchesPlayed": 2,
+    "lastSeen": "2026-07-25T16:19:16.133Z"
+  }
+}

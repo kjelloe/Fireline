@@ -1,0 +1,17 @@
+{
+  "matchId": "test_match_001",
+  "timestamp": "2026-07-25T16:19:16.092Z",
+  "finalState": {
+    "seed": 123,
+    "victory": {
+      "winner": 0
+    }
+  },
+  "commandLog": [
+    {
+      "type": "MOVE",
+      "tick": 1
+    }
+  ],
+  "winner": 0
+}
