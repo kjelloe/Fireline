@@ -1,0 +1,26 @@
+{
+  "TANK": {
+    "hp": 100,
+    "speed": 160,
+    "range": 1280,
+    "damage": 25,
+    "fireRate": 10,
+    "vision": 1536
+  },
+  "SCOUT": {
+    "hp": 50,
+    "speed": 320,
+    "range": 768,
+    "damage": 10,
+    "fireRate": 5,
+    "vision": 2560
+  },
+  "ARTILLERY": {
+    "hp": 40,
+    "speed": 80,
+    "range": 3072,
+    "damage": 50,
+    "fireRate": 30,
+    "vision": 768
+  }
+}

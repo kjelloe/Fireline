@@ -1,0 +1,9 @@
+{
+  "unit_destroyed": "Unit destroyed",
+  "units_remaining": "{count} units remaining",
+  "units_remaining_one": "1 unit remaining",
+  "victory": "Victory!",
+  "defeat": "Defeat.",
+  "turn": "Turn {n}",
+  "welcome": "Welcome, {name}!"
+}

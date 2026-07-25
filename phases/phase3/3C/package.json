@@ -1,0 +1,22 @@
+{
+  "name": "more-firepower",
+  "version": "0.3.2",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/milestone1*.test.js test/milestone2*.test.js",
+    "sim1f": "node test/headless/sim1f.js",
+    "sim1g": "node test/headless/sim1g.js",
+    "sim1h": "node test/headless/sim1h.js",
+    "sim1i": "node test/headless/sim1i.js",
+    "sim1j": "node test/headless/sim1j.js",
+    "sim1k": "node test/headless/sim1k.js",
+    "sim2a": "node test/headless/sim2a.js",
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0",
+    "three": "^0.165.0"
+  },
+  "main": "server/index.js"
+}

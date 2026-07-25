@@ -1,0 +1,10 @@
+{
+  "name": "more-firepower",
+  "version": "0.1.8",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/milestone1f.test.js test/milestone1g.test.js",
+    "sim1f": "node test/headless/sim1f.js",
+    "sim1g": "node test/headless/sim1g.js"
+  }
+}
