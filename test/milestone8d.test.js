@@ -49,7 +49,7 @@ test("8D towing halves speed and drags the wreck along", () => {
   s = apply(s, { type: "tow_order", operatorId: 0, wreckAssetId: 1 });
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 8, "tank 16 * 0.5 tow penalty");
+  assert.equal(s.assets[0].x - x0, 16, "tank 32 * 0.5 tow penalty");
   assert.equal(s.assets[1].x, s.assets[0].x, "wreck follows the tower");
 });
 

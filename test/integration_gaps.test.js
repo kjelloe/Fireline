@@ -43,7 +43,7 @@ test("integration: a rejoined player actually drives their old asset", async () 
     b.ws.send(JSON.stringify({ type: "move_order", targetCellX: 20, targetCellY: 56 }));
     await settle();
     appServer.gameServer.step();
-    assert.equal(appServer.gameServer.state.assets[0].x, 7 * 256 + 16,
+    assert.equal(appServer.gameServer.state.assets[0].x, 7 * 256 + 32,
       "post-rejoin orders drive the same asset");
     b.ws.close();
   });

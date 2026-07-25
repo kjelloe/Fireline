@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 12,
+  "fixtureVersion": 13,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 12 (2026-07-26): fire cooldown reloadTimer (slice 8E); hashes re-pinned, command script and events still verbatim from v1.",
+  "note": "fixtureVersion 13 (2026-07-25): global pace x2 after first LAN playtest (tank 32 / scout 56 / artillery 16); hashes re-pinned, command script and events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "7bf44d55359c92c7",
@@ -94,7 +94,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "4e355e4a48303aa1",
+      "stateHashAfter": "6373a237eff57bb1",
       "tick": 1
     },
     {
@@ -102,7 +102,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "e50bc89cac7a83d3",
+      "stateHashAfter": "e301a816002cc4b3",
       "tick": 2
     },
     {
@@ -110,7 +110,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "50ac0a50cdbceb2d",
+      "stateHashAfter": "6bd9cabf1ce4bc9d",
       "tick": 3
     },
     {
@@ -126,7 +126,7 @@
           "reason": "operator already active"
         }
       ],
-      "stateHashAfter": "50ac0a50cdbceb2d",
+      "stateHashAfter": "6bd9cabf1ce4bc9d",
       "tick": 3
     },
     {
@@ -142,7 +142,7 @@
           "reason": "asset belongs to other team"
         }
       ],
-      "stateHashAfter": "50ac0a50cdbceb2d",
+      "stateHashAfter": "6bd9cabf1ce4bc9d",
       "tick": 3
     },
     {
@@ -160,7 +160,7 @@
           "targetY": 16128
         }
       ],
-      "stateHashAfter": "30238b0d044f5da7",
+      "stateHashAfter": "520de868ad536457",
       "tick": 3
     },
     {
@@ -176,7 +176,7 @@
           "assetId": 4
         }
       ],
-      "stateHashAfter": "30238b0d044f5da7",
+      "stateHashAfter": "520de868ad536457",
       "tick": 3
     },
     {
@@ -194,7 +194,7 @@
           "targetY": 16128
         }
       ],
-      "stateHashAfter": "604bf3dbdc5e05f2",
+      "stateHashAfter": "6ce4afc44915e642",
       "tick": 3
     },
     {
@@ -202,7 +202,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "74c5f9946226d320",
+      "stateHashAfter": "4e54f5d579cfa830",
       "tick": 4
     }
   ],
@@ -248,5 +248,5 @@
       "expectedReason": "invalid targetCellX"
     }
   ],
-  "finalStateHash": "74c5f9946226d320"
+  "finalStateHash": "4e54f5d579cfa830"
 }

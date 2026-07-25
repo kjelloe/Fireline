@@ -99,7 +99,7 @@ test("2F interpolator smooths a real command-driven movement", async () => {
     const sampled = interp.sample(fakeNow - 50); // target lands between snapshots 2 and 3
     const own = sampled.friendlyAssets.find((x) => x.id === 0);
     const start = 7 * 256;
-    assert.ok(own.x > start + 16 && own.x < start + 48, `interpolated x=${own.x}`);
+    assert.ok(own.x > start + 32 && own.x < start + 96, `interpolated x=${own.x}`);
     a.ws.close();
   } finally {
     await appServer.stop();

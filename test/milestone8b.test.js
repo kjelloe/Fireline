@@ -46,7 +46,7 @@ test("8B the carried standard rides with the carrier at reduced speed", () => {
   s = apply(s, { type: "advance_tick" }); // pickup on the spot
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 12, "tank 16 * 0.75 carrier penalty");
+  assert.equal(s.assets[0].x - x0, 24, "tank 32 * 0.75 carrier penalty");
   assert.equal(s.standards[1].x, s.assets[0].x, "standard rides along");
 });
 

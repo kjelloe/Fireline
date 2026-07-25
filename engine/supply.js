@@ -7,8 +7,9 @@ import { ASSET_IDLE } from "./state.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
 export const AMMO_MAX = 12;
-// 1 fuel per moving tick; 2400 covers a full 128-cell map crossing (~2048
-// ticks at BASE_SPEED 16/256 cell) with margin. Tuned for 2A integration.
+// 1 fuel per moving tick; at BASE_SPEED 32/256 cell a full 128-cell crossing
+// costs ~1024 ticks, so 2400 now covers two crossings — generous on purpose
+// after the pace x2 pass.
 export const FUEL_MAX = 2400;
 export const SUPPLY_FIRE_COST = 1;
 export const SUPPLY_MOVE_COST = 1;

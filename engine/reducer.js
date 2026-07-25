@@ -40,7 +40,9 @@ export { createInitialState } from "./state.js";
 
 // Tank movement speed in fixed world units per tick before terrain multiplier.
 // Kept as the historical export name; per-unit speeds come from units.js (3A).
-export const BASE_SPEED = 16;
+// Doubled 16->32 after the first LAN playtest ("tank felt slow") — designer's
+// sanctioned x2 pace pass; reload times unchanged so combat pace in seconds holds.
+export const BASE_SPEED = 32;
 
 function copyState(state) {
   return {

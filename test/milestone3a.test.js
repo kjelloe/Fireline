@@ -15,9 +15,9 @@ import { sandbox } from "./helpers.js";
 
 test("3A stat table is pinned", () => {
   assert.deepEqual(getUnitStats(UNIT_TANK), {
-    id: 0, name: "tank", speed: 16, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
+    id: 0, name: "tank", speed: 32, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
   });
-  assert.equal(getUnitStats(UNIT_SCOUT).speed, 28);
+  assert.equal(getUnitStats(UNIT_SCOUT).speed, 56);
   assert.equal(getUnitStats(UNIT_SCOUT).hp, 60);
   assert.equal(getUnitStats(UNIT_ARTILLERY).range, 3072);
   assert.equal(getUnitStats(UNIT_ARTILLERY).minRange, 768);
@@ -49,9 +49,9 @@ test("3A scout outruns tank on the same terrain", () => {
     { team: 0, cellX: 0, cellY: 4, type: UNIT_ARTILLERY, state: ASSET_MOVING, targetX: 4096 },
   ]);
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x, 16);
-  assert.equal(s.assets[1].x, 28);
-  assert.equal(s.assets[2].x, 8);
+  assert.equal(s.assets[0].x, 32);
+  assert.equal(s.assets[1].x, 56);
+  assert.equal(s.assets[2].x, 16);
 });
 
 test("3A damage comes from the attacker's chassis", () => {

@@ -48,7 +48,7 @@ test("3B out-of-supply units move at half speed", () => {
     [], { bases: CORNER_BASE }
   );
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - cellToWorld(40), 8, "tank crawls at 8 instead of 16");
+  assert.equal(s.assets[0].x - cellToWorld(40), 16, "tank crawls at 16 instead of 32");
 });
 
 test("3B out-of-supply units cannot fire", () => {

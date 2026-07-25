@@ -10,15 +10,15 @@ export const UNIT_ARTILLERY = 2;
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
     id: UNIT_TANK, name: "tank",
-    speed: 16, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
+    speed: 32, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
   }),
   [UNIT_SCOUT]: Object.freeze({
     id: UNIT_SCOUT, name: "scout",
-    speed: 28, range: 1024, minRange: 0, hp: 60, damage: 10, indirect: false, reloadTicks: 8,
+    speed: 56, range: 1024, minRange: 0, hp: 60, damage: 10, indirect: false, reloadTicks: 8,
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
-    speed: 8, range: 3072, minRange: 768, hp: 80, damage: 30, indirect: true, reloadTicks: 40,
+    speed: 16, range: 3072, minRange: 768, hp: 80, damage: 30, indirect: true, reloadTicks: 40,
   }),
 });
 

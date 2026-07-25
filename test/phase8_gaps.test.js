@@ -22,7 +22,7 @@ const settle = (ms = 60) => new Promise((r) => setTimeout(r, ms));
 
 // ── unit ──────────────────────────────────────────────────────────────────────
 
-test("phase8 unit: carrier and tow penalties stack (16 → 12 → 6)", () => {
+test("phase8 unit: carrier and tow penalties stack (32 → 24 → 12)", () => {
   // Base rect sits 20 cells south: close enough for supply, far enough that
   // the towed wreck is NOT "at base" (which would start repair and cut the tow).
   let s = sandbox(
@@ -42,7 +42,7 @@ test("phase8 unit: carrier and tow penalties stack (16 → 12 → 6)", () => {
   assert.equal(s.standards[1].status, STD_CARRIED);
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 6, "16 * 0.75 carrier * 0.5 tow = 6");
+  assert.equal(s.assets[0].x - x0, 12, "32 * 0.75 carrier * 0.5 tow = 12");
 });
 
 // ── component ─────────────────────────────────────────────────────────────────
