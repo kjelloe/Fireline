@@ -102,7 +102,10 @@ test("2B malformed JSON does not kill the server", async () => {
     a.ws.send("this is not json{{{");
     await settle();
     a.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
-    await settle();
+    // Poll-wait: under full parallel suite load a fixed settle is flaky.
+    for (let i = 0; i < 40 && !a.messages.some((m) => m.type === "s_joined"); i++) {
+      await settle(50);
+    }
     assert.ok(a.messages.some((m) => m.type === "s_joined"), "server still serves");
     a.ws.close();
   });
