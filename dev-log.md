@@ -106,3 +106,21 @@ hash fn); `1A_reducer.json` → fixtureVersion 3 (hashes only, events verbatim).
 
 **Tests:** `milestone1h.test.js` — 6 plan criteria + 3 self-tests (suppress →
 recover cycle, no timer on wrecks, wrecked sensors blind). 68/68 green.
+
+---
+
+## marker-0004 — Slice 1I: relay sites, capture, fog extension (2026-07-25)
+
+**Added:** `engine/sites.js` (`SITE_RELAY`, `SITE_NEUTRAL`, `RELAY_FOG_CELLS`
+16, pure `captureCheck`); three neutral relays on frontier_corridor at cells
+(32,63), (63,63), (95,63); capture pass in advance_tick (stable asset order
+decides same-tick contests, wrecks can't capture, no repeat events); owned
+relays act as team sensors in `los.computeVisible`; views expose the public
+sites array (id/type/owner/cell only).
+
+**Schema:** `sites` hashed after assets (snapshot.js + 1A test hash);
+`1A_reducer.json` → fixtureVersion 4 (hashes only, events verbatim).
+
+**Tests:** `milestone1i.test.js` — 6 plan criteria + 3 self-tests
+(captureCheck purity + wreck exclusion, no repeat capture events, sites
+affect state hash). 76/76 green.

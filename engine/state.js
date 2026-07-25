@@ -60,19 +60,36 @@ function createFieldAssets() {
   return assets;
 }
 
+// Relay sites along the corridor: west approach, objective centre, east approach.
+const RELAY_CELLS = [
+  { cellX: 32, cellY: 63 },
+  { cellX: 63, cellY: 63 },
+  { cellX: 95, cellY: 63 },
+];
+
+function createSites() {
+  return RELAY_CELLS.map((pos, id) => ({
+    id, type: 1 /* SITE_RELAY */, owner: -1 /* SITE_NEUTRAL */,
+    cellX: pos.cellX, cellY: pos.cellY,
+  }));
+}
+
 // mapArg: profile name string (standard scenario with field assets),
 // a prebuilt map object (empty sandbox for tests), or undefined (default profile).
 export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
   let map;
   let assets;
+  let sites;
   if (typeof mapArg === "string") {
     const profile = MAP_PROFILES[mapArg];
     if (!profile) throw new RangeError(`unknown map profile: ${mapArg}`);
     map = profile(mapSeed >>> 0);
     assets = createFieldAssets();
+    sites = createSites();
   } else if (mapArg && typeof mapArg === "object") {
     map = mapArg;
     assets = [];
+    sites = [];
   } else {
     throw new RangeError("mapArg must be a profile name or map object");
   }
@@ -84,6 +101,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     teamScores: [0, 0],
     operators: createOperators(),
     assets,
+    sites,
     events: [],
   };
 }

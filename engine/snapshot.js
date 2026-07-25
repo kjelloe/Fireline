@@ -21,6 +21,10 @@ export function hashState(state) {
     w.writeI32LE(a.hp); w.writeI32LE(a.operatorId); w.writeU8(a.moveProgress);
     w.writeU8(a.suppressedTimer); // added 1H
   }
+  for (const s of state.sites) { // added 1I
+    w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
+    w.writeI32LE(s.cellX); w.writeI32LE(s.cellY);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

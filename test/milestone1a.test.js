@@ -29,6 +29,10 @@ function stateHash(s) {
     w.writeU8(a.moveProgress);
     w.writeU8(a.suppressedTimer); // added 1H
   }
+  for (const site of s.sites) { // added 1I
+    w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
+    w.writeI32LE(site.cellX); w.writeI32LE(site.cellY);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

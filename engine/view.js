@@ -20,6 +20,11 @@ export function buildView(state, team) {
     .filter((a) => visible.has(a.id))
     .map((a) => ({ id: a.id, type: a.type, team: a.team, state: a.state, x: a.x, y: a.y }));
 
+  // Relay infrastructure is public knowledge (position/type/owner only).
+  const sites = state.sites.map((s) => ({
+    id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
+  }));
+
   return {
     tick: state.tick,
     team,
@@ -27,5 +32,6 @@ export function buildView(state, team) {
     mapCells: state.map.cells,
     friendlyAssets,
     visibleEnemies,
+    sites,
   };
 }

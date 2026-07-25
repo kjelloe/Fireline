@@ -13,6 +13,7 @@ import {
   CMD_FIRE_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
+import { captureCheck } from "./sites.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -27,6 +28,7 @@ function copyState(state) {
     teamScores: [...state.teamScores],
     operators: state.operators.map((o) => ({ ...o })),
     assets: state.assets.map((a) => ({ ...a })),
+    sites: state.sites.map((s) => ({ ...s })),
     events: [],
   };
 }
@@ -157,6 +159,14 @@ function applyAdvanceTick(next) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.state !== ASSET_MOVING) continue;
     stepAsset(asset, next.map);
+  }
+  // Capture pass: stable asset order decides same-tick contests.
+  for (const asset of next.assets) {
+    const site = captureCheck(next, asset.id);
+    if (site && site.owner !== asset.team) {
+      site.owner = asset.team;
+      next.events.push({ type: "site_captured", siteId: site.id, team: asset.team });
+    }
   }
   return next;
 }
