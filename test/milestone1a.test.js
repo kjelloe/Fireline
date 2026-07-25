@@ -32,6 +32,7 @@ function stateHash(s) {
     w.writeU8(a.suppressedTimer); // added 1H
     w.writeI32LE(a.ammo); w.writeI32LE(a.fuel); // added 1J
     w.writeI32LE(a.towedBy); w.writeI32LE(a.recoverTimer); // added 8D
+    w.writeU8(a.reloadTimer); // added 8E
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);

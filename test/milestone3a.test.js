@@ -15,7 +15,7 @@ import { sandbox } from "./helpers.js";
 
 test("3A stat table is pinned", () => {
   assert.deepEqual(getUnitStats(UNIT_TANK), {
-    id: 0, name: "tank", speed: 16, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false,
+    id: 0, name: "tank", speed: 16, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
   });
   assert.equal(getUnitStats(UNIT_SCOUT).speed, 28);
   assert.equal(getUnitStats(UNIT_SCOUT).hp, 60);

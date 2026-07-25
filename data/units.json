@@ -9,7 +9,8 @@
       "minRange": 0,
       "hp": 100,
       "damage": 20,
-      "indirect": false
+      "indirect": false,
+      "reloadTicks": 15
     },
     "1": {
       "id": 1,
@@ -19,7 +20,8 @@
       "minRange": 0,
       "hp": 60,
       "damage": 10,
-      "indirect": false
+      "indirect": false,
+      "reloadTicks": 8
     },
     "2": {
       "id": 2,
@@ -29,7 +31,8 @@
       "minRange": 768,
       "hp": 80,
       "damage": 30,
-      "indirect": true
+      "indirect": true,
+      "reloadTicks": 40
     }
   }
 }

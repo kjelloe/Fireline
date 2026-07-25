@@ -122,6 +122,7 @@ function applyFireOrder(next, command) {
   if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
     return reject(next, command, "target not operable");
   }
+  if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
   if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
   if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
   if (!inFireRange(attacker, target)) return reject(next, command, "target out of range");
@@ -137,6 +138,7 @@ function applyFireOrder(next, command) {
   }
 
   attacker.ammo -= SUPPLY_FIRE_COST;
+  attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks; // 8E
   const shot = resolveShot(attacker, target);
   target.hp = Math.max(0, target.hp - shot.hpDelta);
   if (shot.suppressed && target.hp > 0) target.suppressedTimer = SUPPRESSION_TICKS;
@@ -227,6 +229,7 @@ function applyAdvanceTick(next) {
   if (next.phase === PHASE_OVER) return next;
   for (const asset of next.assets) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
+    if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
     if (asset.state !== ASSET_MOVING) continue;
     if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
     const beforeX = asset.x;

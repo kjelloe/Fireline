@@ -61,6 +61,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery
+    reloadTimer: 0, // 8E fire cooldown
   };
 }
 

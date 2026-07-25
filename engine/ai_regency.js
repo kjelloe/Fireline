@@ -12,6 +12,7 @@ import { CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER, CMD_FIRE_ORDER } f
 import { computeVisible } from "./los.js";
 import { inFireRange } from "./combat.js";
 import { inSupply } from "./supply.js";
+import { getUnitStats } from "./units.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
 export const AI_OPERATOR_FIRST = 16;
@@ -138,10 +139,13 @@ export class AIRegency {
       // The AI never evicts humans or drives assets it does not operate.
       if (!asset || asset.operatorId !== operatorId || isWreck(asset)) continue;
 
-      // Fire doctrine: engage the nearest visible enemy in range when able.
-      // Easy regents only squeeze the trigger on even ticks (6D).
-      const mayFire = this.difficulty !== AI_EASY || (state.tick & 1) === 0;
-      if (mayFire && asset.ammo > 0 && inSupply(state, asset)) {
+      // Fire doctrine: engage the nearest visible enemy in range when the
+      // gun is loaded (8E). Easy regents observe a duty cycle: they only
+      // engage during the first half of every double-reload window (6D).
+      const reload = getUnitStats(asset.type).reloadTicks;
+      const dutyOpen = this.difficulty !== AI_EASY ||
+        state.tick % (2 * reload) < reload;
+      if (dutyOpen && asset.reloadTimer === 0 && asset.ammo > 0 && inSupply(state, asset)) {
         const target = pickFireTarget(state, asset, visibleByTeam[asset.team]);
         if (target) {
           commands.push({ type: CMD_FIRE_ORDER, operatorId, targetAssetId: target.id });

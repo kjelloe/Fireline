@@ -341,3 +341,47 @@ order feedback, balance pass, session robustness; P2 + art track).
   ws-level game-over delivery + post-war join refusal, crash recovery
   (rebuild from command log, then continue in lockstep), 4000-tick invariant
   sweep (integer fields, bounds, link symmetry, non-negative pools, replay).
+
+---
+
+## marker-0022..0026 — Phase 8 P0: Core Fantasy Retrofit (2026-07-26)
+
+Designer-approved plan archived in `specs/phase8_core_fantasy_retrofit.md`;
+prompt 6 in dev-prompts.md. Vision now centres on physical Command Standards.
+
+**8A (marker-0022)** `engine/standards.js` — per-team physical standard
+(position, carrier, home, status AT_BASE/CARRIED/DROPPED/SCORED), hashed
+(1A fixture → v10), publicly visible in views (deliberate fog exception),
+homes at cells (14,59)/(113,59) inside the command zones.
+
+**8B (marker-0023)** The loop: drive-over pickup of grounded ENEMY standards,
+carrier slowed to 0.75x, standard rides the carrier, drops where a disabled
+carrier died, own dropped standard returns home instantly on friendly touch,
+scoring gated on carrier-in-own-zone AND own-standard-AT_BASE. Events:
+standard_taken/dropped/returned/scored. Return and score can land the same
+tick (return pass precedes scoring pass).
+
+**8C (marker-0024)** `WIN_STANDARD` is the primary victory (checked before
+elimination/domination/clock). War lifecycle in `server/index.js pump()`:
+game_over → archive → postgame (default 300 ticks) → `GameServer.resetWar`
+with deterministic mix32 seed rotation → transport re-joins every connected
+session on its old slot (`s_war_reset` + fresh `s_map`). `warsStarted`
+counter; second war archives and rotates again (tested).
+
+**8D (marker-0025)** `engine/recovery.js` + `tow_order` command: adjacency
+tow with full rejection taxonomy ("no such wreck"/"not a wreck"/"enemy
+wreck"/"already under tow"/"already recovering"/"already towing"/"wreck out
+of reach"), 0.5x tow speed (stacks with carrier/supply penalties), wreck
+follows tower, reaching own base starts a 100-tick repair, restored at half
+hull with original crew link intact, tow line cut when the tower is
+disabled. Fields towedBy/recoverTimer hashed (1A → v11).
+
+**8E (marker-0026)** Reducer-enforced fire cooldown: reloadTicks tank 15 /
+scout 8 / artillery 40; "reloading" rejection; reloadTimer hashed (1A → v12),
+ticks down while moving, visible only to the owning team. AI fires only when
+loaded; easy difficulty (6D) redefined as a duty cycle (fires only in the
+first half of each double-reload window) since tick-parity throttling became
+meaningless under reload. Updated: 1G double-shot test, sim1g, 2F volleys,
+6D pull-in test window, data/units.json mirror.
+
+Suite: 229/229. **P0 complete — the game now has its core fantasy.**

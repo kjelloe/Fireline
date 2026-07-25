@@ -21,11 +21,13 @@ s = apply(s, { type: "select_asset", operatorId: 0, assetId: 0 });
 let tick = 0;
 while (s.assets[1].state !== ASSET_DISABLED) {
   const before = s.assets[1].hp;
-  s = apply(s, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
+  if (s.assets[0].reloadTimer === 0) {
+    s = apply(s, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
+    const a = s.assets[1];
+    const status = a.state === ASSET_DISABLED ? "DISABLED" : "ACTIVE";
+    console.log(`Tick ${s.tick} | A0 fires at A1 | A1 hp: ${before} -> ${a.hp} | status: ${status}`);
+  }
   s = apply(s, { type: "advance_tick" });
   tick = s.tick;
-  const a = s.assets[1];
-  const status = a.state === ASSET_DISABLED ? "DISABLED" : "ACTIVE";
-  console.log(`Tick ${tick} | A0 fires at A1 | A1 hp: ${before} -> ${a.hp} | status: ${status}`);
 }
 console.log(`A1 disabled after ${tick} ticks.`);

@@ -33,6 +33,8 @@ test("1G repeated fire disables asset at HP=0", () => {
     { type: "fire_resolved", attackerId: 0, targetId: 1, hpDelta: 20, targetHp: 20 },
   ]);
 
+  // 8E: wait out the tank's reload before the follow-up shot.
+  for (let i = 0; i < 15; i++) s = apply(s, { type: "advance_tick" });
   s = apply(s, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
   assert.equal(s.assets[1].hp, 0);
   assert.equal(s.assets[1].state, ASSET_DISABLED);

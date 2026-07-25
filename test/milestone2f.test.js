@@ -63,7 +63,7 @@ test("2F full loop: join, select, converge, fire, wreck visible to both", async 
     assert.equal(cmd.type, "fire_order");
     for (let volley = 0; volley < 5; volley++) {
       a.ws.send(JSON.stringify(cmd));
-      await step();
+      await step(15); // 8E: wait out the tank's reload between volleys
     }
 
     const finalA = lastSnapshot(a).view;

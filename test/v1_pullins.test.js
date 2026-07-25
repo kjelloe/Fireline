@@ -89,7 +89,7 @@ test("6D easy AI fires roughly half as often; hard AI pushes relays", () => {
     server.state.assets[4].x = server.state.assets[0].x + 512;
     server.state.assets[4].y = server.state.assets[0].y;
     server.state.assets[4].hp = 10000; // absorb everything; count shots
-    for (let i = 0; i < 20; i++) server.step();
+    for (let i = 0; i < 90; i++) server.step();
     return server.commandLog.filter((e) => e.cmd.type === "fire_order").length;
   };
   const normal = shots(1);
