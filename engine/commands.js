@@ -7,6 +7,7 @@ export const CMD_ADVANCE_TICK   = "advance_tick";
 export const CMD_JOIN_OPERATOR  = "join_operator";
 export const CMD_SELECT_ASSET   = "select_asset";
 export const CMD_MOVE_ORDER     = "move_order";
+export const CMD_FIRE_ORDER     = "fire_order";
 export const CMD_CALL_MEDIC     = "call_medic";
 export const CMD_RESPAWN        = "respawn";
 
@@ -37,6 +38,11 @@ export function validate(cmd) {
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       if (!isCell(cmd.targetCellX))     return { ok: false, reason: "invalid targetCellX" };
       if (!isCell(cmd.targetCellY))     return { ok: false, reason: "invalid targetCellY" };
+      return { ok: true };
+
+    case CMD_FIRE_ORDER:
+      if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.targetAssetId, 63))  return { ok: false, reason: "invalid targetAssetId" };
       return { ok: true };
 
     case CMD_CALL_MEDIC:

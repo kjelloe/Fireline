@@ -10,8 +10,9 @@ import {
 } from "./state.js";
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
-  CMD_CALL_MEDIC, CMD_RESPAWN, validate,
+  CMD_FIRE_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
+import { resolveShot, inFireRange } from "./combat.js";
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -81,6 +82,41 @@ function applyMoveOrder(next, command) {
   return next;
 }
 
+function applyFireOrder(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const attacker = next.assets[operator.assetId];
+  if (!attacker || attacker.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (attacker.state === ASSET_DISABLED || attacker.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const target = next.assets[command.targetAssetId];
+  if (!target) return reject(next, command, "no such target");
+  if (target.team === attacker.team) return reject(next, command, "friendly target");
+  if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
+    return reject(next, command, "target not operable");
+  }
+  if (!inFireRange(attacker, target)) return reject(next, command, "target out of range");
+
+  const shot = resolveShot(attacker, target);
+  target.hp = Math.max(0, target.hp - shot.hpDelta);
+  next.events.push({
+    type: "fire_resolved",
+    attackerId: attacker.id,
+    targetId: target.id,
+    hpDelta: shot.hpDelta,
+    targetHp: target.hp,
+  });
+  if (target.hp === 0) {
+    target.state = ASSET_DISABLED;
+    next.events.push({ type: "asset_disabled", assetId: target.id });
+  }
+  return next;
+}
+
 function stepAsset(asset, map) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
@@ -136,6 +172,7 @@ export function apply(state, command) {
     case CMD_JOIN_OPERATOR: return applyJoinOperator(next, command);
     case CMD_SELECT_ASSET: return applySelectAsset(next, command);
     case CMD_MOVE_ORDER: return applyMoveOrder(next, command);
+    case CMD_FIRE_ORDER: return applyFireOrder(next, command);
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
     case CMD_RESPAWN:
       return next;
