@@ -81,3 +81,13 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 1. Doc/memory refresh after Phase 8 (RUNNING.md controls, CLAUDE.md layer map, memories).
 2. Project skills created in `.claude/skills/`: fixture-repin, slice-workflow, playtest-report (+ `tools/repin_1a.mjs` as a real script).
 3. Phase-8 gap tests added while the user runs browser/LAN acceptance.
+
+### Prompt 8 — Art asset pipeline (designer spec)
+
+> Thanks. While I playtest, can you look at the suggested specification for the art assets in @assets/asset-spec.md And see how we can set up at asset building pipeline for all the assets we need
+
+**Decisions captured:**
+1. Art direction confirmed: **Painted Low-Poly Hybrid** (designer spec in `assets/asset-spec.md`).
+2. Art Slice A implemented: style tokens, asset manifest, anchor points, procedural stand-ins with budget tests, SVG icon/sprite generation from tokens (`tools/build_assets.mjs`), manifest-driven renderer (GLB → procedural → sprite resolution).
+3. Deviation flagged: spec's infantry carrier / recovery vehicle are reserved manifest slots — engine roster is tank/scout/artillery and every chassis tows/carries.
+4. Pipeline doc: `assets/PIPELINE.md`; painted GLBs drop in later without code changes.

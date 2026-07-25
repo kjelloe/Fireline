@@ -1,0 +1,36 @@
+{
+  "note": "Painted Low-Poly Hybrid style tokens (assets/asset-spec.md §17). Single source of truth for materials, palette, and team identity — icons and procedural models are generated from these.",
+  "materials": {
+    "paintedMatte": { "roughness": 0.85, "metalness": 0.0 },
+    "teamPanel": { "roughness": 0.75, "metalness": 0.0 },
+    "wornMetal": { "roughness": 0.9, "metalness": 0.15 },
+    "wreck": { "roughness": 0.95, "metalness": 0.05 }
+  },
+  "colors": {
+    "teamGreen": "#4f8f4f",
+    "teamRed": "#c7443e",
+    "teamBlue": "#3d6fb6",
+    "teamYellow": "#d1a33a",
+    "selection": "#f5e96b",
+    "danger": "#e74c3c",
+    "recover": "#6bd17b",
+    "hullPaint": "#8a7f5c",
+    "hullShadow": "#5e563d",
+    "barrel": "#4a4a44",
+    "wheel": "#3a352c",
+    "wreckBody": "#4d453d",
+    "standardPole": "#6b4a2f",
+    "smoke": "#777777"
+  },
+  "teams": [
+    { "id": 0, "name": "green", "color": "#4f8f4f", "symbol": "square" },
+    { "id": 1, "name": "red", "color": "#c7443e", "symbol": "triangle" }
+  ],
+  "terrainPalette": {
+    "open": "#77995a",
+    "road": "#b7a27a",
+    "forest": "#3f6b3f",
+    "rough": "#8c7a5f",
+    "blocking": "#43414d"
+  }
+}

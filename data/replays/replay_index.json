@@ -1,0 +1,22 @@
+{
+  "replays": [
+    {
+      "id": "war-2026-bedbb5c783b7",
+      "mapSeed": 2026,
+      "ticks": 6899,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "236a218b2117405a",
+      "finishedAt": "2026-07-25T23:13:09.672Z"
+    },
+    {
+      "id": "war-2026-57758108dbb8",
+      "mapSeed": 2026,
+      "ticks": 3789,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "490f0040fbd48453",
+      "finishedAt": "2026-07-25T23:19:31.994Z"
+    }
+  ]
+}

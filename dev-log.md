@@ -438,7 +438,43 @@ project skills in `.claude/skills/`: `fixture-repin` (the re-pin ritual),
 `slice-workflow` (end-to-end slice delivery contract), `playtest-report`
 (pull /metrics + replays into the P1-G balance-pass format after sessions).
 
-**Tests (+9 → 256/256, verified stable twice):** `phase8_gaps.test.js` —
+**Tests (+9 → 256/256, verified stable twice):** *(see marker-0031 below for the art pipeline)*
+
+---
+
+## marker-0031 — Art Slice A: Painted Low-Poly Hybrid pipeline (2026-07-26)
+
+Designer's art direction confirmed (`assets/asset-spec.md`); pipeline doc in
+`assets/PIPELINE.md`. Everything visual now flows through four artifacts:
+
+- **`style_tokens.json`** — palette, matte material params, team identity
+  (color AND symbol per team — colorblind rule §7): green/square,
+  red/triangle. Single source of truth.
+- **`asset_manifest.json`** — every visual key with GLB path (future),
+  procedural key (today), sprite fallback, minimap icon, triBudget.
+  Reserved slots for spec chassis the engine doesn't field yet
+  (infantry_carrier, vehicle_recovery — flagged deviation: our roster is
+  tank/scout/artillery and every chassis tows/carries).
+- **`anchor_points.json`** — tow/banner offsets per chassis.
+- **`tools/build_assets.mjs`** — generates 20 SVG icons + fallback sprites
+  FROM tokens; validates manifest references; idempotent.
+
+**Renderer** now resolves through `asset_resolver.js` (visualKeyFor /
+standardVisualKey / resolveVisual: GLB → procedural → sprite) and
+`asset_factory.js` (chunky procedural stand-ins, 48-164 tris, 15-40x under
+spec budgets; `team_panel` tint slot; wrecks slumped/tilted/faded). New
+readability: tow cables drawn between towers and wrecks; carried standards
+bob; scored standard tints gold. No hardcoded model paths or unit shapes
+remain in client.js (pinned by test).
+
+**Tests (+10 → 266/266):** `art_pipeline.test.js` — chassis/manifest/anchor
+completeness, color+symbol rule, per-key poly budgets, panel-only tinting,
+wreck readability, state→key mapping, resolution order, build idempotency,
+no-hardcoded-paths sweep, HTTP serving of metadata/icons.
+
+**Next art slices (see PIPELINE.md):** painted GLBs drop into
+`client/assets/models/` and are auto-preferred — B: standard + capture VFX,
+C: unit kit GLBs, D: order/selection markers, E: canvas sprite renderer. `phase8_gaps.test.js` —
 penalty stacking 16→12→6 (which caught that whole-map sandbox bases
 auto-repair towed wrecks — test design issue, mechanics correct),
 same-tick contested grab (lowest id), tower-carrier death drops flag AND

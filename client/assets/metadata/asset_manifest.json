@@ -1,0 +1,91 @@
+{
+  "note": "Asset manifest (assets/asset-spec.md §16). The renderer resolves visuals ONLY through this file: no hardcoded model paths in gameplay/render code. Resolution order per entry: webglModel (GLB, when the painted pass lands) -> procedural (asset_factory key) -> fallbackSprite. Engine roster today is tank/scout/artillery; every chassis can tow and carry the standard. infantry_carrier and vehicle_recovery slots are reserved for future chassis per the spec.",
+  "units": {
+    "unit_tank": {
+      "webglModel": "assets/models/units/unit_vehicle_tank.glb",
+      "procedural": "tank",
+      "fallbackSprite": "assets/sprites/fallback/unit_tank.svg",
+      "minimapIcon": "assets/icons/svg/icon_tank.svg",
+      "triBudget": 2500
+    },
+    "unit_scout": {
+      "webglModel": "assets/models/units/unit_vehicle_scout.glb",
+      "procedural": "scout",
+      "fallbackSprite": "assets/sprites/fallback/unit_scout.svg",
+      "minimapIcon": "assets/icons/svg/icon_scout.svg",
+      "triBudget": 2500
+    },
+    "unit_artillery": {
+      "webglModel": "assets/models/units/unit_vehicle_artillery.glb",
+      "procedural": "artillery",
+      "fallbackSprite": "assets/sprites/fallback/unit_artillery.svg",
+      "minimapIcon": "assets/icons/svg/icon_artillery.svg",
+      "triBudget": 3500
+    }
+  },
+  "wrecks": {
+    "wreck_tank": {
+      "webglModel": "assets/models/wrecks/wreck_vehicle_tank.glb",
+      "procedural": "wreck_tank",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    },
+    "wreck_scout": {
+      "webglModel": "assets/models/wrecks/wreck_vehicle_scout.glb",
+      "procedural": "wreck_scout",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    },
+    "wreck_artillery": {
+      "webglModel": "assets/models/wrecks/wreck_vehicle_artillery.glb",
+      "procedural": "wreck_artillery",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    }
+  },
+  "objectives": {
+    "standard_upright": {
+      "webglModel": "assets/models/objectives/objective_standard.glb",
+      "procedural": "standard_upright",
+      "fallbackSprite": "assets/sprites/fallback/standard.svg",
+      "minimapIcon": "assets/icons/svg/icon_standard.svg",
+      "triBudget": 1000
+    },
+    "standard_dropped": {
+      "webglModel": "assets/models/objectives/objective_standard_dropped.glb",
+      "procedural": "standard_dropped",
+      "fallbackSprite": "assets/sprites/fallback/standard.svg",
+      "minimapIcon": "assets/icons/svg/icon_standard.svg",
+      "triBudget": 1000
+    },
+    "relay_site": {
+      "webglModel": "assets/models/objectives/objective_relay.glb",
+      "procedural": "relay",
+      "fallbackSprite": "assets/sprites/fallback/relay.svg",
+      "minimapIcon": "assets/icons/svg/icon_relay.svg",
+      "triBudget": 1200
+    },
+    "zone_command": {
+      "webglModel": "assets/models/structures/zone_command_base.glb",
+      "procedural": "command_zone",
+      "fallbackSprite": "assets/sprites/fallback/zone.svg",
+      "minimapIcon": "assets/icons/svg/icon_zone.svg",
+      "triBudget": 5000
+    }
+  },
+  "reserved": {
+    "unit_infantry_carrier": { "status": "future chassis — spec §8; engine has no infantry yet" },
+    "unit_vehicle_recovery": { "status": "future chassis — spec §8; today every chassis tows" }
+  },
+  "ui": {
+    "icon_move": "assets/icons/svg/icon_move.svg",
+    "icon_attack": "assets/icons/svg/icon_attack.svg",
+    "icon_cooldown": "assets/icons/svg/icon_cooldown.svg",
+    "icon_recover": "assets/icons/svg/icon_recover.svg",
+    "team_symbol_green": "assets/icons/svg/team_square.svg",
+    "team_symbol_red": "assets/icons/svg/team_triangle.svg"
+  }
+}

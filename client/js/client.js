@@ -13,6 +13,8 @@ import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver } from "./feedback_model.js";
+import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
+import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
 
 const CELL = 256; // fixed world units per cell
 const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33];
@@ -120,8 +122,10 @@ function init() {
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
 
-  connect();
-  animate();
+  loadAssetMetadata().then(() => {
+    connect();
+    animate();
+  });
 }
 
 // 5B: stable per-browser identity so a refresh reattaches to your operator.
@@ -135,6 +139,18 @@ function myPlayerId() {
 }
 
 let cachedMap = null; // 6A: terrain arrives once via s_map
+let ASSET_TOKENS = null; // Art Slice A: style tokens + manifest drive visuals
+let ASSET_MANIFEST = null;
+
+async function loadAssetMetadata() {
+  const [tokens, manifest] = await Promise.all([
+    fetch("assets/metadata/style_tokens.json").then((r) => r.json()),
+    fetch("assets/metadata/asset_manifest.json").then((r) => r.json()),
+  ]);
+  ASSET_TOKENS = tokens;
+  ASSET_MANIFEST = manifest;
+  setStyleTokens(tokens);
+}
 
 function connect() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -292,31 +308,66 @@ function buildTerrain() {
   scene.add(group);
 }
 
-function assetColor(a, friendly) {
-  if (a.state === STATE_DISABLED) return 0x444444;
-  return friendly ? (joined?.team === 1 ? 0xcc4444 : 0x44cc44)
-                  : (joined?.team === 1 ? 0x44cc44 : 0xcc4444);
-}
-
 function upsertAssetMesh(a, friendly) {
+  // Manifest-resolved visuals (Art Slice A): unit_<chassis> or wreck_<chassis>,
+  // painted GLB when it exists, procedural stand-in until then.
+  const visualKey = visualKeyFor(a);
   let mesh = assetMeshes.get(a.id);
+  if (mesh && mesh.userData.visualKey !== visualKey) {
+    scene.remove(mesh);
+    assetMeshes.delete(a.id);
+    mesh = null;
+  }
   if (!mesh) {
-    mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.8, 0.5, 0.8),
-      new THREE.MeshPhongMaterial({ color: 0xffffff })
-    );
+    const resolved = resolveVisual(ASSET_MANIFEST, visualKey);
+    mesh = (resolved.kind === "procedural" ? buildProcedural(resolved.key) : null)
+      ?? new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.4, 0.6),
+        new THREE.MeshStandardMaterial({ color: 0x888888 }));
+    mesh.userData.visualKey = visualKey;
+    applyTeamColor(mesh, teamToken(ASSET_TOKENS, a.team).color);
     scene.add(mesh);
     assetMeshes.set(a.id, mesh);
   }
-  mesh.material.color.setHex(assetColor(a, friendly));
-  mesh.position.set(a.x / CELL + 0.5, a.state === STATE_DISABLED ? 0.15 : 0.35, a.y / CELL + 0.5);
+  mesh.position.set(a.x / CELL + 0.5, 0, a.y / CELL + 0.5);
   if (typeof a.heading === "number") mesh.rotation.y = -a.heading; // 4D: face motion
   if (friendly && a.operatorId === joined?.operatorId) {
-    mesh.scale.set(1.2, 1.2, 1.2);
-  } else {
-    mesh.scale.set(1, 1, 1);
+    mesh.scale.setScalar(1.15);
+  } else if (a.state !== STATE_DISABLED) {
+    mesh.scale.setScalar(1);
   }
   return mesh;
+}
+
+// 8D readability: tow cables between friendly towers and their wrecks.
+const towCables = new Map(); // wreck id -> mesh
+function updateTowCables(view) {
+  const live = new Set();
+  for (const wreck of view.friendlyAssets ?? []) {
+    if (wreck.towedBy === -1 || wreck.towedBy === undefined) continue;
+    const tower = view.friendlyAssets.find((t) => t.id === wreck.towedBy);
+    if (!tower) continue;
+    live.add(wreck.id);
+    let cable = towCables.get(wreck.id);
+    if (!cable) {
+      cable = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.03, 0.03, 1, 5),
+        new THREE.MeshStandardMaterial({ color: 0x2e2418, roughness: 0.95 })
+      );
+      scene.add(cable);
+      towCables.set(wreck.id, cable);
+    }
+    const ax = tower.x / CELL + 0.5, az = tower.y / CELL + 0.5;
+    const bx = wreck.x / CELL + 0.5, bz = wreck.y / CELL + 0.5;
+    const dx = bx - ax, dz = bz - az;
+    const len = Math.max(0.2, Math.hypot(dx, dz));
+    cable.scale.set(1, len, 1);
+    cable.position.set((ax + bx) / 2, 0.18, (az + bz) / 2);
+    cable.rotation.z = Math.PI / 2;
+    cable.rotation.y = -Math.atan2(dz, dx);
+  }
+  for (const [id, cable] of towCables) {
+    if (!live.has(id)) { scene.remove(cable); towCables.delete(id); }
+  }
 }
 
 function updateOverlays(view) {
@@ -399,24 +450,27 @@ function updateVfx(nowMs) {
 }
 
 function upsertStandardMesh(st) {
+  const key = standardVisualKey(st);
   let mesh = standardMeshes.get(st.team);
+  if (mesh && mesh.userData.visualKey !== key) {
+    scene.remove(mesh);
+    standardMeshes.delete(st.team);
+    mesh = null;
+  }
   if (!mesh) {
-    mesh = new THREE.Mesh(
-      new THREE.ConeGeometry(0.45, 1.6, 4),
-      new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0x222222 })
-    );
+    const resolved = resolveVisual(ASSET_MANIFEST, key);
+    mesh = buildProcedural(resolved.key ?? "standard_upright");
+    mesh.userData.visualKey = key;
     scene.add(mesh);
     standardMeshes.set(st.team, mesh);
   }
-  const ours = st.team === joined?.team;
-  mesh.material.color.setHex(ours ? 0x66ff66 : 0xff6666);
-  if (st.status === 3) mesh.material.color.setHex(0xffd700); // scored
-  mesh.position.set(st.x / CELL + 0.5, 1.1, st.y / CELL + 0.5);
-  // Carried or dropped standards pulse for attention.
-  const hot = st.status === 1 || st.status === 2;
-  const pulse = hot ? 1 + 0.25 * Math.sin(performance.now() / 150) : 1;
-  mesh.scale.set(pulse, pulse, pulse);
-  mesh.rotation.y = performance.now() / 800;
+  const token = teamToken(ASSET_TOKENS, st.team);
+  applyTeamColor(mesh, st.status === 3 ? ASSET_TOKENS.colors.selection : token.color);
+  // Carried standards ride high and bob (procedural anim per spec §11).
+  const carried = st.status === 1;
+  const bob = carried ? 0.12 * Math.sin(performance.now() / 180) : 0;
+  mesh.position.set(st.x / CELL + 0.5, (carried ? 0.35 : 0) + bob, st.y / CELL + 0.5);
+  mesh.rotation.y = performance.now() / 900;
 }
 
 function renderMinimap(view) {
@@ -466,23 +520,23 @@ function renderMinimap(view) {
 function upsertSiteMesh(site) {
   let mesh = siteMeshes.get(site.id);
   if (!mesh) {
-    mesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.5, 0.7, 1.4, 8),
-      new THREE.MeshPhongMaterial({ color: 0x888888 })
-    );
+    const resolved = resolveVisual(ASSET_MANIFEST, "relay_site");
+    mesh = buildProcedural(resolved.key ?? "relay");
     scene.add(mesh);
     siteMeshes.set(site.id, mesh);
   }
-  const color = site.owner === -1 ? 0x888888 : site.owner === joined?.team ? 0x44cc44 : 0xcc4444;
-  mesh.material.color.setHex(color);
-  mesh.position.set(site.cellX + 0.5, 0.7, site.cellY + 0.5);
+  const color = site.owner === -1
+    ? "#888888" : teamToken(ASSET_TOKENS, site.owner).color;
+  applyTeamColor(mesh, color);
+  mesh.position.set(site.cellX + 0.5, 0, site.cellY + 0.5);
 }
 
 function renderBattlefield() {
   const view = interpolator.sample(performance.now());
-  if (!view) return;
+  if (!view || !ASSET_TOKENS) return;
   buildTerrain();
   updateSupplyBar(view);
+  updateTowCables(view);
 
   const seen = new Set();
   for (const a of view.friendlyAssets ?? []) {
