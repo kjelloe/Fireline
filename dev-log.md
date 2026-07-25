@@ -163,3 +163,23 @@ replay an exact reproduction.
 replay hash equality with AI + human commands) + 2 self-tests (log ordering
 contract, replay leaves initial state untouched). 94/94 green.
 **Phase 1 complete.**
+
+---
+
+## marker-0007 — Slice 2A: first playable full-stack soak (2026-07-25)
+
+**Integration slice, no new engine logic.** `test/headless/soak2a.js` runs two
+scripted operators that emulate browser clients: they read only their own
+fog-filtered views and answer with ordinary commands. They cross the corridor
+on opposing routes, duel on contact (asset 4 disabled ~tick 867), and the
+survivor captures the east relay (~tick 1556). Replay of the recorded command
+log reproduces the live hash exactly.
+
+**Tuning:** `FUEL_MAX` 600 → 2400. At BASE_SPEED (1/16 cell/tick) and
+1 fuel/moving-tick, 600 fuel stranded assets after ~37 cells on a 128-cell
+map; 2400 covers a full crossing with margin. `1A_reducer.json` →
+fixtureVersion 6 (hashes only).
+
+**Tests:** `milestone2a.test.js` — 6 plan criteria (soak completes, run-to-run
+hash stability, replay match, ≥1 capture, ≥1 disablement, supply floors ≥ 0).
+`sim2a` npm script. 100/100 green.

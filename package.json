@@ -10,6 +10,7 @@
     "start": "node test/headless/sim1f.js",
     "sim1f": "node test/headless/sim1f.js",
     "sim1g": "node test/headless/sim1g.js",
+    "sim2a": "node test/headless/sim2a.js",
     "test": "node --test test/*.test.js"
   }
 }
