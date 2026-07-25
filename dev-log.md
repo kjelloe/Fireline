@@ -216,3 +216,24 @@ malformed JSON resilience, reservation release, /health. 107/107 green.
   server's visibility mask, verified against a live GameServer fog cycle.
 
 **Tests:** milestone2c/2d/2e — 16 subtests. 123/123 green.
+
+---
+
+## marker-0010 — Slice 2F: browser client + e2e vertical slice (2026-07-25)
+
+**Rewritten client** (`client/index.html` + `client/js/client.js`): join
+overlay (team pick, no-lobby), instanced terrain from `mapCells`, per-frame
+interpolated assets (2C module), click-to-move / click-enemy-to-fire (2D),
+strict fog culling (2E), sites with ownership colors, HUD (op/tick/hash,
+hp/ammo/fuel), event feed, follow camera + "Next asset" selection.
+three.js vendored locally via `/vendor` (no CDN). `npm start` now launches
+`server/index.js` (v0.2.6).
+
+**Fixes found by tests:** `stop()` hung on keep-alive sockets →
+`closeAllConnections` + ws terminate; ws-send-then-step races in e2e tests →
+settle-before-step.
+
+**Tests:** `milestone2f.test.js` — full ws loop (join both teams, fog at
+spawn, converge, 5-shot duel, wreck visible to both sides), interpolator
+over a real command-driven run, client + vendored three.js served. 126/126.
+**Phase 2 complete — the game is playable in a browser.**
