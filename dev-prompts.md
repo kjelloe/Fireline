@@ -72,3 +72,12 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 6. Fire cooldowns enforced by the reducer (never the client), with visible reload feedback.
 7. P1 legibility (minimap, free camera, click-select, order feedback, end screen, heartbeats, balance instrumentation) is gameplay, not polish.
 8. Updated vision: "...players drop into active miniature wars and fight over physical Command Standards."
+
+### Prompt 7 — Post-Phase-8 consolidation while user playtests
+
+> Thanks. Does any docs, MD files or memories need updates with the latest discoveries? And any skills needing to be created? Any any more unit, component and integration tests needed while I test?
+
+**Decisions captured:**
+1. Doc/memory refresh after Phase 8 (RUNNING.md controls, CLAUDE.md layer map, memories).
+2. Project skills created in `.claude/skills/`: fixture-repin, slice-workflow, playtest-report (+ `tools/repin_1a.mjs` as a real script).
+3. Phase-8 gap tests added while the user runs browser/LAN acceptance.

@@ -115,9 +115,9 @@ test("2B disconnect frees the slot reservation", async () => {
   await withServer(async (appServer, port) => {
     const a = await connect(port);
     a.ws.send(JSON.stringify({ type: "c_join", operatorId: 3, team: 0 }));
-    await settle();
+    for (let i = 0; i < 40 && !appServer.transport.reserved.has(3); i++) await settle(50);
     a.ws.close();
-    await settle();
+    for (let i = 0; i < 40 && appServer.transport.reserved.has(3); i++) await settle(50);
     assert.equal(appServer.transport.reserved.has(3), false);
   });
 });

@@ -15,13 +15,20 @@ import { mix32 } from "../shared/prng.js";
 import { createReplayStore } from "./replay_store.js";
 import { createMetrics } from "./metrics.js";
 
-const CLIENT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "client");
-const NODE_MODULES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "node_modules");
+const ROOT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const CLIENT_DIR = path.join(ROOT_DIR, "client");
+const NODE_MODULES_DIR = path.join(ROOT_DIR, "node_modules");
 
 export function createAppServer(options = {}) {
   const app = express();
   app.use(express.static(options.clientDir ?? CLIENT_DIR));
   app.use("/vendor", express.static(NODE_MODULES_DIR));
+  // Client pure-model modules import engine stat tables/constants as data
+  // (e.g. overlay_model → engine/units.js). Serve those layers so the
+  // browser module graph resolves; authority still lives server-side.
+  app.use("/engine", express.static(path.join(ROOT_DIR, "engine")));
+  app.use("/shared", express.static(path.join(ROOT_DIR, "shared")));
+  app.get("/favicon.ico", (req, res) => res.status(204).end());
   const startedAt = Date.now(); // operational metric only — never game logic
   app.get("/health", (req, res) => {
     res.json({

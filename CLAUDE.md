@@ -28,6 +28,11 @@ outcome. Renderer presents fog-filtered views only.
 - Asset ids 0-7 keep their pinned spawn arrangement (1B/1D depend on it);
   reserves are 8-19 (team A) and 20-31 (team B). Operators: 0-15 humans,
   16-31 AI regents.
+- Phase 8 modules: `engine/standards.js` (Command Standards — the primary
+  objective), `engine/recovery.js` (tow-back), war lifecycle in
+  `server/index.js pump()`. Commands: join/select/move/fire/tow (+ inert
+  call_medic/respawn). Re-pin the 1A fixture with
+  `node tools/repin_1a.mjs "<reason>"` — it aborts on event drift.
 
 ## Workflow per change
 1. Identify the owning layer (shared/engine/server/client/test).

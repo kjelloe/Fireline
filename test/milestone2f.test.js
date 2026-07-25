@@ -121,3 +121,38 @@ test("2F server serves the client and vendored three.js", async () => {
     await appServer.stop();
   }
 });
+
+test("2F the entire browser module graph resolves over HTTP with JS MIME", async () => {
+  // Regression for the field bug where client modules importing engine data
+  // (overlay_model → /engine/units.js) got a 404 HTML page and Firefox
+  // refused the module graph — killing every click handler.
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const appServer = createAppServer({ mapSeed: 1, enableAi: false });
+  const addr = await appServer.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+  try {
+    // Walk every client module's static imports and resolve them as URLs,
+    // exactly as the browser would from /js/<file>.
+    const clientJsDir = new URL("../client/js/", import.meta.url);
+    const toCheck = new Set(["/js/client.js"]);
+    for (const file of readdirSync(clientJsDir)) {
+      if (!file.endsWith(".js")) continue;
+      const src = readFileSync(new URL(file, clientJsDir), "utf8");
+      for (const m of src.matchAll(/from\s+"([^"]+)"/g)) {
+        const spec = m[1];
+        if (spec === "three") { toCheck.add("/vendor/three/build/three.module.js"); continue; }
+        if (spec.startsWith(".")) {
+          toCheck.add(new URL(spec, `http://x/js/${file}`).pathname);
+        }
+      }
+    }
+    assert.ok([...toCheck].some((u) => u.startsWith("/engine/")), "graph reaches engine data");
+    for (const urlPath of toCheck) {
+      const res = await fetch(`http://localhost:${addr.port}${urlPath}`);
+      assert.equal(res.status, 200, `${urlPath} must be served`);
+      const mime = res.headers.get("content-type") ?? "";
+      assert.match(mime, /javascript/, `${urlPath} must be JS, got ${mime}`);
+    }
+  } finally {
+    await appServer.stop();
+  }
+});

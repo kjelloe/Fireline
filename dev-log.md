@@ -416,3 +416,34 @@ contact tick; `GET /metrics`.
 Suite: 247/247. **Phase 8 complete — designer's P0+P1 retrofit delivered.**
 v0.10.0. Remaining human acceptance: browser + LAN sessions (now with the
 Command Standard loop to actually playtest).
+
+---
+
+## marker-0030 — Field-bug fix + consolidation: docs, skills, phase-8 gap tests (2026-07-26)
+
+**FIELD BUG (user's Firefox test):** client modules importing engine data
+(`overlay_model.js` → `/engine/units.js`, `/engine/supply.js`) 404'd because
+express served only `client/` — Firefox blocked the text/html response as a
+module, the whole graph failed, and no click handler ever bound. Fix:
+`/engine` and `/shared` are now static mounts (pure ESM data for the client;
+authority unchanged), `/favicon.ico` → 204. Regression test walks every
+client module's import graph over HTTP and demands 200 + JS MIME.
+
+**Docs:** RUNNING.md rewritten for Phase 8 (objective, click semantics,
+camera keys, supply/reload/tow rules, /metrics); CLAUDE.md gained the
+phase-8 layer map + repin tool pointer; dev-prompts prompt 7.
+
+**Tooling/skills:** `tools/repin_1a.mjs` (aborts on event drift) and three
+project skills in `.claude/skills/`: `fixture-repin` (the re-pin ritual),
+`slice-workflow` (end-to-end slice delivery contract), `playtest-report`
+(pull /metrics + replays into the P1-G balance-pass format after sessions).
+
+**Tests (+9 → 256/256, verified stable twice):** `phase8_gaps.test.js` —
+penalty stacking 16→12→6 (which caught that whole-map sandbox bases
+auto-repair towed wrecks — test design issue, mechanics correct),
+same-tick contested grab (lowest id), tower-carrier death drops flag AND
+cuts tow, resetWar produces a byte-identical fresh war and drops queued
+commands, postgame countdown exact, full standard-capture win over ws with
+rotation and standards home, pure-command raid replaying hash-exactly, and
+a 3000-tick hard-AI war with per-tick standard invariants. Plus module-graph
+regression (2F) and two ws settle-flakes hardened into poll-waits (2B).
