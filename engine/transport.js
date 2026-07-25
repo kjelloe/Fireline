@@ -89,10 +89,12 @@ export class NetworkTransport {
 
     handleDisconnect(ws) {
         const session = this.sessions.get(ws);
-        if (session) this.reserved.delete(session.operatorId);
+        if (session) {
+            this.reserved.delete(session.operatorId);
+            // 3C: the dropped operator's assets fall to AI regency.
+            if (session.authenticated) this.server.assumeRegency(session.operatorId);
+        }
         this.sessions.delete(ws);
-        // Note: the operator remains OP_ACTIVE in state until disconnect/regency
-        // takeover logic arrives in a later milestone (3C).
     }
 
     broadcastSnapshots(snapshot) {

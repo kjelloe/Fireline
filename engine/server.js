@@ -68,6 +68,18 @@ export class GameServer {
 
   getLatestSnapshot() { return this.snapshots.at(-1) ?? null; }
 
+  // 3C: a disconnected human's operator slot falls to AI regency so the war
+  // keeps moving. Lazily creates a regency without fixed agents when the
+  // server runs AI-less.
+  assumeRegency(operatorId) {
+    if (!this.ai) this.ai = new AIRegency({ fixedAgents: false });
+    this.ai.assume(operatorId);
+  }
+
+  releaseRegency(operatorId) {
+    this.ai?.release(operatorId);
+  }
+
   start(options = {}) {
     const { onSnapshot, ...clockOptions } = options;
     if (!this.clock) {
