@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>More Firepower — Version 1 Plan &amp; Status</title>
+<title>More Firepower — Version 1 Plan & Status</title>
 <style>
   :root {
     --bg: #101018; --panel: #181824; --ink: #e8e8e2; --dim: #9a9aa8;
@@ -11,121 +11,78 @@
     --ok: #6bd17b; --line: #2c2c3a;
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--ink);
+  body { margin: 0; background: var(--bg); color: var(--ink);
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    line-height: 1.55; padding: 2rem 1rem 4rem;
-  }
-  main { max-width: 880px; margin: 0 auto; }
+    line-height: 1.55; padding: 2rem 1rem 4rem; }
+  main { max-width: 900px; margin: 0 auto; }
   h1 { letter-spacing: 2px; margin-bottom: 0.2rem; }
   h1 span { color: var(--gold); }
   .sub { color: var(--dim); margin-top: 0; font-size: 0.95rem; }
-  h2 {
-    margin-top: 2.4rem; padding-bottom: 0.3rem;
-    border-bottom: 2px solid var(--line); letter-spacing: 1px;
-  }
-  .card {
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0;
-  }
-  .status-banner {
-    background: linear-gradient(90deg, #1d2b1d, #181824);
-    border-left: 5px solid var(--ok); font-size: 1.05rem;
-  }
-  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+  h2 { margin-top: 2.4rem; padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--line); letter-spacing: 1px; }
+  .card { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.92rem; }
   th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--dim); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
-  .pass { color: var(--ok); font-weight: 700; }
-  .fail { color: var(--red); font-weight: 700; }
-  .todo { color: var(--dim); }
-  .new { color: var(--gold); font-weight: 700; }
-  .pill {
-    display: inline-block; padding: 0.1rem 0.55rem; border-radius: 999px;
-    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.5px;
-  }
-  .pill.done { background: #234023; color: var(--ok); }
-  .pill.later { background: #2c2c3a; color: var(--dim); }
-  .pill.next { background: #40391d; color: var(--gold); }
-  ol li, ul li { margin: 0.35rem 0; }
-  code { background: #23232f; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
-  .footer { color: var(--dim); font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem; }
-  .team-g { color: var(--green); font-weight: 700; }
-  .team-r { color: var(--red); font-weight: 700; }
+  th { color: var(--dim); font-weight: 600; }
+  code { background: #22222e; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; }
+  .ok { color: var(--ok); font-weight: 700; }
+  .next { color: var(--gold); font-weight: 700; }
+  .later { color: var(--dim); }
+  .hold { color: #8fd4ff; }
+  .banner { background: linear-gradient(90deg, #1c2a1c, #181824);
+    border: 1px solid var(--green); border-radius: 10px;
+    padding: 1rem 1.2rem; margin: 1.2rem 0; }
+  ul { padding-left: 1.2rem; }
+  li { margin: 0.3rem 0; }
 </style>
 </head>
-<body>
-<main>
-  <h1>MORE <span>FIREPOWER</span> — Version 1 Plan</h1>
-  <p class="sub">Updated 2026-07-26 · marker-0037 · markdown twin: <code>plan-version1.md</code></p>
+<body><main>
 
-  <div class="card status-banner">
-    <strong>v0.11.0 — 272/272 tests green.</strong> The core fantasy is in and playtested:
-    physical Command Standards (steal → escort → drop → rescue → score, first capture wins),
-    automatic war rotation, wreck tow-back recovery (a <em>Logistics Truck</em> role),
-    reducer-enforced fire cooldowns, relay supply projection, fog, AI regency,
-    byte-exact replays, and a manifest-driven art pipeline awaiting painted models.
-  </div>
+<h1>MORE <span>FIREPOWER</span> — Version 1</h1>
+<p class="sub">Updated 2026-07-26 · branch dev_night · suite 416/416 · fixture v30 · twin of plan-version1.md</p>
 
-  <h2>Acceptance so far</h2>
-  <table>
-    <tr><th>Check</th><th>Result</th></tr>
-    <tr><td>Headless 32-participant war, byte-exact replay (<code>npm run simv1</code>)</td><td class="pass">PASS</td></tr>
-    <tr><td>LAN playtest 1 — two humans</td><td><span class="pass">technical PASS</span> / <span class="fail">experience FAIL</span> — “made little sense”</td></tr>
-    <tr><td>Fix slice — pace ×2 + legibility kit (auto-crew, briefing, objective strip, world labels)</td><td class="pass">SHIPPED</td></tr>
-    <tr><td>LAN playtest 2</td><td class="pass">PASS — “hint leads somewhere useful: YES; ×2 pace felt right”</td></tr>
-  </table>
+<div class="banner"><strong class="ok">VERSION 1 SHIPPED — and overtaken the same day.</strong>
+A playable 32-participant war for humans and AI, over LAN, no lobbies — met at tag <code>v1.0</code>
+after playtest 3; the Rescue Update and the living-world round then shipped most of what used to be "later".
+The living roadmap is <a href="plan-version2.html" style="color:#f5e96b">plan-version2.html</a>.</div>
 
-  <h2>The roster — decided: spec “middle path”</h2>
-  <table>
-    <tr><th>Chassis</th><th>Status</th><th>Role</th><th>Notes</th></tr>
-    <tr><td>Tank <em>(≈ Assault Vehicle)</em></td><td><span class="pill done">IN</span></td><td>direct combat</td><td>speed 32 · dmg 20 · reload 15</td></tr>
-    <tr><td>Scout <em>(≈ Scout Buggy)</em></td><td><span class="pill done">IN</span></td><td>recon / harass</td><td>speed 56 · fragile</td></tr>
-    <tr><td>Artillery</td><td><span class="pill done">IN</span></td><td>indirect fire w/ spotter</td><td>our addition — not in spec roster</td></tr>
-    <tr><td class="new">Logistics Truck</td><td><span class="pill done">NEW</span></td><td><strong>only chassis that tows</strong>; lightly armed</td><td>speed 40 · 3 per team in reserves</td></tr>
-    <tr><td>Command Carrier</td><td><span class="pill later">LATER</span></td><td>standard escort, POWs</td><td>will take over standard-carrying</td></tr>
-    <tr><td>Sentinel <span class="team-g">(Warden)</span></td><td><span class="pill later">LATER</span></td><td>deployable area denial</td><td>needs faction system</td></tr>
-    <tr><td>Infiltrator <span class="team-r">(Freehold)</span></td><td><span class="pill later">LATER</span></td><td>amphibious EW raider</td><td>needs water terrain + sensors</td></tr>
-  </table>
-  <p class="sub">Until the Command Carrier exists, any chassis may carry the standard.</p>
+<h2>Acceptance record</h2>
+<table>
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td>Headless 32-participant war, byte-exact replay</td><td class="ok">PASS (npm run simv1)</td></tr>
+<tr><td>LAN playtest 1</td><td>technical PASS, experience FAIL ("made little sense")</td></tr>
+<tr><td>Pace ×2 + legibility kit</td><td class="ok">shipped</td></tr>
+<tr><td>LAN playtest 2</td><td class="ok">PASS — "hint leads somewhere useful; pace felt right"</td></tr>
+<tr><td>LAN playtest 3</td><td class="ok">PASS → tagged <code>v1.0</code></td></tr>
+<tr><td>Playtest 4 (post-Rescue-Update)</td><td class="ok">"Starting to get more fun" — 4 UX fixes shipped same day</td></tr>
+<tr><td>AI-vs-AI wars end decisively</td><td class="ok">PASS — standard captures ≈ 6 min, 5-seed verified</td></tr>
+</table>
 
-  <h2>Remaining before v1 <span class="pill next">SHORT LIST</span></h2>
-  <ol>
-    <li><strong>Balance pass from real sessions</strong> (designer P1-G): play the objective
-        loop + truck role, then <code>/playtest-report</code> against <code>/metrics</code> and replays.
-        Watch war duration, capture attempts vs scores, tow usage, “reloading” / “out of supply” rejection rates.</li>
-    <li><strong>Playtest 3, full loop</strong>: steal a standard, lose a unit, tow it back,
-        finish a war, and ride the rotation into war two.</li>
-    <li>Any P0 bugs those sessions surface.</li>
-  </ol>
+<h2>What v1 contains today</h2>
+<div class="card"><ul>
+<li><strong>Core fantasy</strong>: physical Command Standards (steal → escort → drop → rescue → score),
+war rotation, BF2-style capture countdowns with contested-freeze, relay supply, fog.</li>
+<li><strong>The Rescue Update</strong>: carrier-exclusive carrying, full walking downed operators,
+truck-only tow-back, Minimum Playability Guarantee, mines, the anti-camping drone, per-chassis turn-rate movement.</li>
+<li><strong>Roster of seven</strong> with explicit contract flags: tank, scout, artillery (only siege gun),
+logistics, command carrier, scout bike (courier — cannot capture), mortar carrier (mobile indirect).</li>
+<li><strong>Living world</strong>: AI roles (raider, courier, capturers, fire support), AI mining/clearing/
+towing/rescuing/repairing/pinging, trail patrols for light chassis.</li>
+<li><strong>Coordination</strong>: context pings, fog-safe mission cards, takeover confirmations,
+rescue-autopilot option, Recognition scoring with honors.</li>
+<li><strong>Modes & tooling</strong>: direct control with aim assist, spectator, local-resim replay viewer,
+two mirror-fair maps, path terrain, ops hardening, batch-PC sim lane.</li>
+</ul></div>
 
-  <h2>Valuable, not blocking (P2)</h2>
-  <ul>
-    <li><strong>Art Slices B–E</strong> — painted GLBs (standard, unit kit incl. truck), order markers,
-        canvas sprite fallback. Pipeline ready: models drop into <code>client/assets/models/</code>
-        with zero code changes (<code>assets/PIPELINE.md</code>).</li>
-    <li><strong>Camera/perspective pass</strong> — playtest 2: reads as “low-poly Syndicate with tanks”;
-        art spec §3 wants the 35–55° diorama feel.</li>
-    <li><strong>Direct tank control mode</strong> (Firepower homage, user-requested) — optional
-        client input mode: held keys → continuous short move orders + aim-fire. No engine change.</li>
-    <li>Replay viewer · second map profile · mobile controls · profiles/leaderboard ·
-        onboarding tooltips · i18n/accessibility.</li>
-  </ul>
+<h2>The invariants that made it work</h2>
+<div class="card"><ul>
+<li>Deterministic pure reducer, integer math, hashed state pinned by the 1A fixture (v30) with an event-drift guard.</li>
+<li><strong>Mirror symmetry is a tested balance invariant</strong> — the "one team wins 5/5 seeds" era
+traced to a 3-cell spawn asymmetry and an un-mirrorable center relay.</li>
+<li>Every gameplay slice ends with the AI-only sim gate; every product decision is the user's,
+recorded verbatim before implementation.</li>
+</ul></div>
 
-  <h2>Definition of done for v1</h2>
-  <ol>
-    <li>Two humans on LAN + AI regents play a complete war — contest relays, steal a standard,
-        rescue wrecks via the truck, reach the end screen — then keep playing the next war
-        without touching the server. <em>(Shipped; needs playtest-3 confirmation.)</em></li>
-    <li>A newcomer understands where they are, what they drive, and what to do inside 60 seconds.
-        <em>(Briefing + auto-crew + objective strip + labels shipped; playtest 2 positive.)</em></li>
-    <li><code>npm test</code> green; every mechanic hashed, replayable, fixture-pinned. <em>(272/272.)</em></li>
-  </ol>
-
-  <div class="footer">
-    More Firepower — deterministic, server-authoritative, no-lobby tactical wargame.
-    Post-v1 roadmap: <code>dev-log.md</code> marker-0019 · <code>specs/future/FUTURE_ROADMAP.md</code>.
-    Build history: <code>dev-log.md</code> (markers 0001–0037).
-  </div>
-</main>
-</body>
+</main></body>
 </html>
