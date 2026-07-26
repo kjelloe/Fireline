@@ -80,6 +80,33 @@
       "reason": 0,
       "finalHash": "9442c065b219fd6c",
       "finishedAt": "2026-07-26T01:10:32.948Z"
+    },
+    {
+      "id": "war-2026-69a51b870394",
+      "mapSeed": 2026,
+      "ticks": 3423,
+      "winner": 1,
+      "reason": 4,
+      "finalHash": "17b54fbf82e85e3e",
+      "finishedAt": "2026-07-26T18:52:02.913Z"
+    },
+    {
+      "id": "war-1188793051-666bf9a95e11",
+      "mapSeed": 1188793051,
+      "ticks": 5316,
+      "winner": 0,
+      "reason": 2,
+      "finalHash": "0ce05da75a06a114",
+      "finishedAt": "2026-07-26T19:01:27.138Z"
+    },
+    {
+      "id": "war-3424666900-5a8b37937a1d",
+      "mapSeed": 3424666900,
+      "ticks": 3427,
+      "winner": 1,
+      "reason": 4,
+      "finalHash": "6ee91dd96768a35e",
+      "finishedAt": "2026-07-26T19:07:41.461Z"
     }
   ]
 }

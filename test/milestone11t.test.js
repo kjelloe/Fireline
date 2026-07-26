@@ -88,3 +88,25 @@ test("11T cards are stable and deduplicated by place", () => {
   assert.equal(tasks.length, 1, "a claimed wreck (towed) is nobody's mission");
   assert.equal(tasks[0].id, "recover:10,10", "stable id for the HUD diff");
 });
+
+test("11U towing a wreck flips its card to a green in-progress mission", () => {
+  const view = {
+    team: 0,
+    standards: [],
+    friendlyAssets: [
+      { id: 1, type: 3, state: 0, operatorId: 7, x: 10 * CELL, y: 10 * CELL, towedBy: -1, recoverTimer: 0 },
+      { id: 2, state: 2, x: 10 * CELL, y: 10 * CELL, towedBy: 1, recoverTimer: 0 },
+      { id: 3, state: 2, x: 20 * CELL, y: 10 * CELL, towedBy: -1, recoverTimer: 0 },
+    ],
+    downedOperators: [],
+    sites: [],
+  };
+  const mine = tasksFor(view, 7);
+  assert.equal(mine[0].kind, "towing_now", "my tow outranks the open wreck");
+  assert.equal(mine[0].mine, true);
+  assert.equal(mine[1].kind, "recover", "the other wreck still cards");
+
+  const teammate = tasksFor(view, 99);
+  assert.equal(teammate.some((t) => t.kind === "towing_now"), false,
+    "someone else's tow is a claimed wreck, not my mission");
+});

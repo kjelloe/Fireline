@@ -1294,3 +1294,28 @@ jumps the camera and sends the task's matching context ping (all standing
 stable task ids. No engine changes, no new state, no repin.
 
 Suite 411/411 (x2). Tagged slice-11t.
+
+---
+
+## slice-11u — Playtest-4 fixes (2026-07-26, prompt 24)
+
+1. **Orientation bug (the real one)**: vehicles drove 90° right of their
+   travel direction. Root cause: the brads→radians conversion assumed
+   models face +x; every builder authors them facing +z (barrels at +z).
+   Fix: `rotation.y = π/2 − θ`. The replay viewer was already correct
+   (canvas basis differs) — untouched.
+2. **Downed UX**: bottom-center action banner — "YOU ARE DOWN — redeploy
+   in Ns" counting the 10 s gate down, then a clickable green "REDEPLOY
+   NOW (R)". On YOUR redeploy the camera jumps home, auto-select re-arms
+   and follow mode resumes — the answer to "my view stayed on my corpse"
+   (ruled: move automatically, no edge arrows needed yet).
+3. **Tow UX**: same banner offers "TOW ASSET N (T)" when a truck stands
+   beside a claimable wreck; T and the click both hook it. The mission
+   card flips to a green "Towing asset N — head home" in-progress state
+   (model-tested: a teammate's tow is a claimed wreck, not your mission).
+4. **Labels**: world-label sprites now take two lines; live countdowns
+   everywhere they matter — relay flips ("RAISING 2s" / "DROPPING 2s —
+   DEFEND!"), damaged relays ("truck + materiel rebuilds"), repair bays
+   ("REPAIRING 4s"), dropped standards ("auto-returns in 38s").
+
+Suite 412/412 (x2). Tagged slice-11u.

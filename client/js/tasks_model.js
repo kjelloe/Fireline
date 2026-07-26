@@ -70,8 +70,18 @@ export function tasksFor(view, myOperatorId = null) {
     }
   }
   // Claimable friendly wrecks: the rescue fantasy's bread and butter.
+  const myAsset = (view?.friendlyAssets ?? []).find((a) => a.operatorId === myOperatorId);
   for (const a of (view?.friendlyAssets ?? [])) {
-    if ((a.state === 2 || a.state === 3) && a.towedBy === -1 && a.recoverTimer === 0) {
+    if (a.state !== 2 && a.state !== 3) continue;
+    if (a.recoverTimer > 0) continue;
+    if (myAsset && a.towedBy === myAsset.id) {
+      // 11U: you're on it — the card flips to in-progress.
+      tasks.push({
+        kind: "towing_now", priority: 2, mine: true,
+        label: `Towing asset ${a.id} — head home`,
+        cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "recovery_in_progress",
+      });
+    } else if (a.towedBy === -1) {
       tasks.push({
         kind: "recover", priority: 5,
         label: `Recover asset ${a.id} — tow it home`,

@@ -142,6 +142,11 @@ function init() {
       if (carrier) send({ type: "board_carrier", carrierAssetId: carrier.id });
     }
     if (e.key === "u" || e.key === "U") send({ type: "unboard" });
+    // 11U: T tows the adjacent claimable wreck (same as the banner).
+    if (e.key === "t" || e.key === "T") {
+      const wreck = adjacentTowableWreck(interpolator.latest());
+      if (wreck) send({ type: "tow_order", wreckAssetId: wreck.id });
+    }
     // 10B: Enter confirms a pending consequential takeover; Esc declines.
     if (e.key === "Enter" && pendingTakeover !== -1) {
       send({ type: "select_asset", assetId: pendingTakeover, confirm: true });
@@ -190,6 +195,7 @@ function init() {
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
+  document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
   // 11G: settings panel.
   const settingsOverlay = document.getElementById("settings-overlay");
   document.getElementById("btn-settings").onclick = () => {
@@ -365,6 +371,15 @@ function handleEvents(events) {
   for (const e of events) {
     const line = describeEvent(e, joined?.team);
     if (line) pushEvent(line);
+    // 11U: your redeploy brings the view HOME and re-arms auto-select —
+    // the answer to "my camera stayed on my corpse".
+    if (e.type === "operator_redeployed" && e.operatorId === joined?.operatorId) {
+      const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
+      if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
+      autoSelectSent = false; // pick a fresh garage asset automatically
+      mySelectedAssetId = null;
+      freeCam.followMode(true);
+    }
     // 10B: arm the Enter-confirm retry for a consequential takeover.
     if (e.type === "rejected" && e.reason === "takeover needs confirmation") {
       pendingTakeover = lastSelectAttempt;
@@ -474,7 +489,9 @@ function upsertAssetMesh(a, friendly) {
   const brads = typeof a.heading === "number" && a.heading >= 0 && a.heading <= 255
     ? a.heading : null;
   {
-    const target = brads !== null ? -(brads * Math.PI * 2) / 256 : null;
+    // 11U: models are authored facing +z; engine theta runs from +x (east)
+    // toward +y (south). rotation.y = pi/2 - theta makes barrel follow travel.
+    const target = brads !== null ? Math.PI / 2 - (brads * Math.PI * 2) / 256 : null;
     if (target !== null) {
       const prev = mesh.userData.smoothedHeading ?? target;
       const maxStep = TURN_RATE_RAD_PER_SEC / 60;
@@ -650,20 +667,22 @@ function updateObjectiveStrip(view) {
 // Floating world labels so objectives stop being anonymous polygons
 // (playtest: "did not understand what was relay").
 function makeTextSprite(text, colorHex) {
+  // 11U: up to two lines ("\n"-separated) — details and countdowns fit.
+  const lines = String(text).split("\n").slice(0, 2);
   const canvas = document.createElement("canvas");
-  canvas.width = 512; canvas.height = 96;
+  canvas.width = 512; canvas.height = lines.length > 1 ? 160 : 96;
   const ctx = canvas.getContext("2d");
   ctx.font = "bold 52px sans-serif";
   ctx.textAlign = "center";
+  const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 40;
   ctx.fillStyle = "rgba(0,0,0,0.55)";
-  const w = ctx.measureText(text).width + 40;
-  ctx.fillRect((512 - w) / 2, 8, w, 72);
+  ctx.fillRect((512 - w) / 2, 8, w, canvas.height - 16);
   ctx.fillStyle = colorHex;
-  ctx.fillText(text, 256, 62);
+  lines.forEach((line, i) => ctx.fillText(line, 256, 62 + i * 58));
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
     map: new THREE.CanvasTexture(canvas), transparent: true, depthTest: false,
   }));
-  sprite.scale.set(4.4, 0.85, 1);
+  sprite.scale.set(4.4, lines.length > 1 ? 1.45 : 0.85, 1);
   return sprite;
 }
 
@@ -682,17 +701,46 @@ function upsertWorldLabel(key, text, colorHex, x, y, z) {
 function updateWorldLabels(view) {
   for (const site of view.sites ?? []) {
     const who = site.owner === -1 ? "NEUTRAL" : site.owner === joined?.team ? "YOURS" : "ENEMY";
-    const color = site.owner === -1 ? "#cccccc"
+    let color = site.owner === -1 ? "#cccccc"
       : site.owner === joined?.team ? "#9fe89f" : "#f0a0a0";
-    upsertWorldLabel(`site${site.id}`, `RELAY — ${who}`, color,
+    let detail = null;
+    if (site.hp === 0) {
+      detail = "DAMAGED — truck + materiel rebuilds";
+      color = "#c9b28a";
+    } else if (site.captureProgress > 0 && site.capturingTeam !== -1) {
+      // 11U: the flip countdown, live over the flag.
+      const phase = site.owner === -1 ? "RAISING" : "DROPPING";
+      const secs = Math.ceil((30 - site.captureProgress) / 10);
+      const hostile = site.capturingTeam !== joined?.team;
+      detail = `${phase} ${secs}s${hostile ? " — DEFEND!" : ""}`;
+      color = hostile ? "#ffb066" : "#f5e96b";
+    }
+    upsertWorldLabel(`site${site.id}`,
+      detail ? `RELAY — ${who}\n${detail}` : `RELAY — ${who}`, color,
       site.cellX + 0.5, 2.1, site.cellY + 0.5);
   }
   for (const st of view.standards ?? []) {
     const mine = st.team === joined?.team;
-    upsertWorldLabel(`std${st.team}`,
-      mine ? "YOUR STANDARD" : "ENEMY STANDARD — STEAL IT",
+    let text = mine ? "YOUR STANDARD" : "ENEMY STANDARD — STEAL IT";
+    if (st.status === 2) { // DROPPED: the auto-return countup matters
+      const secs = Math.max(0, Math.ceil((600 - (st.droppedTimer ?? 0)) / 10));
+      text = (mine ? "YOUR STANDARD IS DOWN" : "ENEMY STANDARD IN THE OPEN") +
+        `\nauto-returns in ${secs}s`;
+    }
+    upsertWorldLabel(`std${st.team}`, text,
       mine ? "#9fe89f" : "#ffd75e",
       st.x / CELL + 0.5, 2.6, st.y / CELL + 0.5);
+  }
+  // 11U: repair bays count down over the hull.
+  for (const a of view.friendlyAssets ?? []) {
+    const key = `repair${a.id}`;
+    if (a.recoverTimer > 0) {
+      upsertWorldLabel(key, `REPAIRING ${Math.ceil(a.recoverTimer / 10)}s`, "#8fd4ff",
+        a.x / CELL + 0.5, 1.5, a.y / CELL + 0.5);
+    } else {
+      const entry = worldLabels.get(key);
+      if (entry) { scene.remove(entry.sprite); worldLabels.delete(key); }
+    }
   }
 }
 
@@ -815,6 +863,52 @@ function updateDroneMeshes(view, nowMs) {
 
 // 11O: in direct mode a targeting circle rides the asset — your gun's
 // true reach, always visible while you drive.
+// 11U: the one-action banner — DOWN countdown/redeploy, or the tow
+// prompt. Clicking it performs the action; the key shortcut still works.
+let bannerAction = null;
+function updateActionBanner(view) {
+  const el = document.getElementById("action-banner");
+  if (!el || !joined || joined.spectator) return;
+  let text = null;
+  bannerAction = null;
+  const myDown = view?.downedOperators?.find((d) => d.operatorId === joined.operatorId);
+  if (myDown) {
+    const wait = Math.ceil((100 - (myDown.downTicks ?? 0)) / 10);
+    if (wait > 0) {
+      text = `YOU ARE DOWN — redeploy in ${wait}s`;
+    } else {
+      text = "REDEPLOY NOW (R) — or crawl to a carrier";
+      bannerAction = () => send({ type: "redeploy" });
+    }
+  } else {
+    const wreck = adjacentTowableWreck(view);
+    if (wreck) {
+      text = `TOW ASSET ${wreck.id} (T)`;
+      bannerAction = () => send({ type: "tow_order", wreckAssetId: wreck.id });
+    }
+  }
+  if (text) {
+    if (el.textContent !== text) el.textContent = text;
+    el.style.display = "block";
+    el.style.color = bannerAction ? "#9fe89f" : "#ffd75e";
+  } else {
+    el.style.display = "none";
+  }
+}
+
+// 11U: the claimable friendly wreck beside my truck, if I drive one.
+function adjacentTowableWreck(view) {
+  const me = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  if (!me || me.type !== 3) return null;
+  const towingAlready = (view?.friendlyAssets ?? []).some((a) => a.towedBy === me.id);
+  if (towingAlready) return null;
+  return (view?.friendlyAssets ?? []).find((a) =>
+    (a.state === STATE_DISABLED || a.state === 3) &&
+    a.towedBy === -1 && a.recoverTimer === 0 && a.id !== me.id &&
+    Math.max(Math.abs(Math.floor(a.x / CELL) - Math.floor(me.x / CELL)),
+             Math.abs(Math.floor(a.y / CELL) - Math.floor(me.y / CELL))) <= 1) ?? null;
+}
+
 // 11T public tasks (plan 2.4): top mission cards from the pure model.
 // Clicking a card jumps the camera there and sends the matching context
 // ping — that IS "responding" on the team channel for v2.0.
@@ -827,7 +921,7 @@ function updateTaskStrip(view) {
     return;
   }
   const tasks = tasksFor(view, joined.operatorId).slice(0, 3);
-  const key = tasks.map((t) => t.id).join("|");
+  const key = tasks.map((t) => t.id + (t.mine ? "*" : "")).join("|");
   if (key === lastTaskKey) return;
   lastTaskKey = key;
   el.innerHTML = "";
@@ -836,8 +930,8 @@ function updateTaskStrip(view) {
     card.textContent = t.label;
     card.style.cssText =
       "background:rgba(10,14,10,0.78); color:#d8e6c8; padding:7px 10px;" +
-      "border-left:3px solid #f5e96b; border-radius:4px; font:12px sans-serif;" +
-      "cursor:pointer;";
+      `border-left:3px solid ${t.mine ? "#57c46b" : "#f5e96b"}; border-radius:4px;` +
+      "font:12px sans-serif; cursor:pointer;";
     card.onclick = () => {
       freeCam.jumpTo(t.cellX, t.cellY);
       send({ type: "ping", kind: t.ping, targetCellX: t.cellX, targetCellY: t.cellY });
@@ -970,6 +1064,7 @@ function renderBattlefield() {
   updatePingLabels(view);
   updateDirectRing(view);
   updateTaskStrip(view);
+  updateActionBanner(view);
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);
