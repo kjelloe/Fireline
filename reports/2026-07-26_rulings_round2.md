@@ -14,6 +14,8 @@
 | `slice-11a` | Q4: artillery turnRate 5 → 2 (~6.4 s half turn). |
 | `slice-11b` | Q3: BF2 capture countdown — lone team drains a relay to neutral (~3 s) then captures (~3 s), both constants configurable; CONTESTED ground freezes the clock (relay churn is gone). Flip telemetry is public in views for a capture bar. |
 | `slice-11c` | Q1 role-based garage crewing + Q2d anti-standard-carrier fire doctrine + Q14 drone swatting — plus everything the sims dragged out (below). |
+| `slice-11d` | Q11+Q16 alive world: tanks mine ground near owned relays, trucks clear marked mines en route, regents PING (raider need_escort, recoverer recovery_in_progress, scout mines_detected; 30 s per-seat throttle), vocabulary + client options grow (carrier_under_attack, road_blocked, safe_route). Mines now fire in AI-only wars. |
+| `slice-11e` | Q5 full AI rescue play, **sim gate PASSED**: trucks tow wrecks home every seed (up to 6 hulls restored), carriers deliver passengers and fetch walking downed teammates (that path mostly serves HUMAN downed players — AI seats redeploy in 10 s). The "AI never tows" pin is overruled. |
 
 ## What the backend sims found (and forced)
 
@@ -40,6 +42,11 @@ problems. Each fix is 5-seed verified:
 seeds now end DECISIVELY by standard capture around tick 3400–4000 —
 ~6-minute wars.** Before tonight, zero of five ever resolved.
 
+**And after 11D mines entered the doctrine, the winner column finally
+mixed: team A takes seeds 777/31337, B takes 2026/4242/9001-ish, with two
+close horn-bound wars.** The "team B wins everything" era is over; question
+18's residual-bias study is now about a much smaller effect.
+
 ## New questions (17+)
 
 17. **FUEL_MAX 4000** — ratify or tune? (A tank now gets ~4 map crossings;
@@ -58,7 +65,7 @@ seeds now end DECISIVELY by standard capture around tick 3400–4000 —
 
 ## Still queued from prompt 16
 
-11D AI mines + AI pings + vocabulary (Q11/Q16) → 11E AI rescue play
-(Q5, sim-gated) → 11F damaged sites + materiel (Q9) → 11G rescue
-autopilot option (Q8) → 11H replay viewer (Q15). Q2b point-bleed stays
-armed-but-deferred pending human standoff evidence.
+11F damaged sites + materiel (Q9 — design sketch in the plan, one open
+question: can bases be shelled? Q19) → 11G rescue autopilot option (Q8) →
+11H replay viewer (Q15). Q2b point-bleed stays armed-but-deferred pending
+human standoff evidence.
