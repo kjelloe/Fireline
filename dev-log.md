@@ -1027,3 +1027,19 @@ the downed label upgrades to "CARRIER HERE — B TO BOARD" when a boardable
 carrier is adjacent. AI seats keep the default.
 
 Suite 368/368 (x2), simwar + replay OK. Tagged slice-11g.
+
+---
+
+## slice-11i — War-rotation regression (2026-07-26, prompt 18 plan)
+
+Nothing had verified that a war ROTATION cleanly resets the phase-9/10/11
+state. New integration test dirties one war with every system at once —
+mines, drones, ruins, half-flipped flags, materiel, passengers, camp
+clocks, manufacture timers, downed bodies, ping cooldowns, autoRescue —
+forces game over, rides out postgame stopping EXACTLY at the reset, and
+asserts the rotated battlefield is spotless AND byte-identical
+(hashState) to a cold start on the rotated seed. Passes against the
+current resetWar (fresh createInitialState — clean by construction); now
+it can never silently regress when someone "optimizes" rotation later.
+
+Suite 369/369 (x2). Tagged slice-11i.
