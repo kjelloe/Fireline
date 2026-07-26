@@ -969,3 +969,23 @@ and 31337, B takes 4242**, two seeds run long with close scores. The
 5/5-team-B pattern is dead. No hashed-state change — no repin.
 
 Suite 356/356 (x2). Tagged slice-11d.
+
+---
+
+## slice-11e — Full AI rescue play (2026-07-26, prompt 16 Q5, sim-gated)
+
+Doctrine between standard objectives and capture-seek: **trucks** hook the
+nearest claimable wreck within 24 cells (tow_order when adjacent, else
+drive to it) and haul it to the base centre — the repair bay does the
+rest; **carriers** ferry aboard passengers home to deliver, and when not
+the team's on-duty raider, fetch walking downed teammates nearby. The old
+"towing is human work" pin in roster_gaps was overruled by ruling Q5 and
+now asserts the opposite.
+
+Sim gate (5 seeds x 12000): tows fire every seed (2-8), wrecks come back
+(up to 6 restored — seed 9001's winner had 12 operable at the horn), war
+tempo and mixed winners unchanged. Carrier pickups stay near zero in
+AI-only wars because AI seats redeploy in 10 s — that path exists for
+HUMAN downed players, which is the alive-world point. **GATE: PASS.**
+
+Suite 356/356. Tagged slice-11e.

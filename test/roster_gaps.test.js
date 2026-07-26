@@ -48,17 +48,18 @@ test("roster component: each team fields 3 trucks in reserves; ids pinned", () =
   // and a truck (9/21); one carrier and two trucks sit in the garage.
 });
 
-test("roster component: AI doctrine never issues tow orders (towing is human work for now)", () => {
+test("roster component: AI trucks tow wrecks home (11E full AI rescue play, Q5)", () => {
+  // The pre-11E pin ("towing is human work") was overruled by ruling Q5:
+  // full AI rescue play, sim-gated. The doctrine hauls claimable wrecks.
   const server = new GameServer({ mapSeed: 42, enableAi: true, aiDifficulty: 2 });
   server.step();
-  // Wreck a few assets near AI units so tow opportunities exist.
   for (const id of [1, 2]) {
     server.state.assets[id].hp = 0;
     server.state.assets[id].state = 2;
   }
-  for (let i = 0; i < 200; i++) server.step();
+  for (let i = 0; i < 400; i++) server.step();
   const tows = server.commandLog.filter((e) => e.cmd.type === "tow_order");
-  assert.equal(tows.length, 0, "pinned: AI regency has no tow doctrine yet");
+  assert.ok(tows.length >= 1, "the AI truck hooks a nearby wreck");
 });
 
 test("roster integration: ws truck rescue — select truck, tow, watch it ride home", async () => {

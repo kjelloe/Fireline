@@ -10,7 +10,7 @@ import {
 } from "./state.js";
 import {
   CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER, CMD_FIRE_ORDER,
-  CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
+  CMD_TOW_ORDER, CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
 } from "./commands.js";
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
@@ -21,6 +21,7 @@ import { getUnitStats } from "./units.js";
 import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
 import { CMD_REDEPLOY } from "./commands.js";
 import { downedFor, REDEPLOY_TICKS } from "./downed.js";
+import { towRejection, towedWreck } from "./recovery.js";
 import { OP_DOWN } from "./state.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
@@ -64,6 +65,12 @@ function patrolTarget(agent, tick) {
   const patrol = agent.team === 0 ? TEAM_A_PATROL : TEAM_B_PATROL;
   const phase = ((tick / 80) | 0) + (agent.assetId & 3);
   return patrol[phase % patrol.length];
+}
+
+function homeCellFor(state, team) {
+  const base = state.bases.find((b) => b.team === team);
+  if (!base) return null;
+  return [base.x + ((base.width / 2) | 0), base.y + ((base.height / 2) | 0)];
 }
 
 function isWreck(asset) {
@@ -127,6 +134,9 @@ export const CAPTURE_SEEK_CELLS = 16;
 export const MINE_FORTIFY_CELLS = 3;
 // 11D (Q16): regents signal sparingly — one ping per seat per 30 s.
 export const AI_PING_INTERVAL_TICKS = 300;
+
+// 11E (Q5): how far a truck/carrier will divert for a rescue errand.
+export const RESCUE_SEEK_CELLS = 24;
 
 export const AI_EASY = 0;
 export const AI_NORMAL = 1;
@@ -377,6 +387,51 @@ export class AIRegency {
           target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
         }
       }
+      // 11E full AI rescue play (Q5). Trucks: hook the nearest claimable
+      // wreck, haul it home (the repair bay takes it from there). Carriers:
+      // ferry aboard passengers home; otherwise fetch a walking downed
+      // teammate nearby — unless this carrier is the team's raider on duty.
+      if (!target && stats.canTow) {
+        const inTow = towedWreck(state, asset.id);
+        if (inTow) {
+          target = homeCellFor(state, asset.team);
+        } else {
+          let wreck = null;
+          let bestDist = Infinity;
+          for (const w of state.assets) {
+            if (w.team !== asset.team || !isWreck(w)) continue;
+            if (w.towedBy !== -1 || w.recoverTimer > 0) continue;
+            const d = Math.max(Math.abs(worldToCellFloor(w.x) - cellX0),
+                               Math.abs(worldToCellFloor(w.y) - cellY0));
+            if (d < bestDist) { bestDist = d; wreck = w; }
+          }
+          if (wreck && bestDist <= RESCUE_SEEK_CELLS) {
+            if (towRejection(state, asset, wreck) === null) {
+              commands.push({ type: CMD_TOW_ORDER, operatorId, wreckAssetId: wreck.id });
+              continue;
+            }
+            target = [worldToCellFloor(wreck.x), worldToCellFloor(wreck.y)];
+          }
+        }
+      }
+      if (!target && stats.capacity > 0) {
+        if (asset.aboard1 !== -1 || asset.aboard2 !== -1) {
+          target = homeCellFor(state, asset.team); // deliver at base idle
+        } else if (asset.id !== raiderFor[asset.team]) {
+          let body = null;
+          let bestDist = Infinity;
+          for (const d of state.downed) {
+            if (d.team !== asset.team) continue;
+            const dist = Math.max(Math.abs(worldToCellFloor(d.x) - cellX0),
+                                  Math.abs(worldToCellFloor(d.y) - cellY0));
+            if (dist < bestDist) { bestDist = dist; body = d; }
+          }
+          if (body && bestDist <= RESCUE_SEEK_CELLS) {
+            target = [worldToCellFloor(body.x), worldToCellFloor(body.y)];
+          }
+        }
+      }
+
       // 11C capture-seek (11B consequence): the countdown killed drive-by
       // captures. The designated capturer diverts to its relay and stands
       // on it (standing on the target cell issues no move — the dwell IS
