@@ -1,3 +1,4 @@
+import { t } from "./strings.js";
 // client/js/objective_model.js — "what do I do now?" (post-playtest slice).
 // Pure view-derived guidance: standard status lines, relay tally, and one
 // prioritized hint. Born from LAN playtest #1: "did not understand what was
@@ -61,14 +62,17 @@ export function currentHint(view, myTeam, opts = {}) {
 }
 
 // The join briefing, shown once per war (playtest: nobody reads a hint bar).
-export function briefingText(myTeam) {
-  const teamName = myTeam === 0 ? "GREEN (west)" : "RED (east)";
+export function briefingText(myTeam, faction = null) {
+  const teamName = faction
+    ? `${faction.name.toUpperCase()} — ${faction.tacticalIdentity}`
+    : myTeam === 0 ? "GREEN (west)" : "RED (east)";
   return [
-    `You fight for ${teamName}.`,
-    "WIN: a COMMAND CARRIER must take the enemy standard (tall banner) home while your own standard is safe. Trucks tow wrecks; everyone escorts.",
-    "RELAYS (masts on the road) project supply — out of supply you crawl and cannot fire.",
-    "Enemies are hidden by fog until your units get close. Wrecks can be towed home and repaired.",
-    "Click: your unit = take it · ground = move · enemy = fire · friendly wreck = tow.",
+    t("brief.fight_for", { name: teamName }),
+    ...(faction ? [faction.line] : []),
+    t("brief.win"),
+    t("brief.relays"),
+    t("brief.fog"),
+    t("brief.clicks"),
   ].join("\n");
 }
 

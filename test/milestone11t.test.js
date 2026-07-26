@@ -217,3 +217,26 @@ test("15B the models speak the active locale", async () => {
     setLocale("en");
   }
 });
+
+test("15B part 2: event feed and end screen speak the active locale", async () => {
+  const { setLocale } = await import("../client/js/strings.js");
+  const { describeEvent, describeWinReason, summarizeGameOver } =
+    await import("../client/js/feedback_model.js");
+  try {
+    setLocale("no");
+    assert.equal(describeEvent({ type: "standard_taken", byTeam: 0 }, 0),
+      "VI HAR STANDARTEN DERES! Eskorter den hjem!");
+    assert.equal(describeEvent({ type: "operator_rescued", byAssetId: 8, operatorId: 3 }, 0),
+      "Vogn 8 plukket opp operatør 3!");
+    assert.equal(describeWinReason(4), "kommandostandarten erobret");
+    assert.equal(summarizeGameOver({ phase: 1, winner: 0, winReason: 4, teamScores: [1, 0] }, 0).title,
+      "SEIER");
+  } finally {
+    setLocale("en");
+  }
+  assert.equal(describeWinReason(4), "Command Standard captured", "historic wording pinned");
+  assert.equal(describeEvent({ type: "mine_deployed", team: 0, minesLeft: 1 }, 0),
+    "Mine laid (1 left in the rack).");
+  assert.equal(describeEvent({ type: "mine_deployed", team: 1, minesLeft: 1 }, 0), null,
+    "enemy mine lays stay silent (fog)");
+});

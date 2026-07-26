@@ -16,11 +16,27 @@ The gaming PC is likely Windows. Split the workloads:
   `node tools\perf_harness.mjs` after `npm i -D playwright` +
   `npx playwright install chromium` in a native clone.
 
-**Hub gotcha:** the DEV machine runs the hub inside WSL2 — its port is
-NOT reachable from the LAN by default. Either run Windows 11 mirrored
-networking, or forward it once in an admin PowerShell on the dev machine:
-`netsh interface portproxy add v4tov4 listenport=8970 connectaddress=$(wsl hostname -I)`
-(same trick RUNNING.md uses for LAN play).
+**Hub topology:** the gaming PC ALREADY runs an agent-mail hub for a
+sibling project — hubs are per-repo stores, so firepower gets its OWN hub
+instance ON THE GAMING PC, on a DIFFERENT port (the sibling likely owns
+8970):
+
+```bash
+# gaming PC, inside the firepower clone (WSL):
+python3 tools/agent-mail.py serve --port 8971 &
+echo "http://localhost:8971" > .agent-mail/remote
+```
+
+The dev machine points at it over the LAN — outbound from WSL2 just
+works, so the old portproxy dance is unnecessary:
+
+```bash
+# dev machine:
+echo "http://<gaming-pc>:8971" > .agent-mail/remote
+```
+
+Windows firewall on the gaming PC must allow inbound 8971 (the same
+allowance the sibling hub already has for its port).
 
 ## One-time setup on the PC
 
@@ -44,9 +60,8 @@ The repo now carries `tools/agent-mail.py` (single file, no deps). Jobs
 travel as queue items; results come back as mail. **Round-trip verified
 end to end on the dev machine.**
 
-On the DEV machine (hub host):
+On the DEV machine (the hub lives on the GAMING PC — topology above):
 ```bash
-python3 tools/agent-mail.py serve --port 8970 &   # the shared hub
 bash tools/batch_send.sh sweep 600                # queue jobs...
 bash tools/batch_send.sh mirror 600               # ...as many as you like
 bash tools/batch_send.sh factionswap 300          # 12D fairness gate
@@ -58,7 +73,7 @@ bash tools/batch_send.sh collect                  # deliver + settle results
 
 On the BATCH PC (after the one-time setup below):
 ```bash
-echo "http://<dev-machine>:8970" > .agent-mail/remote
+# hub + remote pointer as in the topology section, then:
 bash tools/batch_worker.sh                        # sits in flag-wait, forever
 ```
 

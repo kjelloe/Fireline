@@ -1494,3 +1494,25 @@ NUMBERS ARE MINE — the faction pair is UNTUNED until the faction-swap
 sweep campaign (12D) runs on the batch PC.
 
 Suite 431/431 (x2), simwar + replay OK. Tagged slice-12c.
+
+---
+
+## slice-15b2 — String extraction part 2 (2026-07-27, prompt 30 window)
+
+The remaining English-only surface: all ~36 describeEvent feed lines,
+win reasons (incl. reason 0, wording pinned to the historic 8H strings),
+the end screen (VICTORY/DEFEAT/DRAW, next-war line, HONORS heading), and
+the mission BRIEFING — which also finally gained the faction opening the
+12A patch had silently missed (found because this slice's patch refused
+to match: the briefing was still the plain-team version; the client call
+site passed a faction arg that JS quietly ignored). Full Norwegian for
+every new key; catalog parity enforced as before. Remaining en-only:
+static index.html text (join headline, options panel labels) — noted,
+low value until a third locale appears.
+
+Also this window: BATCH_PC.md re-topologized — the gaming PC already
+hosts a sibling project's agent-mail hub, so firepower runs its OWN hub
+THERE on port 8971; the dev machine is outbound-only (WSL portproxy
+dance deleted).
+
+Suite 431/431 (x2, 432 with the new test). Tagged slice-15b2.
