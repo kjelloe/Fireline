@@ -37,7 +37,9 @@ export function relayTally(view, myTeam) {
 }
 
 // One hint, highest-priority first. This is presentation guidance only.
-export function currentHint(view, myTeam) {
+// opts.canCarry: whether the player's current chassis can take the enemy
+// standard (9A: Command Carriers only).
+export function currentHint(view, myTeam, opts = {}) {
   const own = (view?.standards ?? []).find((s) => s.team === myTeam);
   const enemy = (view?.standards ?? []).find((s) => s.team !== myTeam);
   if (enemy?.status === STD_CARRIED) {
@@ -47,6 +49,10 @@ export function currentHint(view, myTeam) {
   }
   if (own?.status === STD_CARRIED) return "STOP the enemy carrier before they score";
   if (own?.status === STD_DROPPED) return "Touch your dropped standard to send it home";
+  if (opts.canCarry === false &&
+      (enemy?.status === STD_AT_BASE || enemy?.status === STD_DROPPED)) {
+    return "Only a COMMAND CARRIER can take their standard — crew one or escort it";
+  }
   const relays = relayTally(view, myTeam);
   if (relays.yours < relays.total) {
     return "Capture RELAY masts — they project the supply you need to fight forward";
@@ -59,7 +65,7 @@ export function briefingText(myTeam) {
   const teamName = myTeam === 0 ? "GREEN (west)" : "RED (east)";
   return [
     `You fight for ${teamName}.`,
-    "WIN: steal the enemy Command Standard (tall banner) and carry it into your base zone while your own standard is home.",
+    "WIN: a COMMAND CARRIER must take the enemy standard (tall banner) home while your own standard is safe. Trucks tow wrecks; everyone escorts.",
     "RELAYS (masts on the road) project supply — out of supply you crawl and cannot fire.",
     "Enemies are hidden by fog until your units get close. Wrecks can be towed home and repaired.",
     "Click: your unit = take it · ground = move · enemy = fire · friendly wreck = tow.",

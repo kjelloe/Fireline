@@ -4,6 +4,7 @@
 // that scores the war. Pure helpers only; the reducer owns all mutation.
 
 import { ASSET_DISABLED, ASSET_SALVAGED } from "./state.js";
+import { getUnitStats } from "./units.js";
 import { worldToCellFloor, cellToWorld } from "../shared/fixedmath.js";
 
 export const STD_AT_BASE = 0;
@@ -14,6 +15,10 @@ export const STD_SCORED = 3;
 // Carrying the prize slows you down: 192/256 = 0.75x speed.
 export const CARRIER_SPEED_NUM = 192;
 export const CARRIER_SPEED_DEN = 256;
+
+// Anti-deadlock (ruling Q2): a standard left DROPPED this long walks home by
+// itself. 600 ticks = 60 s.
+export const AUTO_RETURN_TICKS = 600;
 
 // Home positions inside each command zone (off the road grid, mirrored).
 export const STANDARD_HOMES = Object.freeze([
@@ -31,6 +36,7 @@ export function createStandards() {
     homeCellY: home.cellY,
     carrierAssetId: -1,
     status: STD_AT_BASE,
+    droppedTimer: 0,
   }));
 }
 
@@ -45,9 +51,11 @@ export function assetCarries(state, assetId) {
 }
 
 // The standard (if any) lying on the asset's cell that this asset may pick up:
-// only the ENEMY standard, only when grounded (at base or dropped).
+// only the ENEMY standard, only when grounded, and ONLY by a Command Carrier
+// (ruling: carrying is Carrier-exclusive as of 9A).
 export function standardTakeableBy(state, asset) {
   if (isWreck(asset)) return null;
+  if (!getUnitStats(asset.type).canCarryStandard) return null;
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.standards.find(

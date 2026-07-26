@@ -11,7 +11,9 @@
       "damage": 20,
       "indirect": false,
       "reloadTicks": 15,
-      "canTow": false
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0
     },
     "1": {
       "id": 1,
@@ -23,7 +25,9 @@
       "damage": 10,
       "indirect": false,
       "reloadTicks": 8,
-      "canTow": false
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0
     },
     "2": {
       "id": 2,
@@ -35,7 +39,9 @@
       "damage": 30,
       "indirect": true,
       "reloadTicks": 40,
-      "canTow": false
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0
     },
     "3": {
       "id": 3,
@@ -47,7 +53,23 @@
       "damage": 5,
       "indirect": false,
       "reloadTicks": 20,
-      "canTow": true
+      "canTow": true,
+      "canCarryStandard": false,
+      "capacity": 0
+    },
+    "4": {
+      "id": 4,
+      "name": "carrier",
+      "speed": 24,
+      "range": 768,
+      "minRange": 0,
+      "hp": 120,
+      "damage": 5,
+      "indirect": false,
+      "reloadTicks": 25,
+      "canTow": false,
+      "canCarryStandard": true,
+      "capacity": 2
     }
   }
 }

@@ -15,7 +15,7 @@ const ZONE_A = { team: 0, x: 0, y: 0, width: 4, height: 4 };
 
 test("8B driving onto the enemy standard picks it up and marks the carrier", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 8 }],
+    [{ team: 0, cellX: 8, type: 4 }],
     [], { standards: [{ team: 0, cellX: 1, cellY: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
   );
   s = joinSelectMove(s, 0, 0, 0, 10, 0);
@@ -28,7 +28,7 @@ test("8B driving onto the enemy standard picks it up and marks the carrier", () 
 
 test("8B pickup emits standard_taken exactly once", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 10 }],
+    [{ team: 0, cellX: 10, type: 4 }],
     [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
   );
   s = apply(s, { type: "advance_tick" });
@@ -40,20 +40,20 @@ test("8B pickup emits standard_taken exactly once", () => {
 
 test("8B the carried standard rides with the carrier at reduced speed", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 10, state: ASSET_MOVING, targetX: cellToWorld(30) }],
+    [{ team: 0, cellX: 10, type: 4, state: ASSET_MOVING, targetX: cellToWorld(30) }],
     [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
   );
   s = apply(s, { type: "advance_tick" }); // pickup on the spot
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 24, "tank 32 * 0.75 carrier penalty");
+  assert.equal(s.assets[0].x - x0, 18, "carrier 24 * 0.75 carrying penalty");
   assert.equal(s.standards[1].x, s.assets[0].x, "standard rides along");
 });
 
 test("8B disabling the carrier drops the standard in place", () => {
   let s = sandbox(
     [
-      { team: 0, cellX: 10, hp: 20 },  // carrier, one shot from death
+      { team: 0, cellX: 10, type: 4, hp: 20 },  // carrier, one shot from death
       { team: 1, cellX: 12 },           // gunner
     ],
     [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
@@ -85,7 +85,7 @@ test("8B a friendly touch returns a dropped standard home", () => {
 
 test("8B carrying the enemy standard into your zone scores — but only while your own is home", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 1, cellY: 1 }], // already inside zone A, standing on enemy standard
+    [{ team: 0, cellX: 1, cellY: 1, type: 4 }], // carrier inside zone A, on the enemy standard
     [],
     {
       bases: [ZONE_A],
@@ -116,7 +116,7 @@ test("8B carrying the enemy standard into your zone scores — but only while yo
 
 test("8B full raid integration: steal from base, run home, score", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 3, cellY: 0 }],
+    [{ team: 0, cellX: 3, cellY: 0, type: 4 }],
     [],
     {
       bases: [ZONE_A, { team: 1, x: 20, y: 0, width: 4, height: 4 }],

@@ -671,3 +671,30 @@ arrow-steering lands with 6C; chase cam keeps minimap/strip, Esc/F returns
 to tactical). Wave 0 closed. Night session begins on branch dev_night:
 Wave 1 slices as phase 9 (9A carrier ... 9G drone), one git tag per slice,
 session report in ./reports.
+
+---
+
+## slice-9a — Command Carrier + Carrier-exclusive carrying (night session, 2026-07-26)
+
+**Engine:** `UNIT_CARRIER = 4` (Q1: hp 120, speed 24, dmg 5/range 768/reload
+25, capacity 2, canCarryStandard: true — the ONLY one). Explicit
+canCarryStandard/capacity on every chassis (roster contract test enforces).
+Fielding: explicit 12-slot reserve mix [4,3,1,0,0,1,2,3,2,3,0,4] — AI slots
+get carrier+truck+scout+tank; per team: 5t/3s/3a/3trk/2car; trucks now ids
+9/15/17 (+12 for B), carriers 8/19 (20/31). Anti-deadlock (Q2):
+`droppedTimer` on standards (hashed, 1A → v15); DROPPED ≥ 600 ticks →
+auto-return home with `standard_returned {auto:true}`; timer clears on
+pickup/manual return. AI raider role = first controlled operable carrier
+(scouts no longer raid); pinned limitation: when the lone AI-crewed carrier
+dies there is NO replacement raid (garage carriers uncrewed) → QUESTION.
+
+**Client/art:** carrier hint ("Only a COMMAND CARRIER can take their
+standard"), briefing rewrite, carrier procedural model (hull/cab/ramp/
+beacon), manifest+anchors+icons, strip now 15 tiles.
+
+**Sim finding (carrier era):** seed 2026 → MUTUAL CARRY STANDOFF: both AI
+carriers hold each other's standard at tick 9000; neither can score (own
+not AT_BASE), auto-return doesn't apply to CARRIED. War resolves only at
+the 18000-tick points horn → QUESTION for designer.
+
+Suite 291/291 (x2). Tagged slice-9a.

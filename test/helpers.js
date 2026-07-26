@@ -51,6 +51,7 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
       homeCellX: spec.homeCellX ?? spec.cellX, homeCellY: spec.homeCellY ?? spec.cellY ?? 0,
       carrierAssetId: spec.carrierAssetId ?? -1,
       status: spec.status ?? 0,
+      droppedTimer: spec.droppedTimer ?? 0,
     }));
   }
   return state;

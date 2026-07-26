@@ -39,6 +39,7 @@ export function hashState(state) {
     w.writeI32LE(st.id); w.writeI32LE(st.team); w.writeI32LE(st.x); w.writeI32LE(st.y);
     w.writeI32LE(st.homeCellX); w.writeI32LE(st.homeCellY);
     w.writeI32LE(st.carrierAssetId); w.writeI32LE(st.status);
+    w.writeI32LE(st.droppedTimer); // added 9A
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

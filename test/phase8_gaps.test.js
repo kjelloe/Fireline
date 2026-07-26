@@ -22,13 +22,14 @@ const settle = (ms = 60) => new Promise((r) => setTimeout(r, ms));
 
 // ── unit ──────────────────────────────────────────────────────────────────────
 
-test("phase8 unit: carrier and tow penalties stack (40 → 30 → 15)", () => {
-  // Base rect sits 20 cells south: close enough for supply, far enough that
-  // the towed wreck is NOT "at base" (which would start repair and cut the tow).
+test("phase8 unit: roles are exclusive — trucks tow, carriers carry (9A)", () => {
+  // Tow+carry stacking died with 9A: the truck cannot take a standard and the
+  // carrier cannot tow. Pin both exclusions and the carrier carrying penalty.
   let s = sandbox(
     [
-      { team: 0, cellX: 10, type: 3, state: ASSET_MOVING, targetX: cellToWorld(40) },
-      { team: 0, cellX: 11, state: ASSET_DISABLED, hp: 0 },
+      { team: 0, cellX: 10, type: 3, state: ASSET_MOVING, targetX: cellToWorld(40) }, // truck
+      { team: 0, cellX: 12, type: 4, state: ASSET_MOVING, targetX: cellToWorld(40), cellY: 4 }, // carrier
+      { team: 0, cellX: 11, state: ASSET_DISABLED, hp: 0 }, // wreck
     ],
     [],
     {
@@ -36,20 +37,29 @@ test("phase8 unit: carrier and tow penalties stack (40 → 30 → 15)", () => {
       standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }],
     }
   );
-  s = joinAndSelect(s, 0, 0, 0);
-  s = apply(s, { type: "tow_order", operatorId: 0, wreckAssetId: 1 });
-  s = apply(s, { type: "advance_tick" }); // picks up standard while towing
-  assert.equal(s.standards[1].status, STD_CARRIED);
-  const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 15, "truck 40 * 0.75 carrier * 0.5 tow = 15");
+  assert.equal(s.standards[1].status, STD_AT_BASE,
+    "truck stood on the enemy standard and could NOT take it");
+
+  s = joinAndSelect(s, 0, 0, 1); // human takes the carrier
+  const rejected = apply(s, { type: "tow_order", operatorId: 0, wreckAssetId: 2 });
+  assert.equal(rejected.events[0].reason, "needs a logistics truck", "carrier cannot tow");
+
+  // Carrier carrying penalty: 24 * 0.75 = 18.
+  s.standards[1].x = s.assets[1].x;
+  s.standards[1].y = s.assets[1].y;
+  s = apply(s, { type: "advance_tick" }); // carrier picks up
+  assert.equal(s.standards[1].carrierAssetId, 1);
+  const x0 = s.assets[1].x;
+  s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[1].x - x0, 18, "carrier 24 * 0.75 = 18");
 });
 
 // ── component ─────────────────────────────────────────────────────────────────
 
 test("phase8 component: two enemies on the standard, lowest asset id wins the grab", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 10 }, { team: 0, cellX: 10 }],
+    [{ team: 0, cellX: 10, type: 4 }, { team: 0, cellX: 10, type: 4 }],
     [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
   );
   s = apply(s, { type: "advance_tick" });
@@ -58,23 +68,26 @@ test("phase8 component: two enemies on the standard, lowest asset id wins the gr
     "one grab, no double-take");
 });
 
-test("phase8 component: disabling a tower-carrier drops the flag AND cuts the tow", () => {
+test("phase8 component: disabling a towing truck cuts the line; disabling a carrier drops the flag", () => {
   let s = sandbox(
     [
-      { team: 0, cellX: 10, type: 3, hp: 20 },              // carrier+tower (truck)
+      { team: 0, cellX: 10, type: 3, hp: 20 },              // truck towing
       { team: 0, cellX: 11, state: ASSET_DISABLED, hp: 0 }, // wreck in tow
       { team: 1, cellX: 12 },                                // gunner
+      { team: 0, cellX: 14, type: 4, hp: 20 },               // carrier w/ flag
     ],
-    [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
+    [], { standards: [{ team: 0, cellX: 1, status: STD_DROPPED }, { team: 1, cellX: 14 }] }
   );
   s = joinAndSelect(s, 0, 0, 0);
   s = apply(s, { type: "tow_order", operatorId: 0, wreckAssetId: 1 });
-  s = apply(s, { type: "advance_tick" }); // pickup
+  s = apply(s, { type: "advance_tick" }); // tow attach + carrier pickup
+  assert.equal(s.standards[1].carrierAssetId, 3);
   s = joinAndSelect(s, 1, 1, 2);
   s = apply(s, { type: "fire_order", operatorId: 1, targetAssetId: 0 });
-  assert.equal(s.assets[0].state, ASSET_DISABLED);
-  assert.equal(s.standards[1].status, STD_DROPPED, "flag hits the dirt");
   assert.equal(s.assets[1].towedBy, -1, "tow line cut");
+  for (let i = 0; i < 15; i++) s = apply(s, { type: "advance_tick" }); // reload
+  s = apply(s, { type: "fire_order", operatorId: 1, targetAssetId: 3 });
+  assert.equal(s.standards[1].status, STD_DROPPED, "flag hits the dirt");
 });
 
 test("phase8 component: resetWar clears queue, log, snapshots; fresh board", () => {
@@ -131,21 +144,21 @@ test("phase8 integration: standard-capture win over ws, then rotation with stand
     await new Promise((r) => ws.on("open", r));
     ws.send(JSON.stringify({ type: "c_join", team: 0 }));
     await settle();
-    ws.send(JSON.stringify({ type: "select_asset", assetId: 0 }));
+    ws.send(JSON.stringify({ type: "select_asset", assetId: 19 })); // garage carrier
     await settle();
     appServer.pump(appServer.gameServer.step());
 
     // Test shortcut: park the raider on the enemy standard's cell...
     const server = appServer.gameServer;
     const enemyStd = server.state.standards[1];
-    server.state.assets[0].x = enemyStd.x;
-    server.state.assets[0].y = enemyStd.y;
+    server.state.assets[19].x = enemyStd.x;
+    server.state.assets[19].y = enemyStd.y;
     appServer.pump(server.step()); // pickup
     assert.equal(server.state.standards[1].status, STD_CARRIED);
     // ...then teleport the carrier to the home zone edge; the carried
     // standard syncs in the movement pass, scoring gate checks the carrier.
-    server.state.assets[0].x = cellToWorld(14);
-    server.state.assets[0].y = cellToWorld(59);
+    server.state.assets[19].x = cellToWorld(14);
+    server.state.assets[19].y = cellToWorld(59);
     appServer.pump(server.step()); // score → game over
     assert.equal(server.state.phase, PHASE_OVER);
     assert.equal(server.state.winReason, WIN_STANDARD);
@@ -170,7 +183,7 @@ test("phase8 integration: standard-capture win over ws, then rotation with stand
 test("phase8 integration: a pure-command standard raid replays hash-exactly", () => {
   const build = () => {
     const s = sandbox(
-      [{ team: 0, cellX: 3, cellY: 1 }],
+      [{ team: 0, cellX: 3, cellY: 1, type: 4 }],
       [],
       {
         bases: [{ team: 0, x: 0, y: 0, width: 4, height: 4 }, { team: 1, x: 20, y: 0, width: 4, height: 4 }],

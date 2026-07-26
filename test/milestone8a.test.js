@@ -59,7 +59,7 @@ test("8A both teams always see both standards in their views", () => {
 
 test("8A takeable: only the ENEMY standard, only when grounded", () => {
   const s = sandbox(
-    [{ team: 0, cellX: 10 }],
+    [{ team: 0, cellX: 10, type: 4 }],
     [], { standards: [{ team: 0, cellX: 10 }, { team: 1, cellX: 10 }] }
   );
   const takeable = standardTakeableBy(s, s.assets[0]);
@@ -100,7 +100,7 @@ test("8A scoring gate requires own standard AT_BASE and carrier in own zone", ()
 
 test("8A wrecks can neither take nor return standards", () => {
   const s = sandbox(
-    [{ team: 0, cellX: 10, state: 2, hp: 0 }],
+    [{ team: 0, cellX: 10, type: 4, state: 2, hp: 0 }],
     [], { standards: [{ team: 0, cellX: 10, status: STD_DROPPED }, { team: 1, cellX: 10 }] }
   );
   assert.equal(standardTakeableBy(s, s.assets[0]), null);

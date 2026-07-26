@@ -20,7 +20,7 @@ const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
 test("8C a scored standard ends the war with WIN_STANDARD for the thief", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 1, cellY: 1 }],
+    [{ team: 0, cellX: 1, cellY: 1, type: 4 }],
     [],
     {
       bases: [{ team: 0, x: 0, y: 0, width: 4, height: 4 }],
@@ -39,7 +39,7 @@ test("8C a scored standard ends the war with WIN_STANDARD for the thief", () => 
 test("8C standard capture outranks elimination as the stated reason", () => {
   let s = sandbox(
     [
-      { team: 0, cellX: 1, cellY: 1 },
+      { team: 0, cellX: 1, cellY: 1, type: 4 },
       { team: 1, cellX: 30, state: 2, hp: 0 }, // team 1 also fully wrecked
     ],
     [],

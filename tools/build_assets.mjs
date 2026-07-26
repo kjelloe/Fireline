@@ -40,6 +40,11 @@ const ICONS = {
     `<path d="M14 28 L26 14 M26 14 l0 8" stroke="${C.barrel}" stroke-width="5" fill="none" stroke-linecap="round"/>` +
     `<circle cx="20" cy="50" r="7" fill="${C.wheel}"/><circle cx="44" cy="50" r="7" fill="${C.wheel}"/>`
   ),
+  "icon_carrier.svg": svg(
+    `<rect x="10" y="22" width="36" height="26" rx="4" fill="${C.hullPaint}" stroke="${C.hullShadow}" stroke-width="3"/>` +
+    `<rect x="46" y="28" width="10" height="20" rx="2" fill="${C.hullShadow}"/>` +
+    `<circle cx="28" cy="16" r="4" fill="${C.recover}"/>`
+  ),
   "icon_wreck.svg": svg(
     `<rect x="12" y="34" width="40" height="16" rx="5" fill="${C.wreckBody}" transform="rotate(-8 32 42)"/>` +
     `<path d="M30 26 q4 -10 0 -18" stroke="${C.smoke}" stroke-width="5" fill="none" stroke-linecap="round"/>`
@@ -88,6 +93,7 @@ const SPRITES = {
   "unit_scout.svg": ICONS["icon_scout.svg"],
   "unit_artillery.svg": ICONS["icon_artillery.svg"],
   "unit_logistics.svg": ICONS["icon_logistics.svg"],
+  "unit_carrier.svg": ICONS["icon_carrier.svg"],
   "wreck.svg": ICONS["icon_wreck.svg"],
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],

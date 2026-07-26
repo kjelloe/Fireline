@@ -515,7 +515,9 @@ function showBriefing() {
 
 function updateObjectiveStrip(view) {
   if (!joined) return;
-  document.getElementById("obj-hint").innerText = currentHint(view, joined.team);
+  const own = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
+  document.getElementById("obj-hint").innerText =
+    currentHint(view, joined.team, { canCarry: own ? own.type === 4 : false });
   document.getElementById("obj-standards").innerText =
     `${ownStandardLine(view, joined.team)}  ·  ${enemyStandardLine(view, joined.team)}`;
   const relays = relayTally(view, joined.team);

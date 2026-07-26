@@ -28,6 +28,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_logistics.svg",
       "minimapIcon": "assets/icons/svg/icon_logistics.svg",
       "triBudget": 3000
+    },
+    "unit_carrier": {
+      "webglModel": "assets/models/units/unit_vehicle_carrier.glb",
+      "procedural": "carrier",
+      "fallbackSprite": "assets/sprites/fallback/unit_carrier.svg",
+      "minimapIcon": "assets/icons/svg/icon_carrier.svg",
+      "triBudget": 3000
     }
   },
   "wrecks": {
@@ -55,6 +62,13 @@
     "wreck_logistics": {
       "webglModel": "assets/models/wrecks/wreck_vehicle_logistics.glb",
       "procedural": "wreck_logistics",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    },
+    "wreck_carrier": {
+      "webglModel": "assets/models/wrecks/wreck_vehicle_carrier.glb",
+      "procedural": "wreck_carrier",
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2000
@@ -91,10 +105,7 @@
     }
   },
   "reserved": {
-    "unit_infantry_carrier": {
-      "status": "future chassis \u2014 spec \u00a78; engine has no infantry yet"
-    },
-    "note": "vehicle_recovery role is now fielded as unit_logistics (spec middle path)"
+    "note": "infantry_carrier role fielded as unit_carrier (Command Carrier, 9A); vehicle_recovery fielded as unit_logistics"
   },
   "ui": {
     "icon_move": "assets/icons/svg/icon_move.svg",

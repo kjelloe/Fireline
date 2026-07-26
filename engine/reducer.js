@@ -21,7 +21,7 @@ import { captureCheck } from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
   STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
-  CARRIER_SPEED_NUM, CARRIER_SPEED_DEN,
+  CARRIER_SPEED_NUM, CARRIER_SPEED_DEN, AUTO_RETURN_TICKS,
 } from "./standards.js";
 import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
@@ -163,6 +163,7 @@ function applyFireOrder(next, command) {
     if (carried) {
       carried.status = STD_DROPPED;
       carried.carrierAssetId = -1;
+      carried.droppedTimer = 0;
       carried.x = target.x;
       carried.y = target.y;
       next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
@@ -243,6 +244,19 @@ function applyAdvanceTick(next) {
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
+  // Anti-deadlock (9A): a standard left dropped long enough returns home.
+  for (const st of next.standards) {
+    if (st.status !== STD_DROPPED) continue;
+    st.droppedTimer += 1;
+    if (st.droppedTimer >= AUTO_RETURN_TICKS) {
+      st.status = STD_AT_BASE;
+      st.carrierAssetId = -1;
+      st.droppedTimer = 0;
+      st.x = cellToWorld(st.homeCellX);
+      st.y = cellToWorld(st.homeCellY);
+      next.events.push({ type: "standard_returned", standardId: st.id, team: st.team, auto: true });
+    }
+  }
   // Carried standards ride with their carriers (8B); towed wrecks follow (8D).
   for (const st of next.standards) {
     if (st.status !== STD_CARRIED) continue;
@@ -269,6 +283,7 @@ function applyAdvanceTick(next) {
     if (takeable) {
       takeable.status = STD_CARRIED;
       takeable.carrierAssetId = asset.id;
+      takeable.droppedTimer = 0;
       takeable.x = asset.x;
       takeable.y = asset.y;
       next.events.push({
@@ -279,6 +294,7 @@ function applyAdvanceTick(next) {
     if (returnable) {
       returnable.status = STD_AT_BASE;
       returnable.carrierAssetId = -1;
+      returnable.droppedTimer = 0;
       returnable.x = cellToWorld(returnable.homeCellX);
       returnable.y = cellToWorld(returnable.homeCellY);
       next.events.push({ type: "standard_returned", standardId: returnable.id, team: asset.team });

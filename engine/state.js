@@ -39,7 +39,10 @@ const MAP_PROFILES = {
 // cycle all four chassis so each team fields logistics trucks (tow role).
 const SPAWN_ROWS = [56, 58, 60, 62];
 const SPAWN_TYPES = [0, 0, 1, 2];
-const RESERVE_TYPES = [0, 1, 2, 3];
+// 9A: explicit 12-slot reserve mix. The first four are AI-crewed (ops 24-27 /
+// 28-31): carrier, truck, scout, tank — so AI regents can raid AND rescue.
+// Per-team totals: 5 tanks, 3 scouts, 3 artillery, 3 trucks, 2 carriers.
+const RESERVE_TYPES = [4, 3, 1, 0, 0, 1, 2, 3, 2, 3, 0, 4];
 const TEAM_A_SPAWN_X = 7;
 const TEAM_B_SPAWN_X = 117;
 const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
@@ -82,7 +85,7 @@ function createFieldAssets() {
     let slot = 0;
     for (const col of cols) {
       for (const row of RESERVE_ROWS) {
-        assets.push(makeFieldAsset(id, RESERVE_TYPES[slot % 4], team, col, row));
+        assets.push(makeFieldAsset(id, RESERVE_TYPES[slot % 12], team, col, row));
         id++;
         slot++;
       }

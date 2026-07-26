@@ -22,6 +22,9 @@ test("roster unit: every chassis states its full contract explicitly", () => {
     assert.equal(typeof stats.indirect, "boolean", `${stats.name}.indirect explicit`);
     assert.equal(typeof stats.canTow, "boolean",
       `${stats.name}.canTow must be explicit — new chassis must declare their tow role`);
+    assert.equal(typeof stats.canCarryStandard, "boolean",
+      `${stats.name}.canCarryStandard must be explicit (9A)`);
+    assert.equal(typeof stats.capacity, "number", `${stats.name}.capacity explicit (9B prep)`);
     assert.notEqual(chassisName(Number(type)), undefined);
   }
   const towers = Object.values(UNIT_STATS).filter((s) => s.canTow);
@@ -34,10 +37,15 @@ test("roster component: each team fields 3 trucks in reserves; ids pinned", () =
   const trucks = (team) => s.assets
     .filter((a) => a.team === team && a.type === UNIT_LOGISTICS)
     .map((a) => a.id);
-  assert.deepEqual(trucks(0), [11, 15, 19]);
-  assert.deepEqual(trucks(1), [23, 27, 31]);
-  // AI regents crew assets 8-11 / 20-23, so exactly one truck per team is
-  // AI-crewed (11 and 23) and two sit in the garage for humans.
+  assert.deepEqual(trucks(0), [9, 15, 17]);
+  assert.deepEqual(trucks(1), [21, 27, 29]);
+  const carriers = (team) => s.assets
+    .filter((a) => a.team === team && a.type === 4)
+    .map((a) => a.id);
+  assert.deepEqual(carriers(0), [8, 19]);
+  assert.deepEqual(carriers(1), [20, 31]);
+  // AI regents crew assets 8-11 / 20-23: each team's AI gets a carrier (8/20)
+  // and a truck (9/21); one carrier and two trucks sit in the garage.
 });
 
 test("roster component: AI doctrine never issues tow orders (towing is human work for now)", () => {

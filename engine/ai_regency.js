@@ -16,9 +16,8 @@ import { getUnitStats } from "./units.js";
 import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
-// Objective doctrine (backend standard-war sims): each team's scout agent is
-// the designated raider. Deterministic by construction.
-const RAIDER_ASSET = Object.freeze({ 0: 2, 1: 6 });
+// Objective doctrine: since 9A only Command Carriers can take the enemy
+// standard, the raider role goes to the first controlled operable carrier.
 
 export const AI_OPERATOR_FIRST = 16;
 export const AI_OPERATOR_COUNT = 16;
@@ -144,20 +143,15 @@ export class AIRegency {
     // raider: the team scout if alive, else the highest such operator's asset.
     const recovererFor = { 0: -1, 1: -1 };
     const raiderFor = { 0: -1, 1: -1 };
-    const scoutAlive = { 0: false, 1: false };
     for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
       const op = state.operators[operatorId];
       if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
       const a = state.assets[op.assetId];
       if (!a || a.operatorId !== operatorId || isWreck(a)) continue;
       if (recovererFor[a.team] === -1) recovererFor[a.team] = operatorId;
-      if (a.id === RAIDER_ASSET[a.team]) scoutAlive[a.team] = true;
-      // Fallback raiders come only from fixed agents: a lone regented slot
-      // (dropped human) plays relays, it does not solo-raid across the map.
-      if (agent) raiderFor[a.team] = a.id;
-    }
-    for (const team of [0, 1]) {
-      if (scoutAlive[team]) raiderFor[team] = RAIDER_ASSET[team];
+      if (raiderFor[a.team] === -1 && getUnitStats(a.type).canCarryStandard) {
+        raiderFor[a.team] = a.id; // first operable controlled carrier raids
+      }
     }
 
     for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
