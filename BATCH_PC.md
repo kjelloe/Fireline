@@ -5,15 +5,32 @@ results flow back. Two workload families: **CPU sim sweeps** (balance
 census — the 5600X's job, one Node process per core) and **GPU client
 perf** (the RTX 4070's job, via the Playwright harness).
 
+## Windows or Linux? (read first)
+
+The gaming PC is likely Windows. Split the workloads:
+- **CPU sweeps + the agent-mail worker: run in WSL2** (Ubuntu) — the
+  worker is bash, and the engine is pure Node either way.
+- **GPU perf harness: run NATIVELY on Windows** (PowerShell) — Chromium
+  under WSL2 usually falls back to software GL and the 4070 sits idle.
+  The harness is pure Node + Playwright, no bash needed:
+  `node tools\perf_harness.mjs` after `npm i -D playwright` +
+  `npx playwright install chromium` in a native clone.
+
+**Hub gotcha:** the DEV machine runs the hub inside WSL2 — its port is
+NOT reachable from the LAN by default. Either run Windows 11 mirrored
+networking, or forward it once in an admin PowerShell on the dev machine:
+`netsh interface portproxy add v4tov4 listenport=8970 connectaddress=$(wsl hostname -I)`
+(same trick RUNNING.md uses for LAN play).
+
 ## One-time setup on the PC
 
 ```bash
-git clone <repo> firepower && cd firepower
-git checkout dev_night            # or the tag under study, e.g. slice-11f
+git clone <your-remote> firepower && cd firepower
+git checkout dev_night            # current head: slice-12c (factions landed)
 node --version                    # engine is tested on Node 20.x
-npm test                          # must be green before ANY batch run —
-                                  # a red suite invalidates every result
-# Only needed for the GPU perf harness:
+npm install && npm test           # 431 tests; must be green before ANY
+                                  # batch run — red invalidates results
+# Only needed for the GPU perf harness (native Windows clone):
 npm i -D playwright && npx playwright install chromium
 ```
 
@@ -32,6 +49,8 @@ On the DEV machine (hub host):
 python3 tools/agent-mail.py serve --port 8970 &   # the shared hub
 bash tools/batch_send.sh sweep 600                # queue jobs...
 bash tools/batch_send.sh mirror 600               # ...as many as you like
+bash tools/batch_send.sh factionswap 300          # 12D fairness gate
+bash tools/batch_send.sh matrix 2 100             # hard-AI variant
 bash tools/batch_send.sh perf
 bash tools/batch_send.sh board                    # who's doing what
 bash tools/batch_send.sh collect                  # deliver + settle results
@@ -79,6 +98,15 @@ scale), war-length distribution, win-reason mix (standard capture vs
 domination vs horn), how often mines/tows/downs actually shape wars, and
 — from the mirror set — whether any residual bias flips with the sides
 (flips ⇒ geometry/fixedmath; survives ⇒ doctrine/order-of-execution).
+**From the factionswap set (12D):** with Directorate/Outlier uniques now
+live, compare win rates in `sweep.csv` vs `factionswap.csv` — a shift
+that TRACKS the swap is Sentinel-vs-Skimmer imbalance, cleanly separated
+from side bias. Analysis on the dev machine:
+`python3 debugging/analyze_sweep.py reports/sweeps/sweep.csv reports/sweeps/mirror.csv`
+(and run it again with `factionswap.csv` as a plain summary).
+
+**Priority order if time is short:** sweep 600 → factionswap 300 →
+mirror 600 → perf → difficulty matrix.
 
 ## Job 2 — client render perf (GPU)
 
