@@ -102,7 +102,17 @@ port, tournaments.
   target moves. First flying entity: needs a `flying` flag exempting terrain
   speed/blocking and maybe its own LOS rule. → Q7.
 
-## Questionnaire — rulings needed from you/designer
+## Questionnaire — ANSWERED 2026-07-26 (dev-prompts prompt 14)
+
+All twelve ruled. Deviations from defaults: **Q3** full walking
+`operator_foot` entities (not the slim marker — slice 1.2 grows); **Q9** (b)
+upgraded procedural models PLUS a committed demo asset-strip PNG for human
+assessment (`npm run strip` → `client/assets/preview/asset_strip.png`);
+**Q10** chase cam for direct control (not tactical), gamepad later, and
+mobile gets on-screen steering arrows (tank drives off in arrow direction,
+tap the unit to stop). Everything else: defaults confirmed.
+
+### Original questionnaire (for the record)
 
 | # | Question | My default if you just say "go" |
 |---|---|---|

@@ -17,7 +17,7 @@ the previous ones richer. Priorities: **V2.0** (the next coherent release),
 | Feature | Tier | What it is |
 |---|---|---|
 | **Command Carrier** | V2.0 | Rescue/protected transport chassis: extracts downed operators, moves specialists/POWs, **takes over the standard-carrying role** (carrier_heavy class, big footprint, needs suitable crossings). Takeover of a carrier mid-task requires confirmation (spec 02 §9). |
-| **Downed operators** | V2.0 | Disabled asset may produce a downed operator (`operator_foot`): fast redeploy (~10 s), Command Carrier rescue, or auto-return (~60 s); can call for help and crawl to cover. The heart of the spec's recovery fantasy. |
+| **Downed operators** | V2.0 | RULED (Q3): FULL walking `operator_foot` entities — disabled asset may produce a downed operator that can move short distances to cover, call for help; fast redeploy (~10 s), Command Carrier rescue, or auto-return (~60 s). POW capture arrives with the NPC layer (Q4). |
 | **Sentinel** (Warden unique) | V2.x | Deployable defensive platform: anchor/deploy-lock for area control and recovery-site protection. First faction-unique asset. |
 | **Infiltrator** (Freehold unique) | V2.x | Amphibious EW raider: water lanes, sensor disruption/ECM, sabotage of exposed infrastructure. Needs Track B water + sensor systems first. |
 | **Factions: Warden vs Freehold** | V2.x | Faction identity (unique assets, audio timbre, visual trim) replacing plain team A/B — spec 01 §5. |
@@ -50,7 +50,7 @@ the previous ones richer. Priorities: **V2.0** (the next coherent release),
 |---|---|---|
 | **Art Slices B–E** | V2.0 | Painted GLBs (standard, four-chassis kit, wrecks), order/selection markers, capture VFX, canvas sprite-fallback renderer. Pipeline is ready (`assets/PIPELINE.md`); models drop in with zero code changes. |
 | **Camera/diorama pass** | V2.0 | Fix the "low-poly Syndicate" read (playtest 2): 35–55° angle, isometric bias, three zoom tiers per the art spec §3. |
-| **Direct tank control mode** | V2.0 | User-requested Firepower homage: optional client input mode — held keys stream short move orders, aim-to-fire — no engine change. Feel/command-rate design pass required. |
+| **Direct tank control mode** | V2.0 | Firepower homage (ruled Q10): WASD + mouse aim with CHASE CAM; gamepad later; mobile variant uses on-screen steering arrows (tank sets off in arrow direction, tap the unit to stop). Client input mode over the command stream; engine turn-rate model (Wave 1) feeds the feel. |
 | **Audio identity system** | V2.x | Per-asset movement/tool/damage voices (spec 02 §17 table), the recovery sound arc, adaptive fog-safe music intensity. Replaces the synth placeholder cues. |
 | **Mobile & touch** | V2.x | 6C touch overlay (virtual stick, tap orders, pinch-zoom) → roadmap 10B app wrapper later. |
 | **Localization & accessibility** | V2.x | 7A string tables (en/no first); 7B colorblind matrices (team symbols already shipped in tokens), high contrast, screen-reader announcements, keybind validation. |

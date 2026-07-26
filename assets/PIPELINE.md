@@ -30,6 +30,12 @@ tools/build_assets.mjs                       generates SVG icons/sprites from to
 `node tools/build_assets.mjs` (regenerates all SVG icons + fallback sprites
 from tokens), `npm test`.
 
+**Assess the current look** → `npm run strip` renders every procedural
+stand-in to `client/assets/preview/asset_strip.png` (software rasterizer,
+no GPU: isometric projection at the art-spec ~34°, lambert shading, labeled
+tiles, deterministic bytes). Regenerate after any factory/token change and
+show the PNG to humans — ruling Q9b.
+
 **Add a painted model** (Blender/Blockbench → glTF):
 1. Export GLB to the manifest path, e.g.
    `client/assets/models/units/unit_vehicle_tank.glb` (embedded painted

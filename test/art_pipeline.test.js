@@ -141,6 +141,22 @@ test("art: the renderer holds no hardcoded model paths or ad-hoc unit shapes", (
   assert.match(clientSrc, /resolveVisual\(/, "renderer resolves through the manifest");
 });
 
+test("art: the demo asset strip renders deterministically as a valid PNG", () => {
+  // Design ruling Q9b: a committed strip PNG for human assessment.
+  const tool = new URL("tools/render_asset_strip.mjs", root).pathname;
+  execFileSync("node", [tool]);
+  const stripPath = new URL("client/assets/preview/asset_strip.png", root);
+  const first = readFileSync(stripPath);
+  assert.deepEqual([...first.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], "PNG signature");
+  const width = first.readUInt32BE(16);
+  const height = first.readUInt32BE(20);
+  assert.equal(width, 13 * 176, "one tile per procedural key + the red standard");
+  assert.equal(height, 176 + 18);
+  execFileSync("node", [tool]);
+  const second = readFileSync(stripPath);
+  assert.deepEqual(second, first, "byte-identical across runs");
+});
+
 test("art: assets are served to the browser over HTTP", async () => {
   const { createAppServer } = await import("../server/index.js");
   const appServer = createAppServer({ mapSeed: 1, enableAi: false });

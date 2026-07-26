@@ -639,3 +639,24 @@ track. Slim-model proposals written for the six under-designed systems
 (Carrier deadlock rule, downed operators, cargo, public tasks, mines,
 drone). Q1-Q12 questionnaire with defaults so work proceeds without
 blocking on answers.
+
+---
+
+## marker-0041 — Q1-Q12 rulings applied + demo asset strip renderer (2026-07-26)
+
+**All twelve design questions ruled** (dev-prompts prompt 14). Deviations
+from defaults: Q3 full walking `operator_foot` (slice 1.2 grows); Q9 (b)
+upgraded procedurals + committed demo strip PNG; Q10 direct control = WASD +
+mouse with CHASE cam, gamepad later, mobile arrow-steering (tap unit to
+stop). Drone confirmed. Turn-rate model locked into Wave 1. Plans updated.
+
+**New tool: `npm run strip`** (`tools/render_asset_strip.mjs`) — pure-code
+software rasterizer (no GPU): extracts triangles from the procedural
+factory, isometric projection at the art-spec ~34°, flat lambert shading,
+painter's algorithm, 3x5 bitmap labels, hand-rolled PNG encoder (zlib +
+CRC32). Renders all 12 keys + a red-team standard to
+`client/assets/preview/asset_strip.png` (13 labeled tiles, 2288x194,
+~12 KB, byte-deterministic — pinned by test). Visually verified: silhouettes
+and team tints read; wrecks clearly slumped.
+
+Suite 284/284. Wave 1 (Rescue Update) is now fully unblocked.
