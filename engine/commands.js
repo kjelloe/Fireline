@@ -37,6 +37,9 @@ export function validate(cmd) {
     case CMD_SELECT_ASSET:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       if (!isUint(cmd.assetId, 63))     return { ok: false, reason: "invalid assetId" };
+      if (cmd.confirm !== undefined && typeof cmd.confirm !== "boolean") {
+        return { ok: false, reason: "invalid confirm" }; // 10B
+      }
       return { ok: true };
 
     case CMD_MOVE_ORDER:

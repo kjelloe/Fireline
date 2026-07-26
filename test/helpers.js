@@ -63,7 +63,9 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
 
 export function joinAndSelect(state, operatorId, team, assetId) {
   let s = apply(state, { type: "join_operator", operatorId, team });
-  s = apply(s, { type: "select_asset", operatorId, assetId });
+  // Staging convenience: always confirm (10B) — takeover-gate tests issue
+  // their own raw select_asset commands.
+  s = apply(s, { type: "select_asset", operatorId, assetId, confirm: true });
   return s;
 }
 

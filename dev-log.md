@@ -813,3 +813,20 @@ drone to shoot it (outranks the asset under it), feed lines, metrics.
 1A → v20.
 
 Suite 329/329 (x2), simwar + replay OK. Tagged slice-9g.
+
+---
+
+## slice-10b — Takeover confirmations (night session, 2026-07-26)
+
+First Wave-2 item (plan 2.2, spec 02 §9) — pulled forward as the smallest
+no-design-blocker slice. Claiming an UNCREWED asset in a consequential
+state (carrying the Command Standard, towing a wreck, passengers aboard)
+now demands `confirm: true` on select_asset; plain assets keep the
+friction-free single click, and reselecting the asset you already drive
+never re-asks. AI regents always confirm (spec: regency continues safely).
+Client: the rejection arms an Enter-confirm / Esc-cancel retry; friendly
+views now expose aboard1/2 so the UI can say what you'd inherit. No new
+hashed state — no fixture repin. `joinAndSelect` test helper confirms by
+default (staging convenience); gate tests issue raw commands.
+
+Suite 334/334 (x2), simwar + replay OK. Tagged slice-10b.

@@ -103,6 +103,16 @@ function applySelectAsset(next, command) {
   if (asset.operatorId !== -1 && asset.operatorId !== operator.id) {
     return reject(next, command, "asset already operated");
   }
+  // 10B (spec 02 §9): claiming an asset in a consequential state demands an
+  // explicit confirmation — you are about to inherit the standard run, a
+  // rescue tow, or living passengers.
+  if (asset.operatorId === -1 && command.confirm !== true) {
+    const consequential =
+      assetCarries(next, asset.id) !== null ||
+      towedWreck(next, asset.id) !== null ||
+      asset.aboard1 !== -1 || asset.aboard2 !== -1;
+    if (consequential) return reject(next, command, "takeover needs confirmation");
+  }
   if (operator.assetId !== -1 && operator.assetId !== asset.id) {
     const previous = next.assets[operator.assetId];
     if (previous && previous.operatorId === operator.id) previous.operatorId = -1;

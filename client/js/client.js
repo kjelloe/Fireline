@@ -40,6 +40,8 @@ const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
+let lastSelectAttempt = -1; // 10B
+let pendingTakeover = -1;   // 10B: asset awaiting Enter-confirm
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -110,6 +112,12 @@ function init() {
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
     }
     if (e.key === "r" || e.key === "R") send({ type: "redeploy" }); // 9B
+    // 10B: Enter confirms a pending consequential takeover; Esc declines.
+    if (e.key === "Enter" && pendingTakeover !== -1) {
+      send({ type: "select_asset", assetId: pendingTakeover, confirm: true });
+      pendingTakeover = -1;
+    }
+    if (e.key === "Escape") pendingTakeover = -1;
     // 9E: M lays a mine under the tank; C clears the nearest adjacent
     // known mine with a truck.
     if (e.key === "m" || e.key === "M") send({ type: "deploy_mine" });
@@ -263,7 +271,10 @@ function onPointerDown(event) {
     fireRadiusCells: 1, myOperatorId: joined.operatorId,
     canTow: own ? own.type === 3 : false,
   });
-  if (cmd.type === "select_asset") mySelectedAssetId = cmd.assetId;
+  if (cmd.type === "select_asset") {
+    mySelectedAssetId = cmd.assetId;
+    lastSelectAttempt = cmd.assetId; // 10B: may need a confirmed retry
+  }
   send(cmd);
 }
 
@@ -271,6 +282,10 @@ function handleEvents(events) {
   for (const e of events) {
     const line = describeEvent(e, joined?.team);
     if (line) pushEvent(line);
+    // 10B: arm the Enter-confirm retry for a consequential takeover.
+    if (e.type === "rejected" && e.reason === "takeover needs confirmation") {
+      pendingTakeover = lastSelectAttempt;
+    }
     if (e.type === "game_over") showEndScreen();
   }
 }

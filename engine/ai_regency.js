@@ -128,7 +128,7 @@ export class AIRegency {
     for (const agent of this.fixedAgents) {
       if (state.operators[agent.operatorId].state === OP_ABSENT) {
         commands.push({ type: CMD_JOIN_OPERATOR, operatorId: agent.operatorId, team: agent.team });
-        commands.push({ type: CMD_SELECT_ASSET, operatorId: agent.operatorId, assetId: agent.assetId });
+        commands.push({ type: CMD_SELECT_ASSET, operatorId: agent.operatorId, assetId: agent.assetId, confirm: true });
       }
     }
 
@@ -182,7 +182,7 @@ export class AIRegency {
           if (free) pick = free.id;
         }
         if (pick !== null) {
-          commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: pick });
+          commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: pick, confirm: true });
         }
         continue;
       }

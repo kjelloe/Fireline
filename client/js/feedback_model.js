@@ -39,6 +39,8 @@ export const REJECTION_TEXT = Object.freeze({
   "no such mine": "No mine there.",
   "too far to clear": "Get adjacent to the mine to clear it.",
   "mine not marked": "Unknown minefield — a scout must mark it first.",
+  "takeover needs confirmation":
+    "That asset carries real responsibility — press ENTER to confirm the takeover, ESC to cancel.",
   "no such drone": "That drone is already gone.",
   "cannot track aircraft": "Artillery cannot track aircraft — use a direct gun.",
   "war is over": "The war is over — next one starts shortly.",

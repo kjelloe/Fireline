@@ -5,8 +5,9 @@ verified. Every completed slice is git-tagged.*
 
 **Session outcome: 6 of 7 Wave-1 slices shipped and tagged (9A, 9F, 9B,
 9D, 9E, 9G) — the seventh (9C cargo) is deliberately parked on a design
-question. Suite 306 → 329 tests, fixture v14 → v20, every slice
-double-run green with simwar + replay verification.**
+question — plus the first Wave-2 slice (10B takeover confirmations).
+Suite 306 → 334 tests, fixture v14 → v20, every slice double-run green
+with simwar + replay verification.**
 
 ## Session opening state
 
@@ -102,6 +103,14 @@ entity system since standards.
    standard and the war again waits on the points horn — the standoff
    pattern persists across seeds, strengthening question 2. Downed AI crews
    redeploy and re-crew correctly (no more seat bleed-out).
+
+## Bonus: first Wave-2 slice landed
+
+**slice-10b — Takeover confirmations** (plan 2.2, spec 02 §9): claiming an
+uncrewed asset that carries the standard, tows a wreck, or has passengers
+aboard now requires an explicit confirm (Enter in the client, Esc cancels);
+plain assets keep the single-click flow; AI regents always confirm. Chosen
+as the only Wave-2 item with zero open design questions. Suite **334/334**.
 
 ## Wave-1 close-out sim campaign (5 seeds × 12000 ticks, AI-only)
 
