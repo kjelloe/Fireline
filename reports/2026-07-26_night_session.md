@@ -5,9 +5,9 @@ verified. Every completed slice is git-tagged.*
 
 **Session outcome: 6 of 7 Wave-1 slices shipped and tagged (9A, 9F, 9B,
 9D, 9E, 9G) — the seventh (9C cargo) is deliberately parked on a design
-question — plus the first two Wave-2 slices (10B takeover confirmations, 10C context
-pings). Suite 306 → 340 tests, fixture v14 → v21, every slice double-run
-green with simwar + replay verification.**
+question — plus three Wave-2 slices (10A spectator role, 10B takeover confirmations,
+10C context pings). Suite 306 → 343 tests, fixture v14 → v21, every slice
+double-run green with simwar + replay verification.**
 
 ## Session opening state
 
@@ -112,6 +112,13 @@ aboard now requires an explicit confirm (Enter in the client, Esc cancels);
 plain assets keep the single-click flow; AI regents always confirm. Chosen
 as the only Wave-2 item with zero open design questions. Suite **334/334**.
 
+**slice-10a — Spectator role** (plan 2.1, slim): a third button on the
+join screen seats you in the booth — fog-free view of both teams (all
+telemetry, mines, pings, drones), strictly read-only at the transport.
+Built so you can WATCH the AI standoff (question 2) live instead of
+reading sim logs: start the server with AI on and spectate. The replay
+VIEWER half of plan 2.1 is still open. Suite **343/343**.
+
 **slice-10c — Context pings** (plan 2.3, spec 02 §14): keys 1/2/3 send
 context-sensitive team signals (carrier: ESCORT THE STANDARD; towing truck:
 RECOVERY IN PROGRESS; scout: MINES DETECTED; downed: NEED RESCUE), 3 s
@@ -185,7 +192,10 @@ construction (enemy views never receive them). Suite **340/340**.
     their duty cycle keeps them moving — but a stranded/unsupplied AI unit
     will eat stings without shooting back). Add "shoot the drone stinging
     me" to the fire doctrine?
-15. **Ping vocabulary** (10C): shipped subset is attack/defend/rally/
+15. **Replay viewer** (other half of plan 2.1): spectator LIVE view shipped;
+    scrubbing archived replays (the /replays store) in the client is the
+    remaining piece. Worth prioritizing for balance work?
+16. **Ping vocabulary** (10C): shipped subset is attack/defend/rally/
     need_escort/recovery_in_progress/mines_detected/need_rescue on keys
     1/2/3. Additions from spec 02 §14 (Carrier under attack, Road blocked,
     Safe route marked) can be one-liners — which do you want in v2.0? And

@@ -61,6 +61,10 @@ npm start                              # host machine
   visible to everyone. It stings for light damage until you MOVE (or get back
   in supply); any direct-fire gun downs it with one shot (click it) —
   artillery cannot track aircraft.
+- Spectator mode (10A): the join screen's third button seats you in the
+  booth — you see BOTH teams, every mine, all pings, full telemetry, and
+  can touch nothing. Perfect for watching AI-vs-AI wars (start the server
+  with AI enabled and just spectate).
 - Context pings (10C): keys 1/2/3 send team signals whose meaning follows
   your seat (a standard carrier offers ESCORT THE STANDARD, a towing truck
   RECOVERY IN PROGRESS, a scout MINES DETECTED, downed operators NEED

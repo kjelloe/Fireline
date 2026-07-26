@@ -5,6 +5,7 @@
 
 import { Session } from "./session.js";
 import { OP_ABSENT } from "./state.js";
+import { buildSpectatorView } from "./view.js";
 
 // Human operator slots are 0..15; 16..23 belong to AI regency (2B policy).
 const HUMAN_SLOT_MAX = 15;
@@ -122,8 +123,25 @@ export class NetworkTransport {
                 return;
             }
 
+            // 10A: spectator handshake — no operator slot, no team, no voice.
+            if (msg.type === "c_spectate") {
+                if (session) return; // already seated
+                session = new Session(ws, -1);
+                session.team = -1;
+                session.spectator = true;
+                session.authenticated = true;
+                this.sessions.set(ws, session);
+                session.send("s_spectating", {});
+                this.sendMap(session);
+                return;
+            }
+
             // Handle Gameplay Commands
             if (!session || !session.authenticated) return;
+            if (session.spectator) {
+                session.send("s_rejected", { seq: msg.seq, reason: "spectators only watch" });
+                return;
+            }
 
             // Map transport signal to server command
             const cmd = { ...msg, operatorId: session.operatorId };
@@ -139,7 +157,7 @@ export class NetworkTransport {
 
     handleDisconnect(ws) {
         const session = this.sessions.get(ws);
-        if (session) {
+        if (session && !session.spectator) {
             this.reserved.delete(session.operatorId);
             // 3C: the dropped operator's assets fall to AI regency.
             if (session.authenticated) this.server.assumeRegency(session.operatorId);
@@ -152,9 +170,11 @@ export class NetworkTransport {
     onWarReset(mapSeed) {
         for (const session of this.sessions.values()) {
             if (!session.authenticated) continue;
-            this.server.enqueue({
-                type: "join_operator", operatorId: session.operatorId, team: session.team,
-            });
+            if (!session.spectator) {
+                this.server.enqueue({
+                    type: "join_operator", operatorId: session.operatorId, team: session.team,
+                });
+            }
             session.send("s_war_reset", { mapSeed });
             this.sendMap(session);
         }
@@ -171,10 +191,20 @@ export class NetworkTransport {
     }
 
     broadcastSnapshots(snapshot) {
+        let spectatorView = null; // 10A: built once per tick, only on demand
         for (const session of this.sessions.values()) {
-            if (!session.authenticated || session.team === -1) continue;
+            if (!session.authenticated) continue;
+            let source;
+            if (session.spectator) {
+                spectatorView ??= buildSpectatorView(this.server.state);
+                source = spectatorView;
+            } else if (session.team === -1) {
+                continue;
+            } else {
+                source = snapshot.views[session.team];
+            }
             // 6A: strip the static mapCells from the per-tick payload.
-            const { mapCells, ...view } = snapshot.views[session.team];
+            const { mapCells, ...view } = source;
             session.send("s_snapshot", {
                 tick: snapshot.tick,
                 stateHash: snapshot.stateHash,

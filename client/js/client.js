@@ -156,6 +156,7 @@ function init() {
   });
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
+  document.getElementById("btn-spectate").onclick = spectate; // 10A
 
   loadAssetMetadata().then(() => {
     connect();
@@ -202,6 +203,11 @@ function connect() {
       pushEvent("A new war has begun!");
     } else if (msg.type === "s_server_closing") {
       pushEvent("server shutting down");
+    } else if (msg.type === "s_spectating") { // 10A: omniscient read-only seat
+      joined = { operatorId: -1, team: -1, spectator: true };
+      autoSelectSent = true; // nothing to crew
+      document.getElementById("join-overlay").style.display = "none";
+      pushEvent("Spectating — you see everything, you touch nothing.");
     } else if (msg.type === "s_joined") {
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
@@ -237,6 +243,11 @@ function connect() {
 function joinTeam(team) {
   if (!socket || socket.readyState !== 1) return;
   socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId() }));
+}
+
+function spectate() { // 10A
+  if (!socket || socket.readyState !== 1) return;
+  socket.send(JSON.stringify({ type: "c_spectate" }));
 }
 
 function send(cmd) {

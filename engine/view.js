@@ -6,6 +6,48 @@
 export { FOG_RADIUS_CELLS } from "./los.js";
 import { computeVisible } from "./los.js";
 
+// 10A: spectators see the whole war — every asset with full telemetry,
+// both teams' downed operators, every mine, all events (pings included).
+// Shaped like a player view (assets ride in friendlyAssets) so the client
+// renders it without a special path. Read-only by transport contract.
+export function buildSpectatorView(state) {
+  const friendlyAssets = state.assets.map((a) => ({
+    id: a.id, type: a.type, team: a.team, state: a.state,
+    x: a.x, y: a.y, targetX: a.targetX, targetY: a.targetY,
+    hp: a.hp, operatorId: a.operatorId,
+    ammo: a.ammo, fuel: a.fuel,
+    towedBy: a.towedBy, recoverTimer: a.recoverTimer,
+    reloadTimer: a.reloadTimer,
+    heading: a.heading, minesLeft: a.minesLeft,
+    aboard1: a.aboard1, aboard2: a.aboard2,
+  }));
+  return {
+    tick: state.tick,
+    team: -1,
+    spectator: true,
+    phase: state.phase,
+    winner: state.winner,
+    teamScores: [...state.teamScores],
+    events: state.events,
+    mapCells: state.map.cells,
+    friendlyAssets,
+    visibleEnemies: [],
+    sites: state.sites.map((s) => ({
+      id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
+    })),
+    bases: state.bases.map((b) => ({ ...b })),
+    standards: state.standards.map((st) => ({ ...st })),
+    downedOperators: state.downed.map((d) => ({ ...d })),
+    mines: state.mines.map((m) => ({
+      id: m.id, team: m.team, cellX: m.cellX, cellY: m.cellY,
+      armed: m.armTimer === 0, marked: m.marked === 1,
+    })),
+    drones: state.drones.map((d) => ({
+      id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
+    })),
+  };
+}
+
 export function buildView(state, team) {
   const friendlyAssets = state.assets
     .filter((a) => a.team === team)

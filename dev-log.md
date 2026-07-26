@@ -849,3 +849,21 @@ seat is doing), cyan world labels with 50-tick TTL via `activePings`.
 AI regents don't ping yet.
 
 Suite 340/340 (x2), simwar + replay OK. Tagged slice-10c.
+
+---
+
+## slice-10a — Spectator role (night session, 2026-07-26)
+
+Plan 2.1 slim (the replay VIEWER half remains future work — noted as a
+question). `buildSpectatorView(state)`: omniscient, player-shaped (all 32
+assets ride in friendlyAssets with full telemetry, so the renderer needs no
+special path), sees both teams' downed/mines/drones and toTeam-scoped
+pings. Transport: `c_spectate` handshake → read-only session (team -1, no
+operator slot, commands bounce with "spectators only watch"), spectator
+view built at most once per tick and only when a spectator is connected;
+disconnects skip regency/reservation bookkeeping; war resets re-ship the
+map without a join. Client: third button on the join screen. No hashed
+state touched — no repin. Main value tonight: the designer can WATCH
+AI-vs-AI wars live (the question-2 standoff) instead of reading sim logs.
+
+Suite 343/343 (x2), simwar + replay OK. Tagged slice-10a.
