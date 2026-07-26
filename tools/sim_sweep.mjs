@@ -25,13 +25,38 @@ const HORIZON = Number(process.env.TICKS ?? 18000);
 console.log("seed,mirror,difficulty,ticks,winner,reason,scoreA,scoreB,tows,restored,rescued,downs,mines,detonations,captures,shells");
 for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
-  const server = new GameServer({ mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY });
+  const server = new GameServer({
+    mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
+  });
   if (MIRROR) {
-    // Swap the two teams' assets/operators in place: same map, sides traded.
-    for (const a of server.state.assets) a.team = a.team === 0 ? 1 : 0;
-    for (const o of server.state.operators) if (o.team !== -1) o.team = o.team === 0 ? 1 : 0;
-    for (const st of server.state.standards) st.team = st.team === 0 ? 1 : 0;
-    for (const b of server.state.bases) b.team = b.team === 0 ? 1 : 0;
+    // TRUE world reflection (question 18): mirror the terrain and every
+    // entity across x' = W-1-x, headings across the vertical axis, and
+    // the AI patrols swap sides (aiMirrored). In a bias-free engine the
+    // outcome distribution must be the exact flip of the normal run;
+    // any residue that survives reflection is directional arithmetic.
+    // Known caveat: MPG rebuilds use the unmirrored spawn table (rare;
+    // only fires below 6 operable) — treat MPG-heavy wars as noise.
+    const s = server.state;
+    const W = s.map.width;
+    const cells = s.map.cells;
+    for (let y = 0; y < s.map.height; y++) {
+      for (let x = 0; x < W / 2; x++) {
+        const a = y * W + x;
+        const b = y * W + (W - 1 - x);
+        const t = cells[a]; cells[a] = cells[b]; cells[b] = t;
+      }
+    }
+    const mx = (worldX) => (W - 1) * 256 - worldX;
+    for (const a of s.assets) {
+      a.x = mx(a.x); a.targetX = mx(a.targetX);
+      a.heading = (128 - a.heading) & 255;
+    }
+    for (const st of s.standards) {
+      st.x = mx(st.x);
+      st.homeCellX = W - 1 - st.homeCellX;
+    }
+    for (const site of s.sites) site.cellX = W - 1 - site.cellX;
+    for (const b of s.bases) b.x = W - b.x - b.width;
   }
   const c = {};
   for (let i = 0; i < HORIZON && server.state.phase === 0; i++) {

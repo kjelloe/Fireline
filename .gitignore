@@ -3,3 +3,5 @@ node_modules/
 test/headless/reports/
 **/*.zip
 dev-prompts.md
+.agent-mail/
+reports/sweeps/

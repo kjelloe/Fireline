@@ -71,9 +71,12 @@ const PATROLS = Object.freeze({
   }),
 });
 
-function patrolTarget(agent, tick, profileName = "frontier_corridor") {
+function patrolTarget(agent, tick, profileName = "frontier_corridor", mirrored = false) {
   const set = PATROLS[profileName] ?? PATROLS.frontier_corridor;
-  const patrol = set[agent.team === 0 ? 0 : 1];
+  // 11P: in a reflected world each team patrols the OTHER side's routes —
+  // legal because the tables are exact mirrors of each other (11C).
+  const side = (agent.team === 0) !== mirrored ? 0 : 1;
+  const patrol = set[side];
   const phase = ((tick / 80) | 0) + (agent.assetId & 3);
   return patrol[phase % patrol.length];
 }
@@ -156,6 +159,7 @@ export const AI_HARD = 2;
 export class AIRegency {
   constructor(options = {}) {
     this.fixedAgents = options.fixedAgents === false ? [] : AGENTS;
+    this.mirrored = options.mirrored === true; // 11P: world-reflection sims
     this.regented = new Set(); // human operator slots under takeover (3C)
     // 6D: easy fires every other tick; hard swaps patrols for relay pushes.
     this.difficulty = options.difficulty ?? AI_NORMAL;
@@ -476,11 +480,11 @@ export class AIRegency {
         }
       }
       if (!target && agent && this.difficulty !== AI_HARD) {
-        target = patrolTarget(agent, state.tick, state.mapProfile);
+        target = patrolTarget(agent, state.tick, state.mapProfile, this.mirrored);
       } else if (!target) {
         const relay = nearestUnownedRelay(state, asset);
         if (relay) target = [relay.cellX, relay.cellY];
-        else if (agent) target = patrolTarget(agent, state.tick, state.mapProfile);
+        else if (agent) target = patrolTarget(agent, state.tick, state.mapProfile, this.mirrored);
       }
       if (!target) continue;
       const currentCellX = worldToCellFloor(asset.x);

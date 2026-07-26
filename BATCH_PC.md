@@ -21,6 +21,35 @@ No other dependencies. The engine is deterministic: same commit + same
 seed = byte-identical war, so results are reproducible and attributable
 to an exact tag. **Always record `git describe --tags` next to results.**
 
+## The agent-mail flow (preferred once set up)
+
+The repo now carries `tools/agent-mail.py` (single file, no deps). Jobs
+travel as queue items; results come back as mail. **Round-trip verified
+end to end on the dev machine.**
+
+On the DEV machine (hub host):
+```bash
+python3 tools/agent-mail.py serve --port 8970 &   # the shared hub
+bash tools/batch_send.sh sweep 600                # queue jobs...
+bash tools/batch_send.sh mirror 600               # ...as many as you like
+bash tools/batch_send.sh perf
+bash tools/batch_send.sh board                    # who's doing what
+bash tools/batch_send.sh collect                  # deliver + settle results
+```
+
+On the BATCH PC (after the one-time setup below):
+```bash
+echo "http://<dev-machine>:8970" > .agent-mail/remote
+bash tools/batch_worker.sh                        # sits in flag-wait, forever
+```
+
+The worker refuses to serve on a red test suite, posts its status while
+running, auto-shards sweeps across its cores, merges the CSVs, and mails
+back a one-line summary per job (`ONCE=1` drains the queue once for
+testing). Delivery is at-least-once and every job is idempotent by seed,
+so a redelivered job costs time, never correctness. The manual commands
+below remain valid without the hub.
+
 ## Job 1 — balance census (CPU, ~overnight)
 
 600 full wars, six shards (one per physical core), plus the mirrored run

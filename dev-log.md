@@ -1157,3 +1157,29 @@ are untouched (pinned by test). Engine unchanged — pure client/model
 slice, no repin.
 
 Suite 394/394 (x2). Tagged slice-11o.
+
+---
+
+## slice-11p — BATCH_PC agent-mail lane + true mirror mode (2026-07-26, prompt 20)
+
+The gaming-PC job flow, agent-mail semantics as ruled: `tools/agent-mail.py`
+deployed into the repo (single file, no deps; `.agent-mail/` gitignored).
+`tools/batch_send.sh` queues jobs (sweep/mirror/matrix/perf) and collects
+results; `tools/batch_worker.sh` is the batch-pc lane — refuses a red
+suite, sits in blocking `flag wait`, takes queued JSON jobs (whitelisted
+kinds only, never arbitrary text), auto-shards sweeps across cores,
+merges CSVs, mails back one-line summaries, posts status while running.
+Round-trip verified locally both ways (ONCE=1 drain mode).
+
+The smoke test caught that the old MIRROR swap made dead 0-0 wars (team
+swaps broke fixed AI pairings). Replaced with a TRUE world reflection:
+terrain mirrored cell-for-cell, every entity reflected across x'=W-1-x,
+headings across the vertical axis, AI patrol tables swapped (legal — they
+are exact mirrors). In a bias-free engine the mirrored outcome
+distribution must be the exact flip of the normal run; any residue is
+directional arithmetic (question 18). First 2-seed probe already shows
+residue: normal seeds 1-2 end in A standard-captures ~tick 3500; mirrored
+same-seeds run past 6000 undecided. The 600-war census will say whether
+that is real. Known caveat noted: MPG rebuilds use unmirrored spawns.
+
+Suite 394/394. Tagged slice-11p.
