@@ -61,6 +61,7 @@ export function buildView(state, team) {
       heading: a.heading, minesLeft: a.minesLeft,
       aboard1: a.aboard1, aboard2: a.aboard2, // 10B: takeover context
       materiel: a.materiel, // 11F
+      driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
     }));
 
   const visible = computeVisible(state, team);

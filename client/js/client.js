@@ -45,6 +45,10 @@ const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let lastSelectAttempt = -1; // 10B
 let pendingTakeover = -1;   // 10B: asset awaiting Enter-confirm
 const teamPings = []; // 10C: recent own-team pings for world labels
+// 11L direct control (G toggles): WASD becomes tank controls.
+let directMode = false;
+const driveHeld = { w: false, a: false, s: false, d: false };
+let lastDriveSent = "0,0";
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -105,8 +109,23 @@ function init() {
   document.getElementById("btn-recenter").onclick = () => freeCam.followMode(true);
   document.getElementById("btn-next-asset").onclick = selectNextAsset;
 
-  // 8G: free camera controls.
+  // 8G: free camera controls (11L: direct mode claims WASD first).
   window.addEventListener("keydown", (e) => {
+    if (e.key === "g" || e.key === "G") {
+      directMode = !directMode;
+      if (!directMode) { for (const k in driveHeld) driveHeld[k] = false; }
+      sendDriveIntent();
+      pushEvent(directMode
+        ? "DIRECT DRIVE — W/S throttle, A/D steer, G to exit"
+        : "Direct drive off — click-to-move restored.");
+      if (directMode) freeCam.followMode(true);
+      return;
+    }
+    if (directMode && e.key.toLowerCase() in driveHeld) {
+      driveHeld[e.key.toLowerCase()] = true;
+      sendDriveIntent();
+      return;
+    }
     const pan = panForKey(e.key);
     if (pan) { freeCam.pan(pan.dx, pan.dy); return; }
     if (e.key === "f" || e.key === "F") freeCam.followMode(true);
@@ -144,6 +163,12 @@ function init() {
     if (e.key === "x" || e.key === "X") {
       const enemyStd = interpolator.latest()?.standards?.find((st) => st.team !== joined?.team);
       if (enemyStd) freeCam.jumpTo(enemyStd.x / CELL, enemyStd.y / CELL);
+    }
+  });
+  window.addEventListener("keyup", (e) => { // 11L
+    if (directMode && e.key.toLowerCase() in driveHeld) {
+      driveHeld[e.key.toLowerCase()] = false;
+      sendDriveIntent();
     }
   });
   renderer.domElement.addEventListener("wheel", (e) => {
@@ -262,6 +287,16 @@ function connect() {
   socket.onclose = () => {
     pushEvent("connection lost — refresh to rejoin");
   };
+}
+
+// 11L: stream the current WASD intent, only on change.
+function sendDriveIntent() {
+  const throttle = driveHeld.w ? 1 : driveHeld.s ? -1 : 0;
+  const turn = driveHeld.d ? 1 : driveHeld.a ? -1 : 0;
+  const key = `${throttle},${turn}`;
+  if (key === lastDriveSent) return;
+  lastDriveSent = key;
+  send({ type: "drive", throttle, turn });
 }
 
 function joinTeam(team) {

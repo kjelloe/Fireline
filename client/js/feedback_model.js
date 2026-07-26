@@ -51,6 +51,8 @@ export const REJECTION_TEXT = Object.freeze({
   "not aboard": "You are not aboard a carrier.",
   "unknown option": "No such setting.",
   "invalid value": "That setting takes on or off.",
+  "invalid throttle": "Bad drive input.",
+  "invalid turn": "Bad drive input.",
   "no such site": "No such site.",
   "cannot breach sites": "Only artillery can breach infrastructure.",
   "site already damaged": "That site is already in ruins.",

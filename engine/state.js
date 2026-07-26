@@ -76,6 +76,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
     materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
+    driveThrottle: 0, driveTurn: 0, // 11L: direct-control intent
   };
 }
 

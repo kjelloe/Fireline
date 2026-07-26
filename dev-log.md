@@ -1078,3 +1078,24 @@ already hashed — no repin. Views gain a minimal PUBLIC scoreboard
 absence). End screen shows HONORS (top 3, humans and regents alike).
 
 Suite 379/379 (x2), simwar + replay OK. Tagged slice-11k.
+
+---
+
+## slice-11l — Direct control, all chassis (2026-07-26, Q10 + prompt 19)
+
+The Firepower homage, server-authoritative: the client streams WASD
+INTENT (`drive {throttle, turn}` in {-1,0,1}, sent only on change); the
+reducer owns the physics. `driveStep`: A/D pivot at the chassis turnRate,
+W drives along the heading at chassis speed, S reverses at half — terrain
+/ supply / carrying / towing multipliers all reuse the stepAsset math;
+map edges clamp; fuel bills per moving tick as ever. Intent preempts the
+click-move target and hands back cleanly when zeroed. "All chassis" cost
+nothing extra — speed and turnRate were already per-chassis contracts
+(the per-chassis pivot test sweeps all five). A wreck's wheel clears on
+disablement; a seat at the wheel is NOT camping (no drone for pivoting in
+place). driveThrottle/driveTurn hashed (1A → v28). Client: G toggles the
+mode (WASD otherwise pans the camera), keyup streaming, hint-bar note.
+Chase-cam rotation deliberately deferred — the ortho camera stays fixed;
+noted as a question.
+
+Suite 385/385 (x2), simwar + replay OK. Tagged slice-11l.

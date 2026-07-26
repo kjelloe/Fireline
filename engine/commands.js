@@ -12,6 +12,7 @@ export const CMD_TOW_ORDER      = "tow_order";
 export const CMD_CRAWL_ORDER    = "crawl_order";
 export const CMD_REDEPLOY       = "redeploy";
 export const CMD_PING           = "ping";        // 10C
+export const CMD_DRIVE          = "drive";        // 11L direct control
 export const CMD_SET_OPTION     = "set_option";   // 11G
 export const CMD_BOARD_CARRIER  = "board_carrier"; // 11G
 export const CMD_UNBOARD        = "unboard";       // 11G
@@ -79,6 +80,14 @@ export function validate(cmd) {
     case CMD_REDEPLOY:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };
+
+    case CMD_DRIVE: {
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      const ok = (v) => v === -1 || v === 0 || v === 1;
+      if (!ok(cmd.throttle)) return { ok: false, reason: "invalid throttle" };
+      if (!ok(cmd.turn))     return { ok: false, reason: "invalid turn" };
+      return { ok: true };
+    }
 
     case CMD_SET_OPTION:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };

@@ -12,7 +12,7 @@ import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
-  CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD,
+  CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import {
@@ -262,6 +262,8 @@ function applyFireOrder(next, command) {
 // it so bail-out, tow release, and standard drops can never diverge.
 function disableAsset(next, target, scoringTeam) {
   target.state = ASSET_DISABLED;
+  target.driveThrottle = 0;
+  target.driveTurn = 0; // 11L: a wreck holds no wheel
   next.teamScores[scoringTeam] += SCORE_DISABLE;
   next.events.push({ type: "asset_disabled", assetId: target.id });
   // 9B: the crew bails out as a downed operator (the wreck repairs to
@@ -287,6 +289,30 @@ function disableAsset(next, target, scoringTeam) {
     carried.y = target.y;
     next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
   }
+}
+
+// 11L: direct control — store the seat's drive intent on its asset. Any
+// intent cancels the click-move target; zeroing both returns the asset to
+// ordinary click-to-move.
+function applyDrive(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  asset.driveThrottle = command.throttle;
+  asset.driveTurn = command.turn;
+  if (command.throttle !== 0 || command.turn !== 0) {
+    asset.targetX = asset.x;
+    asset.targetY = asset.y;
+    asset.state = ASSET_IDLE; // direct mode owns the wheel, not the target
+  }
+  return next;
 }
 
 // 11G: per-seat preference; the only option so far is the rescue autopilot.
@@ -509,6 +535,37 @@ function turnToward(heading, desiredBrads, turnRate) {
   return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
 }
 
+// 11L: tank-style direct drive. A/D pivot at the chassis turnRate; W
+// drives along the heading at chassis speed, S reverses at half; every
+// speed multiplier stepAsset honors applies here too. Map edges clamp.
+function driveStep(asset, map, supplied, carrying, towing) {
+  const stats = getUnitStats(asset.type);
+  if (asset.driveTurn !== 0) {
+    asset.heading = (asset.heading + asset.driveTurn * stats.turnRate) & 255;
+  }
+  if (asset.driveThrottle === 0) return;
+
+  const cellX = worldToCellFloor(asset.x);
+  const cellY = worldToCellFloor(asset.y);
+  if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
+  const terrain = map.cells[cellY * map.width + cellX];
+  let step = floorDivI32(stats.speed * speedMultiplier(terrain), 256);
+  if (!supplied) step = floorDivI32(step, 2);
+  if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN);
+  if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN);
+  if (asset.driveThrottle < 0) step = floorDivI32(step, 2); // reverse gear
+  if (step <= 0) return;
+
+  const dir = (floorDivI32(asset.heading + 8, 16)) & 15;
+  const sign = asset.driveThrottle < 0 ? -1 : 1;
+  const maxX = (map.width - 1) * 256 + 255;
+  const maxY = (map.height - 1) * 256 + 255;
+  asset.x = Math.min(maxX, Math.max(0, asset.x + sign * floorDivI32(step * DIR_COS[dir], 256)));
+  asset.y = Math.min(maxY, Math.max(0, asset.y + sign * floorDivI32(step * DIR_SIN[dir], 256)));
+  asset.targetX = asset.x;
+  asset.targetY = asset.y;
+}
+
 function stepAsset(asset, map, supplied, carrying, towing) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
@@ -557,6 +614,20 @@ function applyAdvanceTick(next) {
   for (const asset of next.assets) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
+    // 11L direct control: intent-driven physics preempts target-seeking.
+    if ((asset.driveThrottle !== 0 || asset.driveTurn !== 0) &&
+        asset.state !== ASSET_DISABLED && asset.state !== ASSET_SALVAGED) {
+      if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
+      const beforeX = asset.x;
+      const beforeY = asset.y;
+      driveStep(
+        asset, next.map, inSupply(next, asset),
+        assetCarries(next, asset.id) !== null,
+        towedWreck(next, asset.id) !== null
+      );
+      if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
+      continue;
+    }
     if (asset.state !== ASSET_MOVING) continue;
     if (asset.fuel < SUPPLY_MOVE_COST) continue; // stranded until resupplied
     const beforeX = asset.x;
@@ -645,7 +716,8 @@ function applyAdvanceTick(next) {
   }  // 9G anti-camping: idling outside your own supply umbrella draws a drone
   // from the enemy's nearest owned relay.
   for (const asset of next.assets) {
-    if (asset.state === ASSET_IDLE && !inSupply(next, asset)) {
+    const atTheWheel = asset.driveThrottle !== 0 || asset.driveTurn !== 0; // 11L
+    if (asset.state === ASSET_IDLE && !atTheWheel && !inSupply(next, asset)) {
       asset.campTicks += 1;
     } else {
       asset.campTicks = 0;
@@ -957,6 +1029,7 @@ export function apply(state, command) {
     case CMD_TOW_ORDER: return applyTowOrder(next, command);
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
     case CMD_PING: return applyPing(next, command);
+    case CMD_DRIVE: return applyDrive(next, command);
     case CMD_SET_OPTION: return applySetOption(next, command);
     case CMD_BOARD_CARRIER: return applyBoardCarrier(next, command);
     case CMD_UNBOARD: return applyUnboard(next, command);

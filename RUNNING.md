@@ -65,6 +65,12 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Direct drive (11L, the Firepower homage): press G — WASD becomes tank
+  controls (W/S throttle with half-speed reverse, A/D steer at your
+  chassis' turn rate; all chassis supported). Any drive input overrides
+  click-to-move; G again (or releasing everything) hands the wheel back.
+  Fully server-authoritative: terrain, supply, carrying, and towing
+  multipliers all still apply.
 - Replay viewer (11H): the join screen links to /replay.html — every
   finished war is archived and re-simulated LOCALLY in your browser
   (deterministic engine), so you can scrub anywhere instantly. Top-down

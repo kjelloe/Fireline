@@ -26,6 +26,7 @@ export function makeAsset(id, spec) {
     minesLeft: spec.minesLeft ?? ((spec.type ?? 0) === 0 ? 2 : 0), // 9E
     campTicks: spec.campTicks ?? 0, // 9G
     materiel: spec.materiel ?? 0, // 11F
+    driveThrottle: spec.driveThrottle ?? 0, driveTurn: spec.driveTurn ?? 0, // 11L
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }

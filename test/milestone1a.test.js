@@ -40,6 +40,7 @@ function stateHash(s) {
     w.writeU8(a.minesLeft); // added 9E
     w.writeI32LE(a.campTicks); // added 9G
     w.writeU8(a.materiel ?? 0); // added 11F
+    w.writeI32LE(a.driveThrottle ?? 0); w.writeI32LE(a.driveTurn ?? 0); // added 11L
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
