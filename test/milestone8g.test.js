@@ -92,3 +92,27 @@ test("9G clicking an enemy drone fires at it, above any asset on the cell", () =
     { type: "fire_order", targetDroneId: 2 });
   assert.equal(buildCommandForClick(view, 7, 5, { myOperatorId: 0 }).type, "move_order");
 });
+
+test("11O direct mode: clicks are weapons-only, with generous aim assist", () => {
+  const view = {
+    team: 0,
+    friendlyAssets: [
+      { id: 3, state: 0, operatorId: -1, x: 5 * CELL, y: 5 * CELL, towedBy: -1, recoverTimer: 0 },
+    ],
+    visibleEnemies: [{ id: 20, state: 0, x: 10 * CELL, y: 5 * CELL }],
+    drones: [{ id: 2, team: 1, x: 20 * CELL, y: 20 * CELL }],
+  };
+  const opts = { myOperatorId: 0, directMode: true };
+  // 3 cells off the enemy still snaps onto it (not an FPS).
+  assert.deepEqual(buildCommandForClick(view, 12, 6, opts),
+    { type: "fire_order", targetAssetId: 20 });
+  // Drones snap too.
+  assert.deepEqual(buildCommandForClick(view, 22, 19, opts),
+    { type: "fire_order", targetDroneId: 2 });
+  // Nothing near the cursor: no command at all — never a move, never a select.
+  assert.equal(buildCommandForClick(view, 40, 40, opts), null);
+  assert.equal(buildCommandForClick(view, 5, 5, opts), null,
+    "clicking a friendly in direct mode does not switch seats");
+  // Normal mode is untouched: the same ground click moves.
+  assert.equal(buildCommandForClick(view, 40, 40, { myOperatorId: 0 }).type, "move_order");
+});

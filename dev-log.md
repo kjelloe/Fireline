@@ -1141,3 +1141,19 @@ units/tick on a trail where a tank does 16.
 
 Suite 390/390 (x2, +3 new = 393 on next count), simwar + replay OK.
 Tagged slice-11n.
+
+---
+
+## slice-11o — Direct-drive targeting (2026-07-26, prompt 20 Q23)
+
+"Not an FPS": in direct mode, clicks are WEAPONS ONLY with aim assist —
+`buildCommandForClick` gains a directMode contract: the nearest visible
+enemy (or drone) within DIRECT_ASSIST_CELLS (3) of the cursor snaps as
+the target; empty ground returns null — never a move, never a seat
+switch, so a stray click cannot yank the tank off its line. A red
+targeting circle (true weapon range, per chassis) rides the asset every
+frame while driving, with a center reticle. Normal-mode click semantics
+are untouched (pinned by test). Engine unchanged — pure client/model
+slice, no repin.
+
+Suite 394/394 (x2). Tagged slice-11o.

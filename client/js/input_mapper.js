@@ -36,10 +36,28 @@ function atCell(entity, cellX, cellY, radiusCells = 0) {
   return Math.abs(ex - cellX) <= radiusCells && Math.abs(ey - cellY) <= radiusCells;
 }
 
+// 11O (Q23): direct drive is not an FPS — clicks get a generous snap
+// radius onto the nearest visible target near the cursor.
+export const DIRECT_ASSIST_CELLS = 3;
+
 // Click semantics (8G): own selectable asset → select; visible live enemy →
 // fire; own wreck → tow; anywhere else → move. Priority in that order.
+// 11O: in directMode, clicks are WEAPONS ONLY — drone or enemy near the
+// cursor fires (with assist); anything else returns null (the wheel owns
+// movement, so a stray click must never send the tank somewhere).
 export function buildCommandForClick(view, cellX, cellY, opts = {}) {
-  const { fireRadiusCells = 0, myOperatorId = null, canTow = true } = opts;
+  const { fireRadiusCells = 0, myOperatorId = null, canTow = true, directMode = false } = opts;
+  if (directMode) {
+    const assist = Math.max(fireRadiusCells, DIRECT_ASSIST_CELLS);
+    const drone = (view?.drones ?? [])
+      .filter((d) => d.team !== view?.team)
+      .filter((d) => atCell(d, cellX, cellY, assist))
+      .sort((a, b) => a.id - b.id)[0];
+    if (drone) return { type: "fire_order", targetDroneId: drone.id };
+    const target = enemyAtCell(view, cellX, cellY, assist);
+    if (target) return { type: "fire_order", targetAssetId: target.id };
+    return null;
+  }
 
   const selectable = (view?.friendlyAssets ?? [])
     .filter((a) => a.state !== DISABLED && a.state !== SALVAGED)

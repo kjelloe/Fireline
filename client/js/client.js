@@ -49,6 +49,7 @@ const teamPings = []; // 10C: recent own-team pings for world labels
 let directMode = false;
 const driveHeld = { w: false, a: false, s: false, d: false };
 let lastDriveSent = "0,0";
+let directRing = null; // 11O: the tracking targeting circle
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -349,7 +350,9 @@ function onPointerDown(event) {
   const cmd = buildCommandForClick(view, cellX, cellY, {
     fireRadiusCells: 1, myOperatorId: joined.operatorId,
     canTow: own ? own.type === 3 : false,
+    directMode, // 11O: weapons-only clicks with aim assist
   });
+  if (!cmd) return; // direct mode: nothing near the cursor — hold fire
   if (cmd.type === "select_asset") {
     mySelectedAssetId = cmd.assetId;
     lastSelectAttempt = cmd.assetId; // 10B: may need a confirmed retry
@@ -820,6 +823,34 @@ function updateDroneMeshes(view, nowMs) {
   }
 }
 
+// 11O: in direct mode a targeting circle rides the asset — your gun's
+// true reach, always visible while you drive.
+function updateDirectRing(view) {
+  const own = directMode
+    ? view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId)
+    : null;
+  const range = own ? weaponRangeOverlay(view, joined.operatorId) : null;
+  if (!range) {
+    if (directRing) { scene.remove(directRing); directRing = null; }
+    return;
+  }
+  if (!directRing) {
+    directRing = new THREE.Group();
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xff5533, transparent: true, opacity: 0.5, side: THREE.DoubleSide,
+    });
+    const outer = new THREE.Mesh(
+      new THREE.RingGeometry(range.radiusCells - 0.18, range.radiusCells, 64), mat);
+    outer.rotation.x = -Math.PI / 2;
+    outer.name = "outer";
+    const inner = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.85, 24), mat);
+    inner.rotation.x = -Math.PI / 2;
+    directRing.add(outer, inner);
+    scene.add(directRing);
+  }
+  directRing.position.set(range.centerX, 0.07, range.centerY);
+}
+
 function updatePingLabels(view) {
   const alive = activePings(teamPings, view.tick ?? 0);
   teamPings.length = 0;
@@ -916,6 +947,7 @@ function renderBattlefield() {
   updateMineMeshes(view);
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
+  updateDirectRing(view);
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);

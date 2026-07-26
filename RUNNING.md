@@ -70,12 +70,15 @@ npm start                              # host machine
   north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half
   generated, east half mirrored). Wars there run slower — tuning follows
   your first playtest.
-- Direct drive (11L, the Firepower homage): press G — WASD becomes tank
-  controls (W/S throttle with half-speed reverse, A/D steer at your
-  chassis' turn rate; all chassis supported). Any drive input overrides
-  click-to-move; G again (or releasing everything) hands the wheel back.
-  Fully server-authoritative: terrain, supply, carrying, and towing
-  multipliers all still apply.
+- Direct drive (11L+11O, the Firepower homage): press G — WASD becomes
+  tank controls (W/S throttle with half-speed reverse, A/D steer at your
+  chassis' turn rate; all chassis supported). A red targeting circle
+  rides your unit showing true gun reach, and clicks become WEAPONS ONLY
+  with aim assist — anything visible within 3 cells of the cursor snaps
+  as the target (drones included); empty ground does nothing, so a stray
+  click never drives you off. G again hands the wheel back. Fully
+  server-authoritative: terrain, supply, carrying, and towing multipliers
+  all still apply.
 - Replay viewer (11H): the join screen links to /replay.html — every
   finished war is archived and re-simulated LOCALLY in your browser
   (deterministic engine), so you can scrub anywhere instantly. Top-down
