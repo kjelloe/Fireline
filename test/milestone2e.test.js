@@ -44,7 +44,7 @@ test("2E culling tracks a live server's fog exactly over time", () => {
   assert.deepEqual(diff.added, [4], "enemy 4 appears");
   rendered = visibleEnemyIds(snap.views[0]);
 
-  server.state.assets[4].x = 117 * 256;
+  server.state.assets[4].x = 120 * 256;
   server.state.assets[4].y = 60 * 256;
   snap = server.step();
   diff = diffVisibleEnemies(rendered, snap.views[0]);

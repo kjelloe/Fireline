@@ -903,3 +903,41 @@ participating). 5B reattach test hardened from fixed settles to poll-waits
 chaining).
 
 Suite 348/348 (x3), simwar + replay OK. Tagged slice-11b.
+
+---
+
+## slice-11c — AI hunt & guard + the balance hunt (2026-07-26, prompt 16 Q1/Q2d/Q14)
+
+Doctrine: fire priority targets enemy STANDARD-CARRIERS (Q2d — the ruled
+standoff counter); a unit stung by a drone swats it first (Q14, direct guns
+only); role-based garage crewing — with no crewed operable carrier
+team-wide (humans count), any free AI seat pulls the spare carrier from the
+garage before its default pick (Q1).
+
+The sim campaign then dragged three real bugs into the light, each found by
+5-seed evidence and fixed:
+1. **11B killed drive-by captures** → whichever team's patrol happened to
+   dwell on a relay won 55-0 every seed. Fix: designated capturer roles —
+   ONE nearest agent per (team, unowned relay) within 16 cells diverts and
+   stands on the flag; it won't stare down an enemy-held flag it can't
+   shoot at (a naive everyone-diverts froze 4/5 seeds at 0-0, both teams
+   contesting one flag out of supply).
+2. **The map was not mirror-symmetric**: B spawned at x=117 (mirror of A's
+   7 is 120) and the single centre relay at x=63 is un-mirrorable on a
+   128 map — B's patrol landed ON it, A's mirror landed beside it. Fix:
+   spawns mirrored (120, reserves 119/118) and FOUR relays in exact mirror
+   pairs (32<->95, 58<->69) with mirrored patrols. Result: every seed
+   became a two-sided war.
+3. **Laden carriers ran dry mid-map** (fuel is per tick, so slow chassis
+   pay more per cell; a standard round trip costs ~3200 vs FUEL_MAX 2400 —
+   seed 777's winning carrier stranded with the flag aboard). Fix:
+   FUEL_MAX 2400 → 4000 until 11F fuel logistics; MPG rebuild now uses the
+   constant.
+
+**Outcome: all 5 seeds end DECISIVELY by standard capture at tick
+3400-4000 (~6 min wars).** Residual: team B still wins 5/5 — much smaller
+margin, hypothesis recorded (cell-floor boundary favors west-movers by one
+edge per leg; needs a mirrored-teams harness to quantify). 1A → v25 (three
+repins: spawns, relays, fuel). 2A/8F/1I pins updated to the new map.
+
+Suite 351/351 (x2), campaign + replay OK. Tagged slice-11c.

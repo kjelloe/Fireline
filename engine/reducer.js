@@ -38,7 +38,7 @@ import {
   STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
   CARRIER_SPEED_NUM, CARRIER_SPEED_DEN, AUTO_RETURN_TICKS,
 } from "./standards.js";
-import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, resupplyAt, inSupply } from "./supply.js";
+import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, FUEL_MAX, resupplyAt, inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
 import {
@@ -764,7 +764,7 @@ function applyAdvanceTick(next) {
     wreck.suppressedTimer = 0;
     wreck.reloadTimer = 0;
     wreck.ammo = 12;
-    wreck.fuel = 2400;
+    wreck.fuel = FUEL_MAX;
     next.manufacture[team] = 0;
     next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
   }

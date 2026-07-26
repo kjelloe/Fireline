@@ -29,7 +29,7 @@ test("1D AI issues normal move_order commands on its next decision pass", () => 
     assert.equal(server.state.assets[assetId].state, ASSET_MOVING);
   }
   assert.ok(server.state.assets[0].x > 7 * 256, "team A regent should advance east");
-  assert.ok(server.state.assets[4].x < 117 * 256, "team B regent should advance west");
+  assert.ok(server.state.assets[4].x < 120 * 256, "team B regent should advance west");
 });
 
 test("1D human command resolves before AI and AI does not evict that human", () => {

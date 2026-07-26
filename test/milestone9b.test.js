@@ -165,7 +165,7 @@ test("9B AI seats redeploy and re-crew their paired asset", () => {
   // redeploy after the timer and retake its paired asset.
   S().assets[4].state = 0;
   S().assets[4].hp = 50;
-  S().assets[4].x = 117 * 256;
+  S().assets[4].x = 120 * 256;
   S().assets[4].y = 60 * 256;
   let recrewed = false;
   for (let i = 0; i < REDEPLOY_TICKS + 60 && !recrewed; i++) {

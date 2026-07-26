@@ -14,8 +14,11 @@ import { ASSET_DISABLED, ASSET_SALVAGED } from "../../engine/state.js";
 // what lets a tank fight this deep in the corridor. Team B's route is shorter,
 // so B captures, gains supply, and defeats the out-of-supply attacker.
 const OPS = [
-  { operatorId: 0, team: 0, assetId: 0, goal: { cellX: 63, cellY: 63 } },
-  { operatorId: 1, team: 1, assetId: 4, goal: { cellX: 63, cellY: 63 } },
+  // 11B era: sharing the flag cell would contest-freeze it forever. Op 1
+  // takes team B's mid relay (capture countdown -> supply); op 0 stands one
+  // cell off, unsupplied, and loses the duel — captures AND disables flow.
+  { operatorId: 0, team: 0, assetId: 0, goal: { cellX: 68, cellY: 63 } },
+  { operatorId: 1, team: 1, assetId: 4, goal: { cellX: 69, cellY: 63 } },
 ];
 
 function operable(state) {

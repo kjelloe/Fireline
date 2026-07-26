@@ -51,8 +51,9 @@ const AGENTS = Object.freeze([
 // Legible doctrine: advance from both base areas toward the corridor, then
 // patrol the centre. Team B's patrol crosses the centre relay, so AI wars
 // contest supply the same way humans do.
-const TEAM_A_PATROL = Object.freeze([[48, 56], [60, 56], [64, 63], [56, 70]]);
-const TEAM_B_PATROL = Object.freeze([[79, 56], [67, 56], [63, 63], [71, 70]]);
+// 11C: exact mirrors (x' = 127-x), each crossing its team's mid relay.
+const TEAM_A_PATROL = Object.freeze([[48, 56], [60, 56], [58, 63], [56, 70]]);
+const TEAM_B_PATROL = Object.freeze([[79, 56], [67, 56], [69, 63], [71, 70]]);
 
 function patrolTarget(agent, tick) {
   const patrol = agent.team === 0 ? TEAM_A_PATROL : TEAM_B_PATROL;
@@ -85,20 +86,36 @@ function nearestUnownedRelay(state, asset) {
 function pickFireTarget(state, asset, visibleSet) {
   let best = null;
   let bestKey = null;
+  // Q2d (prompt 16): an enemy CARRYING a standard is the priority target —
+  // the ruled counter to the mutual-carry standoff. Rank: carrier-of-standard
+  // first, then nearest, ties on lowest id.
+  const carryingIds = new Set(
+    state.standards.filter((st) => st.carrierAssetId !== -1).map((st) => st.carrierAssetId)
+  );
+  let bestCarries = false;
   for (const enemy of state.assets) {
     if (enemy.team === asset.team || isWreck(enemy)) continue;
     if (!visibleSet.has(enemy.id)) continue;
     if (!inFireRange(asset, enemy)) continue;
+    const carries = carryingIds.has(enemy.id);
     const dx = enemy.x - asset.x;
     const dy = enemy.y - asset.y;
     const key = dx * dx + dy * dy;
-    if (best === null || key < bestKey || (key === bestKey && enemy.id < best.id)) {
+    const better =
+      best === null ||
+      (carries && !bestCarries) ||
+      (carries === bestCarries && (key < bestKey || (key === bestKey && enemy.id < best.id)));
+    if (better) {
       best = enemy;
       bestKey = key;
+      bestCarries = carries;
     }
   }
   return best;
 }
+
+// 11C: how far off-plan an agent will divert to flip a nearby relay.
+export const CAPTURE_SEEK_CELLS = 16;
 
 export const AI_EASY = 0;
 export const AI_NORMAL = 1;
@@ -157,6 +174,35 @@ export class AIRegency {
       }
     }
 
+    // 11C capture-seek roles: ONE designated capturer per (team, unowned
+    // relay) — the nearest controlled operable asset, ties on lowest
+    // operator id. Sim-verified: letting everyone divert piled both teams
+    // onto one contested flag where nobody could fire (out of supply) and
+    // four of five seeds froze at 0-0.
+    const capturerFor = new Map(); // `${team}:${siteId}` -> operatorId
+    for (const site of state.sites) {
+      for (const team of [0, 1]) {
+        if (site.owner === team) continue;
+        let bestOp = -1;
+        let bestDist = Infinity;
+        for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+          const op = state.operators[operatorId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
+          const dist = Math.abs(site.cellX - worldToCellFloor(a.x)) +
+                       Math.abs(site.cellY - worldToCellFloor(a.y));
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestOp = operatorId;
+          }
+        }
+        if (bestOp !== -1 && bestDist <= CAPTURE_SEEK_CELLS) {
+          capturerFor.set(`${team}:${site.id}`, bestOp);
+        }
+      }
+    }
+
     for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
       const operator = state.operators[operatorId];
 
@@ -172,12 +218,27 @@ export class AIRegency {
       }
       if (operator.state === OP_ACTIVE && operator.assetId === -1) {
         let pick = null;
-        if (agent) {
+        const team = operator.team;
+        // Q1 (prompt 16): "AI may crew free assets when a ROLE is unfilled."
+        // TEAM-wide check (a human raiding fills the role too): no crewed
+        // operable carrier anywhere on the team → ANY free AI seat grabs a
+        // spare carrier before its default pick.
+        const carrierCrewed = state.assets.some((a) =>
+          a.team === team && a.operatorId !== -1 && !isWreck(a) &&
+          getUnitStats(a.type).canCarryStandard);
+        const roleCarrier = !carrierCrewed
+          ? state.assets.find((a) =>
+              a.team === team && a.operatorId === -1 && !isWreck(a) &&
+              getUnitStats(a.type).canCarryStandard)
+          : null;
+        if (roleCarrier) {
+          pick = roleCarrier.id;
+        } else if (agent) {
           const paired = state.assets[agent.assetId];
           if (paired && paired.operatorId === -1 && !isWreck(paired)) pick = paired.id;
         } else {
           const free = state.assets.find((a) =>
-            a.team === state.operators[operatorId].team &&
+            a.team === team &&
             a.operatorId === -1 && !isWreck(a));
           if (free) pick = free.id;
         }
@@ -198,6 +259,17 @@ export class AIRegency {
       const dutyOpen = this.difficulty !== AI_EASY ||
         state.tick % (2 * reload) < reload;
       if (dutyOpen && asset.reloadTimer === 0 && asset.ammo > 0 && inSupply(state, asset)) {
+        // Q14 (prompt 16): a drone stinging THIS asset gets swatted first —
+        // cheap shot, ends the pestering. Indirect tubes can't track it.
+        if (!getUnitStats(asset.type).indirect) {
+          const pest = state.drones.find(
+            (d) => d.targetAssetId === asset.id && inFireRange(asset, d)
+          );
+          if (pest) {
+            commands.push({ type: CMD_FIRE_ORDER, operatorId, targetDroneId: pest.id });
+            continue;
+          }
+        }
         const target = pickFireTarget(state, asset, visibleByTeam[asset.team]);
         if (target) {
           commands.push({ type: CMD_FIRE_ORDER, operatorId, targetAssetId: target.id });
@@ -223,6 +295,22 @@ export class AIRegency {
         } else if (asset.id === raiderFor[asset.team] &&
                    (enemyStd.status === STD_AT_BASE || enemyStd.status === STD_DROPPED)) {
           target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
+        }
+      }
+      // 11C capture-seek (11B consequence): the countdown killed drive-by
+      // captures. The designated capturer diverts to its relay and stands
+      // on it (standing on the target cell issues no move — the dwell IS
+      // the capture). It won't stare down an enemy-held flag it cannot
+      // shoot at (out of supply): that froze whole wars at 0-0.
+      if (!target) {
+        const relay = nearestUnownedRelay(state, asset);
+        if (relay && capturerFor.get(`${asset.team}:${relay.id}`) === operatorId) {
+          const enemyOnFlag = state.assets.some((e) =>
+            e.team !== asset.team && !isWreck(e) &&
+            worldToCellFloor(e.x) === relay.cellX && worldToCellFloor(e.y) === relay.cellY);
+          if (!enemyOnFlag || inSupply(state, asset)) {
+            target = [relay.cellX, relay.cellY];
+          }
         }
       }
       if (!target && agent && this.difficulty !== AI_HARD) {

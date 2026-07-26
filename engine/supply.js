@@ -8,9 +8,12 @@ import { worldToCellFloor } from "../shared/fixedmath.js";
 
 export const AMMO_MAX = 12;
 // 1 fuel per moving tick; at BASE_SPEED 32/256 cell a full 128-cell crossing
-// costs ~1024 ticks, so 2400 now covers two crossings — generous on purpose
-// after the pace x2 pass.
-export const FUEL_MAX = 2400;
+// costs ~1024 ticks. Slow chassis pay per TICK, so the laden Command Carrier
+// (speed 24 x 192/256 carry multiplier) needs ~3200 for a standard round
+// trip — sim seed 777 stranded it dry mid-map with the flag aboard. 4000
+// keeps deep raids feasible until 11F brings fuel logistics; fuel still
+// bites (a tank gets ~4 crossings, a laden carrier ~1.25 round trips).
+export const FUEL_MAX = 4000;
 export const SUPPLY_FIRE_COST = 1;
 export const SUPPLY_MOVE_COST = 1;
 

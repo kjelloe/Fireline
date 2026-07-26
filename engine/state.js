@@ -33,7 +33,7 @@ const MAP_PROFILES = {
 };
 
 // Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
-// original 4v4 arrangement (0-3 team A col 7, 4-7 team B col 117 — positions
+// original 4v4 arrangement (0-3 team A col 7, 4-7 team B col 120 — positions
 // and chassis pinned by 1A/1B/1D tests). Ids 8-19 are team A reserves and
 // 20-31 team B reserves (32 field assets total — the v1 "32 players" scale).
 // Original eight keep the pinned tank/tank/scout/artillery pattern; reserves
@@ -45,10 +45,13 @@ const SPAWN_TYPES = [0, 0, 1, 2];
 // Per-team totals: 5 tanks, 3 scouts, 3 artillery, 3 trucks, 2 carriers.
 const RESERVE_TYPES = [4, 3, 1, 0, 0, 1, 2, 3, 2, 3, 0, 4];
 const TEAM_A_SPAWN_X = 7;
-const TEAM_B_SPAWN_X = 117;
+// 11C balance fix: 117 put B three cells closer to the center relay than
+// A's mirror (127-7=120) — B won the middle race and the war in 5/5 sim
+// seeds. Spawns are now exact mirrors.
+const TEAM_B_SPAWN_X = 120;
 const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
 const TEAM_A_RESERVE_COLS = [8, 9];
-const TEAM_B_RESERVE_COLS = [116, 115];
+const TEAM_B_RESERVE_COLS = [119, 118]; // mirror of A's [8, 9]
 
 function createOperators() {
   const operators = [];
@@ -118,10 +121,16 @@ function createFieldAssets() {
   return assets;
 }
 
-// Relay sites along the corridor: west approach, objective centre, east approach.
+// Relay sites along the corridor: west approach, two mid relays, east
+// approach. 11C balance fix: the old single centre relay at x=63 was
+// un-mirrorable on a 128 map (centre = 63.5) — team B's patrol landed ON
+// it while A's mirror landed beside it, and B won the middle race in 5/5
+// sim seeds. Four relays in exact mirror pairs (32<->95, 58<->69) give
+// each side a natural mid anchor and put the fight at the seam.
 const RELAY_CELLS = [
   { cellX: 32, cellY: 63 },
-  { cellX: 63, cellY: 63 },
+  { cellX: 58, cellY: 63 },
+  { cellX: 69, cellY: 63 },
   { cellX: 95, cellY: 63 },
 ];
 
