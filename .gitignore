@@ -2,3 +2,4 @@ node_modules/
 *.log
 test/headless/reports/
 **/*.zip
+dev-prompts.md
