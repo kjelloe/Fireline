@@ -830,3 +830,22 @@ hashed state — no fixture repin. `joinAndSelect` test helper confirms by
 default (staging convenience); gate tests issue raw commands.
 
 Suite 334/334 (x2), simwar + replay OK. Tagged slice-10b.
+
+---
+
+## slice-10c — Context pings (night session, 2026-07-26)
+
+Plan 2.3, spec 02 §14, v2.0 subset chosen: attack / defend / rally /
+need_escort / recovery_in_progress / mines_detected / need_rescue. New
+`ping` command: driving seats ping a named cell or their own; downed seats
+may ONLY cry need_rescue, pinned at their body; garage seats must name a
+cell. Anti-spam is deterministic — per-operator `lastPingTick` in hashed
+state (1A → v21), 30-tick cooldown. **Structural addition: toTeam-scoped
+events** — buildView now withholds events carrying `toTeam` from the other
+team, so pings ride the normal event wire with zero enemy leakage (first
+use of per-team events; nothing existing carried the field). Client:
+`ping_model.js` pure context-option module (the 1/2/3 keys mean what your
+seat is doing), cyan world labels with 50-tick TTL via `activePings`.
+AI regents don't ping yet.
+
+Suite 340/340 (x2), simwar + replay OK. Tagged slice-10c.

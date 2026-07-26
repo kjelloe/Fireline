@@ -5,9 +5,9 @@ verified. Every completed slice is git-tagged.*
 
 **Session outcome: 6 of 7 Wave-1 slices shipped and tagged (9A, 9F, 9B,
 9D, 9E, 9G) — the seventh (9C cargo) is deliberately parked on a design
-question — plus the first Wave-2 slice (10B takeover confirmations).
-Suite 306 → 334 tests, fixture v14 → v20, every slice double-run green
-with simwar + replay verification.**
+question — plus the first two Wave-2 slices (10B takeover confirmations, 10C context
+pings). Suite 306 → 340 tests, fixture v14 → v21, every slice double-run
+green with simwar + replay verification.**
 
 ## Session opening state
 
@@ -104,13 +104,20 @@ entity system since standards.
    pattern persists across seeds, strengthening question 2. Downed AI crews
    redeploy and re-crew correctly (no more seat bleed-out).
 
-## Bonus: first Wave-2 slice landed
+## Bonus: first Wave-2 slices landed
 
 **slice-10b — Takeover confirmations** (plan 2.2, spec 02 §9): claiming an
 uncrewed asset that carries the standard, tows a wreck, or has passengers
 aboard now requires an explicit confirm (Enter in the client, Esc cancels);
 plain assets keep the single-click flow; AI regents always confirm. Chosen
 as the only Wave-2 item with zero open design questions. Suite **334/334**.
+
+**slice-10c — Context pings** (plan 2.3, spec 02 §14): keys 1/2/3 send
+context-sensitive team signals (carrier: ESCORT THE STANDARD; towing truck:
+RECOVERY IN PROGRESS; scout: MINES DETECTED; downed: NEED RESCUE), 3 s
+deterministic per-seat cooldown, 5 s world labels. Structurally new:
+**toTeam-scoped events** — the first per-team event channel, fog-safe by
+construction (enemy views never receive them). Suite **340/340**.
 
 ## Wave-1 close-out sim campaign (5 seeds × 12000 ticks, AI-only)
 
@@ -178,6 +185,11 @@ as the only Wave-2 item with zero open design questions. Suite **334/334**.
     their duty cycle keeps them moving — but a stranded/unsupplied AI unit
     will eat stings without shooting back). Add "shoot the drone stinging
     me" to the fire doctrine?
+15. **Ping vocabulary** (10C): shipped subset is attack/defend/rally/
+    need_escort/recovery_in_progress/mines_detected/need_rescue on keys
+    1/2/3. Additions from spec 02 §14 (Carrier under attack, Road blocked,
+    Safe route marked) can be one-liners — which do you want in v2.0? And
+    should AI regents ping (e.g., their raider calling need_escort)?
 
 ## How to review this session
 

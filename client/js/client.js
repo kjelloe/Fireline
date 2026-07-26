@@ -13,6 +13,8 @@ import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver } from "./feedback_model.js";
+import { pingOptionsFor } from "./ping_model.js";
+import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
@@ -42,6 +44,7 @@ const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let lastSelectAttempt = -1; // 10B
 let pendingTakeover = -1;   // 10B: asset awaiting Enter-confirm
+const teamPings = []; // 10C: recent own-team pings for world labels
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -121,6 +124,12 @@ function init() {
     // 9E: M lays a mine under the tank; C clears the nearest adjacent
     // known mine with a truck.
     if (e.key === "m" || e.key === "M") send({ type: "deploy_mine" });
+    // 10C: 1/2/3 send context pings (what they mean depends on your seat).
+    if (e.key === "1" || e.key === "2" || e.key === "3") {
+      const opts = pingOptionsFor(interpolator.latest(), joined?.operatorId);
+      const pick = opts[Number(e.key) - 1];
+      if (pick) send({ type: "ping", kind: pick.kind });
+    }
     if (e.key === "c" || e.key === "C") {
       const v = interpolator.latest();
       const mine = nearestAdjacentMine(v);
@@ -286,6 +295,7 @@ function handleEvents(events) {
     if (e.type === "rejected" && e.reason === "takeover needs confirmation") {
       pendingTakeover = lastSelectAttempt;
     }
+    if (e.type === "ping") teamPings.push(e); // 10C (view is already team-scoped)
     if (e.type === "game_over") showEndScreen();
   }
 }
@@ -727,6 +737,25 @@ function updateDroneMeshes(view, nowMs) {
   }
 }
 
+function updatePingLabels(view) {
+  const alive = activePings(teamPings, view.tick ?? 0);
+  teamPings.length = 0;
+  teamPings.push(...alive);
+  const live = new Set();
+  for (const p of alive) {
+    const key = `ping${p.operatorId}`;
+    live.add(key);
+    upsertWorldLabel(key, `◈ ${(p.kind ?? "").replace(/_/g, " ").toUpperCase()}`,
+      "#7fd4ff", p.cellX + 0.5, 1.6, p.cellY + 0.5);
+  }
+  for (const [key, label] of worldLabels) {
+    if (key.startsWith("ping") && !live.has(key)) {
+      scene.remove(label.sprite);
+      worldLabels.delete(key);
+    }
+  }
+}
+
 function updateDownedMeshes(view) {
   const live = new Set();
   for (const d of view.downedOperators ?? []) {
@@ -798,6 +827,7 @@ function renderBattlefield() {
   updateDownedMeshes(view);
   updateMineMeshes(view);
   updateDroneMeshes(view, performance.now());
+  updatePingLabels(view);
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);

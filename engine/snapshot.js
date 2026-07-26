@@ -16,6 +16,7 @@ export function hashState(state) {
   for (const o of state.operators) {
     w.writeI32LE(o.id); w.writeI32LE(o.team); w.writeI32LE(o.state);
     w.writeI32LE(o.assetId); w.writeI32LE(o.score); w.writeI32LE(o.downTimer);
+    w.writeI32LE(o.lastPingTick); // added 10C
   }
   for (const a of state.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);

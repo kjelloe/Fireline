@@ -11,7 +11,7 @@ import {
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
-  CMD_DEPLOY_MINE, CMD_CLEAR_MINE,
+  CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import {
@@ -22,6 +22,7 @@ import {
   CAMP_TICKS, DRONE_LIFETIME, DRONE_HIT_INTERVAL, DRONE_DAMAGE,
   DRONE_STATION_CELLS, launchSiteFor, stepDrone,
 } from "./drone.js";
+import { PING_KINDS, PING_COOLDOWN_TICKS, pingRejection } from "./pings.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -237,6 +238,38 @@ function disableAsset(next, target, scoringTeam) {
     carried.y = target.y;
     next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
   }
+}
+
+// 10C: a bounded team signal — kind + place, own team only, cooled down.
+function applyPing(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (!PING_KINDS.includes(command.kind)) return reject(next, command, "unknown ping kind");
+  const why = pingRejection(operator.state, OP_ACTIVE, OP_DOWN, command.kind);
+  if (why) return reject(next, command, why);
+  if (next.tick - operator.lastPingTick < PING_COOLDOWN_TICKS) {
+    return reject(next, command, "ping cooling down");
+  }
+  // Where: a downed seat pings its own body; a driving seat pings the
+  // target cell if given, else its asset's cell; a seatless active
+  // operator (in the garage) must give a target cell.
+  let cellX = command.targetCellX;
+  let cellY = command.targetCellY;
+  if (operator.state === OP_DOWN) {
+    const body = downedFor(next, operator.id);
+    cellX = worldToCellFloor(body.x);
+    cellY = worldToCellFloor(body.y);
+  } else if (cellX === undefined || cellY === undefined) {
+    const asset = operator.assetId === -1 ? null : next.assets[operator.assetId];
+    if (!asset) return reject(next, command, "ping needs a target cell");
+    cellX = worldToCellFloor(asset.x);
+    cellY = worldToCellFloor(asset.y);
+  }
+  operator.lastPingTick = next.tick;
+  next.events.push({
+    type: "ping", toTeam: operator.team, operatorId: operator.id,
+    kind: command.kind, cellX, cellY, tick: next.tick,
+  });
+  return next;
 }
 
 // 9E: lay a mine on the asset's own cell (arms after MINE_ARM_TICKS).
@@ -754,6 +787,7 @@ export function apply(state, command) {
     case CMD_FIRE_ORDER: return applyFireOrder(next, command);
     case CMD_TOW_ORDER: return applyTowOrder(next, command);
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
+    case CMD_PING: return applyPing(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);

@@ -39,6 +39,10 @@ export const REJECTION_TEXT = Object.freeze({
   "no such mine": "No mine there.",
   "too far to clear": "Get adjacent to the mine to clear it.",
   "mine not marked": "Unknown minefield — a scout must mark it first.",
+  "unknown ping kind": "That signal is not in the book.",
+  "ping cooling down": "Signal lamp recharging — a moment.",
+  "only rescue pings while down": "On foot you can only call for rescue.",
+  "ping needs a target cell": "Pick a spot on the map to signal about.",
   "takeover needs confirmation":
     "That asset carries real responsibility — press ENTER to confirm the takeover, ESC to cancel.",
   "no such drone": "That drone is already gone.",
@@ -74,6 +78,10 @@ export function describeEvent(e, myTeam) {
     case "mine_marked": return "Scouts marked an enemy mine.";
     case "mine_detonated": return `MINE! Asset ${e.assetId} hit.`;
     case "mine_cleared": return `Mine cleared by asset ${e.assetId}.`;
+    case "ping": {
+      const label = (e.kind ?? "").replace(/_/g, " ").toUpperCase();
+      return `[PING] ${label} @ (${e.cellX},${e.cellY})`;
+    }
     case "drone_launched":
       return "DRONE UP — someone idled too long off supply. Move or shoot it down.";
     case "drone_hit": return `Drone stinging asset ${e.assetId} — move!`;

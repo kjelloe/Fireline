@@ -53,7 +53,7 @@ const TEAM_B_RESERVE_COLS = [116, 115];
 function createOperators() {
   const operators = [];
   for (let id = 0; id < OPERATOR_COUNT; id++) {
-    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0 });
+    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000 });
   }
   return operators;
 }

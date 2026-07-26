@@ -61,6 +61,10 @@ npm start                              # host machine
   visible to everyone. It stings for light damage until you MOVE (or get back
   in supply); any direct-fire gun downs it with one shot (click it) —
   artillery cannot track aircraft.
+- Context pings (10C): keys 1/2/3 send team signals whose meaning follows
+  your seat (a standard carrier offers ESCORT THE STANDARD, a towing truck
+  RECOVERY IN PROGRESS, a scout MINES DETECTED, downed operators NEED
+  RESCUE). Own team only — the enemy never sees them; 3 s cooldown per seat.
 - Your browser keeps a persistent player id: closing the tab hands your asset
   to AI regency, reopening reattaches you to the same operator slot.
 - Difficulty: `AI_DIFFICULTY=0|1|2 npm start` (easy/normal/hard).

@@ -56,7 +56,8 @@ export function buildView(state, team) {
     phase: state.phase,
     winner: state.winner,
     teamScores: [...state.teamScores],
-    events: state.events,
+    // 10C: events carrying toTeam are that team's business only (pings).
+    events: state.events.filter((e) => e.toTeam === undefined || e.toTeam === team),
     mapCells: state.map.cells,
     friendlyAssets,
     visibleEnemies,
