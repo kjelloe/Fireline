@@ -142,6 +142,15 @@ export class NetworkTransport {
                 session.send("s_rejected", { seq: msg.seq, reason: "spectators only watch" });
                 return;
             }
+            // 11J ops hardening: per-connection token bucket. Purely a
+            // transport concern — a dropped command never reaches the
+            // reducer, so replays and determinism are untouched. Budget is
+            // generous for humans (direct drive streams intent) and tight
+            // enough to stop runaway scripts.
+            if (!this.allowCommand(session, Date.now())) {
+                session.send("s_rejected", { seq: msg.seq, reason: "rate limited" });
+                return;
+            }
 
             // Map transport signal to server command
             const cmd = { ...msg, operatorId: session.operatorId };
@@ -153,6 +162,22 @@ export class NetworkTransport {
         } catch (e) {
             console.error("Transport error:", e);
         }
+    }
+
+    // 11J: 30 commands/second sustained, burst of 60. Injectable clock for
+    // tests via the nowMs argument.
+    allowCommand(session, nowMs) {
+        const RATE = 30;
+        const BURST = 60;
+        if (session.rl === undefined) {
+            session.rl = { tokens: BURST, lastMs: nowMs };
+        }
+        const b = session.rl;
+        b.tokens = Math.min(BURST, b.tokens + ((nowMs - b.lastMs) / 1000) * RATE);
+        b.lastMs = nowMs;
+        if (b.tokens < 1) return false;
+        b.tokens -= 1;
+        return true;
     }
 
     handleDisconnect(ws) {

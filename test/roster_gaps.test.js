@@ -181,3 +181,35 @@ test("roster integration: the drive command works over the wire (11L ws gap)", a
     await appServer.stop();
   }
 });
+
+test("11J ops: /version reports provenance; command floods are rate limited", async () => {
+  const appServer = createAppServer({ mapSeed: 42, enableAi: false });
+  const addr = await appServer.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+  try {
+    const version = await (await fetch(`http://localhost:${addr.port}/version`)).json();
+    assert.equal(version.name, "more-firepower");
+    assert.ok(version.fixtureVersion >= 30, "fixture provenance exposed");
+    assert.equal(version.mapProfile, "frontier_corridor");
+
+    const ws = new WebSocket(`ws://localhost:${addr.port}`);
+    const messages = [];
+    ws.on("message", (d) => messages.push(JSON.parse(d)));
+    await new Promise((r) => ws.on("open", r));
+    ws.send(JSON.stringify({ type: "c_join", team: 0 }));
+    await new Promise((r) => setTimeout(r, 60));
+    // Flood far past the burst budget in one instant.
+    for (let i = 0; i < 200; i++) {
+      ws.send(JSON.stringify({ type: "move_order", targetCellX: 1, targetCellY: 1, seq: i }));
+    }
+    await new Promise((r) => setTimeout(r, 150));
+    const limited = messages.filter((m) => m.type === "s_rejected" && m.reason === "rate limited");
+    assert.ok(limited.length >= 100, `flood mostly rejected (${limited.length} limited)`);
+    // The session is throttled, not executed: the queue holds at most the
+    // burst worth of commands.
+    assert.ok(appServer.gameServer.queue.length <= 61,
+      `reducer sees at most the burst (${appServer.gameServer.queue.length})`);
+    ws.close();
+  } finally {
+    await appServer.stop();
+  }
+});

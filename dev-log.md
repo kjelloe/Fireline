@@ -1255,3 +1255,24 @@ strip → 22 tiles. 1A → v30.
 Sim gate: AI-war outcomes byte-identical to baseline (both new chassis
 are garage stock — humans and role-crewing reach them, fixed AI pairings
 don't). Suite 403/403 (x2). Tagged slice-11s.
+
+---
+
+## slice-11j — Ops hardening (2026-07-26, plan 2.6, prompt 23 window)
+
+Two protections for LAN playtests and BATCH_PC provenance:
+- **Per-connection rate limit** (transport-level token bucket: 30
+  commands/s sustained, burst 60 — generous for direct-drive intent
+  streams, fatal to runaway scripts). Purely a transport concern: a
+  dropped command never reaches the reducer, so determinism and replays
+  are untouched; flood test pins that the reducer queue holds at most
+  one burst.
+- **GET /version**: name, package version, 1A fixtureVersion, map
+  profile/seed, AI difficulty — exact provenance for bug reports and
+  batch results.
+Also: `debugging/analyze_sweep.py` — turns BATCH_PC CSVs into findings
+(win rates, decided-war length percentiles, per-system activity, and the
+question-18 mirror flip-rate verdict); smoke-verified against live runs
+(early signal: mirrored wars mostly stop deciding — residue is real).
+
+Suite 407/407 (x2). Tagged slice-11j.

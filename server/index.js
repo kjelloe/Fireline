@@ -4,6 +4,7 @@
 // broadcast. All game logic stays in engine/.
 
 import http from "node:http";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -39,6 +40,26 @@ export function createAppServer(options = {}) {
       players: transport.sessions.size,
       uptimeMs: Date.now() - startedAt,
       version: options.version ?? "dev",
+    });
+  });
+
+  // 11J: what exactly is running — for BATCH_PC provenance and bug reports.
+  app.get("/version", (req, res) => {
+    let pkgVersion = "dev";
+    let fixtureVersion = null;
+    try {
+      pkgVersion = JSON.parse(readFileSync(path.join(ROOT_DIR, "package.json"))).version;
+      fixtureVersion = JSON.parse(
+        readFileSync(path.join(ROOT_DIR, "test", "fixtures", "1A_reducer.json"))
+      ).fixtureVersion;
+    } catch { /* fine — a stripped deploy reports what it can */ }
+    res.json({
+      name: "more-firepower",
+      version: pkgVersion,
+      fixtureVersion,
+      mapProfile: gameServer.state.mapProfile,
+      mapSeed: gameServer.state.mapSeed,
+      aiDifficulty: options.aiDifficulty ?? 1,
     });
   });
 
