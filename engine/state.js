@@ -52,7 +52,7 @@ const SPAWN_TYPES = [0, 0, 1, 2];
 // No 17th asset; indices 0-3 stay AI-paired and never reorder.
 const RESERVE_TYPES_BY_TEAM = [
   [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 7, 4], // team 0: The Directorate
-  [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 0, 4], // team 1: The Outliers (Skimmer in 12C)
+  [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 8, 4], // team 1: The Outliers — Skimmer
 ];
 const TEAM_A_SPAWN_X = 7;
 // 11C balance fix: 117 put B three cells closer to the center relay than

@@ -72,6 +72,12 @@ const ICONS = {
     `<circle cx="32" cy="32" r="20" fill="none" stroke="${C.hullShadow}" stroke-width="6"/>` +
     `<path d="M32 32 L32 14 A18 18 0 0 1 48 26 Z" fill="${C.selection}"/>`
   ),
+  "icon_skimmer.svg": svg( // 12C: the airboat — hull wedge + fan circle
+    `<path d="M12 36 L44 30 L52 36 L44 42 Z" fill="${C.hullPaint}"/>` +
+    `<circle cx="16" cy="36" r="9" fill="none" stroke="${C.barrel}" stroke-width="3"/>` +
+    `<path d="M16 27 V45 M8 36 H24" stroke="${C.barrel}" stroke-width="2"/>` +
+    `<path d="M12 48 Q32 54 52 48" stroke="#4a7dc9" stroke-width="3" fill="none" opacity="0.7"/>`
+  ),
   "icon_sentinel.svg": svg( // 12B: the hardpoint — a squat block on legs
     `<rect x="20" y="24" width="24" height="16" rx="2" fill="${C.hullPaint}"/>` +
     `<rect x="26" y="14" width="12" height="10" rx="2" fill="${C.hullShadow}"/>` +
@@ -134,6 +140,7 @@ const SPRITES = {
   "unit_bike.svg": ICONS["icon_bike.svg"], // 11R
   "unit_mortar.svg": ICONS["icon_mortar.svg"], // 11S
   "unit_sentinel.svg": ICONS["icon_sentinel.svg"], // 12B
+  "unit_skimmer.svg": ICONS["icon_skimmer.svg"], // 12C
   "wreck.svg": ICONS["icon_wreck.svg"],
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],

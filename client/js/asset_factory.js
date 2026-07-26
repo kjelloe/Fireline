@@ -218,7 +218,8 @@ function buildCarrier() {
 
 // Wrecks: same footprint, slumped/tilted/darkened, identifiable (spec §10).
 function buildWreck(kind) {
-  const base = kind === "wreck_sentinel" ? buildSentinel()
+  const base = kind === "wreck_skimmer" ? buildSkimmer()
+    : kind === "wreck_sentinel" ? buildSentinel()
     : kind === "wreck_mortar" ? buildMortar()
     : kind === "wreck_bike" ? buildBike()
     : kind === "wreck_scout" ? buildScout()
@@ -358,6 +359,31 @@ function buildSentinel() {
   return g;
 }
 
+function buildSkimmer() {
+  // 12C: a rag-tag airboat — flat hull, big caged fan aft, outrigger
+  // floats, an aerial of exposed wiring. bypass · improvise.
+  const g = new THREE.Group();
+  const C = colors();
+  const hull = box(0.4, 0.1, 0.62, C.hullPaint); hull.position.y = 0.14;
+  const bow = box(0.3, 0.08, 0.16, C.hullShadow);
+  bow.position.set(0, 0.16, 0.36); bow.rotation.x = 0.25;
+  for (const side of [-1, 1]) {
+    const float = cyl(0.07, 0.07, 0.5, 6, C.hullShadow, "wornMetal");
+    float.rotation.x = Math.PI / 2; float.position.set(side * 0.26, 0.08, 0);
+    g.add(float);
+  }
+  const cage = cyl(0.2, 0.2, 0.08, 10, C.barrel, "wornMetal");
+  cage.rotation.x = Math.PI / 2; cage.position.set(0, 0.32, -0.3);
+  const fan = box(0.3, 0.3, 0.02, C.hullShadow); fan.position.set(0, 0.32, -0.3);
+  const seat = box(0.16, 0.12, 0.16, C.hullShadow); seat.position.set(0, 0.24, 0.05);
+  const gun = cyl(0.025, 0.03, 0.3, 6, C.barrel, "wornMetal");
+  gun.rotation.x = Math.PI / 2; gun.position.set(0.1, 0.3, 0.3);
+  const wire = cyl(0.008, 0.008, 0.4, 4, C.recover); wire.position.set(-0.15, 0.45, -0.1); wire.rotation.z = 0.3;
+  const panel = teamPanel(0.2, 0.03, 0.16); panel.position.set(0, 0.21, -0.12);
+  g.add(hull, bow, cage, fan, seat, gun, wire, panel);
+  return g;
+}
+
 function buildMine() {
   const g = new THREE.Group();
   const C = colors();
@@ -410,6 +436,8 @@ const BUILDERS = {
   wreck_mortar: () => buildWreck("wreck_mortar"), // 11S
   sentinel: buildSentinel,                            // 12B
   wreck_sentinel: () => buildWreck("wreck_sentinel"), // 12B
+  skimmer: buildSkimmer,                            // 12C
+  wreck_skimmer: () => buildWreck("wreck_skimmer"), // 12C
   operator_down: buildOperatorDown,
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),

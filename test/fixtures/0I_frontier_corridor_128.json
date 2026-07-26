@@ -1,5 +1,5 @@
 {
- "fixtureVersion": 2,
+ "fixtureVersion": 4,
  "id": "0I_frontier_corridor_128",
  "purpose": "Compact deterministic parity contract for the 128x128 named profile. Does not store the 16,384-cell array.",
  "profile": {
@@ -13,7 +13,8 @@
   "2": "forest",
   "3": "rough",
   "4": "blocking",
-  "5": "path"
+  "5": "path",
+  "6": "water"
  },
  "cases": [
   {
@@ -26,7 +27,8 @@
     816,
     952,
     0,
-    320
+    320,
+    0
    ],
    "probes": [
     {
@@ -111,7 +113,8 @@
     822,
     958,
     0,
-    320
+    320,
+    0
    ],
    "probes": [
     {

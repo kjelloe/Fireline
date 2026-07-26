@@ -11,6 +11,7 @@ export const UNIT_CARRIER = 4;
 export const UNIT_BIKE = 5;    // 11R: scout bike
 export const UNIT_MORTAR = 6;  // 11S: mortar carrier
 export const UNIT_SENTINEL = 7; // 12B: Directorate unique
+export const UNIT_SKIMMER = 8;  // 12C: Outlier unique
 
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
@@ -20,6 +21,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: true, // 11N: too wide for woodland paths — crosses at rough speed
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   [UNIT_SCOUT]: Object.freeze({
     id: UNIT_SCOUT, name: "scout",
@@ -28,6 +30,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false, // 11N: paths are a scout's home ground
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
@@ -37,6 +40,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false, // 11N
     canCapture: true, siege: true, // 11R: ONLY artillery breaches sites (Q9)
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   // Spec roster middle path (playtest 2 decision): the Logistics Truck is the
   // ONLY chassis that tows — the rescue fantasy becomes a role, not a chore.
@@ -48,6 +52,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   // Rescue Update 9A (rulings Q1/Q2): the Command Carrier is the ONLY chassis
   // that can take the enemy standard, and it will carry downed operators (9B).
@@ -59,6 +64,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   // 11R (prompt 22): the Scout Bike — a courier that outruns everything,
   // dies to anything, and can neither capture nor contest a relay. It
@@ -71,6 +77,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false,
     canCapture: false, siege: false,
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
   // 12B (prompt 29): the Directorate Sentinel — Deploy Hardpoint. Mobile:
   // a crawling, lightly-armed hull. Deployed: an immobile hardpoint with
@@ -84,6 +91,20 @@ export const UNIT_STATS = Object.freeze({
     canCapture: true, siege: false,
     deployable: true,
     deployedRange: 2048, deployedDamage: 25, deployedReloadTicks: 20,
+    amphibious: false, // 12C
+  }),
+  // 12C (prompt 29): the Outlier Skimmer — Riverline Drive. A rag-tag
+  // airboat: light, fast, and the only hull that treats water as a road.
+  // bypass · improvise · exploit neglected routes.
+  [UNIT_SKIMMER]: Object.freeze({
+    id: UNIT_SKIMMER, name: "skimmer",
+    speed: 56, range: 896, minRange: 0, hp: 45, damage: 8, indirect: false, reloadTicks: 12,
+    canTow: false, canCarryStandard: false, capacity: 0, turnRate: 16,
+    canMine: false, canClearMines: false,
+    heavy: false,
+    canCapture: true, siege: false,
+    deployable: false,
+    amphibious: true,
   }),
   // 11S (prompt 22): the Mortar Carrier — artillery's little brother that
   // keeps up with a push. Indirect fire on the move-and-stop rhythm:
@@ -98,6 +119,7 @@ export const UNIT_STATS = Object.freeze({
     heavy: false,
     canCapture: true, siege: false,
     deployable: false, // 12B
+    amphibious: false, // 12C
   }),
 });
 

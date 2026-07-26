@@ -20,6 +20,7 @@ test("3A stat table is pinned", () => {
     heavy: true, // 11N: no path bonus for the tank
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
+    amphibious: false, // 12C
   });
   assert.equal(getUnitStats(UNIT_SCOUT).speed, 56);
   assert.equal(getUnitStats(UNIT_SCOUT).hp, 60);
@@ -38,9 +39,10 @@ test("3A frontier spawn mix cycles tank/tank/scout/artillery per team", () => {
   for (const team of [0, 1]) {
     const teamAssets = s.assets.filter((a) => a.team === team);
     assert.equal(teamAssets.length, 16);
-    assert.equal(teamAssets.filter((a) => a.type === 0).length, team === 0 ? 3 : 4,
-      "tanks (11R bike trade; 12B: Directorate trades one more for the Sentinel)");
+    assert.equal(teamAssets.filter((a) => a.type === 0).length, 3,
+      "3 tanks each (11R bike trade; 12B/12C: one more for the faction unique)");
     if (team === 0) assert.equal(teamAssets.filter((a) => a.type === 7).length, 1, "1 Sentinel (12B)");
+    if (team === 1) assert.equal(teamAssets.filter((a) => a.type === 8).length, 1, "1 Skimmer (12C)");
     assert.equal(teamAssets.filter((a) => a.type === 5).length, 1, "1 scout bike (11R)");
     assert.equal(teamAssets.filter((a) => a.type === 1).length, 3, "3 scouts");
     assert.equal(teamAssets.filter((a) => a.type === 2).length, 2, "2 artillery (11S: one traded for the mortar)");

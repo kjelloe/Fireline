@@ -29,7 +29,10 @@ test("1F terrain speed table has correct values", () => {
   assert.equal(speedMultiplier(5), 307);
   assert.equal(speedMultiplier(5, { heavy: true }), 128);
   assert.equal(speedMultiplier(5, { heavy: false }), 307);
-  assert.equal(Object.keys(TERRAIN_SPEED).length, 6);
+  // 12C: water — misery to ford, a trail for the amphibious Skimmer.
+  assert.equal(speedMultiplier(6), 64);
+  assert.equal(speedMultiplier(6, { amphibious: true }), 307);
+  assert.equal(Object.keys(TERRAIN_SPEED).length, 7);
 });
 
 test("1F asset on road tile moves faster than on open tile", () => {

@@ -29,7 +29,7 @@ test("11M riverline terrain is deterministic and mirror-symmetric", () => {
   assert.equal(at(63, 63), 1, "central bridge is road");
   assert.equal(at(63, 21), 1, "north bridge is road");
   assert.equal(at(63, 105), 1, "south bridge is road");
-  assert.equal(at(63, 40), 3, "river is rough between bridges");
+  assert.equal(at(63, 40), 6, "river is WATER between bridges (12C)");
 });
 
 test("11M every registered layout keeps the mirror invariant", () => {

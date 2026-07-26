@@ -167,8 +167,8 @@ test("14A riverline dressing: water on the river, rails on bridges, nothing on f
   assert.ok(water.length > 500, `the river reads as water (${water.length})`);
   assert.ok(rails.length >= 12, `bridges have rails (${rails.length})`);
   for (const w of water) {
-    assert.equal(river.cells[Math.floor(w.y) * river.width + Math.floor(w.x)], 3,
-      "water only over river rough");
+    assert.equal(river.cells[Math.floor(w.y) * river.width + Math.floor(w.x)], 6,
+      "water props only over T_WATER (12C)");
   }
   for (const r of rails) {
     assert.equal(river.cells[Math.floor(r.y) * river.width + Math.floor(r.x)], 1,

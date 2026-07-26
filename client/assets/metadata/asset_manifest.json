@@ -56,6 +56,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_sentinel.svg",
       "minimapIcon": "assets/icons/svg/icon_sentinel.svg",
       "triBudget": 2500
+    },
+    "unit_skimmer": {
+      "webglModel": "assets/models/units/unit_skimmer.glb",
+      "procedural": "skimmer",
+      "fallbackSprite": "assets/sprites/fallback/unit_skimmer.svg",
+      "minimapIcon": "assets/icons/svg/icon_skimmer.svg",
+      "triBudget": 2000
     }
   },
   "wrecks": {
@@ -114,6 +121,13 @@
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2500
+    },
+    "wreck_skimmer": {
+      "webglModel": "assets/models/wrecks/wreck_skimmer.glb",
+      "procedural": "wreck_skimmer",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
     }
   },
   "objectives": {

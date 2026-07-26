@@ -62,7 +62,7 @@ export function propsFor(cells, width, height, profile = "frontier_corridor") {
           if (cx === RIVER_COLS[0] || cx === RIVER_COLS[RIVER_COLS.length - 1]) {
             props.push({ kind: "rail", x: cx + 0.5, y: cy + 0.5, scale: 1, rotation: 0 });
           }
-        } else if (terrain === 3) {
+        } else if (terrain === 6) { // 12C: T_WATER
           // The river itself: water sheen tiles, denser than rocks ever were.
           props.push({ kind: "water", x: cx + 0.5, y: cy + 0.5, scale: 1, rotation: 0 });
           const h = cellHash(cx, cy);

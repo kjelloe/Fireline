@@ -6,7 +6,7 @@
 import { createReplayPlayer } from "./replay_engine.js";
 import { describeEvent } from "./feedback_model.js";
 
-const TERRAIN_COLORS = ["#3e5a3e", "#8a8a72", "#274427", "#5e5240", "#2b2b33", "#6e5f42"]; // 11N: path
+const TERRAIN_COLORS = ["#3e5a3e", "#8a8a72", "#274427", "#5e5240", "#2b2b33", "#6e5f42", "#2a4a66"]; // 11N path, 12C water
 const TEAM_COLORS = ["#57c46b", "#d05a4a"];
 const CELL_PX = 6; // 128 cells -> 768 px
 const WIN_REASONS = { 1: "elimination", 2: "domination", 3: "points horn", 4: "STANDARD CAPTURED" };

@@ -13,6 +13,7 @@ export const T_FOREST = 2;
 export const T_ROUGH = 3;
 export const T_BLOCKING = 4;
 export const T_PATH = 5; // 11N: dirt road / woodland trail
+export const T_WATER = 6; // 12C: rivers — grim to ford, home to Skimmers
 
 export function generateMap(seed, width, height) {
   if (!Number.isInteger(width) || width < 4 || width > 256) {

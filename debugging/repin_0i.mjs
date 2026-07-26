@@ -13,7 +13,7 @@ for (const c of fx.cases) {
   const map = generateFrontierCorridor(c.rootSeed);
   const digest = computeFnv1a64(map.cells);
   c.expectedHashFnv1a64 = hashToHex64(digest.hashHi, digest.hashLo);
-  const counts = new Array(6).fill(0);
+  const counts = new Array(7).fill(0); // 12C: 6 = water
   for (const cell of map.cells) counts[cell] += 1;
   c.expectedTerrainCounts = counts;
   for (const probe of c.probes) {
@@ -21,6 +21,7 @@ for (const c of fx.cases) {
   }
 }
 fx.terrainIds["5"] = "path";
+fx.terrainIds["6"] = "water";
 fx.fixtureVersion = (fx.fixtureVersion ?? 1) + 1;
 fx.provenance = "11N: mirrored woodland paths added (rows 40/41/86/87, x 24..103); terrain id 5";
 writeFileSync(path, JSON.stringify(fx, null, 1) + "\n");

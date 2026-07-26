@@ -1471,3 +1471,26 @@ NUMBERS ARE MINE — flagged for tuning (12-Q #2 asked; answer pending).
 
 Suite 422/422 (x2, 427 with the new file), simwar + replay OK.
 Tagged slice-12b.
+
+---
+
+## slice-12c — The Outlier Skimmer (2026-07-27, prompt 29)
+
+Riverline Drive, and with it REAL WATER: `T_WATER` joins the terrain set
+and the riverline river band converts from rough to water. Design call
+(flagged for the designer): water is brutally slow but PASSABLE for
+normal hulls (0.25x — misery fording) rather than impassable, because
+the straight-line AI would wedge against a hard wall until the 13C route
+graph exists; the amphibious Skimmer crosses at trail speed (307) — an
+8x mobility gap on the river, the Outliers' highway. The Skimmer itself:
+speed 56, hp 45, light gun, fast tube, agile — bypass · improvise. New
+`amphibious` contract flag explicit on every chassis. Fielding per
+directive: Outlier garage slot idx 10 (id 30) traded from tank — both
+factions now run 3 tanks + their unique, rosters stay 16. Frontier map
+untouched (0I fixture re-pinned only for the counts-array width).
+Art: rag-tag airboat (fan cage, outrigger floats, exposed wiring);
+strip → 26 tiles. Roster sweep test now faction-aware.
+NUMBERS ARE MINE — the faction pair is UNTUNED until the faction-swap
+sweep campaign (12D) runs on the batch PC.
+
+Suite 431/431 (x2), simwar + replay OK. Tagged slice-12c.

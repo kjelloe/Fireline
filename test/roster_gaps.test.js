@@ -141,13 +141,14 @@ test("roster component: every fielded chassis is selectable and drivable (11R/11
   // selection) should fail HERE, not in a playtest garage.
   const s0 = createInitialState(42, "frontier_corridor");
   const types = [...new Set(s0.assets.map((a) => a.type))].sort();
-  assert.deepEqual(types, [0, 1, 2, 3, 4, 5, 6, 7],
-    "eight chassis fielded (12B: Sentinel is Directorate-only until 12C adds the Skimmer)");
+  assert.deepEqual(types, [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    "nine chassis fielded (12B Sentinel west, 12C Skimmer east)");
   for (const type of types) {
-    const asset = s0.assets.find((a) => a.type === type && a.team === 0 && a.operatorId === -1);
-    assert.ok(asset, `type ${type} has a free team-0 unit`);
+    // Faction uniques live on one side only — test on the owning team.
+    const asset = s0.assets.find((a) => a.type === type && a.operatorId === -1);
+    assert.ok(asset, `type ${type} has a free unit somewhere`);
     let s = createInitialState(42, "frontier_corridor");
-    s = apply(s, { type: "join_operator", operatorId: 0, team: 0 });
+    s = apply(s, { type: "join_operator", operatorId: 0, team: asset.team });
     s = apply(s, { type: "select_asset", operatorId: 0, assetId: asset.id, confirm: true });
     assert.equal(s.assets[asset.id].operatorId, 0, `type ${type} selectable`);
     s = apply(s, { type: "drive", operatorId: 0, throttle: 1, turn: 0 });

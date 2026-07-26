@@ -23,6 +23,7 @@ const T_OPEN = 0;
 const T_ROAD = 1;
 const T_FOREST = 2;
 const T_ROUGH = 3;
+const T_WATER = 6; // 12C
 
 function idx(x, y) { return y * RIVERLINE.width + x; }
 function randBelow(state, max) {
@@ -63,8 +64,9 @@ export function generateRiverline(rootSeed) {
   }
 
   // The river drowns whatever it crosses (both halves — symmetric band).
+  // 12C: real WATER — grim fording for hulls, a highway for Skimmers.
   for (const x of p.riverCols) {
-    for (let y = 0; y < p.height; y++) cells[idx(x, y)] = T_ROUGH;
+    for (let y = 0; y < p.height; y++) cells[idx(x, y)] = T_WATER;
   }
   // Bases are clear operational ground.
   for (const b of [p.teamABase, p.teamBBase]) {

@@ -82,7 +82,7 @@ export function generateFrontierCorridor(rootSeed) {
 }
 
 export function countTerrain(cells) {
-  const counts = [0, 0, 0, 0, 0, 0]; // 11N: index 5 = path
+  const counts = [0, 0, 0, 0, 0, 0, 0]; // 11N: 5 = path; 12C: 6 = water
   for (const cell of cells) counts[cell]++;
   return counts;
 }
