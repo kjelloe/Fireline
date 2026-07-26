@@ -8,6 +8,7 @@ export const UNIT_SCOUT = 1;
 export const UNIT_ARTILLERY = 2;
 export const UNIT_LOGISTICS = 3;
 export const UNIT_CARRIER = 4;
+export const UNIT_BIKE = 5;    // 11R: scout bike
 
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
@@ -15,12 +16,14 @@ export const UNIT_STATS = Object.freeze({
     speed: 32, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15, canTow: false, canCarryStandard: false, capacity: 0, turnRate: 8,
     canMine: true, canClearMines: false, // 9E: the Assault chassis lays mines
     heavy: true, // 11N: too wide for woodland paths — crosses at rough speed
+    canCapture: true, siege: false, // 11R
   }),
   [UNIT_SCOUT]: Object.freeze({
     id: UNIT_SCOUT, name: "scout",
     speed: 56, range: 1024, minRange: 0, hp: 60, damage: 10, indirect: false, reloadTicks: 8, canTow: false, canCarryStandard: false, capacity: 0, turnRate: 14,
     canMine: false, canClearMines: false, // 9E: scouts DETECT mines (los pass)
     heavy: false, // 11N: paths are a scout's home ground
+    canCapture: true, siege: false, // 11R
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
@@ -28,6 +31,7 @@ export const UNIT_STATS = Object.freeze({
     speed: 16, range: 3072, minRange: 768, hp: 80, damage: 30, indirect: true, reloadTicks: 40, canTow: false, canCarryStandard: false, capacity: 0, turnRate: 2,
     canMine: false, canClearMines: false,
     heavy: false, // 11N
+    canCapture: true, siege: true, // 11R: ONLY artillery breaches sites (Q9)
   }),
   // Spec roster middle path (playtest 2 decision): the Logistics Truck is the
   // ONLY chassis that tows — the rescue fantasy becomes a role, not a chore.
@@ -37,6 +41,7 @@ export const UNIT_STATS = Object.freeze({
     canTow: true, canCarryStandard: false, capacity: 0, turnRate: 10,
     canMine: false, canClearMines: true, // 9E: trucks clear marked mines
     heavy: false, // 11N
+    canCapture: true, siege: false, // 11R
   }),
   // Rescue Update 9A (rulings Q1/Q2): the Command Carrier is the ONLY chassis
   // that can take the enemy standard, and it will carry downed operators (9B).
@@ -46,6 +51,18 @@ export const UNIT_STATS = Object.freeze({
     canTow: false, canCarryStandard: true, capacity: 2, turnRate: 6,
     canMine: false, canClearMines: false,
     heavy: false, // 11N
+    canCapture: true, siege: false, // 11R
+  }),
+  // 11R (prompt 22): the Scout Bike — a courier that outruns everything,
+  // dies to anything, and can neither capture nor contest a relay. It
+  // SEES the war; it cannot HOLD it.
+  [UNIT_BIKE]: Object.freeze({
+    id: UNIT_BIKE, name: "bike",
+    speed: 72, range: 768, minRange: 0, hp: 30, damage: 5, indirect: false, reloadTicks: 10,
+    canTow: false, canCarryStandard: false, capacity: 0, turnRate: 20,
+    canMine: false, canClearMines: false,
+    heavy: false,
+    canCapture: false, siege: false,
   }),
 });
 

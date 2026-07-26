@@ -1212,3 +1212,25 @@ and judge; round 2 follows your verdict. team_panel tint contract and all
 art pins hold (strip width pin updated 16→18).
 
 Suite 394/394 (x2). Tagged slice-11q.
+
+---
+
+## slice-11r — The Scout Bike (2026-07-26, prompt 22)
+
+New chassis id 5: speed 72 (outruns everything including the drone's
+chase), hp 30 (dies to any hit), damage 5, turnRate 20, path-loving —
+and the headline: **`canCapture: false`**, a new explicit contract flag
+on every chassis. A bike on a flag neither captures NOR contests it — it
+sees the war, it cannot hold it. It still returns its own dropped
+standard (any chassis may) — the fastest standard-recovery in the war,
+its courier role. Fielding: garage reserve slot idx 4 traded from tank
+to bike (ids 12/24; AI-paired slots 8-11/20-23 untouched); roster now 4
+tanks / 3 scouts / 3 artillery / 3 trucks / 2 carriers / 1 bike per
+team. Also landed the **`siege` flag** (mortar prep): site-breaching is
+no longer "indirect" but explicitly artillery-only, per ruling Q9.
+Capture pass and AI capturer roles skip canCapture:false chassis. Art:
+bike builder (hunched rider, panniers), wreck, icon/sprite, strip → 20
+tiles. 1A → v29.
+
+Suite 394/394 (x2, 399 with the new file), simwar + replay OK.
+Tagged slice-11r.

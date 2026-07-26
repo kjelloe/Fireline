@@ -17,7 +17,9 @@
       "turnRate": 8,
       "canMine": true,
       "canClearMines": false,
-      "heavy": true
+      "heavy": true,
+      "canCapture": true,
+      "siege": false
     },
     "1": {
       "id": 1,
@@ -35,7 +37,9 @@
       "turnRate": 14,
       "canMine": false,
       "canClearMines": false,
-      "heavy": false
+      "heavy": false,
+      "canCapture": true,
+      "siege": false
     },
     "2": {
       "id": 2,
@@ -53,7 +57,9 @@
       "turnRate": 2,
       "canMine": false,
       "canClearMines": false,
-      "heavy": false
+      "heavy": false,
+      "canCapture": true,
+      "siege": true
     },
     "3": {
       "id": 3,
@@ -71,7 +77,9 @@
       "turnRate": 10,
       "canMine": false,
       "canClearMines": true,
-      "heavy": false
+      "heavy": false,
+      "canCapture": true,
+      "siege": false
     },
     "4": {
       "id": 4,
@@ -89,7 +97,29 @@
       "turnRate": 6,
       "canMine": false,
       "canClearMines": false,
-      "heavy": false
+      "heavy": false,
+      "canCapture": true,
+      "siege": false
+    },
+    "5": {
+      "id": 5,
+      "name": "bike",
+      "speed": 72,
+      "range": 768,
+      "minRange": 0,
+      "hp": 30,
+      "damage": 5,
+      "indirect": false,
+      "reloadTicks": 10,
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0,
+      "turnRate": 20,
+      "canMine": false,
+      "canClearMines": false,
+      "heavy": false,
+      "canCapture": false,
+      "siege": false
     }
   }
 }

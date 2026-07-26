@@ -21,6 +21,7 @@ test("9A carrier stats are pinned per ruling Q1", () => {
     canTow: false, canCarryStandard: true, capacity: 2, turnRate: 6,
     canMine: false, canClearMines: false,
     heavy: false, // 11N
+    canCapture: true, siege: false, // 11R
   });
 });
 

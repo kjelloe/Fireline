@@ -35,6 +35,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_carrier.svg",
       "minimapIcon": "assets/icons/svg/icon_carrier.svg",
       "triBudget": 3000
+    },
+    "unit_bike": {
+      "webglModel": "assets/models/units/unit_bike.glb",
+      "procedural": "bike",
+      "fallbackSprite": "assets/sprites/fallback/unit_bike.svg",
+      "minimapIcon": "assets/icons/svg/icon_bike.svg",
+      "triBudget": 1500
     }
   },
   "wrecks": {
@@ -72,6 +79,13 @@
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2000
+    },
+    "wreck_bike": {
+      "webglModel": "assets/models/wrecks/wreck_bike.glb",
+      "procedural": "wreck_bike",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 1500
     }
   },
   "objectives": {

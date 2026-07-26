@@ -45,7 +45,9 @@ const SPAWN_TYPES = [0, 0, 1, 2];
 // 9A: explicit 12-slot reserve mix. The first four are AI-crewed (ops 24-27 /
 // 28-31): carrier, truck, scout, tank — so AI regents can raid AND rescue.
 // Per-team totals: 5 tanks, 3 scouts, 3 artillery, 3 trucks, 2 carriers.
-const RESERVE_TYPES = [4, 3, 1, 0, 0, 1, 2, 3, 2, 3, 0, 4];
+// 11R: garage slot idx 4 (ids 12 / 24) traded from tank to Scout Bike.
+// Indices 0-3 are AI-paired (assets 8-11 / 20-23) — never reordered.
+const RESERVE_TYPES = [4, 3, 1, 0, 5, 1, 2, 3, 2, 3, 0, 4];
 const TEAM_A_SPAWN_X = 7;
 // 11C balance fix: 117 put B three cells closer to the center relay than
 // A's mirror (127-7=120) — B won the middle race and the war in 5/5 sim

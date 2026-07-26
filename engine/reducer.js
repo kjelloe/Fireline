@@ -177,7 +177,7 @@ function applyFireOrder(next, command) {
   if (command.targetSiteId !== undefined) {
     const site = next.sites.find((s) => s.id === command.targetSiteId);
     if (!site) return reject(next, command, "no such site");
-    if (!getUnitStats(attacker.type).indirect) {
+    if (!getUnitStats(attacker.type).siege) { // 11R: explicit, artillery-only
       return reject(next, command, "cannot breach sites");
     }
     if (!siteOperational(site)) return reject(next, command, "site already damaged");
@@ -770,6 +770,7 @@ function applyAdvanceTick(next) {
   {
     const present = new Map(); // siteId -> bitmask of teams standing on it
     for (const asset of next.assets) {
+      if (!getUnitStats(asset.type).canCapture) continue; // 11R: bikes are ghosts here
       const site = captureCheck(next, asset.id);
       if (site) present.set(site.id, (present.get(site.id) ?? 0) | (1 << asset.team));
     }

@@ -214,7 +214,8 @@ function buildCarrier() {
 
 // Wrecks: same footprint, slumped/tilted/darkened, identifiable (spec §10).
 function buildWreck(kind) {
-  const base = kind === "wreck_scout" ? buildScout()
+  const base = kind === "wreck_bike" ? buildBike()
+    : kind === "wreck_scout" ? buildScout()
     : kind === "wreck_artillery" ? buildArtillery()
     : kind === "wreck_logistics" ? buildLogistics()
     : kind === "wreck_carrier" ? buildCarrier() : buildTank();
@@ -278,6 +279,29 @@ function buildCommandZone() {
   return g;
 }
 
+function buildBike() {
+  // 11R: two wheels, a frame, a hunched rider silhouette — pure hurry.
+  const g = new THREE.Group();
+  const C = colors();
+  for (const z of [0.2, -0.18]) {
+    const wheel = cyl(0.13, 0.13, 0.05, 10, C.wheel, "wornMetal");
+    wheel.rotation.x = Math.PI / 2; wheel.rotation.z = Math.PI / 2;
+    wheel.position.set(0, 0.13, z);
+    g.add(wheel);
+  }
+  const frame = box(0.08, 0.07, 0.4, C.hullPaint); frame.position.y = 0.2;
+  const tank = box(0.1, 0.08, 0.14, C.hullShadow); tank.position.set(0, 0.27, 0.06);
+  const bars = box(0.22, 0.03, 0.03, C.barrel, "wornMetal"); bars.position.set(0, 0.32, 0.17);
+  const rider = box(0.1, 0.14, 0.16, C.hullShadow);
+  rider.position.set(0, 0.33, -0.08); rider.rotation.x = 0.35;
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.05, 6, 5), mat(C.hullPaint));
+  helmet.position.set(0, 0.42, 0.02);
+  const pannier = box(0.16, 0.08, 0.1, C.crate ?? C.hullPaint); pannier.position.set(0, 0.22, -0.24);
+  const panel = teamPanel(0.12, 0.03, 0.1); panel.position.set(0, 0.27, -0.24);
+  g.add(frame, tank, bars, rider, helmet, pannier, panel);
+  return g;
+}
+
 function buildMine() {
   const g = new THREE.Group();
   const C = colors();
@@ -324,6 +348,8 @@ const BUILDERS = {
   wreck_artillery: () => buildWreck("wreck_artillery"),
   wreck_logistics: () => buildWreck("wreck_logistics"),
   wreck_carrier: () => buildWreck("wreck_carrier"),
+  bike: buildBike,                              // 11R
+  wreck_bike: () => buildWreck("wreck_bike"),   // 11R
   operator_down: buildOperatorDown,
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),

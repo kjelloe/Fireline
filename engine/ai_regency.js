@@ -226,6 +226,7 @@ export class AIRegency {
           if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
           const a = state.assets[op.assetId];
           if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
+          if (!getUnitStats(a.type).canCapture) continue; // 11R: bikes can't be capturers
           const dist = Math.abs(site.cellX - worldToCellFloor(a.x)) +
                        Math.abs(site.cellY - worldToCellFloor(a.y));
           if (dist < bestDist) {
