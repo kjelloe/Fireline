@@ -193,6 +193,15 @@ agent-mail lane + true mirror mode · 11Q art pass round 1 (APPROVED) ·
 Sentinel/Infiltrator faction pair (own campaign, mirror-sweep gated),
 AI doctrine for bike/mortar/paths, chase cam (with art pass round 2).
 
+### Wave 3 planned (prompt 26)
+
+Full design-ahead plan in **`plan-wave3.md`**: factions + Sentinel/
+Infiltrator + NPC/POW/convoys (phase 12, gated on the designer talk),
+cargo/route-graph/fog-ghosts (phase 13), presentation completion — props
+r2, faction palette r2, motion, baked sprites, camera/chase, audio
+(phase 14), mobile/i18n/a11y (phase 15). Execution ladder + the 12-Q
+designer-conversation questions live there.
+
 ### Awaiting rulings (see questions in reports/2026-07-26_rulings_round2.md + prompt-18 answer)
 
 - Q17 fuel 4000 ratification; Q19 bases-shellable (currently sacred);
