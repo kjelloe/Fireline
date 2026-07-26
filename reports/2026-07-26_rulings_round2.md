@@ -131,6 +131,18 @@ Suite at **411/411**. When your sweep CSVs come back:
 Suite **416/416**. Sim gate: mixed winners hold; several seeds become
 long, high-scoring slugfests — trails generate real flank contact.
 
+## Prompt-25 rulings — landed
+
+| Slice | What |
+|---|---|
+| `slice-11w` | Riverline bridge relay pair (58↔69) — ruling (b). HONEST RESULT: livelier bridge fighting, but wars still horn-bound; **riverline standard-run viability stays OPEN** (candidates: standard homes nearer the road, raider route bias, or riverline as the points-war map until the Infiltrator). |
+| `slice-11x` | Art 2c: deterministic instanced battlefield props — forest=trees, rough=rocks, trails=ruts. Terrain reads at a glance (the playtest-2 complaint, closed). |
+| `slice-11y` | Art 2a: faction paint schemes — hulls blend 30% toward faction hue with per-hull weathering jitter; panel and worn-metal contracts pinned. Art 2b (motion) and 2d (baked sprites) NOTED for later. |
+
+Also this window: `plan-version1.md/.html` and `plan-version2.md/.html`
+rewritten to post-Rescue-Update reality (v1 marked SHIPPED; v2 tracks
+show shipped/queued/remaining honestly). Suite **418/418**.
+
 **Old note, superseded:** Semantics
 scoped from ../agent-mail/: the dev session posts jobs with `queue add
 --for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
