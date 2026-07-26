@@ -522,7 +522,25 @@ picker) + wiring:
   "ENEMY STANDARD — STEAL IT" / "YOUR STANDARD" above the banners.
 
 Tests: `legibility.test.js` (+6 → 272/272): hint priority order, status
-line coverage, briefing content, auto-crew rules, pace pin. `phase8_gaps.test.js` —
+line coverage, briefing content, auto-crew rules, pace pin.
+
+---
+
+## PLAYTEST 2 RESULT (2026-07-26)
+
+**User verdict: objective strip hint "actually leads somewhere useful — YES";
+×2 pace "felt right".** The legibility + pacing slice landed.
+
+Two notes recorded for later:
+1. **Direct tank control mode (backlog)** — user wants an optional
+   direct-drive mode for some tanks as homage to the original Firepower's
+   easy action/fire feel. Architecture note: this is a CLIENT INPUT mode
+   (WASD→continuous move_orders + aim-fire), not an engine change — the
+   reducer already accepts a command stream; a "drive mode" maps keys to
+   frequent short move orders. Needs design pass on feel + command rate.
+2. **Identity observation** — current perspective reads as "a low-poly
+   Syndicate with tanks". Worth revisiting camera angle/height in the art
+   pass (spec §3 wants 35-55° diorama feel) once painted assets land. `phase8_gaps.test.js` —
 penalty stacking 16→12→6 (which caught that whole-map sandbox bases
 auto-repair towed wrecks — test design issue, mechanics correct),
 same-tick contested grab (lowest id), tower-carrier death drops flag AND

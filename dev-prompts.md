@@ -91,3 +91,13 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 2. Art Slice A implemented: style tokens, asset manifest, anchor points, procedural stand-ins with budget tests, SVG icon/sprite generation from tokens (`tools/build_assets.mjs`), manifest-driven renderer (GLB → procedural → sprite resolution).
 3. Deviation flagged: spec's infantry carrier / recovery vehicle are reserved manifest slots — engine roster is tank/scout/artillery and every chassis tows/carries.
 4. Pipeline doc: `assets/PIPELINE.md`; painted GLBs drop in later without code changes.
+
+### Prompt 9 — Playtest 2 verdict + roster question
+
+> From playtest 2: does the objective strip's hint actually lead you somewhere useful YES and ×2 pace felt right. Mind you, please note that, we might have to have a direct tank control mode option as well, for some tanks, to pay homage to the original Firepower easy action, fire control, but that is for later. Currently it feels more like a low poly version of Syndicate with tanks, due to perspective
+> (also asked: list the vehicles that are in the specs)
+
+**Decisions captured:**
+1. Playtest 2 PASSED on legibility and pacing (hint useful; ×2 pace right).
+2. Backlog: optional direct tank control mode (Firepower homage) — later, client-input-mode design.
+3. Identity note: perspective currently reads "low-poly Syndicate with tanks"; revisit camera in art pass.
