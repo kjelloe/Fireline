@@ -70,6 +70,10 @@ export function describeWinReason(reason) {
 export function describeEvent(e, myTeam) {
   switch (e?.type) {
     case "rejected": return describeRejection(e.reason);
+    case "site_neutralized":
+      return e.byTeam === myTeam
+        ? `Relay ${e.siteId} neutralized — hold to capture!`
+        : `Relay ${e.siteId} is being taken — defend it!`;
     case "site_captured":
       return e.team === myTeam ? `Relay ${e.siteId} secured.` : `Relay ${e.siteId} lost to the enemy!`;
     case "asset_disabled": return `Asset ${e.assetId} disabled.`;

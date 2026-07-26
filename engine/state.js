@@ -128,6 +128,7 @@ const RELAY_CELLS = [
 function createSites() {
   return RELAY_CELLS.map((pos, id) => ({
     id, type: 1 /* SITE_RELAY */, owner: -1 /* SITE_NEUTRAL */,
+    captureProgress: 0, capturingTeam: -1, // 11B countdown
     cellX: pos.cellX, cellY: pos.cellY,
   }));
 }

@@ -57,15 +57,19 @@ test("1I owning relay extends fog radius for that team", () => {
 });
 
 test("1I enemy recapture changes owner back", () => {
+  // Second relay owned by team 1: the 11B contested freeze would otherwise
+  // let team 0 hold the only relay long enough for a domination win.
   let s = sandbox(
     [{ team: 0, cellX: 3 }, { team: 1, cellX: 6 }],
-    [{ cellX: 3, owner: SITE_NEUTRAL }]
+    [{ cellX: 3, owner: SITE_NEUTRAL }, { cellX: 60, owner: 1 }]
   );
-  s = apply(s, { type: "advance_tick" });
+  for (let i = 0; i < 30 && s.sites[0].owner !== 0; i++) {
+    s = apply(s, { type: "advance_tick" }); // 11B: neutral relay takes ~3 s
+  }
   assert.equal(s.sites[0].owner, 0, "team 0 captures by standing on it");
 
   s = joinSelectMove(s, 1, 1, 1, 3, 0);
-  for (let i = 0; i < 80 && s.sites[0].owner !== 1; i++) {
+  for (let i = 0; i < 400 && s.sites[0].owner !== 1; i++) {
     s = apply(s, { type: "advance_tick" });
   }
   // Both assets share the cell; asset order decides, and asset 0 (team 0)
@@ -81,13 +85,17 @@ test("1I enemy recapture changes owner back", () => {
 });
 
 test("1I view includes sites array with correct fields", () => {
+  // 11B: capture countdown telemetry is public, like ownership itself.
   const s = sandbox(
     [{ team: 0, cellX: 0 }],
     [{ cellX: 5, cellY: 7, owner: 0 }]
   );
   const view = buildView(s, 1);
   assert.equal(view.sites.length, 1);
-  assert.deepEqual(view.sites[0], { id: 0, type: SITE_RELAY, owner: 0, cellX: 5, cellY: 7 });
+  assert.deepEqual(view.sites[0], {
+    id: 0, type: SITE_RELAY, owner: 0, cellX: 5, cellY: 7,
+    captureProgress: 0, capturingTeam: -1,
+  });
 });
 
 // ── additional 1I self-tests ──────────────────────────────────────────────────
@@ -107,8 +115,12 @@ test("1I captureCheck is pure and ignores wrecks", () => {
 
 test("1I standing on an owned relay emits no repeat capture events", () => {
   let s = sandbox([{ team: 0, cellX: 3 }], [{ cellX: 3 }]);
-  s = apply(s, { type: "advance_tick" });
-  assert.equal(s.events.filter((e) => e.type === "site_captured").length, 1);
+  let captures = 0;
+  for (let i = 0; i < 40; i++) { // 11B: capture lands once the countdown runs
+    s = apply(s, { type: "advance_tick" });
+    captures += s.events.filter((e) => e.type === "site_captured").length;
+  }
+  assert.equal(captures, 1);
   s = apply(s, { type: "advance_tick" });
   assert.equal(s.events.filter((e) => e.type === "site_captured").length, 0);
 });

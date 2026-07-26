@@ -35,6 +35,7 @@ export function hashState(state) {
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
     w.writeI32LE(s.cellX); w.writeI32LE(s.cellY);
+  w.writeI32LE(s.captureProgress); w.writeI32LE(s.capturingTeam); // added 11B
   }
   for (const b of state.bases) { // added 1J
     w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);

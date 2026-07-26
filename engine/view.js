@@ -70,6 +70,7 @@ export function buildView(state, team) {
   // Relay infrastructure and base zones are public knowledge.
   const sites = state.sites.map((s) => ({
     id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
+    captureProgress: s.captureProgress, capturingTeam: s.capturingTeam, // 11B
   }));
   const bases = state.bases.map((b) => ({ ...b }));
   // 9B: downed operators are visible to their OWN team only (enemies cannot

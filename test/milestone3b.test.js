@@ -79,7 +79,9 @@ test("3B capturing a relay restores fighting power on the spot", () => {
   s = apply(s, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
   assert.equal(s.events[0].reason, "out of supply");
 
-  s = apply(s, { type: "advance_tick" }); // standing on relay -> capture
+  for (let i = 0; i < 30 && s.sites[0].owner !== 0; i++) {
+    s = apply(s, { type: "advance_tick" }); // 11B: stand the countdown out
+  }
   assert.equal(s.sites[0].owner, 0);
   s = apply(s, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
   assert.equal(s.events[0].type, "fire_resolved", "owned relay supplies the gun");

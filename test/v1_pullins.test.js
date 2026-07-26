@@ -13,6 +13,12 @@ import { GameServer } from "../engine/server.js";
 import { AI_EASY, AI_HARD } from "../engine/ai_regency.js";
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
+// Load-tolerant wait: poll a condition instead of trusting a fixed delay.
+async function until(cond, ms = 2000) {
+  const t0 = Date.now();
+  while (!cond() && Date.now() - t0 < ms) await settle(20);
+  return cond();
+}
 
 function connect(port) {
   const ws = new WebSocket(`ws://localhost:${port}`);
@@ -31,16 +37,16 @@ test("5B same playerId reattaches to its operator and ends regency", async () =>
   await withServer({}, async (appServer, port) => {
     const a = await connect(port);
     a.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "kjell-abc" }));
-    await settle();
+    await until(() => a.messages.some((m) => m.type === "s_joined"));
     appServer.gameServer.step();
     const opId = a.messages.find((m) => m.type === "s_joined").operatorId;
     a.ws.close();
-    await settle();
+    await until(() => appServer.gameServer.ai?.regented?.has(opId) === true);
     assert.ok(appServer.gameServer.ai.regented.has(opId), "regency assumed on drop");
 
     const b = await connect(port);
     b.ws.send(JSON.stringify({ type: "c_join", team: 1, playerId: "kjell-abc" })); // team ignored on rejoin
-    await settle();
+    await until(() => b.messages.some((m) => m.type === "s_joined"));
     const rejoined = b.messages.find((m) => m.type === "s_joined");
     assert.equal(rejoined.operatorId, opId, "same slot back");
     assert.equal(rejoined.team, 0, "original team preserved");

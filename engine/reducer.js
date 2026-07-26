@@ -32,7 +32,7 @@ import {
 } from "./recovery.js";
 import { inOwnBase } from "./supply.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
-import { captureCheck } from "./sites.js";
+import { captureCheck, SITE_NEUTRALIZE_TICKS, SITE_CAPTURE_TICKS } from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
   STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
@@ -589,12 +589,44 @@ function applyAdvanceTick(next) {
     if (tower) { wreck.x = tower.x; wreck.y = tower.y; }
   }
   // Capture pass: stable asset order decides same-tick contests.
-  for (const asset of next.assets) {
-    const site = captureCheck(next, asset.id);
-    if (site && site.owner !== asset.team) {
-      site.owner = asset.team;
-      next.teamScores[asset.team] += SCORE_CAPTURE;
-      next.events.push({ type: "site_captured", siteId: site.id, team: asset.team });
+  // 11B capture pass: BF2-style countdown. Contested = frozen; empty =
+  // progress drains; a lone team neutralizes the enemy flag, then raises
+  // its own. Stable site order; team presence from operable assets only.
+  {
+    const present = new Map(); // siteId -> bitmask of teams standing on it
+    for (const asset of next.assets) {
+      const site = captureCheck(next, asset.id);
+      if (site) present.set(site.id, (present.get(site.id) ?? 0) | (1 << asset.team));
+    }
+    for (const site of next.sites) {
+      const mask = present.get(site.id) ?? 0;
+      if (mask === 0 || mask === 3) { // empty or contested: no flip, drain/freeze
+        if (mask === 0 && site.captureProgress > 0) site.captureProgress -= 1;
+        if (mask === 0 && site.captureProgress === 0) site.capturingTeam = -1;
+        continue;
+      }
+      const team = mask === 1 ? 0 : 1;
+      if (site.owner === team) { // securing your own ground heals the clock
+        if (site.captureProgress > 0) site.captureProgress -= 1;
+        if (site.captureProgress === 0) site.capturingTeam = -1;
+        continue;
+      }
+      if (site.capturingTeam !== team) {
+        site.capturingTeam = team;
+        site.captureProgress = 0;
+      }
+      site.captureProgress += 1;
+      if (site.owner !== -1 && site.captureProgress >= SITE_NEUTRALIZE_TICKS) {
+        site.owner = -1;
+        site.captureProgress = 0;
+        next.events.push({ type: "site_neutralized", siteId: site.id, byTeam: team });
+      } else if (site.owner === -1 && site.captureProgress >= SITE_CAPTURE_TICKS) {
+        site.owner = team;
+        site.captureProgress = 0;
+        site.capturingTeam = -1;
+        next.teamScores[team] += SCORE_CAPTURE;
+        next.events.push({ type: "site_captured", siteId: site.id, team });
+      }
     }
   }
   // Standard pass (8B): pickups, returns, then scoring — stable asset order.

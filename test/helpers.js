@@ -40,6 +40,7 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
   state.sites = siteSpecs.map((spec, id) => ({
     id, type: spec.type ?? SITE_RELAY, owner: spec.owner ?? SITE_NEUTRAL,
     cellX: spec.cellX, cellY: spec.cellY ?? 0,
+    captureProgress: spec.captureProgress ?? 0, capturingTeam: spec.capturingTeam ?? -1, // 11B
   }));
   // Default: whole-map bases for both teams so supply rules (3B) stay neutral
   // in tests that aren't about supply. Pass opts.bases to exercise them.

@@ -1,11 +1,11 @@
 {
-  "fixtureVersion": 21,
+  "fixtureVersion": 22,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 21 (2026-07-26): 10C: context pings — operator lastPingTick hashed; hashes re-pinned, command script and events still verbatim from v1.",
+  "note": "fixtureVersion 22 (2026-07-26): 11B: BF2 capture countdown — per-site captureProgress/capturingTeam hashed; hashes re-pinned, command script and events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
-  "initialStateHash": "11f6f7b54f1007d7",
+  "initialStateHash": "7a27ebccfc653a73",
   "steps": [
     {
       "command": {
@@ -20,7 +20,7 @@
           "team": 0
         }
       ],
-      "stateHashAfter": "8e81a189e7076baa",
+      "stateHashAfter": "920f015751d35d56",
       "tick": 0
     },
     {
@@ -36,7 +36,7 @@
           "team": 1
         }
       ],
-      "stateHashAfter": "3460cdb638a1b52e",
+      "stateHashAfter": "44e9fa13d830a39a",
       "tick": 0
     },
     {
@@ -52,7 +52,7 @@
           "assetId": 0
         }
       ],
-      "stateHashAfter": "85e089395acc227e",
+      "stateHashAfter": "5e531f58990af9ea",
       "tick": 0
     },
     {
@@ -68,7 +68,7 @@
           "assetId": 4
         }
       ],
-      "stateHashAfter": "a968c7bd9c4ce1a7",
+      "stateHashAfter": "08d3325c8b05fe43",
       "tick": 0
     },
     {
@@ -86,7 +86,7 @@
           "targetY": 16128
         }
       ],
-      "stateHashAfter": "a184d51b94041a37",
+      "stateHashAfter": "8e907ea446702153",
       "tick": 0
     },
     {
@@ -94,7 +94,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "d11e2f7046d14ec5",
+      "stateHashAfter": "20a1dd3464bcf311",
       "tick": 1
     },
     {
@@ -102,7 +102,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "497a67be13f7448f",
+      "stateHashAfter": "51c6c1e1f12aa1eb",
       "tick": 2
     },
     {
@@ -110,7 +110,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "266e711241692821",
+      "stateHashAfter": "70b18fc9ab82106d",
       "tick": 3
     },
     {
@@ -126,7 +126,7 @@
           "reason": "operator already active"
         }
       ],
-      "stateHashAfter": "266e711241692821",
+      "stateHashAfter": "70b18fc9ab82106d",
       "tick": 3
     },
     {
@@ -142,7 +142,7 @@
           "reason": "asset belongs to other team"
         }
       ],
-      "stateHashAfter": "266e711241692821",
+      "stateHashAfter": "70b18fc9ab82106d",
       "tick": 3
     },
     {
@@ -160,7 +160,7 @@
           "targetY": 16128
         }
       ],
-      "stateHashAfter": "aa28574895d3a48b",
+      "stateHashAfter": "6130c335f29b06c7",
       "tick": 3
     },
     {
@@ -176,7 +176,7 @@
           "assetId": 4
         }
       ],
-      "stateHashAfter": "aa28574895d3a48b",
+      "stateHashAfter": "6130c335f29b06c7",
       "tick": 3
     },
     {
@@ -194,7 +194,7 @@
           "targetY": 16128
         }
       ],
-      "stateHashAfter": "fbcf5bea090f6e22",
+      "stateHashAfter": "f711fa0ceacfd60e",
       "tick": 3
     },
     {
@@ -202,7 +202,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "1711dab6e59989c8",
+      "stateHashAfter": "a342b52125bda624",
       "tick": 4
     }
   ],
@@ -248,5 +248,5 @@
       "expectedReason": "invalid targetCellX"
     }
   ],
-  "finalStateHash": "1711dab6e59989c8"
+  "finalStateHash": "a342b52125bda624"
 }

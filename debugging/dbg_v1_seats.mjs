@@ -1,0 +1,12 @@
+import { runV1Soak } from "../test/headless/soak_v1.js";
+const r = runV1Soak(2026, 1500);
+const s = r.server.state;
+const states = { absent: 0, active: 0, down: 0 };
+for (const o of s.operators) states[["absent","active","down"][o.state]]++;
+const downs = r.server.state.tick;
+console.log("seat states:", states, "activeOperators:", r.activeOperators);
+console.log("captures:", r.captures, "disables:", r.disables);
+const aboard = s.assets.reduce((n, a) => n + (a.aboard1 !== -1) + (a.aboard2 !== -1), 0);
+console.log("downed walking:", s.downed.length, "aboard carriers:", aboard);
+const wrecks = s.assets.filter(a => a.state === 2).length;
+console.log("wrecks:", wrecks, "sites:", s.sites.map(x => x.owner));

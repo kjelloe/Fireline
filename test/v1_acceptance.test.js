@@ -20,7 +20,11 @@ test("v1: all 32 operator seats participate (active, downed, or aboard)", () => 
   assert.equal(absent, 0, "no seat abandoned the war");
   const driving = s.operators.filter((o) => o.state === 1 && o.assetId !== -1).length;
   assert.equal(driving, result.operatedAssets, "seat/asset links symmetric");
-  assert.ok(result.activeOperators >= 24, `${result.activeOperators} active seats`);
+  // Floor recalibrated for 11B: the capture countdown slows relay flips, so
+  // less supply is projected and more seats are legitimately mid-rescue
+  // (walking or aboard a carrier) at any sampled tick. 2026@1500 measures
+  // 22 active / 6 walking / 4 aboard — all 32 participating.
+  assert.ok(result.activeOperators >= 20, `${result.activeOperators} active seats`);
 });
 
 test("v1: the war is fought — relays change hands and assets fall", () => {

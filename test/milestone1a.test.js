@@ -42,6 +42,7 @@ function stateHash(s) {
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
     w.writeI32LE(site.cellX); w.writeI32LE(site.cellY);
+  w.writeI32LE(site.captureProgress); w.writeI32LE(site.capturingTeam); // added 11B
   }
   for (const b of s.bases) { // added 1J
     w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);

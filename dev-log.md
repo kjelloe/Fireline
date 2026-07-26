@@ -878,3 +878,28 @@ threat; repositioning under fire is a real decision. Pins updated (9F stat
 table, data/units.json mirror). No hashed-state change, no repin.
 
 Suite 343/343. Tagged slice-11a.
+
+---
+
+## slice-11b — BF2 capture countdown (2026-07-26, prompt 16 Q3)
+
+Battlefield-2-inspired relay capture replaces the instant flip. A lone team
+on a relay first drains the enemy flag to NEUTRAL (`SITE_NEUTRALIZE_TICKS`
+30 ≈ 3 s, event `site_neutralized`), then raises its own
+(`SITE_CAPTURE_TICKS` 30 ≈ 3 s) — both configurable constants in
+engine/sites.js. CONTESTED ground (both teams present, wrecks don't count)
+freezes the clock — the ruled fix for tick-to-tick relay churn. Empty
+ground drains attacker progress; a defender standing home heals its flag's
+clock. Per-site `captureProgress`/`capturingTeam` hashed (1A → v22) and
+public in views (flip-bar telemetry, like ownership itself).
+
+Consequences absorbed: 1I/3B tests rewritten to the countdown contract; the
+1I recapture test needed a second relay (a frozen lone relay = domination
+win — the countdown makes standoffs REAL); v1 soak active floor 24 → 20
+with rationale (slower flips → less supply → more seats legitimately
+mid-rescue at any sampled tick: 22 active / 6 walking / 4 aboard, all 32
+participating). 5B reattach test hardened from fixed settles to poll-waits
+(load flake made consistent, then fixed — lazy `ai` needed optional
+chaining).
+
+Suite 348/348 (x3), simwar + replay OK. Tagged slice-11b.
