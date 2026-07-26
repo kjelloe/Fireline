@@ -1276,3 +1276,21 @@ question-18 mirror flip-rate verdict); smoke-verified against live runs
 (early signal: mirrored wars mostly stop deciding — residue is real).
 
 Suite 407/407 (x2). Tagged slice-11j.
+
+---
+
+## slice-11t — Public tasks (2026-07-26, plan 2.4, prompt 23 window)
+
+Mission cards as a PURE view-model (`client/js/tasks_model.js`): tasks
+derive from the team's fog-filtered view only, so fog safety is inherited
+— an engine view goes in, cards come out, and the test proves the enemy's
+wrecks never card for you. Urgency ladder (what loses the war fastest):
+STOP THE THIEF (own standard carried) > secure dropped standard > escort
+the standard run > rescue walkers (your own body is the R-prompt, not a
+mission) > defend a flipping relay > tow claimable wrecks > rebuild
+ruins. "Responding" for v2.0 is the 10C ping channel: clicking a card
+jumps the camera and sends the task's matching context ping (all standing
+-legal kinds — never need_rescue). HUD: top-3 card strip, DOM-diffed by
+stable task ids. No engine changes, no new state, no repin.
+
+Suite 411/411 (x2). Tagged slice-11t.

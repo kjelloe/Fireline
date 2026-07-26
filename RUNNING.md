@@ -65,6 +65,11 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Mission cards (11T): the right-hand strip shows the team's top three
+  public tasks, derived only from what your team legitimately knows —
+  STOP THE THIEF, secure/escort the standard, rescue a walker, defend a
+  dropping flag, tow a wreck, rebuild a ruin. Click a card to jump the
+  camera there and ping the team about it.
 - New garage chassis (11R/11S): press Next-asset to find the SCOUT BIKE
   (fastest thing in the war, dies to anything, can't capture or even
   contest relays — courier, spotter, standard-recovery sprinter) and the

@@ -14,6 +14,7 @@ import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
+import { tasksFor } from "./tasks_model.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
@@ -814,6 +815,37 @@ function updateDroneMeshes(view, nowMs) {
 
 // 11O: in direct mode a targeting circle rides the asset — your gun's
 // true reach, always visible while you drive.
+// 11T public tasks (plan 2.4): top mission cards from the pure model.
+// Clicking a card jumps the camera there and sends the matching context
+// ping — that IS "responding" on the team channel for v2.0.
+let lastTaskKey = "";
+function updateTaskStrip(view) {
+  const el = document.getElementById("task-strip");
+  if (!el) return;
+  if (joined?.spectator || !joined) {
+    if (lastTaskKey !== "") { el.innerHTML = ""; lastTaskKey = ""; }
+    return;
+  }
+  const tasks = tasksFor(view, joined.operatorId).slice(0, 3);
+  const key = tasks.map((t) => t.id).join("|");
+  if (key === lastTaskKey) return;
+  lastTaskKey = key;
+  el.innerHTML = "";
+  for (const t of tasks) {
+    const card = document.createElement("div");
+    card.textContent = t.label;
+    card.style.cssText =
+      "background:rgba(10,14,10,0.78); color:#d8e6c8; padding:7px 10px;" +
+      "border-left:3px solid #f5e96b; border-radius:4px; font:12px sans-serif;" +
+      "cursor:pointer;";
+    card.onclick = () => {
+      freeCam.jumpTo(t.cellX, t.cellY);
+      send({ type: "ping", kind: t.ping, targetCellX: t.cellX, targetCellY: t.cellY });
+    };
+    el.appendChild(card);
+  }
+}
+
 function updateDirectRing(view) {
   const own = directMode
     ? view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId)
@@ -937,6 +969,7 @@ function renderBattlefield() {
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
   updateDirectRing(view);
+  updateTaskStrip(view);
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);
