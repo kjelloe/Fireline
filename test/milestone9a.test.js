@@ -22,6 +22,7 @@ test("9A carrier stats are pinned per ruling Q1", () => {
     canMine: false, canClearMines: false,
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
+    deployable: false, // 12B
   });
 });
 

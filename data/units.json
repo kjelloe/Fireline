@@ -19,7 +19,8 @@
       "canClearMines": false,
       "heavy": true,
       "canCapture": true,
-      "siege": false
+      "siege": false,
+      "deployable": false
     },
     "1": {
       "id": 1,
@@ -39,7 +40,8 @@
       "canClearMines": false,
       "heavy": false,
       "canCapture": true,
-      "siege": false
+      "siege": false,
+      "deployable": false
     },
     "2": {
       "id": 2,
@@ -59,7 +61,8 @@
       "canClearMines": false,
       "heavy": false,
       "canCapture": true,
-      "siege": true
+      "siege": true,
+      "deployable": false
     },
     "3": {
       "id": 3,
@@ -79,7 +82,8 @@
       "canClearMines": true,
       "heavy": false,
       "canCapture": true,
-      "siege": false
+      "siege": false,
+      "deployable": false
     },
     "4": {
       "id": 4,
@@ -99,7 +103,8 @@
       "canClearMines": false,
       "heavy": false,
       "canCapture": true,
-      "siege": false
+      "siege": false,
+      "deployable": false
     },
     "5": {
       "id": 5,
@@ -119,7 +124,8 @@
       "canClearMines": false,
       "heavy": false,
       "canCapture": false,
-      "siege": false
+      "siege": false,
+      "deployable": false
     },
     "6": {
       "id": 6,
@@ -139,7 +145,32 @@
       "canClearMines": false,
       "heavy": false,
       "canCapture": true,
-      "siege": false
+      "siege": false,
+      "deployable": false
+    },
+    "7": {
+      "id": 7,
+      "name": "sentinel",
+      "speed": 12,
+      "range": 1024,
+      "minRange": 0,
+      "hp": 150,
+      "damage": 8,
+      "indirect": false,
+      "reloadTicks": 20,
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0,
+      "turnRate": 4,
+      "canMine": false,
+      "canClearMines": false,
+      "heavy": true,
+      "canCapture": true,
+      "siege": false,
+      "deployable": true,
+      "deployedRange": 2048,
+      "deployedDamage": 25,
+      "deployedReloadTicks": 20
     }
   }
 }

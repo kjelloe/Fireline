@@ -2,7 +2,7 @@
 // manifest access (Art Slice A). Pure and node-testable. The renderer asks
 // this module WHAT to show; the manifest + factory decide HOW it looks.
 
-const CHASSIS_NAMES = { 0: "tank", 1: "scout", 2: "artillery", 3: "logistics", 4: "carrier", 5: "bike", 6: "mortar" };
+const CHASSIS_NAMES = { 0: "tank", 1: "scout", 2: "artillery", 3: "logistics", 4: "carrier", 5: "bike", 6: "mortar", 7: "sentinel" };
 const WRECK_STATES = new Set([2, 3]); // ASSET_DISABLED, ASSET_SALVAGED
 
 export function chassisName(type) {

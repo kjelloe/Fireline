@@ -13,6 +13,7 @@ import {
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
+  CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import {
@@ -152,6 +153,9 @@ function applyMoveOrder(next, command) {
   if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
   }
+  if (asset.deployed === 1 || asset.deployTimer > 0) {
+    return reject(next, command, "deployed — undeploy to move"); // 12B
+  }
   asset.targetX = cellToWorld(command.targetCellX);
   asset.targetY = cellToWorld(command.targetCellY);
   asset.state = ASSET_MOVING;
@@ -172,6 +176,7 @@ function applyFireOrder(next, command) {
   if (attacker.state === ASSET_DISABLED || attacker.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
   }
+  if (attacker.deployTimer > 0) return reject(next, command, "still transitioning"); // 12B
   // 11F (Q9): shelling infrastructure. Sites are public; only the indirect
   // siege tube can breach them; normal ammo/reload/supply/range discipline.
   if (command.targetSiteId !== undefined) {
@@ -264,6 +269,8 @@ function disableAsset(next, target, scoringTeam) {
   target.state = ASSET_DISABLED;
   target.driveThrottle = 0;
   target.driveTurn = 0; // 11L: a wreck holds no wheel
+  target.deployed = 0;
+  target.deployTimer = 0; // 12B: wrecked legs fold
   next.teamScores[scoringTeam] += SCORE_DISABLE;
   next.events.push({ type: "asset_disabled", assetId: target.id });
   // 9B: the crew bails out as a downed operator (the wreck repairs to
@@ -291,6 +298,50 @@ function disableAsset(next, target, scoringTeam) {
   }
 }
 
+// 12B: Deploy Hardpoint (3 s each way, immobile and guns cold while the
+// legs work). Deployed flag flips IMMEDIATELY; "active" means the timer
+// has finished — effectiveCombat() reads exactly that.
+export const HARDPOINT_TRANSITION_TICKS = 30;
+
+function hardpointSeat(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return { err: "operator not active" };
+  if (operator.assetId === -1) return { err: "no asset selected" };
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) return { err: "no asset selected" };
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return { err: "asset not operable" };
+  }
+  if (!getUnitStats(asset.type).deployable) return { err: "cannot deploy here" };
+  if (asset.deployTimer > 0) return { err: "still transitioning" };
+  return { asset };
+}
+
+function applyDeployHardpoint(next, command) {
+  const { asset, err } = hardpointSeat(next, command);
+  if (err) return reject(next, command, err);
+  if (asset.deployed === 1) return reject(next, command, "already deployed");
+  asset.deployed = 1;
+  asset.deployTimer = HARDPOINT_TRANSITION_TICKS;
+  asset.targetX = asset.x;
+  asset.targetY = asset.y;
+  asset.state = ASSET_IDLE;
+  asset.driveThrottle = 0;
+  asset.driveTurn = 0;
+  next.events.push({ type: "hardpoint_deploying", assetId: asset.id });
+  return next;
+}
+
+function applyUndeploy(next, command) {
+  const { asset, err } = hardpointSeat(next, command);
+  if (err) return reject(next, command, err);
+  if (asset.deployed !== 1) return reject(next, command, "not deployed");
+  asset.deployed = 0;
+  asset.deployTimer = HARDPOINT_TRANSITION_TICKS;
+  next.events.push({ type: "hardpoint_undeploying", assetId: asset.id });
+  return next;
+}
+
 // 11L: direct control — store the seat's drive intent on its asset. Any
 // intent cancels the click-move target; zeroing both returns the asset to
 // ordinary click-to-move.
@@ -304,6 +355,10 @@ function applyDrive(next, command) {
   }
   if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
+  }
+  if ((asset.deployed === 1 || asset.deployTimer > 0) &&
+      (command.throttle !== 0 || command.turn !== 0)) {
+    return reject(next, command, "deployed — undeploy to move"); // 12B
   }
   asset.driveThrottle = command.throttle;
   asset.driveTurn = command.turn;
@@ -614,6 +669,18 @@ function applyAdvanceTick(next) {
   for (const asset of next.assets) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
+    // 12B: hardpoint legs working — immobile; announce completion.
+    if (asset.deployTimer > 0) {
+      asset.deployTimer -= 1;
+      if (asset.deployTimer === 0) {
+        next.events.push({
+          type: asset.deployed === 1 ? "hardpoint_active" : "hardpoint_stowed",
+          assetId: asset.id,
+        });
+      }
+      continue;
+    }
+    if (asset.deployed === 1) continue; // 12B: hardpoints hold their ground
     // 11L direct control: intent-driven physics preempts target-seeking.
     if ((asset.driveThrottle !== 0 || asset.driveTurn !== 0) &&
         asset.state !== ASSET_DISABLED && asset.state !== ASSET_SALVAGED) {
@@ -1031,6 +1098,8 @@ export function apply(state, command) {
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
     case CMD_PING: return applyPing(next, command);
     case CMD_DRIVE: return applyDrive(next, command);
+    case CMD_DEPLOY_HARDPOINT: return applyDeployHardpoint(next, command);
+    case CMD_UNDEPLOY: return applyUndeploy(next, command);
     case CMD_SET_OPTION: return applySetOption(next, command);
     case CMD_BOARD_CARRIER: return applyBoardCarrier(next, command);
     case CMD_UNBOARD: return applyUnboard(next, command);

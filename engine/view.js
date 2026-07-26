@@ -62,12 +62,17 @@ export function buildView(state, team) {
       aboard1: a.aboard1, aboard2: a.aboard2, // 10B: takeover context
       materiel: a.materiel, // 11F
       driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
+      deployed: a.deployed, deployTimer: a.deployTimer, // 12B
     }));
 
   const visible = computeVisible(state, team);
   const visibleEnemies = state.assets
     .filter((a) => visible.has(a.id))
-    .map((a) => ({ id: a.id, type: a.type, team: a.team, state: a.state, x: a.x, y: a.y, heading: a.heading }));
+    .map((a) => ({
+      id: a.id, type: a.type, team: a.team, state: a.state,
+      x: a.x, y: a.y, heading: a.heading,
+      deployed: a.deployed, // 12B: a raised hardpoint is externally obvious
+    }));
 
   // Relay infrastructure and base zones are public knowledge.
   const sites = state.sites.map((s) => ({

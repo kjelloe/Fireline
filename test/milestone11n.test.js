@@ -15,10 +15,11 @@ import { sandbox, joinAndSelect } from "./helpers.js";
 test("11N only the tank is heavy; paths pay out per chassis", () => {
   for (const type of Object.keys(UNIT_STATS).map(Number)) {
     const stats = getUnitStats(type);
-    assert.equal(stats.heavy, type === 0, `chassis ${type} heavy flag`);
+    assert.equal(stats.heavy, type === 0 || type === 7,
+      `chassis ${type} heavy flag (tank + sentinel)`);
     assert.equal(
       speedMultiplier(T_PATH, stats),
-      type === 0 ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH],
+      stats.heavy ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH],
       `chassis ${type} path multiplier`
     );
   }

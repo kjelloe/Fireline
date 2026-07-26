@@ -218,7 +218,8 @@ function buildCarrier() {
 
 // Wrecks: same footprint, slumped/tilted/darkened, identifiable (spec §10).
 function buildWreck(kind) {
-  const base = kind === "wreck_mortar" ? buildMortar()
+  const base = kind === "wreck_sentinel" ? buildSentinel()
+    : kind === "wreck_mortar" ? buildMortar()
     : kind === "wreck_bike" ? buildBike()
     : kind === "wreck_scout" ? buildScout()
     : kind === "wreck_artillery" ? buildArtillery()
@@ -331,6 +332,32 @@ function buildMortar() {
   return g;
 }
 
+function buildSentinel() {
+  // 12B: a squat armored platform on four fold-legs, twin-gun casemate on
+  // a ring mount — reads as "this thing intends to STAY".
+  const g = new THREE.Group();
+  const C = colors();
+  const base = box(0.6, 0.16, 0.6, C.hullShadow); base.position.y = 0.14;
+  const hull = box(0.5, 0.2, 0.5, C.hullPaint); hull.position.y = 0.32;
+  const ring = cyl(0.22, 0.26, 0.08, 10, C.barrel, "wornMetal"); ring.position.y = 0.46;
+  const casemate = box(0.3, 0.14, 0.34, C.hullPaint); casemate.position.y = 0.55;
+  for (const side of [-1, 1]) {
+    const gun = cyl(0.035, 0.04, 0.44, 6, C.barrel, "wornMetal");
+    gun.rotation.x = Math.PI / 2; gun.position.set(side * 0.08, 0.55, 0.36);
+    g.add(gun);
+  }
+  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+    const leg = box(0.1, 0.1, 0.16, C.barrel, "wornMetal");
+    leg.position.set(sx * 0.32, 0.1, sz * 0.32);
+    leg.rotation.y = sx * sz * 0.6;
+    g.add(leg);
+  }
+  const sensor = cyl(0.02, 0.03, 0.3, 5, C.hullShadow); sensor.position.set(-0.15, 0.75, -0.15);
+  const panel = teamPanel(0.3, 0.04, 0.3); panel.position.y = 0.63;
+  g.add(base, hull, ring, casemate, sensor, panel);
+  return g;
+}
+
 function buildMine() {
   const g = new THREE.Group();
   const C = colors();
@@ -381,6 +408,8 @@ const BUILDERS = {
   wreck_bike: () => buildWreck("wreck_bike"),   // 11R
   mortar: buildMortar,                            // 11S
   wreck_mortar: () => buildWreck("wreck_mortar"), // 11S
+  sentinel: buildSentinel,                            // 12B
+  wreck_sentinel: () => buildWreck("wreck_sentinel"), // 12B
   operator_down: buildOperatorDown,
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),

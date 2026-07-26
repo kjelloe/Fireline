@@ -49,6 +49,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_mortar.svg",
       "minimapIcon": "assets/icons/svg/icon_mortar.svg",
       "triBudget": 2500
+    },
+    "unit_sentinel": {
+      "webglModel": "assets/models/units/unit_sentinel.glb",
+      "procedural": "sentinel",
+      "fallbackSprite": "assets/sprites/fallback/unit_sentinel.svg",
+      "minimapIcon": "assets/icons/svg/icon_sentinel.svg",
+      "triBudget": 2500
     }
   },
   "wrecks": {
@@ -97,6 +104,13 @@
     "wreck_mortar": {
       "webglModel": "assets/models/wrecks/wreck_mortar.glb",
       "procedural": "wreck_mortar",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2500
+    },
+    "wreck_sentinel": {
+      "webglModel": "assets/models/wrecks/wreck_sentinel.glb",
+      "procedural": "wreck_sentinel",
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2500

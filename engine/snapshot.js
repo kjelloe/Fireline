@@ -34,6 +34,7 @@ export function hashState(state) {
     w.writeI32LE(a.campTicks); // added 9G
     w.writeU8(a.materiel ?? 0); // added 11F
     w.writeI32LE(a.driveThrottle ?? 0); w.writeI32LE(a.driveTurn ?? 0); // added 11L
+    w.writeU8(a.deployed ?? 0); w.writeU8(a.deployTimer ?? 0); // added 12B
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);

@@ -72,6 +72,11 @@ const ICONS = {
     `<circle cx="32" cy="32" r="20" fill="none" stroke="${C.hullShadow}" stroke-width="6"/>` +
     `<path d="M32 32 L32 14 A18 18 0 0 1 48 26 Z" fill="${C.selection}"/>`
   ),
+  "icon_sentinel.svg": svg( // 12B: the hardpoint — a squat block on legs
+    `<rect x="20" y="24" width="24" height="16" rx="2" fill="${C.hullPaint}"/>` +
+    `<rect x="26" y="14" width="12" height="10" rx="2" fill="${C.hullShadow}"/>` +
+    `<path d="M20 40 L10 52 M44 40 L54 52 M26 40 L22 52 M38 40 L42 52" stroke="${C.barrel}" stroke-width="4" stroke-linecap="round"/>`
+  ),
   "icon_mortar.svg": svg( // 11S
     `<rect x="14" y="44" width="36" height="8" rx="2" fill="${C.hullShadow}"/>` +
     `<rect x="26" y="14" width="12" height="30" rx="4" fill="${C.barrel}" transform="rotate(24 32 44)"/>` +
@@ -128,6 +133,7 @@ const SPRITES = {
   "unit_carrier.svg": ICONS["icon_carrier.svg"],
   "unit_bike.svg": ICONS["icon_bike.svg"], // 11R
   "unit_mortar.svg": ICONS["icon_mortar.svg"], // 11S
+  "unit_sentinel.svg": ICONS["icon_sentinel.svg"], // 12B
   "wreck.svg": ICONS["icon_wreck.svg"],
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],

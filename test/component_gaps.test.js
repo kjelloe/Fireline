@@ -49,6 +49,10 @@ test("component: snapshot never leaks authoritative state or map internals", () 
     for (const enemy of view.visibleEnemies) {
       assert.equal("hp" in enemy, false);
       assert.equal("operatorId" in enemy, false);
+      // 12B: `deployed` IS public — a raised hardpoint is externally
+      // obvious, like heading. Nothing else may leak.
+      assert.deepEqual(Object.keys(enemy).sort(),
+        ["deployed", "heading", "id", "state", "team", "type", "x", "y"]);
     }
   }
 });

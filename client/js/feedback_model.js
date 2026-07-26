@@ -36,6 +36,10 @@ export function describeEvent(e, myTeam) {
     case "rejected": return describeRejection(e.reason);
     case "operator_unboarded": return `Operator ${e.operatorId} hopped off.`;
     case "option_set": return null;
+    case "hardpoint_deploying": return t("ev.hardpoint_deploying");
+    case "hardpoint_active": return t("ev.hardpoint_active");
+    case "hardpoint_undeploying": return t("ev.hardpoint_undeploying");
+    case "hardpoint_stowed": return t("ev.hardpoint_stowed");
     case "site_shelled": return `Relay ${e.siteId} under artillery fire!`;
     case "site_damaged":
       return `Relay ${e.siteId} is DOWN — a truck with materiel can rebuild it.`;

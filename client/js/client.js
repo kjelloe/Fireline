@@ -147,6 +147,14 @@ function init() {
       if (carrier) send({ type: "board_carrier", carrierAssetId: carrier.id });
     }
     if (e.key === "u" || e.key === "U") send({ type: "unboard" });
+    // 12B: H toggles the Sentinel's hardpoint.
+    if (e.key === "h" || e.key === "H") {
+      const me = interpolator.latest()?.friendlyAssets?.find(
+        (a) => a.operatorId === joined?.operatorId);
+      if (me?.type === 7) {
+        send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
+      }
+    }
     // 11U: T tows the adjacent claimable wreck (same as the banner).
     if (e.key === "t" || e.key === "T") {
       const wreck = adjacentTowableWreck(interpolator.latest());
@@ -819,6 +827,24 @@ function updateWorldLabels(view) {
       mine ? "#9fe89f" : "#ffd75e",
       st.x / CELL + 0.5, 2.6, st.y / CELL + 0.5);
   }
+  // 12B: hardpoint states over the Sentinel.
+  for (const a of view.friendlyAssets ?? []) {
+    const key = `hard${a.id}`;
+    let textHp = null;
+    if (a.deployTimer > 0) {
+      textHp = a.deployed === 1
+        ? t("label.deploying", { s: Math.ceil(a.deployTimer / 10) })
+        : t("label.undeploying", { s: Math.ceil(a.deployTimer / 10) });
+    } else if (a.deployed === 1) {
+      textHp = t("label.hardpoint");
+    }
+    if (textHp) {
+      upsertWorldLabel(key, textHp, "#bfe3e8", a.x / CELL + 0.5, 1.7, a.y / CELL + 0.5);
+    } else {
+      const entry = worldLabels.get(key);
+      if (entry) { scene.remove(entry.sprite); worldLabels.delete(key); }
+    }
+  }
   // 11U: repair bays count down over the hull.
   for (const a of view.friendlyAssets ?? []) {
     const key = `repair${a.id}`;
@@ -970,9 +996,13 @@ function updateActionBanner(view) {
     }
   } else {
     const wreck = adjacentTowableWreck(view);
+    const me = view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
     if (wreck) {
       text = t("banner.tow", { id: wreck.id });
       bannerAction = () => send({ type: "tow_order", wreckAssetId: wreck.id });
+    } else if (me?.type === 7 && me.deployTimer === 0) { // 12B
+      text = me.deployed === 1 ? t("banner.undeploy") : t("banner.deploy");
+      bannerAction = () => send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
     }
   }
   if (text) {

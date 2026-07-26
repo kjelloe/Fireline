@@ -10,6 +10,7 @@ export const UNIT_LOGISTICS = 3;
 export const UNIT_CARRIER = 4;
 export const UNIT_BIKE = 5;    // 11R: scout bike
 export const UNIT_MORTAR = 6;  // 11S: mortar carrier
+export const UNIT_SENTINEL = 7; // 12B: Directorate unique
 
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
@@ -18,6 +19,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: true, canClearMines: false, // 9E: the Assault chassis lays mines
     heavy: true, // 11N: too wide for woodland paths — crosses at rough speed
     canCapture: true, siege: false, // 11R
+    deployable: false, // 12B
   }),
   [UNIT_SCOUT]: Object.freeze({
     id: UNIT_SCOUT, name: "scout",
@@ -25,6 +27,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false, // 9E: scouts DETECT mines (los pass)
     heavy: false, // 11N: paths are a scout's home ground
     canCapture: true, siege: false, // 11R
+    deployable: false, // 12B
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
@@ -33,6 +36,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false, // 11N
     canCapture: true, siege: true, // 11R: ONLY artillery breaches sites (Q9)
+    deployable: false, // 12B
   }),
   // Spec roster middle path (playtest 2 decision): the Logistics Truck is the
   // ONLY chassis that tows — the rescue fantasy becomes a role, not a chore.
@@ -43,6 +47,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: true, // 9E: trucks clear marked mines
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
+    deployable: false, // 12B
   }),
   // Rescue Update 9A (rulings Q1/Q2): the Command Carrier is the ONLY chassis
   // that can take the enemy standard, and it will carry downed operators (9B).
@@ -53,6 +58,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
+    deployable: false, // 12B
   }),
   // 11R (prompt 22): the Scout Bike — a courier that outruns everything,
   // dies to anything, and can neither capture nor contest a relay. It
@@ -64,6 +70,20 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false,
     canCapture: false, siege: false,
+    deployable: false, // 12B
+  }),
+  // 12B (prompt 29): the Directorate Sentinel — Deploy Hardpoint. Mobile:
+  // a crawling, lightly-armed hull. Deployed: an immobile hardpoint with
+  // artillery-class DIRECT reach. fortify · contain · stabilize.
+  [UNIT_SENTINEL]: Object.freeze({
+    id: UNIT_SENTINEL, name: "sentinel",
+    speed: 12, range: 1024, minRange: 0, hp: 150, damage: 8, indirect: false, reloadTicks: 20,
+    canTow: false, canCarryStandard: false, capacity: 0, turnRate: 4,
+    canMine: false, canClearMines: false,
+    heavy: true,
+    canCapture: true, siege: false,
+    deployable: true,
+    deployedRange: 2048, deployedDamage: 25, deployedReloadTicks: 20,
   }),
   // 11S (prompt 22): the Mortar Carrier — artillery's little brother that
   // keeps up with a push. Indirect fire on the move-and-stop rhythm:
@@ -77,9 +97,27 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false,
     canCapture: true, siege: false,
+    deployable: false, // 12B
   }),
 });
 
 export function getUnitStats(type) {
   return UNIT_STATS[type] ?? UNIT_STATS[UNIT_TANK];
+}
+
+// 12B: combat numbers depend on the hardpoint state. An ACTIVE hardpoint
+// (deployed, transition finished) fights with its deployed profile;
+// everything else uses the base chassis numbers.
+export function effectiveCombat(asset) {
+  const stats = getUnitStats(asset.type);
+  if (stats.deployable && asset.deployed === 1 && (asset.deployTimer ?? 0) === 0) {
+    return {
+      range: stats.deployedRange, minRange: stats.minRange,
+      damage: stats.deployedDamage, reloadTicks: stats.deployedReloadTicks,
+    };
+  }
+  return {
+    range: stats.range, minRange: stats.minRange,
+    damage: stats.damage, reloadTicks: stats.reloadTicks,
+  };
 }

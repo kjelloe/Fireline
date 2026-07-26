@@ -47,8 +47,13 @@ const SPAWN_TYPES = [0, 0, 1, 2];
 // Per-team totals: 5 tanks, 3 scouts, 3 artillery, 3 trucks, 2 carriers.
 // 11R: garage slot idx 4 (ids 12 / 24) traded from tank to Scout Bike.
 // 11S: garage slot idx 6 (ids 14 / 26) traded from artillery to Mortar.
-// Indices 0-3 are AI-paired (assets 8-11 / 20-23) — never reordered.
-const RESERVE_TYPES = [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 0, 4];
+// 12B/12C (designer directive): the FACTION UNIQUES replace garage slot
+// idx 10 (ids 18 / 30) — Directorate Sentinel west, Outlier Skimmer east.
+// No 17th asset; indices 0-3 stay AI-paired and never reorder.
+const RESERVE_TYPES_BY_TEAM = [
+  [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 7, 4], // team 0: The Directorate
+  [4, 3, 1, 0, 5, 1, 6, 3, 2, 3, 0, 4], // team 1: The Outliers (Skimmer in 12C)
+];
 const TEAM_A_SPAWN_X = 7;
 // 11C balance fix: 117 put B three cells closer to the center relay than
 // A's mirror (127-7=120) — B won the middle race and the war in 5/5 sim
@@ -82,6 +87,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
     materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
     driveThrottle: 0, driveTurn: 0, // 11L: direct-control intent
+    deployed: 0, deployTimer: 0, // 12B: Deploy Hardpoint
   };
 }
 
@@ -101,7 +107,7 @@ export function fieldSpawnFor(id) {
   const cols = team === 0 ? TEAM_A_RESERVE_COLS : TEAM_B_RESERVE_COLS;
   const col = cols[(slot / RESERVE_ROWS.length) | 0];
   const row = RESERVE_ROWS[slot % RESERVE_ROWS.length];
-  return { team, type: RESERVE_TYPES[slot % 12], cellX: col, cellY: row };
+  return { team, type: RESERVE_TYPES_BY_TEAM[team][slot % 12], cellX: col, cellY: row };
 }
 
 function createFieldAssets() {
@@ -119,7 +125,7 @@ function createFieldAssets() {
     let slot = 0;
     for (const col of cols) {
       for (const row of RESERVE_ROWS) {
-        assets.push(makeFieldAsset(id, RESERVE_TYPES[slot % 12], team, col, row));
+        assets.push(makeFieldAsset(id, RESERVE_TYPES_BY_TEAM[team][slot % 12], team, col, row));
         id++;
         slot++;
       }

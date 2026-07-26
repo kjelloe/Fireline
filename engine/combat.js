@@ -4,7 +4,7 @@
 // 1G values: 20 hp per shot, 1280-unit range). Integer math throughout;
 // squared distances stay well inside exact double range for 128x128 maps.
 
-import { getUnitStats } from "./units.js";
+import { getUnitStats, effectiveCombat } from "./units.js";
 
 export const DEFAULT_RULES = Object.freeze({
   damage: 20,
@@ -16,13 +16,13 @@ export const SUPPRESSION_TICKS = 30;
 
 export function resolveShot(attacker, target) {
   return {
-    hpDelta: getUnitStats(attacker.type).damage,
+    hpDelta: effectiveCombat(attacker).damage, // 12B: hardpoint profile
     suppressed: true,
   };
 }
 
 export function inFireRange(attacker, target) {
-  const stats = getUnitStats(attacker.type);
+  const stats = effectiveCombat(attacker); // 12B: hardpoint profile
   const dx = target.x - attacker.x;
   const dy = target.y - attacker.y;
   const distSq = dx * dx + dy * dy;

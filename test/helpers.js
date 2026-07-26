@@ -27,6 +27,7 @@ export function makeAsset(id, spec) {
     campTicks: spec.campTicks ?? 0, // 9G
     materiel: spec.materiel ?? 0, // 11F
     driveThrottle: spec.driveThrottle ?? 0, driveTurn: spec.driveTurn ?? 0, // 11L
+    deployed: spec.deployed ?? 0, deployTimer: spec.deployTimer ?? 0, // 12B
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }

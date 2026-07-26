@@ -1445,3 +1445,29 @@ gameplay change, zero hashed-state change, no repin:
 
 Suite 422/422 (x2). Tagged slice-12a. Next per directive: 12B Sentinel,
 12C Skimmer, each replacing one garage slot, no 17th asset.
+
+---
+
+## slice-12b — The Directorate Sentinel (2026-07-27, prompt 29)
+
+Deploy Hardpoint, exactly as the designer framed it. Mobile: a crawling,
+lightly-armed hull (speed 12, range 1024, damage 8, hp 150, heavy — no
+trail bonus). DEPLOYED: an immobile hardpoint with artillery-class
+DIRECT reach (range 2048, damage 25) — fortify · contain · stabilize.
+Transition is 3 s each way (HARDPOINT_TRANSITION_TICKS): immobile, guns
+cold, no double-commands. Engine shape: `deployable` contract flag on
+every chassis + `deployedRange/Damage/ReloadTicks` on the Sentinel;
+`effectiveCombat(asset)` feeds resolveShot/inFireRange so the profile
+switch is one seam; per-asset `deployed`/`deployTimer` hashed (1A → v31);
+disablement folds the legs; deployed flag is PUBLIC in enemy views (a
+raised hardpoint is externally obvious — baseline leak pin extended
+deliberately). Fielding per directive: replaces the Directorate's garage
+tank at reserve idx 10 (id 18) via per-team reserve tables — no 17th
+asset; the Outliers keep that tank until 12C's Skimmer. Client: H
+toggles, banner action, DEPLOYING/UNDEPLOYING/HARDPOINT ACTIVE labels
+with countdowns, designer's exact UI copy in en + no. Art: squat
+platform on fold-legs with twin-gun casemate; strip → 24 tiles.
+NUMBERS ARE MINE — flagged for tuning (12-Q #2 asked; answer pending).
+
+Suite 422/422 (x2, 427 with the new file), simwar + replay OK.
+Tagged slice-12b.
