@@ -23,7 +23,7 @@ import {
 } from "./objective_model.js";
 
 const CELL = 256; // fixed world units per cell
-const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33];
+const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33, 0x6e5f42]; // 11N: path
 const STATE_DISABLED = 2;
 
 let socket = null;

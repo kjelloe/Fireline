@@ -1120,3 +1120,24 @@ frontier (relays sit off the standard route) — tuning after the first
 human playtest.
 
 Suite 390/390 (x2). Tagged slice-11m.
+
+---
+
+## slice-11n — PATH terrain (2026-07-26, prompt 20 Q22)
+
+New terrain id 5: dirt roads / woodland trails at ~1.2x — slower than the
+road (1.4x), faster than open — for every chassis EXCEPT the tank. First
+per-chassis terrain rule: `speedMultiplier(terrain, stats)` consults an
+explicit `heavy` contract flag (tank true, everyone else false; pinned in
+3A/9A and data/units.json); a heavy hull crosses trails at rough speed
+(128). Both maps grew mirrored trails: frontier gets flanking woodland
+loops north and south of the corridor (rows 40/41 and 86/87, x 24..103),
+riverline gets vertical trails linking the road to each relay pair
+(columns 44/83). The 11M mirror tests extend to trails. 0I map fixture
+re-pinned (v2, terrain id 5 registered, `debugging/repin_0i.mjs`); the 1A
+fixture did NOT drift — no reducer contract change, and no fixture unit
+crosses the new rows. Light chassis now genuinely flank: a scout does 67
+units/tick on a trail where a tank does 16.
+
+Suite 390/390 (x2, +3 new = 393 on next count), simwar + replay OK.
+Tagged slice-11n.

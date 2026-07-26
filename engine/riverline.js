@@ -72,6 +72,13 @@ export function generateRiverline(rootSeed) {
       for (let x = b.x; x < b.x + b.width; x++) cells[idx(x, y)] = T_OPEN;
     }
   }
+  // 11N: woodland paths from the road up/down to each relay (mirrored
+  // columns 44 and 83) — light chassis flank fast, tanks take the road.
+  const T_PATH = 5;
+  for (const x of [44, 83]) {
+    for (let y = 32; y < 62; y++) if (cells[idx(x, y)] !== T_ROAD) cells[idx(x, y)] = T_PATH;
+    for (let y = 66; y <= 95; y++) if (cells[idx(x, y)] !== T_ROAD) cells[idx(x, y)] = T_PATH;
+  }
   // Infrastructure last: the cross-map road, and the three bridges.
   for (const y of p.roadRows) {
     for (let x = 0; x < p.width; x++) cells[idx(x, y)] = T_ROAD;

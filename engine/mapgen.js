@@ -12,6 +12,7 @@ export const T_ROAD = 1;
 export const T_FOREST = 2;
 export const T_ROUGH = 3;
 export const T_BLOCKING = 4;
+export const T_PATH = 5; // 11N: dirt road / woodland trail
 
 export function generateMap(seed, width, height) {
   if (!Number.isInteger(width) || width < 4 || width > 256) {

@@ -549,7 +549,7 @@ function driveStep(asset, map, supplied, carrying, towing) {
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
   const terrain = map.cells[cellY * map.width + cellX];
-  let step = floorDivI32(stats.speed * speedMultiplier(terrain), 256);
+  let step = floorDivI32(stats.speed * speedMultiplier(terrain, stats), 256);
   if (!supplied) step = floorDivI32(step, 2);
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN);
   if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN);
@@ -573,7 +573,7 @@ function stepAsset(asset, map, supplied, carrying, towing) {
 
   const stats = getUnitStats(asset.type);
   const terrain = map.cells[cellY * map.width + cellX];
-  let step = floorDivI32(stats.speed * speedMultiplier(terrain), 256);
+  let step = floorDivI32(stats.speed * speedMultiplier(terrain, stats), 256);
   if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN); // 8B
   if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN); // 8D

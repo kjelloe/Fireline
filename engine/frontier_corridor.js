@@ -20,6 +20,7 @@ const T_OPEN = 0;
 const T_ROAD = 1;
 const T_FOREST = 2;
 const T_ROUGH = 3;
+const T_PATH = 5; // 11N
 
 function indexOf(x, y, width) { return y * width + x; }
 function randBelow(state, max) {
@@ -41,6 +42,9 @@ function stampInfrastructure(cells) {
   fillRect(cells, p.teamABase.x, p.teamABase.y, p.teamABase.width, p.teamABase.height, T_OPEN);
   fillRect(cells, p.teamBBase.x, p.teamBBase.y, p.teamBBase.width, p.teamBBase.height, T_OPEN);
   fillRect(cells, p.objective.x, p.objective.y, p.objective.width, p.objective.height, T_OPEN);
+  // 11N: mirrored woodland paths — slower flanking routes north and south
+  // of the corridor (rows 40/41 and 86/87, x 24..103 = mirror-closed).
+  for (const y of [40, 41, 86, 87]) fillRect(cells, 24, y, 80, 1, T_PATH);
   // Restore the guaranteed cross-map route after clearing operational zones.
   for (const y of p.roadRows) fillRect(cells, 0, y, p.width, 1, T_ROAD);
   for (const x of p.leftApproachX) fillRect(cells, x, p.teamABase.y, 1, p.teamABase.height, T_ROAD);
@@ -78,7 +82,7 @@ export function generateFrontierCorridor(rootSeed) {
 }
 
 export function countTerrain(cells) {
-  const counts = [0, 0, 0, 0, 0];
+  const counts = [0, 0, 0, 0, 0, 0]; // 11N: index 5 = path
   for (const cell of cells) counts[cell]++;
   return counts;
 }

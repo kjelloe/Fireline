@@ -16,7 +16,8 @@
       "capacity": 0,
       "turnRate": 8,
       "canMine": true,
-      "canClearMines": false
+      "canClearMines": false,
+      "heavy": true
     },
     "1": {
       "id": 1,
@@ -33,7 +34,8 @@
       "capacity": 0,
       "turnRate": 14,
       "canMine": false,
-      "canClearMines": false
+      "canClearMines": false,
+      "heavy": false
     },
     "2": {
       "id": 2,
@@ -50,7 +52,8 @@
       "capacity": 0,
       "turnRate": 2,
       "canMine": false,
-      "canClearMines": false
+      "canClearMines": false,
+      "heavy": false
     },
     "3": {
       "id": 3,
@@ -67,7 +70,8 @@
       "capacity": 0,
       "turnRate": 10,
       "canMine": false,
-      "canClearMines": true
+      "canClearMines": true,
+      "heavy": false
     },
     "4": {
       "id": 4,
@@ -84,7 +88,8 @@
       "capacity": 2,
       "turnRate": 6,
       "canMine": false,
-      "canClearMines": false
+      "canClearMines": false,
+      "heavy": false
     }
   }
 }

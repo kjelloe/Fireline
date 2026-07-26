@@ -20,6 +20,7 @@ test("9A carrier stats are pinned per ruling Q1", () => {
     indirect: false, reloadTicks: 25,
     canTow: false, canCarryStandard: true, capacity: 2, turnRate: 6,
     canMine: false, canClearMines: false,
+    heavy: false, // 11N
   });
 });
 

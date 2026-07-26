@@ -25,7 +25,11 @@ test("1F terrain speed table has correct values", () => {
   assert.equal(speedMultiplier(T_FOREST), 179);
   assert.equal(speedMultiplier(T_ROUGH), 128);
   assert.equal(speedMultiplier(T_BLOCKING), 0);
-  assert.equal(Object.keys(TERRAIN_SPEED).length, 5);
+  // 11N: paths — 1.2x for everyone EXCEPT heavy chassis (rough speed).
+  assert.equal(speedMultiplier(5), 307);
+  assert.equal(speedMultiplier(5, { heavy: true }), 128);
+  assert.equal(speedMultiplier(5, { heavy: false }), 307);
+  assert.equal(Object.keys(TERRAIN_SPEED).length, 6);
 });
 
 test("1F asset on road tile moves faster than on open tile", () => {
