@@ -73,7 +73,7 @@ The centerpiece, and the one gated on the designer conversation.
 ## Execution ladder (dependencies, not calendar)
 
 ```
-NOW (no blockers):        13E fog ghosts · 14A props r2 · 15B string extraction
+DONE 2026-07-27:          13E fog ghosts ✅ · 14A props r2 ✅ · 15B strings part 1 ✅ (part 2: describeEvent lines + static pages)
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI
