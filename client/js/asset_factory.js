@@ -24,11 +24,15 @@ function mat(colorHex, tokenName = "paintedMatte") {
 }
 
 function box(w, h, d, colorHex, token) {
-  return new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(colorHex, token));
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(colorHex, token));
+  m.userData.paintToken = token ?? "paintedMatte"; // 11Y: scheme targeting
+  return m;
 }
 
 function cyl(rTop, rBottom, h, seg, colorHex, token) {
-  return new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBottom, h, seg), mat(colorHex, token));
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBottom, h, seg), mat(colorHex, token));
+  m.userData.paintToken = token ?? "paintedMatte";
+  return m;
 }
 
 // Team panel slot: one mesh per unit named "team_panel" so the renderer can
@@ -394,6 +398,22 @@ export function buildProcedural(key) {
   const builder = BUILDERS[key];
   if (!builder) return null;
   return builder();
+}
+
+// 11Y — Art round 2a (prompt 25): the faction paint scheme. Blends every
+// PAINTED body mesh (paintedMatte token; never worn metal, never the
+// team panel) toward the faction hue, with a small per-asset value
+// jitter as weathering — no two hulls in a column read identical.
+// Deterministic from assetId; applyTeamColor stays panel-only (pinned).
+export function applyFactionScheme(group, factionColorHex, assetId = 0) {
+  const faction = new THREE.Color(factionColorHex);
+  const jitter = 0.92 + ((assetId * 2654435761 >>> 0) % 100) / 100 * 0.16;
+  group.traverse((node) => {
+    if (!node.isMesh || node.name === "team_panel") return;
+    if (node.userData.paintToken !== "paintedMatte") return;
+    node.material = node.material.clone();
+    node.material.color.lerp(faction, 0.3).multiplyScalar(jitter);
+  });
 }
 
 // Tint the team-panel slot without touching the painted body.

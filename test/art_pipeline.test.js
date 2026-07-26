@@ -175,3 +175,49 @@ test("art: assets are served to the browser over HTTP", async () => {
     await appServer.stop();
   }
 });
+
+test("11Y the faction scheme paints hulls apart, deterministically, panel-safe", async () => {
+  const { applyFactionScheme } = await import("../client/js/asset_factory.js");
+  const hullColors = (group) => {
+    const out = [];
+    group.traverse((n) => {
+      if (n.isMesh && n.name !== "team_panel" && n.userData.paintToken === "paintedMatte") {
+        out.push(n.material.color.getHexString());
+      }
+    });
+    return out;
+  };
+  const a = buildProcedural("tank");
+  const b = buildProcedural("tank");
+  applyFactionScheme(a, "#57c46b", 4);
+  applyFactionScheme(b, "#d05a4a", 4);
+  assert.notDeepEqual(hullColors(a), hullColors(b), "factions read apart");
+
+  // Deterministic per asset id; different ids weather differently.
+  const c = buildProcedural("tank");
+  applyFactionScheme(c, "#57c46b", 4);
+  assert.deepEqual(hullColors(a), hullColors(c), "same id, same paint");
+  const d = buildProcedural("tank");
+  applyFactionScheme(d, "#57c46b", 9);
+  assert.notDeepEqual(hullColors(a), hullColors(d), "weathering varies by hull");
+
+  // The panel contract survives: scheme never touches the panel, and
+  // applyTeamColor still owns it exclusively.
+  let panel = null;
+  a.traverse((n) => { if (n.isMesh && n.name === "team_panel") panel = n; });
+  const panelBefore = panel.material.color.getHexString();
+  applyFactionScheme(a, "#ffffff", 4);
+  assert.equal(panel.material.color.getHexString(), panelBefore, "panel untouched by scheme");
+
+  // Worn metal (barrels, tracks) keeps its material identity.
+  const metals = [];
+  a.traverse((n) => {
+    if (n.isMesh && n.userData.paintToken === "wornMetal") metals.push(n.material.color.getHexString());
+  });
+  const e = buildProcedural("tank");
+  const metalsRaw = [];
+  e.traverse((n) => {
+    if (n.isMesh && n.userData.paintToken === "wornMetal") metalsRaw.push(n.material.color.getHexString());
+  });
+  assert.deepEqual(metals, metalsRaw, "metal is metal on every faction");
+});

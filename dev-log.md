@@ -1366,3 +1366,29 @@ riverline is the points-war map until the amphibious Infiltrator opens
 the river itself).
 
 Suite 416/416. Tagged slice-11w.
+
+---
+
+## slice-11x / slice-11y — Art round 2 (2026-07-26, prompt 25 rulings c then a)
+
+**11X — battlefield props (2c)**: `client/js/props_model.js`, a PURE
+deterministic placement model (integer cell hash — cross-client identical,
+zero Math.random): forest cells grow cone trees (~1/3 density), rough
+grows rocks, trails get trodden ruts, each with jittered position/scale/
+rotation. Rendered as three InstancedMeshes appended to the terrain group
+— hundreds of props, three draw calls. Test pins determinism,
+terrain-correctness per prop, and density bounds. Terrain now reads at a
+glance — the original playtest-2 legibility complaint, closed.
+
+**11Y — faction palette pass (2a)**: `applyFactionScheme(group, color,
+assetId)` blends every PAINTED body mesh (paintToken "paintedMatte" —
+never worn metal, never the team panel) 30% toward the faction hue with a
+deterministic per-hull value jitter as weathering — a column of tanks no
+longer reads as clones. Wrecks stay ashen. The `applyTeamColor`
+panel-only contract is untouched and re-pinned alongside the new scheme
+test (factions read apart / same id same paint / metal is metal).
+
+NOTED for later (prompt 25): art 2b motion (tracks, recoil, tracers,
+rotor blur) and 2d baked sprite fallbacks.
+
+Suite 418/418 (x2). Tagged slice-11x, slice-11y.

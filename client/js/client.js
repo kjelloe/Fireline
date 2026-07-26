@@ -18,7 +18,7 @@ import { tasksFor } from "./tasks_model.js";
 import { propsFor } from "./props_model.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
-import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
+import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
 import {
   ownStandardLine, enemyStandardLine, relayTally, currentHint, briefingText, autoSelectTarget,
@@ -523,6 +523,10 @@ function upsertAssetMesh(a, friendly) {
         new THREE.MeshStandardMaterial({ color: 0x888888 }));
     mesh.userData.visualKey = visualKey;
     applyTeamColor(mesh, teamToken(ASSET_TOKENS, a.team).color);
+    // 11Y: faction paint scheme + per-hull weathering (wrecks stay ashen).
+    if (!visualKey.startsWith("wreck_")) {
+      applyFactionScheme(mesh, teamToken(ASSET_TOKENS, a.team).color, a.id);
+    }
     scene.add(mesh);
     assetMeshes.set(a.id, mesh);
   }
