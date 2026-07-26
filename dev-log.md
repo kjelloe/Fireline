@@ -574,3 +574,20 @@ art_pipeline completeness tests enforced the whole checklist automatically.
 
 **Process note (user):** helper scripts go to /tmp or ./debugging as files —
 no inline python/node heredocs in Bash (saved to memory).
+
+---
+
+## marker-0038 — plan-version2 (.md + .html) (2026-07-26)
+
+Compiled the complete post-v1 design inventory into `plan-version2.md` and a
+styled `plan-version2.html` twin. Five tracks: A roster/roles (Command
+Carrier, downed operators, Sentinel, Infiltrator, factions, NPC infantry),
+B battlefield depth (mines, cargo/materiel economy, depots + Minimum
+Playability Guarantee, route graph, crossings/water, fog ghosts, convoys),
+C coordination (context pings, public tasks, takeover confirmations, join
+flow/balance), D presentation/platforms (art B-E, camera pass,
+direct-control homage, audio identity, mobile, i18n/a11y, Luau twin,
+native port), E meta/live-ops (profiles/recognition, spectator + replay
+viewer, achievements, rotation/biomes, campaign/offline, telemetry,
+modding/workshop, custom modes, tournaments, ops hardening).
+Suggested V2.0 cut: "The Rescue Update". Four designer tensions flagged.

@@ -111,3 +111,12 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 1. Roster option (c): Logistics Truck fielded now (tow becomes its exclusive role); Command Carrier / Sentinel / Infiltrator deferred; standard carrying stays any-chassis until the Carrier exists.
 2. `plan-version1.md` rewritten to current status; `plan-version1.html` styled twin created.
 3. Process: helper scripts as files in /tmp or ./debugging, never inline heredocs (memory saved).
+
+### Prompt 11 — plan-version2
+
+> Thanks can you also in same format write up plan-version2.md and .html with the rest of the features that you know of and/or have read in the game design @specs/ or in the md files in @phases/
+
+**Decisions captured:**
+1. `plan-version2.md` + `plan-version2.html` written: five tracks (roster/roles, battlefield depth, coordination, presentation/platforms, meta/live-ops) compiled from specs 01-06, phase 5-7 plans, future roadmap, asset spec, and user requests.
+2. Suggested V2.0 cut named "The Rescue Update" (Carrier, downed operators, cargo economy, mines, pings/tasks, art pass, spectator/replay viewer, profiles, direct-control mode).
+3. Four designer tensions flagged (5E lobbies vs no-lobby, artillery's roster status, carrier-exclusive standard carrying, helicopter-pressure equivalent).

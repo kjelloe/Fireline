@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>More Firepower — Version 2 Plan</title>
+<style>
+  :root {
+    --bg: #101018; --panel: #181824; --ink: #e8e8e2; --dim: #9a9aa8;
+    --green: #4f8f4f; --red: #c7443e; --gold: #f5e96b; --blue: #3d6fb6;
+    --ok: #6bd17b; --line: #2c2c3a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55; padding: 2rem 1rem 4rem;
+  }
+  main { max-width: 920px; margin: 0 auto; }
+  h1 { letter-spacing: 2px; margin-bottom: 0.2rem; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--dim); margin-top: 0; font-size: 0.95rem; }
+  h2 {
+    margin-top: 2.4rem; padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--line); letter-spacing: 1px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0;
+  }
+  .banner { border-left: 5px solid var(--blue); font-size: 1.02rem; }
+  .cut { border-left: 5px solid var(--gold); }
+  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+  .pill {
+    display: inline-block; padding: 0.1rem 0.55rem; border-radius: 999px;
+    font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .pill.v20 { background: #40391d; color: var(--gold); }
+  .pill.v2x { background: #1d2b40; color: #7fa9e0; }
+  .pill.hor { background: #2c2c3a; color: var(--dim); }
+  code { background: #23232f; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.9em; }
+  ol li, ul li { margin: 0.35rem 0; }
+  .footer { color: var(--dim); font-size: 0.85rem; margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+  .team-g { color: var(--green); font-weight: 700; }
+  .team-r { color: var(--red); font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <h1>MORE <span>FIREPOWER</span> — Version 2 Plan</h1>
+  <p class="sub">Written 2026-07-26 · marker-0038 · markdown twin: <code>plan-version2.md</code> · companion: <code>plan-version1.html</code></p>
+
+  <div class="card banner">
+    V1 delivers the Command Standard war. <strong>V2 is everything else the design documents
+    describe</strong> — five tracks compiled from <code>specs/01–06</code>, the phase 5–7 plans,
+    <code>specs/future/FUTURE_ROADMAP.md</code>, the art spec, and user requests.
+    Tiers: <span class="pill v20">V2.0</span> next coherent release ·
+    <span class="pill v2x">V2.x</span> after it ·
+    <span class="pill hor">HORIZON</span> documented, unscheduled.
+  </div>
+
+  <h2>Track A — Roster &amp; roles completion</h2>
+  <table>
+    <tr><th>Feature</th><th>Tier</th><th>What it is</th></tr>
+    <tr><td><strong>Command Carrier</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Rescue transport: extracts downed operators, moves specialists/POWs, takes over standard-carrying. Consequential takeovers need confirmation.</td></tr>
+    <tr><td><strong>Downed operators</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Disabled asset → operator on foot: fast redeploy (~10&nbsp;s), Carrier rescue, or ~60&nbsp;s auto-return; can call for help, crawl to cover. The heart of the recovery fantasy.</td></tr>
+    <tr><td>Sentinel <span class="team-g">(Warden)</span></td><td><span class="pill v2x">V2.x</span></td>
+        <td>Deployable defensive platform — anchor/deploy-lock area control.</td></tr>
+    <tr><td>Infiltrator <span class="team-r">(Freehold)</span></td><td><span class="pill v2x">V2.x</span></td>
+        <td>Amphibious EW raider: water lanes, sensor disruption, sabotage. Needs Track B water + sensors.</td></tr>
+    <tr><td>Factions: Warden vs Freehold</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Faction identity (unique assets, audio timbre, visual trim) replacing plain team A/B.</td></tr>
+    <tr><td>NPC infantry layer</td><td><span class="pill v2x">V2.x</span></td>
+        <td>AI-only foot units: site guards, engineer crews, squads, specialists/POWs, civilians. Never player-micromanaged.</td></tr>
+  </table>
+
+  <h2>Track B — Battlefield systems depth</h2>
+  <table>
+    <tr><th>Feature</th><th>Tier</th><th>What it is</th></tr>
+    <tr><td><strong>Mines</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Assault Vehicle deploys, Scout detects; authoritative minefields demanding clearance work.</td></tr>
+    <tr><td><strong>Cargo &amp; materiel economy</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Transfer fuel/materiel/munitions/operators/specialists; site repair; salvage &amp; salvage-denial. The truck becomes a full logistics role.</td></tr>
+    <tr><td><strong>Sites beyond relays</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Depots and repair sites with damaged/restorable states; Minimum Playability Guarantee (Slow Manufacture reserve).</td></tr>
+    <tr><td>Route graph &amp; congestion</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Node/edge network with states open/slowed/blocked/mined/damaged/contested; fast vs safer routing.</td></tr>
+    <tr><td>Bridges, crossings, water lanes</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Per-class crossing rules; amphibious lanes; mud/slope constraints.</td></tr>
+    <tr><td>Fog ghosts</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Fading last-known contacts; discovered terrain stays known. Presentation of legitimate knowledge only.</td></tr>
+    <tr><td>Convoy events</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Escort/interdict convoys as public tasks.</td></tr>
+  </table>
+
+  <h2>Track C — Coordination &amp; social</h2>
+  <table>
+    <tr><th>Feature</th><th>Tier</th><th>What it is</th></tr>
+    <tr><td><strong>Context ping system</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Target-aware ping strips (<em>Need escort</em>, <em>Recovery in progress</em>) with merge/expiry/rate-limit anti-spam.</td></tr>
+    <tr><td><strong>Public tasks</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Mission markers with responder state: <code>Recover Assault Vehicle — 2 responding</code>; fog-honest AI participation.</td></tr>
+    <tr><td><strong>Takeover confirmations</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Confirm before assuming standard carriers, high-value tows, specialist transports.</td></tr>
+    <tr><td>Join flow &amp; balance</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Balance-aware battle picker, join-friend, LAN entry; team-balance protection; operation turnover.</td></tr>
+  </table>
+
+  <h2>Track D — Presentation &amp; platforms</h2>
+  <table>
+    <tr><th>Feature</th><th>Tier</th><th>What it is</th></tr>
+    <tr><td><strong>Art Slices B–E</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Painted GLBs (standard + four-chassis kit + wrecks), order markers, capture VFX, sprite-fallback renderer. Pipeline ready — models drop in with zero code changes.</td></tr>
+    <tr><td><strong>Camera/diorama pass</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Fix the “low-poly Syndicate” read: 35–55°, isometric bias, three zoom tiers.</td></tr>
+    <tr><td><strong>Direct tank control mode</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Firepower homage (user request): held keys stream move orders + aim-fire. Client-only.</td></tr>
+    <tr><td>Audio identity system</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Per-asset voices, recovery sound arc, adaptive fog-safe music. Replaces synth cues.</td></tr>
+    <tr><td>Mobile &amp; touch</td><td><span class="pill v2x">V2.x</span></td>
+        <td>Touch overlay + pinch-zoom, later an app wrapper.</td></tr>
+    <tr><td>Localization &amp; accessibility</td><td><span class="pill v2x">V2.x</span></td>
+        <td>String tables (en/no), colorblind matrices, high contrast, screen-reader queue, keybind validation.</td></tr>
+    <tr><td>Roblox/Luau twin engine</td><td><span class="pill hor">HORIZON</span></td>
+        <td>The founding “Lua-portable subset” constraint cashed in — parity proven by the shared 0A–0E fixtures.</td></tr>
+    <tr><td>Native core port (C++/Rust)</td><td><span class="pill hor">HORIZON</span></td>
+        <td>Only if scale demands it.</td></tr>
+  </table>
+
+  <h2>Track E — Meta, live ops &amp; community</h2>
+  <table>
+    <tr><th>Feature</th><th>Tier</th><th>What it is</th></tr>
+    <tr><td><strong>Profiles &amp; leaderboard</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Persistent per-player record honoring recovery deeds, not just kills (Recognition, spec 01 §13).</td></tr>
+    <tr><td><strong>Spectator &amp; replay viewer</strong></td><td><span class="pill v20">V2.0</span></td>
+        <td>Explicit spectator role; client mode replaying archived logs through the local reducer. Timeline/analysis later.</td></tr>
+    <tr><td>Achievements</td><td><span class="pill v2x">V2.x</span></td><td>Cosmetic-only registry + progress files.</td></tr>
+    <tr><td>Map variety &amp; rotation</td><td><span class="pill v2x">V2.x</span></td><td>Second profile, biome palettes, rotation, voting.</td></tr>
+    <tr><td>Campaign / offline skirmish</td><td><span class="pill v2x">V2.x</span></td><td>Mission chains + offline vs AI.</td></tr>
+    <tr><td>Telemetry &amp; heatmaps</td><td><span class="pill v2x">V2.x</span></td><td>Per-match archives + combat heatmaps on top of <code>/metrics</code>.</td></tr>
+    <tr><td>Modding: schemas, editor, workshop</td><td><span class="pill v2x">V2.x</span></td><td>Unit/rule JSON schemas, safe validation, replay-compatible manifests, browser map editor, sharing.</td></tr>
+    <tr><td>Custom game modes</td><td><span class="pill v2x">V2.x</span></td><td>Victory-condition plugins around the checkVictory seam.</td></tr>
+    <tr><td>Tournaments/ladders</td><td><span class="pill hor">HORIZON</span></td><td>After spectating + profiles.</td></tr>
+    <tr><td>Ops hardening</td><td><span class="pill v2x">V2.x</span></td><td>WS rate limits, feature flags, version manifest.</td></tr>
+  </table>
+
+  <h2>Suggested V2.0 cut</h2>
+  <div class="card cut">
+    <strong>“The Rescue Update”</strong> — Command Carrier + downed operators + cargo/depot economy
+    + mines + pings/public tasks + takeover confirmations, wrapped in the painted art pass
+    (Slices B–E + camera), with spectator/replay viewer, profiles/leaderboard, and the
+    direct-control homage mode.<br><br>
+    Completes the spec's core promise — <em>“the defining experience is recovery”</em> — using seams
+    the engine already hosts. Estimated 12–16 slices at the established cadence.
+  </div>
+
+  <h2>Known tensions for the designer</h2>
+  <ol>
+    <li><strong>Lobbies (phase plan 5E) vs the no-lobby philosophy</strong> — recommend dropping 5E
+        for the balance-aware battle picker.</li>
+    <li><strong>Artillery</strong> is in-engine but not in the spec roster — keep, rename, or fold
+        into the Assault Vehicle family when factions land?</li>
+    <li><strong>Standard carrying</strong> — Carrier-exclusive (spec leaning) or any-chassis-with-penalty
+        (today's small-player-count-friendly rule)?</li>
+    <li><strong>Helicopters</strong> (original Firepower's anti-camping pressure) have no spec
+        equivalent — does a QRF/harassment event fill that emotional slot?</li>
+  </ol>
+
+  <div class="footer">
+    More Firepower — deterministic, server-authoritative, no-lobby tactical wargame.
+    V1 status: <code>plan-version1.html</code> · build history: <code>dev-log.md</code> (markers 0001–0038) ·
+    designer specs: <code>specs/</code> · art pipeline: <code>assets/PIPELINE.md</code>.
+  </div>
+</main>
+</body>
+</html>
