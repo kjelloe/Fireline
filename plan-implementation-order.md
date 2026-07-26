@@ -170,3 +170,26 @@ the minimal toggle if playtests demand more.
 - MPG stays as-is (independent guarantee). Salvage-for-materiel deferred.
 - Open detail to confirm before building: can HOME BASES be shelled?
   (proposal: no — bases stay sacred, only relays/depots.)
+
+---
+
+## Next slices — planned 2026-07-26 evening (prompt 18)
+
+### Ready to build (no clarification blocking)
+
+| # | Slice | Scope |
+|---|---|---|
+| 11G | **Rescue autopilot option** (Q8) | Per-operator `autoRescue` flag in hashed state (default ON) + `set_option` command; explicit `board_carrier`/`unboard` commands for manual mode; gear-button settings panel; hover/tap BOARD icon on adjacent carriers. |
+| 11H | **Replay viewer** (Q15) | The engine is pure browser-safe JS, so the client can RE-SIMULATE a downloaded replay locally and scrub it freely through the spectator view path — no server streaming needed. v1 controls: play/pause, ×1/×4/×16, jump-to-tick, war picker from /replays. |
+| 11I | **War-lifecycle regression test** | Integration test that a war ROTATION (game_over → postgame → reset) cleanly resets phase-9/11 state: mines, drones, ruins, materiel, camp clocks, manufacture timers, ping cooldowns. Nothing verifies this today. |
+| 11J | **Ops hardening** (plan 2.6) | Per-connection command rate limit, /version manifest (tag + fixtureVersion), feature-flag env plumbing. |
+
+### Awaiting rulings (see questions in reports/2026-07-26_rulings_round2.md + prompt-18 answer)
+
+- Q17 fuel 4000 ratification; Q19 bases-shellable (currently sacred);
+  Q20 war pace (~6 min AI wars).
+- Q18 residual-bias verdict comes from the batch-PC mirror sweep.
+- Recognition score table confirmation unlocks 2.5 profiles/leaderboard.
+- Direct-control scope (which chassis first?) unlocks the Wave-3 opener.
+- Second-map commissioning + theme; art-pass timing (Q9b procedural
+  upgrade now vs after more playtests).

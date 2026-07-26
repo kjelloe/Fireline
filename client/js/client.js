@@ -158,6 +158,13 @@ function init() {
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
 
+  // Perf-harness hook (tools/perf_harness.mjs): read-only telemetry.
+  window.__mfDebug = {
+    renderer: () => renderer,
+    scene: () => scene,
+    labelCount: () => worldLabels.size,
+  };
+
   loadAssetMetadata().then(() => {
     connect();
     animate();
