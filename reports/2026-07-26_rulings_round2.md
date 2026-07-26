@@ -51,8 +51,9 @@ close horn-bound wars.** The "team B wins everything" era is over; question
 
 17. **FUEL_MAX 4000** — ratify or tune? (A tank now gets ~4 map crossings;
     a laden carrier ~1.25 standard round trips.)
-18. **Residual bias**: team B still wins all 5 seeds, by a modest margin
-    now (e.g. 80–105, 60–85). Hypothesis: cell-floor arithmetic gives
+18. **Residual bias** (mostly resolved by 11D — winners now mix across
+    seeds): the cell-floor hypothesis below is retained for the record.
+    Hypothesis: cell-floor arithmetic gives
     west-movers a one-edge-per-leg advantage (entering a cell from the
     east happens 255 world-units earlier than from the west). Proposal: a
     mirrored-teams sim harness (swap team sides, same seed) to isolate

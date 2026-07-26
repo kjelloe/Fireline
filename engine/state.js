@@ -75,6 +75,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     reloadTimer: 0, // 8E fire cooldown
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
+    materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
   };
 }
 
@@ -138,6 +139,7 @@ function createSites() {
   return RELAY_CELLS.map((pos, id) => ({
     id, type: 1 /* SITE_RELAY */, owner: -1 /* SITE_NEUTRAL */,
     captureProgress: 0, capturingTeam: -1, // 11B countdown
+    hp: 60, // 11F: SITE_HP_MAX (import cycle keeps this a literal)
     cellX: pos.cellX, cellY: pos.cellY,
   }));
 }

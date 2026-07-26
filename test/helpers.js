@@ -25,6 +25,7 @@ export function makeAsset(id, spec) {
     aboard1: spec.aboard1 ?? -1, aboard2: spec.aboard2 ?? -1,
     minesLeft: spec.minesLeft ?? ((spec.type ?? 0) === 0 ? 2 : 0), // 9E
     campTicks: spec.campTicks ?? 0, // 9G
+    materiel: spec.materiel ?? 0, // 11F
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }
@@ -41,6 +42,7 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
     id, type: spec.type ?? SITE_RELAY, owner: spec.owner ?? SITE_NEUTRAL,
     cellX: spec.cellX, cellY: spec.cellY ?? 0,
     captureProgress: spec.captureProgress ?? 0, capturingTeam: spec.capturingTeam ?? -1, // 11B
+    hp: spec.hp ?? 60, // 11F
   }));
   // Default: whole-map bases for both teams so supply rules (3B) stay neutral
   // in tests that aren't about supply. Pass opts.bases to exercise them.

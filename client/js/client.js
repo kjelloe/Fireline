@@ -803,7 +803,8 @@ function upsertSiteMesh(site) {
   }
   const color = site.owner === -1
     ? "#888888" : teamToken(ASSET_TOKENS, site.owner).color;
-  applyTeamColor(mesh, color);
+  applyTeamColor(mesh, site.hp === 0 ? "#3a3028" : color); // 11F: ruins go dark
+  mesh.scale.y = site.hp === 0 ? 0.45 : 1; // visibly knocked down
   mesh.position.set(site.cellX + 0.5, 0, site.cellY + 0.5);
 }
 

@@ -31,11 +31,13 @@ export function hashState(state) {
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
     w.writeU8(a.minesLeft); // added 9E
     w.writeI32LE(a.campTicks); // added 9G
+    w.writeU8(a.materiel ?? 0); // added 11F
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
     w.writeI32LE(s.cellX); w.writeI32LE(s.cellY);
   w.writeI32LE(s.captureProgress); w.writeI32LE(s.capturingTeam); // added 11B
+  w.writeI32LE(s.hp ?? 60); // added 11F
   }
   for (const b of state.bases) { // added 1J
     w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);

@@ -51,6 +51,10 @@ export function validate(cmd) {
 
     case CMD_FIRE_ORDER:
       if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
+      if (cmd.targetSiteId !== undefined) { // 11F: infrastructure target
+        if (!isUint(cmd.targetSiteId, 0xffff)) return { ok: false, reason: "invalid targetSiteId" };
+        return { ok: true };
+      }
       if (cmd.targetDroneId !== undefined) { // 9G: air target instead
         if (!isUint(cmd.targetDroneId, 0xffff)) return { ok: false, reason: "invalid targetDroneId" };
         return { ok: true };

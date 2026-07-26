@@ -16,6 +16,15 @@ export const RELAY_FOG_CELLS = 16;
 export const SITE_NEUTRALIZE_TICKS = 30; // ~3 s enemy -> neutral
 export const SITE_CAPTURE_TICKS = 30;    // ~3 s neutral -> yours
 
+// 11F (Q9): sites are infrastructure with hit points. Two artillery
+// shells (damage 30) knock a relay out; a DAMAGED site keeps its owner
+// but projects nothing and cannot flip until a truck repairs it.
+export const SITE_HP_MAX = 60;
+
+export function siteOperational(site) {
+  return (site.hp ?? SITE_HP_MAX) > 0;
+}
+
 // Returns the site the asset is standing on (or null). Pure; never mutates.
 export function captureCheck(state, assetId) {
   const asset = state.assets[assetId];

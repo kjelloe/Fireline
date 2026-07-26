@@ -28,7 +28,7 @@ function isWreck(asset) {
 // team's non-wreck assets plus any relay sites the team owns (1I).
 export function computeVisible(state, team) {
   const sensors = state.assets.filter((a) => a.team === team && !isWreck(a));
-  const siteSensors = state.sites.filter((s) => s.owner === team);
+  const siteSensors = state.sites.filter((s) => s.owner === team && (s.hp ?? 1) > 0); // 11F
   const visible = new Set();
   for (const asset of state.assets) {
     if (asset.team === team || asset.team === -1) continue;

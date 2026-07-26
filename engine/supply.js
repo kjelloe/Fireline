@@ -49,7 +49,7 @@ export function inSupply(state, asset) {
   );
   if (baseCovered) return true;
   return state.sites.some((s) => {
-    if (s.owner !== asset.team) return false;
+    if (s.owner !== asset.team || (s.hp ?? 1) <= 0) return false; // 11F
     const dx = Math.abs(s.cellX - cellX);
     const dy = Math.abs(s.cellY - cellY);
     return (dx > dy ? dx : dy) <= RELAY_SUPPLY_CELLS;

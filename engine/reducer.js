@@ -32,7 +32,10 @@ import {
 } from "./recovery.js";
 import { inOwnBase } from "./supply.js";
 import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
-import { captureCheck, SITE_NEUTRALIZE_TICKS, SITE_CAPTURE_TICKS } from "./sites.js";
+import {
+  captureCheck, SITE_NEUTRALIZE_TICKS, SITE_CAPTURE_TICKS,
+  SITE_HP_MAX, siteOperational,
+} from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
   STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
@@ -152,6 +155,33 @@ function applyFireOrder(next, command) {
   }
   if (attacker.state === ASSET_DISABLED || attacker.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
+  }
+  // 11F (Q9): shelling infrastructure. Sites are public; only the indirect
+  // siege tube can breach them; normal ammo/reload/supply/range discipline.
+  if (command.targetSiteId !== undefined) {
+    const site = next.sites.find((s) => s.id === command.targetSiteId);
+    if (!site) return reject(next, command, "no such site");
+    if (!getUnitStats(attacker.type).indirect) {
+      return reject(next, command, "cannot breach sites");
+    }
+    if (!siteOperational(site)) return reject(next, command, "site already damaged");
+    if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
+    if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+    if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
+    const sitePos = { x: cellToWorld(site.cellX), y: cellToWorld(site.cellY) };
+    if (!inFireRange(attacker, sitePos)) return reject(next, command, "target out of range");
+    attacker.ammo -= SUPPLY_FIRE_COST;
+    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    site.hp = Math.max(0, site.hp - getUnitStats(attacker.type).damage);
+    next.events.push({
+      type: "site_shelled", siteId: site.id, byAssetId: attacker.id, siteHp: site.hp,
+    });
+    if (site.hp === 0) {
+      site.captureProgress = 0;
+      site.capturingTeam = -1;
+      next.events.push({ type: "site_damaged", siteId: site.id });
+    }
+    return next;
   }
   // 9G: shooting at a drone. Drones are public and airborne: no spotting or
   // LOS gates, but indirect tubes cannot track aircraft, and normal ammo/
@@ -599,6 +629,7 @@ function applyAdvanceTick(next) {
       if (site) present.set(site.id, (present.get(site.id) ?? 0) | (1 << asset.team));
     }
     for (const site of next.sites) {
+      if (!siteOperational(site)) continue; // 11F: dead ground cannot flip
       const mask = present.get(site.id) ?? 0;
       if (mask === 0 || mask === 3) { // empty or contested: no flip, drain/freeze
         if (mask === 0 && site.captureProgress > 0) site.captureProgress -= 1;
@@ -767,6 +798,29 @@ function applyAdvanceTick(next) {
     wreck.fuel = FUEL_MAX;
     next.manufacture[team] = 0;
     next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
+  }
+
+  // 11F materiel pass: an idle truck in its own base takes on one repair
+  // load; a truck carrying materiel next to a damaged own/neutral site
+  // spends it — the site comes back at full strength.
+  for (const asset of next.assets) {
+    if (!getUnitStats(asset.type).canTow) continue;
+    if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) continue;
+    if (asset.materiel === 0 && asset.state === ASSET_IDLE && inOwnBase(next, asset)) {
+      asset.materiel = 1; // silent, like breathing — the crate is just there
+      continue;
+    }
+    if (asset.materiel !== 1) continue;
+    const cx = worldToCellFloor(asset.x);
+    const cy = worldToCellFloor(asset.y);
+    const site = next.sites.find((s) =>
+      !siteOperational(s) && s.owner !== (asset.team === 0 ? 1 : 0) &&
+      Math.max(Math.abs(s.cellX - cx), Math.abs(s.cellY - cy)) <= 1);
+    if (site) {
+      site.hp = SITE_HP_MAX;
+      asset.materiel = 0;
+      next.events.push({ type: "site_repaired", siteId: site.id, byAssetId: asset.id });
+    }
   }
 
   // Resupply pass: standing in your own base restores ammo and fuel.

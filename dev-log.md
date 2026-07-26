@@ -989,3 +989,24 @@ AI-only wars because AI seats redeploy in 10 s — that path exists for
 HUMAN downed players, which is the alive-world point. **GATE: PASS.**
 
 Suite 356/356. Tagged slice-11e.
+
+---
+
+## slice-11f — Damaged sites + materiel (2026-07-26, prompt 16 Q9)
+
+Old 9C revived per the Q9 greenlight. Sites get `hp` (SITE_HP_MAX 60,
+hashed): artillery — and only artillery — can shell them via `fire_order
+{targetSiteId}` (public infrastructure, no fog gates, normal
+ammo/reload/supply/range discipline; two 30-damage shells). At 0 the site
+is DAMAGED: keeps its owner, projects no supply, extends no fog, cannot
+flip (capture pass skips it, clock cleared) — events site_shelled /
+site_damaged. Repair: trucks carry ONE materiel slot (hashed), loaded
+SILENTLY when idle in own base (the repin guard rightly refused a new
+event inside the 1A fixture steps — loading is not news), and spend it on
+any adjacent damaged own/neutral site → full hp, site_repaired. Enemy
+ruins are not ours to fix. Bases stay sacred (Q19 default — flagged).
+AI trucks run repair errands (park beside the ruin; the materiel pass does
+the rest). Client: ruins render dark and flattened; feed lines. 1A → v26.
+
+Suite 362/362 (x2), campaign unchanged (no AI artillery siege doctrine yet
+— noted as a future question). Tagged slice-11f.

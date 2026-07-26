@@ -45,6 +45,9 @@ export const REJECTION_TEXT = Object.freeze({
   "ping needs a target cell": "Pick a spot on the map to signal about.",
   "takeover needs confirmation":
     "That asset carries real responsibility — press ENTER to confirm the takeover, ESC to cancel.",
+  "no such site": "No such site.",
+  "cannot breach sites": "Only artillery can breach infrastructure.",
+  "site already damaged": "That site is already in ruins.",
   "no such drone": "That drone is already gone.",
   "cannot track aircraft": "Artillery cannot track aircraft — use a direct gun.",
   "war is over": "The war is over — next one starts shortly.",
@@ -70,6 +73,10 @@ export function describeWinReason(reason) {
 export function describeEvent(e, myTeam) {
   switch (e?.type) {
     case "rejected": return describeRejection(e.reason);
+    case "site_shelled": return `Relay ${e.siteId} under artillery fire!`;
+    case "site_damaged":
+      return `Relay ${e.siteId} is DOWN — a truck with materiel can rebuild it.`;
+    case "site_repaired": return `Relay ${e.siteId} rebuilt and humming.`;
     case "site_neutralized":
       return e.byTeam === myTeam
         ? `Relay ${e.siteId} neutralized — hold to capture!`

@@ -95,6 +95,7 @@ test("1I view includes sites array with correct fields", () => {
   assert.deepEqual(view.sites[0], {
     id: 0, type: SITE_RELAY, owner: 0, cellX: 5, cellY: 7,
     captureProgress: 0, capturingTeam: -1,
+    hp: 60, // 11F
   });
 });
 

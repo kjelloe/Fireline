@@ -387,6 +387,22 @@ export class AIRegency {
           target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
         }
       }
+      // 11F repair errands (Q9): a truck carrying materiel heads for a
+      // damaged own/neutral site nearby; adjacency auto-repairs it.
+      if (!target && stats.canTow && asset.materiel === 1) {
+        let hurt = null;
+        let bestDist = Infinity;
+        for (const site of state.sites) {
+          if ((site.hp ?? 1) > 0) continue;
+          if (site.owner === (asset.team === 0 ? 1 : 0)) continue;
+          const d = Math.max(Math.abs(site.cellX - cellX0), Math.abs(site.cellY - cellY0));
+          if (d < bestDist) { bestDist = d; hurt = site; }
+        }
+        if (hurt && bestDist > 1 && bestDist <= RESCUE_SEEK_CELLS) {
+          target = [hurt.cellX, hurt.cellY + 1]; // park beside, not on it
+        }
+      }
+
       // 11E full AI rescue play (Q5). Trucks: hook the nearest claimable
       // wreck, haul it home (the repair bay takes it from there). Carriers:
       // ferry aboard passengers home; otherwise fetch a walking downed

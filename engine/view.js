@@ -60,6 +60,7 @@ export function buildView(state, team) {
       reloadTimer: a.reloadTimer,
       heading: a.heading, minesLeft: a.minesLeft,
       aboard1: a.aboard1, aboard2: a.aboard2, // 10B: takeover context
+      materiel: a.materiel, // 11F
     }));
 
   const visible = computeVisible(state, team);
@@ -71,6 +72,7 @@ export function buildView(state, team) {
   const sites = state.sites.map((s) => ({
     id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
     captureProgress: s.captureProgress, capturingTeam: s.capturingTeam, // 11B
+    hp: s.hp, // 11F: infrastructure state is public, like ownership
   }));
   const bases = state.bases.map((b) => ({ ...b }));
   // 9B: downed operators are visible to their OWN team only (enemies cannot
