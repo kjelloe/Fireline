@@ -97,6 +97,19 @@ Suite at **394/394**, 0I map fixture v2 (paths), 1A still v28 (no drift).
 | `slice-11p` | BATCH_PC agent-mail lane, **round-trip verified locally**: `tools/agent-mail.py` deployed (single file), `batch_send.sh` queues sweep/mirror/matrix/perf jobs + collects results, `batch_worker.sh` is the batch-pc lane (refuses red suites, blocking flag-wait, auto-shards across cores, mails one-line summaries). MIRROR mode rebuilt as a TRUE world reflection (terrain + entities + headings mirrored, AI patrols swapped) — the naive team-swap made dead wars. **First 2-seed probe shows directional residue** (normal: A standard-captures ~tick 3500; mirrored same-seeds: undecided at 6000) — the 600-war census will quantify it. |
 | `slice-11q` | Art pass round 1 (Q9b): all five chassis rebuilt with real character (tank tracks/glacis/muzzle brake, scout roll-cage buggy, artillery split trails + two-stage tube, logistics crane + laden bed, carrier with white RESCUE cross + beacons); mine + drone join the factory and the client now uses them. **`client/assets/preview/asset_strip.png` (18 tiles) is the review artifact — open it and judge; round 2 follows your verdict.** ✅ **APPROVED** (prompt 21: "look good for current pass"). |
 
+## Roster expansion (prompt 22)
+
+| Slice | What |
+|---|---|
+| `slice-11r` | **Scout Bike** (your idea, ruled): speed 72, hp 30 — outruns everything, dies to anything, and per the new `canCapture` contract flag it neither captures NOR contests relays. Its courier niche: fastest standard-recovery in the war, mine-marking runs, drone bait. Garage slot ids 12/24 (one tank traded). Also landed the `siege` flag: site-breaching is now explicitly artillery-only. |
+| `slice-11s` | **Mortar Carrier**: mobile indirect (speed 28, range 1792, minRange 512, dmg 15) — shoot-and-scoot fire support that keeps up with a push; junior to artillery in reach/punch/dead-zone by PINNED relative contract; no siege, no anti-air. Garage slot ids 14/26 (one artillery traded). |
+
+Per-team roster now: 4 tanks / 3 scouts / 2 artillery / 3 trucks /
+2 carriers / 1 bike / 1 mortar. Fixture v30, strip 22 tiles, suite
+**403/403**. Sim gate: AI wars byte-identical (both are garage stock —
+find them via the garage or role-crewing). Sentinel/Infiltrator remain
+queued for their own faction-asymmetry campaign.
+
 **Old note, superseded:** Semantics
 scoped from ../agent-mail/: the dev session posts jobs with `queue add
 --for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
