@@ -121,6 +121,16 @@ queued for their own faction-asymmetry campaign.
 Suite at **411/411**. When your sweep CSVs come back:
 `python3 debugging/analyze_sweep.py reports/sweeps/sweep.csv reports/sweeps/mirror.csv`
 
+## Playtest-4 response (prompt 24)
+
+| Slice | What |
+|---|---|
+| `slice-11u` | The four fixes: vehicle ORIENTATION (models face +z, conversion assumed +x — π/2−θ), downed banner with 10 s countdown → clickable REDEPLOY (camera jumps home + auto-select re-arms on redeploy — ruled "move automatically"), TOW prompt "TOW ASSET N (T)" + green in-progress mission card, two-line labels with live countdowns (relay RAISING/DROPPING Ns — DEFEND!, REPAIRING Ns, standard auto-return, damaged-relay hint). |
+| `slice-11v` | Approved AI doctrine: fastest-seat courier recovery + garage-bike call-up on dropped standards, replacement fire support (no crewed tube → crew a garage mortar/artillery), light chassis patrol the TRAILS while tanks keep the road. Plus a latent replay-scrubber mid-tick checkpoint bug found and fixed. |
+
+Suite **416/416**. Sim gate: mixed winners hold; several seeds become
+long, high-scoring slugfests — trails generate real flank contact.
+
 **Old note, superseded:** Semantics
 scoped from ../agent-mail/: the dev session posts jobs with `queue add
 --for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
