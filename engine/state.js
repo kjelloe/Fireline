@@ -5,6 +5,7 @@
 // 8 field assets: 0..3 team A (west base), 4..7 team B (east base).
 
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
+import { generateRiverline } from "./riverline.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -30,6 +31,7 @@ export const TEAM_COUNT = 2;
 
 const MAP_PROFILES = {
   frontier_corridor: generateFrontierCorridor,
+  riverline: generateRiverline, // 11M
 };
 
 // Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
@@ -136,8 +138,27 @@ const RELAY_CELLS = [
   { cellX: 95, cellY: 63 },
 ];
 
-function createSites() {
-  return RELAY_CELLS.map((pos, id) => ({
+// 11M: per-profile layout — what differs between maps. Spawns and bases
+// are shared (both maps use the same corridor-flank arrangement). Every
+// entry MUST keep the mirror invariant: pairs at x and 127-x.
+export const MAP_LAYOUTS = Object.freeze({
+  frontier_corridor: Object.freeze({
+    relayCells: RELAY_CELLS,
+    standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
+  }),
+  riverline: Object.freeze({
+    // Mirrored pairs north and south of the road: 44<->83.
+    relayCells: [
+      { cellX: 44, cellY: 32 }, { cellX: 83, cellY: 32 },
+      { cellX: 44, cellY: 95 }, { cellX: 83, cellY: 95 },
+    ],
+    standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
+  }),
+});
+
+function createSites(profileName = "frontier_corridor") {
+  const cellsFor = MAP_LAYOUTS[profileName]?.relayCells ?? RELAY_CELLS;
+  return cellsFor.map((pos, id) => ({
     id, type: 1 /* SITE_RELAY */, owner: -1 /* SITE_NEUTRAL */,
     captureProgress: 0, capturingTeam: -1, // 11B countdown
     hp: 60, // 11F: SITE_HP_MAX (import cycle keeps this a literal)
@@ -167,9 +188,11 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     if (!profile) throw new RangeError(`unknown map profile: ${mapArg}`);
     map = profile(mapSeed >>> 0);
     assets = createFieldAssets();
-    sites = createSites();
+    sites = createSites(typeof mapArg === "string" ? mapArg : "frontier_corridor");
     bases = createBases();
-    standards = createStandards();
+    standards = createStandards(
+      MAP_LAYOUTS[typeof mapArg === "string" ? mapArg : "frontier_corridor"]?.standardHomes
+    );
   } else if (mapArg && typeof mapArg === "object") {
     map = mapArg;
     assets = [];
@@ -190,6 +213,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     sites,
     bases,
     standards, // 8A: physical Command Standards
+    mapProfile: typeof mapArg === "string" ? mapArg : "frontier_corridor", // 11M
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     mines: [], // 9E: deployed mines

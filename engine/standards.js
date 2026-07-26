@@ -26,8 +26,8 @@ export const STANDARD_HOMES = Object.freeze([
   Object.freeze({ cellX: 113, cellY: 59 }),
 ]);
 
-export function createStandards() {
-  return STANDARD_HOMES.map((home, team) => ({
+export function createStandards(homes = STANDARD_HOMES) {
+  return (homes ?? STANDARD_HOMES).map((home, team) => ({
     id: team,
     team,
     x: cellToWorld(home.cellX),

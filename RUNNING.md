@@ -65,6 +65,11 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Second map (11M): `MAP=riverline npm start` — a rough-water river splits
+  the field, three road bridges cross it, relays sit in mirrored pairs
+  north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half
+  generated, east half mirrored). Wars there run slower — tuning follows
+  your first playtest.
 - Direct drive (11L, the Firepower homage): press G — WASD becomes tank
   controls (W/S throttle with half-speed reverse, A/D steer at your
   chassis' turn rate; all chassis supported). Any drive input overrides

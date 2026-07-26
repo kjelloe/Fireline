@@ -1099,3 +1099,24 @@ Chase-cam rotation deliberately deferred — the ortho camera stays fixed;
 noted as a question.
 
 Suite 385/385 (x2), simwar + replay OK. Tagged slice-11l.
+
+---
+
+## slice-11m — Second map prep: riverline (2026-07-26, prompt 19)
+
+Layout went per-profile (`MAP_LAYOUTS`: relays + standard homes;
+per-profile AI patrols; bases/spawns shared) with frontier values
+unchanged — no repin. `state.mapProfile` rides the state, survives war
+rotation, and is archived in replay meta so the viewer re-simulates the
+right world. New map `engine/riverline.js`: a rough-ground river splits
+the field, three road bridges (rows 20-23 / 62-65 / 104-107), relays in
+mirrored pairs north and south (44↔83 at y 32/95). **Fairness by
+construction**: random terrain generates on the west half and mirrors
+east — and the 11C lesson is now LAW: a test sweeps every registered
+layout for the mirror invariant, and riverline's terrain mirror is
+asserted cell-by-cell. `MAP=riverline npm start`. AI wars on it are
+fought, deterministic, and replay byte-exactly; they decide slower than
+frontier (relays sit off the standard route) — tuning after the first
+human playtest.
+
+Suite 390/390 (x2). Tagged slice-11m.

@@ -62,6 +62,7 @@ export function createAppServer(options = {}) {
     archived = true;
     return replayStore.save({
       mapSeed: gameServer.state.mapSeed,
+      mapProfile: gameServer.state.mapProfile, // 11M
       ticks: gameServer.state.tick,
       winner: gameServer.state.winner,
       reason: gameServer.state.winReason,
@@ -168,7 +169,8 @@ if (isMain) {
   const port = Number(process.env.PORT ?? 8080);
   const mapSeed = Number(process.env.MAP_SEED ?? 2026);
   const aiDifficulty = Number(process.env.AI_DIFFICULTY ?? 1);
-  const appServer = createAppServer({ mapSeed, aiDifficulty });
+  const mapProfile = process.env.MAP ?? "frontier_corridor"; // 11M
+  const appServer = createAppServer({ mapSeed, aiDifficulty, mapProfile });
   appServer.start(port).then((addr) => {
     console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty})`);
   });

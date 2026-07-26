@@ -58,11 +58,22 @@ const AGENTS = Object.freeze([
 // patrol the centre. Team B's patrol crosses the centre relay, so AI wars
 // contest supply the same way humans do.
 // 11C: exact mirrors (x' = 127-x), each crossing its team's mid relay.
-const TEAM_A_PATROL = Object.freeze([[48, 56], [60, 56], [58, 63], [56, 70]]);
-const TEAM_B_PATROL = Object.freeze([[79, 56], [67, 56], [69, 63], [71, 70]]);
+// 11M: patrols are per-map — riverline routes swing north and south
+// through the bridge lines and past both relay pairs.
+const PATROLS = Object.freeze({
+  frontier_corridor: Object.freeze({
+    0: [[48, 56], [60, 56], [58, 63], [56, 70]],
+    1: [[79, 56], [67, 56], [69, 63], [71, 70]],
+  }),
+  riverline: Object.freeze({
+    0: [[44, 33], [52, 63], [44, 94], [36, 63]],
+    1: [[83, 33], [75, 63], [83, 94], [91, 63]],
+  }),
+});
 
-function patrolTarget(agent, tick) {
-  const patrol = agent.team === 0 ? TEAM_A_PATROL : TEAM_B_PATROL;
+function patrolTarget(agent, tick, profileName = "frontier_corridor") {
+  const set = PATROLS[profileName] ?? PATROLS.frontier_corridor;
+  const patrol = set[agent.team === 0 ? 0 : 1];
   const phase = ((tick / 80) | 0) + (agent.assetId & 3);
   return patrol[phase % patrol.length];
 }
@@ -465,11 +476,11 @@ export class AIRegency {
         }
       }
       if (!target && agent && this.difficulty !== AI_HARD) {
-        target = patrolTarget(agent, state.tick);
+        target = patrolTarget(agent, state.tick, state.mapProfile);
       } else if (!target) {
         const relay = nearestUnownedRelay(state, asset);
         if (relay) target = [relay.cellX, relay.cellY];
-        else if (agent) target = patrolTarget(agent, state.tick);
+        else if (agent) target = patrolTarget(agent, state.tick, state.mapProfile);
       }
       if (!target) continue;
       const currentCellX = worldToCellFloor(asset.x);

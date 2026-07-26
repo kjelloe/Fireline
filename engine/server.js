@@ -13,7 +13,8 @@ import { recordCommand } from "./replay.js";
 
 export class GameServer {
   constructor(options = {}) {
-    this.state = createInitialState(options.mapSeed ?? 0, options.mapProfile ?? "frontier_corridor");
+    this.mapProfile = options.mapProfile ?? "frontier_corridor"; // 11M
+    this.state = createInitialState(options.mapSeed ?? 0, this.mapProfile);
     this.snapshotCapacity = options.snapshotCapacity ?? 30;
     if (!Number.isInteger(this.snapshotCapacity) || this.snapshotCapacity < 1) {
       throw new RangeError("snapshotCapacity must be a positive integer");
@@ -86,7 +87,7 @@ export class GameServer {
   // 8C: begin a fresh war in place. Networking, sessions, and archives are
   // the app layer's concern; regency pairings re-claim on the next step.
   resetWar(mapSeed) {
-    this.state = createInitialState(mapSeed >>> 0, "frontier_corridor");
+    this.state = createInitialState(mapSeed >>> 0, this.mapProfile); // 11M
     this.queue = [];
     this.commandLog = [];
     this.snapshots = [];
