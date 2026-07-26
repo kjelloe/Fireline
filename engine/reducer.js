@@ -52,6 +52,21 @@ import {
 // Scoring (3E): what a capture or a kill is worth on the war clock scoreboard.
 export const SCORE_CAPTURE = 10;
 export const SCORE_DISABLE = 5;
+
+// 11K Recognition scoring (prompt 19): per-OPERATOR credit for verified
+// reducer facts. Rescue work outranks kills by design (spec 04 §4).
+export const RECOG_TOW = 8;
+export const RECOG_RESCUE = 10;
+export const RECOG_STANDARD_RETURN = 10;
+export const RECOG_STANDARD_CAPTURE = 25;
+export const RECOG_RELAY = 10;
+export const RECOG_KILL = 5;
+
+function awardOperator(next, operatorId, points) {
+  if (operatorId === -1 || operatorId === undefined) return;
+  const seat = next.operators[operatorId];
+  if (seat) seat.score += points;
+}
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -236,7 +251,10 @@ function applyFireOrder(next, command) {
     hpDelta: shot.hpDelta,
     targetHp: target.hp,
   });
-  if (target.hp === 0) disableAsset(next, target, attacker.team);
+  if (target.hp === 0) {
+    disableAsset(next, target, attacker.team);
+    awardOperator(next, attacker.operatorId, RECOG_KILL); // 11K
+  }
   return next;
 }
 
@@ -711,6 +729,12 @@ function applyAdvanceTick(next) {
         site.captureProgress = 0;
         site.capturingTeam = -1;
         next.teamScores[team] += SCORE_CAPTURE;
+        for (const a of next.assets) { // 11K: whoever stood the flag out
+          if (a.team === team && a.operatorId !== -1 &&
+              captureCheck(next, a.id)?.id === site.id) {
+            awardOperator(next, a.operatorId, RECOG_RELAY);
+          }
+        }
         next.events.push({ type: "site_captured", siteId: site.id, team });
       }
     }
@@ -735,6 +759,7 @@ function applyAdvanceTick(next) {
       returnable.droppedTimer = 0;
       returnable.x = cellToWorld(returnable.homeCellX);
       returnable.y = cellToWorld(returnable.homeCellY);
+      awardOperator(next, asset.operatorId, RECOG_STANDARD_RETURN); // 11K
       next.events.push({ type: "standard_returned", standardId: returnable.id, team: asset.team });
     }
   }
@@ -744,6 +769,7 @@ function applyAdvanceTick(next) {
     if (carrier && canScore(next, carrier)) {
       st.status = STD_SCORED;
       st.carrierAssetId = -1;
+      awardOperator(next, carrier.operatorId, RECOG_STANDARD_CAPTURE); // 11K
       next.events.push({ type: "standard_scored", standardId: st.id, byTeam: carrier.team });
     }
   }
@@ -796,6 +822,7 @@ function applyAdvanceTick(next) {
       const seat = next.operators[operatorId];
       seat.state = OP_ACTIVE;
       seat.assetId = -1;
+      awardOperator(next, carrier.operatorId, RECOG_RESCUE); // 11K
       next.events.push({ type: "operator_delivered", operatorId });
     }
   }
@@ -804,6 +831,7 @@ function applyAdvanceTick(next) {
   // repair bay; timers count down; repaired assets return at half hull.
   for (const wreck of next.assets) {
     if (wreck.towedBy !== -1 && inOwnBase(next, wreck)) {
+      awardOperator(next, next.assets[wreck.towedBy]?.operatorId, RECOG_TOW); // 11K
       wreck.towedBy = -1;
       wreck.recoverTimer = REPAIR_TICKS;
       next.events.push({ type: "recovery_started", assetId: wreck.id });

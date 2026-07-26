@@ -1061,3 +1061,20 @@ white boxes marking human-crewed assets; major-event ticker;
 play/pause/×1/×4/×16/scrub/±100-tick arrows.
 
 Suite 373/373 (x2). Tagged slice-11h.
+
+---
+
+## slice-11k — Recognition scoring (2026-07-26, prompt 19 table)
+
+Per-operator credit for verified reducer facts, rescue > kill by design
+(spec 04 §4): tow-complete 8 (the tower's seat, at repair-bay entry),
+operator rescue 10 (the carrier's seat, at DELIVERY — boarding alone pays
+nothing, so no board/unboard farming), manual standard return 10,
+standard capture 25, relay capture 10 (every seat standing the flag out),
+kill 5 (trigger seat only — mine and drone kills award nobody; no seat
+sits behind a mine). Auto-returns thank no one. `operator.score` was
+already hashed — no repin. Views gain a minimal PUBLIC scoreboard
+(id/team/score; the leak-guard pin now asserts minimality instead of
+absence). End screen shows HONORS (top 3, humans and regents alike).
+
+Suite 379/379 (x2), simwar + replay OK. Tagged slice-11k.

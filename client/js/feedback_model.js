@@ -129,6 +129,20 @@ export function describeEvent(e, myTeam) {
   }
 }
 
+// 11K: top recognition earners for the end screen. Pure; human seats are
+// ids 0-15, AI regents 16-31 — both can earn honors.
+export function topOperators(view, n = 3) {
+  return (view?.operators ?? [])
+    .filter((o) => o.score > 0)
+    .sort((a, b) => b.score - a.score || a.id - b.id)
+    .slice(0, n)
+    .map((o) => {
+      const who = o.id < 16 ? `Operator ${o.id}` : `Regent ${o.id}`;
+      const side = o.team === 0 ? "A" : "B";
+      return `${who} (${side}) — ${o.score} pts`;
+    });
+}
+
 // End-of-war summary for the overlay.
 export function summarizeGameOver(view, myTeam, postgameSeconds = 30) {
   if (!view || view.phase !== 1) return null;

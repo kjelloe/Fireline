@@ -12,7 +12,7 @@ import { mapEventsToCues } from "./audio_cues.js";
 import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
-import { describeEvent, summarizeGameOver } from "./feedback_model.js";
+import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
@@ -341,7 +341,9 @@ function showEndScreen() {
   if (!summary) return;
   const el = document.getElementById("end-overlay");
   document.getElementById("end-title").innerText = summary.title;
-  document.getElementById("end-reason").innerText = summary.reason;
+  const honors = topOperators(view);
+  document.getElementById("end-reason").innerText = summary.reason +
+    (honors.length ? "\n\nHONORS\n" + honors.join("\n") : "");
   document.getElementById("end-scores").innerText =
     `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
   document.getElementById("end-next").innerText = summary.nextWarText;

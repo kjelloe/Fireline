@@ -95,9 +95,15 @@ export function buildView(state, team) {
   // know both standards' position and status. The stolen flag IS the drama.
   const standards = state.standards.map((st) => ({ ...st }));
 
+  // 11K: the public scoreboard — recognition is meant to be SEEN.
+  const operators = state.operators
+    .filter((o) => o.state !== 0)
+    .map((o) => ({ id: o.id, team: o.team, score: o.score }));
+
   return {
     tick: state.tick,
     team,
+    operators,
     phase: state.phase,
     winner: state.winner,
     teamScores: [...state.teamScores],

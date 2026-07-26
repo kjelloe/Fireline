@@ -40,7 +40,12 @@ test("component: snapshot never leaks authoritative state or map internals", () 
   const snap = createSnapshot(s);
   assert.deepEqual(Object.keys(snap).sort(), ["stateHash", "tick", "views"]);
   for (const view of snap.views) {
-    assert.equal("operators" in view, false, "operator table stays server-side");
+    // 11K: views carry a PUBLIC scoreboard — id/team/score only. The rest
+    // of the operator table (assetId, timers, options) stays server-side.
+    for (const op of view.operators) {
+      assert.deepEqual(Object.keys(op).sort(), ["id", "score", "team"],
+        "scoreboard rows leak nothing but the score");
+    }
     for (const enemy of view.visibleEnemies) {
       assert.equal("hp" in enemy, false);
       assert.equal("operatorId" in enemy, false);
