@@ -110,6 +110,17 @@ Per-team roster now: 4 tanks / 3 scouts / 2 artillery / 3 trucks /
 find them via the garage or role-crewing). Sentinel/Infiltrator remain
 queued for their own faction-asymmetry campaign.
 
+## Prompt-23 window (playtest + BATCH_PC setup)
+
+| Item | What |
+|---|---|
+| `analyze_sweep.py` | Turns BATCH_PC CSVs into findings: win rates, decided-war length percentiles, per-system activity, and the question-18 MIRROR FLIP-RATE verdict (a bias-free engine flips 100% of decided winners under reflection). Smoke runs already hint the residue is real — mirrored wars mostly stop deciding. |
+| `slice-11j` | Ops hardening (plan 2.6): per-connection rate limit (30/s, burst 60 — transport-level, so determinism/replays untouched; flood test pins the reducer sees at most one burst) + GET /version (package + fixture version, map, difficulty — provenance for bug reports and batch results). |
+| `slice-11t` | Public tasks (plan 2.4): mission cards as a PURE fog-safe view-model — STOP THE THIEF > secure/escort standard > rescue > defend flipping relay > tow wrecks > rebuild ruins. Click a card = camera jump + matching context ping ("responding" rides the 10C channel; no new state, no repin). Top-3 strip on the right of the HUD. |
+
+Suite at **411/411**. When your sweep CSVs come back:
+`python3 debugging/analyze_sweep.py reports/sweeps/sweep.csv reports/sweeps/mirror.csv`
+
 **Old note, superseded:** Semantics
 scoped from ../agent-mail/: the dev session posts jobs with `queue add
 --for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
