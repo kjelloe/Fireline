@@ -65,6 +65,8 @@ for i in 0 1 2 3 4 5; do
 done; wait
 DIFFICULTY=2 node tools/sim_sweep.mjs 100 > reports/sweeps/hard.csv
 DIFFICULTY=0 node tools/sim_sweep.mjs 100 > reports/sweeps/easy.csv
+# 12D faction-fairness gate: the Sentinel/Skimmer pair trades sides.
+FACTIONSWAP=1 node tools/sim_sweep.mjs 300 > reports/sweeps/factionswap.csv
 ```
 
 CSV columns: `seed,mirror,difficulty,ticks,winner,reason,scoreA,scoreB,

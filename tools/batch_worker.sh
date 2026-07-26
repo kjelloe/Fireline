@@ -37,11 +37,12 @@ cores=$(nproc 2>/dev/null || echo 4)
 shards=$(( cores > 2 ? cores - 1 : 2 ))
 
 run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
+  # FACTIONSWAP may arrive via the environment (factionswap job kind).
   local count=$1 mirror=$2 diff=$3 label=$4
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
@@ -69,6 +70,8 @@ handle_job() { # $1 = JSON body
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 sweep ;;
     mirror)
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 1 1 mirror ;;
+    factionswap)
+      FACTIONSWAP=1 run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 factionswap ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")

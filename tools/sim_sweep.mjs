@@ -18,11 +18,13 @@ import { GameServer } from "../engine/server.js";
 const COUNT = Number(process.argv[2] ?? 20);
 const DIFFICULTY = Number(process.env.DIFFICULTY ?? 1);
 const MIRROR = process.env.MIRROR === "1";
+const FACTIONSWAP = process.env.FACTIONSWAP === "1"; // 12D: uniques trade sides
 const SHARDS = Number(process.env.SHARDS ?? 1);
 const SHARD = Number(process.env.SHARD ?? 0);
 const HORIZON = Number(process.env.TICKS ?? 18000);
 
 console.log("seed,mirror,difficulty,ticks,winner,reason,scoreA,scoreB,tows,restored,rescued,downs,mines,detonations,captures,shells");
+if (FACTIONSWAP) console.error("factionswap: Sentinel<->Skimmer sides traded");
 for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
@@ -57,6 +59,14 @@ for (let seed = 1; seed <= COUNT; seed++) {
     }
     for (const site of s.sites) site.cellX = W - 1 - site.cellX;
     for (const b of s.bases) b.x = W - b.x - b.width;
+  }
+  if (FACTIONSWAP) {
+    // 12D: the faction-unique pair trades sides — asset 18 (Directorate
+    // Sentinel) becomes a Skimmer, asset 30 becomes a Sentinel. Everything
+    // else is mirror-symmetric, so any win-rate shift that does NOT track
+    // the swap is chassis imbalance, not side or seed luck.
+    server.state.assets[18].type = 8;
+    server.state.assets[30].type = 7;
   }
   const c = {};
   for (let i = 0; i < HORIZON && server.state.phase === 0; i++) {
