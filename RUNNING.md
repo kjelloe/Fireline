@@ -65,6 +65,9 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Rescue autopilot (11G): carriers auto-scoop adjacent downed teammates by
+  default. The ⚙ options panel can turn that off per player — then crawl
+  beside a carrier and press B to board; U hops you out anywhere.
 - Siege & repair (11F): artillery can SHELL relays (two shells knock one
   out — dark, flattened, projecting nothing, unflippable). Trucks silently
   pick up one materiel crate when idle in base and rebuild any adjacent

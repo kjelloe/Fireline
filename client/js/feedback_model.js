@@ -45,6 +45,12 @@ export const REJECTION_TEXT = Object.freeze({
   "ping needs a target cell": "Pick a spot on the map to signal about.",
   "takeover needs confirmation":
     "That asset carries real responsibility — press ENTER to confirm the takeover, ESC to cancel.",
+  "not a carrier": "That is not a rescue carrier.",
+  "no bunk free": "Both bunks are taken.",
+  "carrier out of reach": "Crawl next to the carrier to board.",
+  "not aboard": "You are not aboard a carrier.",
+  "unknown option": "No such setting.",
+  "invalid value": "That setting takes on or off.",
   "no such site": "No such site.",
   "cannot breach sites": "Only artillery can breach infrastructure.",
   "site already damaged": "That site is already in ruins.",
@@ -73,6 +79,8 @@ export function describeWinReason(reason) {
 export function describeEvent(e, myTeam) {
   switch (e?.type) {
     case "rejected": return describeRejection(e.reason);
+    case "operator_unboarded": return `Operator ${e.operatorId} hopped off.`;
+    case "option_set": return null;
     case "site_shelled": return `Relay ${e.siteId} under artillery fire!`;
     case "site_damaged":
       return `Relay ${e.siteId} is DOWN — a truck with materiel can rebuild it.`;

@@ -1010,3 +1010,20 @@ the rest). Client: ruins render dark and flattened; feed lines. 1A → v26.
 
 Suite 362/362 (x2), campaign unchanged (no AI artillery siege doctrine yet
 — noted as a future question). Tagged slice-11f.
+
+---
+
+## slice-11g — Rescue autopilot option (2026-07-26, prompt 16 Q8 / prompt 19)
+
+Boarding stays automatic BY DEFAULT; per-operator `autoRescue` flag
+(hashed, default 1, 1A → v27) via new `set_option` command (whitelisted
+options — only auto_rescue so far). Manual seats are skipped by the
+automatic boarding pass (`boardableBy` gains the check; the manual
+`board_carrier` path passes `manualToo`) and climb in via `board_carrier`
+(adjacency/bunk/team rejections) — `unboard` hops out anywhere, back on
+foot beside the carrier. Delivery at base stays automatic (arriving home
+IS the goal). Client: ⚙ settings overlay with the checkbox, B/U keys, and
+the downed label upgrades to "CARRIER HERE — B TO BOARD" when a boardable
+carrier is adjacent. AI seats keep the default.
+
+Suite 368/368 (x2), simwar + replay OK. Tagged slice-11g.

@@ -56,7 +56,7 @@ const TEAM_B_RESERVE_COLS = [119, 118]; // mirror of A's [8, 9]
 function createOperators() {
   const operators = [];
   for (let id = 0; id < OPERATOR_COUNT; id++) {
-    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000 });
+    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1 });
   }
   return operators;
 }

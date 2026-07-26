@@ -23,6 +23,7 @@ function stateHash(s) {
     w.writeI32LE(o.id); w.writeI32LE(o.team); w.writeI32LE(o.state);
     w.writeI32LE(o.assetId); w.writeI32LE(o.score); w.writeI32LE(o.downTimer);
     w.writeI32LE(o.lastPingTick); // added 10C
+    w.writeU8(o.autoRescue ?? 1); // added 11G
   }
   for (const a of s.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);

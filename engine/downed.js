@@ -37,12 +37,15 @@ export function crawlRejection(downed, targetCellX, targetCellY) {
 }
 
 // A carrier with a free bunk adjacent to a friendly downed operator.
-export function boardableBy(state, carrier) {
+// 11G: manual seats (autoRescue off) are skipped by the automatic pass —
+// they climb aboard with an explicit board_carrier command instead.
+export function boardableBy(state, carrier, { manualToo = false } = {}) {
   if (carrier.aboard1 !== -1 && carrier.aboard2 !== -1) return null;
   const cx = worldToCellFloor(carrier.x);
   const cy = worldToCellFloor(carrier.y);
   return state.downed.find((d) => {
     if (d.team !== carrier.team) return false;
+    if (!manualToo && state.operators[d.operatorId]?.autoRescue === 0) return false;
     const dx = absI32(worldToCellFloor(d.x) - cx);
     const dy = absI32(worldToCellFloor(d.y) - cy);
     return (dx > dy ? dx : dy) <= 1;

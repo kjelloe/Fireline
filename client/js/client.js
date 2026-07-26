@@ -115,6 +115,12 @@ function init() {
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
     }
     if (e.key === "r" || e.key === "R") send({ type: "redeploy" }); // 9B
+    // 11G manual rescue: B boards the adjacent carrier, U hops out.
+    if (e.key === "b" || e.key === "B") {
+      const carrier = adjacentBoardableCarrier(interpolator.latest());
+      if (carrier) send({ type: "board_carrier", carrierAssetId: carrier.id });
+    }
+    if (e.key === "u" || e.key === "U") send({ type: "unboard" });
     // 10B: Enter confirms a pending consequential takeover; Esc declines.
     if (e.key === "Enter" && pendingTakeover !== -1) {
       send({ type: "select_asset", assetId: pendingTakeover, confirm: true });
@@ -157,6 +163,17 @@ function init() {
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
+  // 11G: settings panel.
+  const settingsOverlay = document.getElementById("settings-overlay");
+  document.getElementById("btn-settings").onclick = () => {
+    settingsOverlay.style.display = settingsOverlay.style.display === "flex" ? "none" : "flex";
+  };
+  document.getElementById("btn-settings-close").onclick = () => {
+    settingsOverlay.style.display = "none";
+  };
+  document.getElementById("opt-auto-rescue").onchange = (e) => {
+    send({ type: "set_option", option: "auto_rescue", value: e.target.checked ? 1 : 0 });
+  };
 
   // Perf-harness hook (tools/perf_harness.mjs): read-only telemetry.
   window.__mfDebug = {
@@ -682,6 +699,17 @@ function renderMinimap(view) {
   }
 }
 
+// 11G: the friendly carrier (free bunk) next to MY downed body, if any.
+function adjacentBoardableCarrier(view) {
+  const me = view?.downedOperators?.find((d) => d.operatorId === joined?.operatorId);
+  if (!me) return null;
+  return (view?.friendlyAssets ?? []).find((a) =>
+    a.type === 4 && a.state !== STATE_DISABLED &&
+    (a.aboard1 === -1 || a.aboard2 === -1) &&
+    Math.max(Math.abs(Math.floor(a.x / CELL) - Math.floor(me.x / CELL)),
+             Math.abs(Math.floor(a.y / CELL) - Math.floor(me.y / CELL))) <= 1) ?? null;
+}
+
 function nearestAdjacentMine(view) {
   const me = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
   if (!me) return null;
@@ -786,8 +814,12 @@ function updateDownedMeshes(view) {
       downedMeshes.set(d.operatorId, mesh);
     }
     mesh.position.set(d.x / CELL + 0.5, 0.05, d.y / CELL + 0.5);
+    const mine = d.operatorId === joined?.operatorId;
+    const canBoard = mine && adjacentBoardableCarrier(view);
     upsertWorldLabel(`down${d.operatorId}`,
-      d.operatorId === joined?.operatorId ? "YOU ARE DOWN — R TO REDEPLOY" : "OPERATOR DOWN",
+      mine
+        ? (canBoard ? "CARRIER HERE — B TO BOARD" : "YOU ARE DOWN — R TO REDEPLOY")
+        : "OPERATOR DOWN",
       "#ffd75e", d.x / CELL + 0.5, 1.2, d.y / CELL + 0.5);
   }
   for (const [id, mesh] of downedMeshes) {

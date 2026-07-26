@@ -12,6 +12,9 @@ export const CMD_TOW_ORDER      = "tow_order";
 export const CMD_CRAWL_ORDER    = "crawl_order";
 export const CMD_REDEPLOY       = "redeploy";
 export const CMD_PING           = "ping";        // 10C
+export const CMD_SET_OPTION     = "set_option";   // 11G
+export const CMD_BOARD_CARRIER  = "board_carrier"; // 11G
+export const CMD_UNBOARD        = "unboard";       // 11G
 export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
@@ -74,6 +77,21 @@ export function validate(cmd) {
       return { ok: true };
 
     case CMD_REDEPLOY:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_SET_OPTION:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (cmd.option !== "auto_rescue") return { ok: false, reason: "unknown option" };
+      if (cmd.value !== 0 && cmd.value !== 1) return { ok: false, reason: "invalid value" };
+      return { ok: true };
+
+    case CMD_BOARD_CARRIER:
+      if (!isUint(cmd.operatorId, 31))       return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.carrierAssetId, 63))   return { ok: false, reason: "invalid carrierAssetId" };
+      return { ok: true };
+
+    case CMD_UNBOARD:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };
 

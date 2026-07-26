@@ -12,6 +12,7 @@ import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
+  CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import {
@@ -268,6 +269,60 @@ function disableAsset(next, target, scoringTeam) {
     carried.y = target.y;
     next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
   }
+}
+
+// 11G: per-seat preference; the only option so far is the rescue autopilot.
+function applySetOption(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state === OP_ABSENT) return reject(next, command, "operator not active");
+  operator.autoRescue = command.value;
+  next.events.push({
+    type: "option_set", operatorId: operator.id,
+    option: command.option, value: command.value,
+  });
+  return next;
+}
+
+// 11G: manual boarding — a downed seat climbs into an adjacent friendly
+// carrier with a free bunk, on its own decision.
+function applyBoardCarrier(next, command) {
+  const operator = next.operators[command.operatorId];
+  const down = downedFor(next, command.operatorId);
+  if (operator.state !== OP_DOWN || !down) return reject(next, command, "not downed");
+  const carrier = next.assets[command.carrierAssetId];
+  if (!carrier || getUnitStats(carrier.type).capacity <= 0) {
+    return reject(next, command, "not a carrier");
+  }
+  if (carrier.team !== operator.team) return reject(next, command, "asset belongs to other team");
+  if (carrier.state === ASSET_DISABLED || carrier.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  if (carrier.aboard1 !== -1 && carrier.aboard2 !== -1) {
+    return reject(next, command, "no bunk free");
+  }
+  const dist = chebyshevCells(carrier, down);
+  if (dist > 1) return reject(next, command, "carrier out of reach");
+  if (carrier.aboard1 === -1) carrier.aboard1 = operator.id;
+  else carrier.aboard2 = operator.id;
+  next.downed = next.downed.filter((d) => d.operatorId !== operator.id);
+  next.events.push({
+    type: "operator_rescued", operatorId: operator.id, byAssetId: carrier.id,
+  });
+  return next;
+}
+
+// 11G: hop out anywhere — back on foot beside the carrier.
+function applyUnboard(next, command) {
+  const operator = next.operators[command.operatorId];
+  const carrier = next.assets.find(
+    (a) => a.aboard1 === command.operatorId || a.aboard2 === command.operatorId
+  );
+  if (operator.state !== OP_DOWN || !carrier) return reject(next, command, "not aboard");
+  if (carrier.aboard1 === operator.id) carrier.aboard1 = -1;
+  else carrier.aboard2 = -1;
+  next.downed.push(createDowned(operator, carrier));
+  next.events.push({ type: "operator_unboarded", operatorId: operator.id, fromAssetId: carrier.id });
+  return next;
 }
 
 // 10C: a bounded team signal — kind + place, own team only, cooled down.
@@ -874,6 +929,9 @@ export function apply(state, command) {
     case CMD_TOW_ORDER: return applyTowOrder(next, command);
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
     case CMD_PING: return applyPing(next, command);
+    case CMD_SET_OPTION: return applySetOption(next, command);
+    case CMD_BOARD_CARRIER: return applyBoardCarrier(next, command);
+    case CMD_UNBOARD: return applyUnboard(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
