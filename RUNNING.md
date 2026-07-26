@@ -65,6 +65,11 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Replay viewer (11H): the join screen links to /replay.html — every
+  finished war is archived and re-simulated LOCALLY in your browser
+  (deterministic engine), so you can scrub anywhere instantly. Top-down
+  tactical view, play/pause (space), ×1/×4/×16, arrow keys jump ±100
+  ticks. Human-crewed units get a white box.
 - Rescue autopilot (11G): carriers auto-scoop adjacent downed teammates by
   default. The ⚙ options panel can turn that off per player — then crawl
   beside a carrier and press B to board; U hops you out anywhere.

@@ -1043,3 +1043,21 @@ current resetWar (fresh createInitialState — clean by construction); now
 it can never silently regress when someone "optimizes" rotation later.
 
 Suite 369/369 (x2). Tagged slice-11i.
+
+---
+
+## slice-11h — Replay viewer (2026-07-26, prompt 16 Q15 / prompt 19 controls)
+
+The determinism dividend: the engine is pure browser-safe JS, so the
+viewer re-simulates the archived command log LOCALLY — no server
+streaming, free scrubbing. `client/js/replay_engine.js` (pure, node-
+tested): checkpointed seek — backward scrubs and random jumps are
+byte-exact against live hashes at every probe, and checkpoint density
+provably never changes outcomes. `replay.html` + `replay.js`: war picker
+from /replays, top-down 2D tactical canvas (deliberately map-like — this
+tool exists for balance study): terrain, bases, relays with capture bars
+and ruin state, mines, drones, downed, standards, heading-oriented units,
+white boxes marking human-crewed assets; major-event ticker;
+play/pause/×1/×4/×16/scrub/±100-tick arrows.
+
+Suite 373/373 (x2). Tagged slice-11h.

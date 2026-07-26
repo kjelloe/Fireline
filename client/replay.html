@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>More Firepower — Replay Viewer</title>
+    <style>
+        html, body { margin: 0; height: 100%; background: #101018; color: #cdc;
+                     font-family: sans-serif; font-size: 14px; }
+        #layout { display: flex; flex-direction: column; height: 100%; }
+        #topbar { padding: 8px 12px; display: flex; gap: 12px; align-items: center;
+                  background: #181824; flex-wrap: wrap; }
+        #topbar a { color: #7fd4ff; text-decoration: none; }
+        #stage { flex: 1; display: flex; align-items: center; justify-content: center; }
+        canvas { background: #0c0c12; image-rendering: pixelated; }
+        #controls { padding: 8px 12px; background: #181824; display: flex;
+                    gap: 10px; align-items: center; }
+        #scrub { flex: 1; }
+        button { background: #2a2a3a; color: #cdc; border: 1px solid #444;
+                 border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+        button.active { background: #3a5a3a; }
+        #war-list { padding: 20px; }
+        #war-list table { border-collapse: collapse; }
+        #war-list td, #war-list th { padding: 4px 14px; border-bottom: 1px solid #333;
+                                     text-align: left; }
+        #feed { padding: 4px 12px; background: #141420; height: 3.6em;
+                overflow: hidden; font-size: 12px; color: #9a9; }
+    </style>
+</head>
+<body>
+    <div id="layout">
+        <div id="topbar">
+            <a href="/">&larr; back to the war</a>
+            <strong>REPLAY VIEWER</strong>
+            <span id="meta"></span>
+        </div>
+        <div id="war-list" style="display:none;"></div>
+        <div id="stage" style="display:none;"><canvas id="board" width="768" height="768"></canvas></div>
+        <div id="feed" style="display:none;"></div>
+        <div id="controls" style="display:none;">
+            <button id="btn-play">Play</button>
+            <button class="speed" data-x="1">×1</button>
+            <button class="speed" data-x="4">×4</button>
+            <button class="speed" data-x="16">×16</button>
+            <input id="scrub" type="range" min="0" max="1" value="0">
+            <span id="tick-label">tick 0</span>
+        </div>
+    </div>
+    <script type="module" src="./js/replay.js"></script>
+</body>
+</html>
