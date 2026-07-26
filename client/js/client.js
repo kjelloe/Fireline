@@ -15,6 +15,7 @@ import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
+import { propsFor } from "./props_model.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
@@ -458,6 +459,48 @@ function buildTerrain() {
       mesh.setMatrixAt(i, m);
     });
     group.add(mesh);
+  }
+  // Art round 2c (prompt 25): instanced battlefield props — forest reads
+  // as trees, rough as rocks, trails as trodden ruts, at a glance.
+  const props = propsFor(cells, size, size);
+  const byKind = { tree: [], rock: [], rut: [] };
+  for (const pr of props) byKind[pr.kind]?.push(pr);
+  const PROP_GEO = {
+    tree: () => {
+      const g = new THREE.ConeGeometry(0.28, 0.85, 6);
+      g.translate(0, 0.5, 0);
+      return g;
+    },
+    rock: () => {
+      const g = new THREE.DodecahedronGeometry(0.2, 0);
+      g.translate(0, 0.12, 0);
+      return g;
+    },
+    rut: () => {
+      const g = new THREE.BoxGeometry(0.5, 0.02, 0.14);
+      g.translate(0, 0.06, 0);
+      return g;
+    },
+  };
+  const PROP_COLOR = { tree: 0x1f3a1f, rock: 0x6a6a5e, rut: 0x574a34 };
+  const m = new THREE.Matrix4();
+  const q = new THREE.Quaternion();
+  const up = new THREE.Vector3(0, 1, 0);
+  const one = new THREE.Vector3();
+  for (const [kind, list] of Object.entries(byKind)) {
+    if (!list.length) continue;
+    const inst = new THREE.InstancedMesh(
+      PROP_GEO[kind](),
+      new THREE.MeshLambertMaterial({ color: PROP_COLOR[kind] }),
+      list.length
+    );
+    list.forEach((pr, i) => {
+      q.setFromAxisAngle(up, pr.rotation);
+      one.set(pr.scale, pr.scale, pr.scale);
+      m.compose(new THREE.Vector3(pr.x, 0.05, pr.y), q, one);
+      inst.setMatrixAt(i, m);
+    });
+    group.add(inst);
   }
   terrainMesh = group;
   scene.add(group);

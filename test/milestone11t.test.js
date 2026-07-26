@@ -110,3 +110,25 @@ test("11U towing a wreck flips its card to a green in-progress mission", () => {
   assert.equal(teammate.some((t) => t.kind === "towing_now"), false,
     "someone else's tow is a claimed wreck, not my mission");
 });
+
+test("11X props are deterministic, terrain-correct, and density-bounded", async () => {
+  const { propsFor } = await import("../client/js/props_model.js");
+  const { generateFrontierCorridor } = await import("../engine/frontier_corridor.js");
+  const map = generateFrontierCorridor(42);
+  const a = propsFor(map.cells, map.width, map.height);
+  const b = propsFor(map.cells, map.width, map.height);
+  assert.deepEqual(a, b, "same forest for every client");
+  assert.ok(a.length > 100, `the field is dressed (${a.length} props)`);
+
+  const at = (x, y) => map.cells[Math.floor(y) * map.width + Math.floor(x)];
+  for (const p of a) {
+    const terrain = at(p.x, p.y);
+    if (p.kind === "tree") assert.equal(terrain, 2, `tree on forest at ${p.x},${p.y}`);
+    if (p.kind === "rock") assert.equal(terrain, 3, `rock on rough at ${p.x},${p.y}`);
+    if (p.kind === "rut") assert.equal(terrain, 5, `rut on path at ${p.x},${p.y}`);
+  }
+  const forestCells = map.cells.filter((c) => c === 2).length;
+  const trees = a.filter((p) => p.kind === "tree").length;
+  assert.ok(trees > forestCells / 6 && trees < forestCells / 2,
+    `tree density sane (${trees} of ${forestCells} forest cells)`);
+});
