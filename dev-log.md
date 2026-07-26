@@ -660,3 +660,14 @@ CRC32). Renders all 12 keys + a red-team standard to
 and team tints read; wrecks clearly slumped.
 
 Suite 284/284. Wave 1 (Rescue Update) is now fully unblocked.
+
+---
+
+## v1.0 TAGGED — playtest 3 PASSED (2026-07-26)
+
+User: "playtest-3 completed. Works." Full loop confirmed on LAN. Follow-ups
+1-3 confirmed on defaults (downed operators unshootable in v2.0; mobile
+arrow-steering lands with 6C; chase cam keeps minimap/strip, Esc/F returns
+to tactical). Wave 0 closed. Night session begins on branch dev_night:
+Wave 1 slices as phase 9 (9A carrier ... 9G drone), one git tag per slice,
+session report in ./reports.
