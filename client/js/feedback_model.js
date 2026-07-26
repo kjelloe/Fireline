@@ -73,6 +73,7 @@ export function describeEvent(e, myTeam) {
     case "tow_started": return `Asset ${e.by} is towing wreck ${e.assetId}.`;
     case "recovery_started": return `Wreck ${e.assetId} in the repair bay.`;
     case "asset_restored": return `Asset ${e.assetId} restored to duty!`;
+    case "asset_manufactured": return `Home base rebuilt asset ${e.assetId} — reinforcements!`;
     case "game_over": return null; // handled by the end screen
     default: return null;
   }

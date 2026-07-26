@@ -42,6 +42,12 @@ import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
 export { createInitialState } from "./state.js";
+import { fieldSpawnFor } from "./state.js";
+
+// 9D Minimum Playability Guarantee (spec 01 §9, cadence per ruling Q5):
+// below this many operable assets, the home base slow-manufactures.
+export const MPG_MIN_OPERABLE = 6;
+export const MPG_TICKS = 900;
 
 // Tank movement speed in fixed world units per tick before terrain multiplier.
 // Kept as the historical export name; per-unit speeds come from units.js (3A).
@@ -58,6 +64,7 @@ function copyState(state) {
     sites: state.sites.map((s) => ({ ...s })),
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
+    manufacture: [...state.manufacture],
     events: [],
   };
 }
@@ -464,6 +471,41 @@ function applyAdvanceTick(next) {
         next.events.push({ type: "asset_restored", assetId: wreck.id });
       }
     }
+  }
+
+  // Slow Manufacture pass (9D): a depleted team rebuilds its oldest wreck
+  // at the original spawn — a losing side can always field something.
+  for (const team of [0, 1]) {
+    const operable = next.assets.filter(
+      (a) => a.team === team && a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED
+    ).length;
+    if (operable >= MPG_MIN_OPERABLE) {
+      next.manufacture[team] = 0;
+      continue;
+    }
+    if (next.manufacture[team] < MPG_TICKS) next.manufacture[team] += 1;
+    if (next.manufacture[team] < MPG_TICKS) continue;
+    const wreck = next.assets.find(
+      (a) => a.team === team &&
+        (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) &&
+        a.towedBy === -1 && a.recoverTimer === 0
+    );
+    if (!wreck) continue; // hold at threshold until a hull is available
+    const spawn = fieldSpawnFor(wreck.id);
+    wreck.state = ASSET_IDLE;
+    wreck.hp = floorDivI32(getUnitStats(wreck.type).hp, 2);
+    wreck.x = cellToWorld(spawn.cellX);
+    wreck.y = cellToWorld(spawn.cellY);
+    wreck.targetX = wreck.x;
+    wreck.targetY = wreck.y;
+    wreck.heading = team === 1 ? 128 : 0;
+    wreck.operatorId = -1;
+    wreck.suppressedTimer = 0;
+    wreck.reloadTimer = 0;
+    wreck.ammo = 12;
+    wreck.fuel = 2400;
+    next.manufacture[team] = 0;
+    next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
   }
 
   // Resupply pass: standing in your own base restores ammo and fuel.

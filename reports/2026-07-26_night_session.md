@@ -66,13 +66,13 @@ verified. Every completed slice is git-tagged.*
 | 9A Command Carrier | ✅ tagged `slice-9a` |
 | 9B Downed operators | ✅ tagged `slice-9b` |
 | 9F Turn-rate movement | ✅ tagged `slice-9f` |
-| 9C Cargo/materiel economy | ⬜ not started (next up; couples with 9D) |
-| 9D Depots + Minimum Playability Guarantee | ⬜ not started |
+| 9C Cargo/materiel economy | ⬜ deferred — needs the damaged-sites design round (question 9) |
+| 9D Minimum Playability Guarantee | ✅ tagged `slice-9d` (Slow Manufacture wreck-rebuild) |
 | 9E Mines | ⬜ not started |
 | 9G Drone | ⬜ not started |
 
-Three of seven Wave-1 slices landed, fully tested and tagged, suite at
-**306/306** (every count double-run verified). The three shipped slices are
+Four of seven Wave-1 slices landed, fully tested and tagged, suite at
+**312/312** (every count double-run verified). The three shipped slices are
 the load-bearing ones: the carrier changes the objective game, the movement
 model changes feel everywhere, and downed operators are the largest new
 entity system since standards.
@@ -124,6 +124,13 @@ entity system since standards.
 8. **Human rescue UX**: carrier boarding/delivery is automatic on adjacency/
    base-idle. Good enough, or should players get explicit board/unload
    commands (with pings)?
+9. **Cargo/materiel design round needed (old 9C)**: a materiel resource only
+   earns its place once sites can be DAMAGED and repaired — which nothing can
+   do yet. Proposal to react to: relays/depots get hp, artillery can shell
+   them, trucks haul materiel to repair them. Until then MPG covers the
+   losing-team guarantee without an economy.
+10. **MPG numbers**: threshold 6 operable / 900-tick cadence / half-hull
+    rebuild — sanity-check in play.
 
 ## How to review this session
 

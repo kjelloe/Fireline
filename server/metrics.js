@@ -17,6 +17,7 @@ export function createMetrics() {
     recoveries: 0,
     operatorsDowned: 0,
     operatorsRescued: 0,
+    manufactured: 0,
     fireOrdersRejected: 0,
     rejectionsByReason: {},
     firstContactTick: null,
@@ -38,6 +39,7 @@ export function createMetrics() {
           case "tow_started": counters.towsStarted++; break;
           case "operator_downed": counters.operatorsDowned++; break;
           case "operator_rescued": counters.operatorsRescued++; break;
+          case "asset_manufactured": counters.manufactured++; break;
           case "asset_restored": counters.recoveries++; break;
           case "rejected":
             counters.rejectionsByReason[e.reason] =

@@ -749,3 +749,23 @@ all 32 seats participate as active, downed, or aboard.
 clicks crawl while down, R redeploys, hint bar updated. Strip → 16 tiles.
 
 Suite 306/306 (x2). Tagged slice-9b.
+
+---
+
+## slice-9d — Minimum Playability Guarantee (night session, 2026-07-26)
+
+Spec 01 §9 with ruling Q5 cadence: when a team fields fewer than 6 operable
+assets, its home base Slow Manufacture timer runs; at 900 ticks the oldest
+eligible wreck (not towed, not in the repair bay) is REBUILT at its original
+spawn — half hull, full stores, crewless, facing home. Fits the fixed
+32-asset roster (manufacture = rebuild, no id churn). Timers `manufacture[2]`
+hashed (1A → v18); event `asset_manufactured` + feedback + metrics. Healthy
+teams never trigger; with no eligible hull the timer holds and fires the
+moment one frees up. `fieldSpawnFor(id)` exposes the deterministic spawn
+layout (a test walks all 32 ids against the fielded state — which caught my
+wrong id→team assumption on the first pass).
+
+Design note: the cargo/materiel half of old 9C is DEFERRED — it needs the
+damaged-sites design round (new question 9). MPG stands alone.
+
+Suite 312/312 (x2). Tagged slice-9d.
