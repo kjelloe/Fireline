@@ -139,3 +139,12 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 **Decisions captured:**
 1. Standard carrying: Carrier-exclusive once the Command Carrier ships; evaluate via AI-only backend sims first (harness: `npm run simwar`, AI objective doctrine shipped).
 2. Movement wiggle: client gradual-turn smoothing shipped now; authoritative per-chassis turn-rate model queued V2.x.
+
+### Prompt 13 — Implementation ordering + design gap review
+
+> While I playtest, can you plan out in which order to implement @plan-version1.md and @plan-version2.md items, and look through to see where we need to do more design and where you need clarifications from me
+
+**Decisions captured:**
+1. `plan-implementation-order.md` written: Wave 0 (v1 close-out) → Wave 1 (Rescue Update engine core, sim-verified) → Wave 2 (coordination/meta) → Wave 3 (presentation, parallel art track) → Wave 4+/V3.
+2. Design proposals drafted for: Carrier-exclusive anti-deadlock rule, slim downed-operators model, single-resource cargo cut, auto-generated public tasks, slim mines, drone mechanics.
+3. Twelve-question ruling questionnaire (Q1-Q12) issued with proceed-on-default values.

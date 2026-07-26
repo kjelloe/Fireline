@@ -626,3 +626,16 @@ truck fielding pins, AI-never-tows pin, ws truck rescue incl. same-tick
 depot handoff, teaching rejection for tank tows); `ai_objective.test.js`
 (raider/carrier/recoverer/reassignment + determinism + heading math).
 Memories + manifest note refreshed. v0.12.0. Suite 283/283 (x2).
+
+---
+
+## marker-0040 — Implementation order + design-gap review (2026-07-26)
+
+`plan-implementation-order.md`: dependency-ordered waves for the remaining
+v1/v2 items. Principles: engine-before-client with simwar verification per
+slice; design-blocked slices flagged not scheduled; spectator/replay viewer
+and ops hardening identified as zero-design gap-fillers; art as a parallel
+track. Slim-model proposals written for the six under-designed systems
+(Carrier deadlock rule, downed operators, cargo, public tasks, mines,
+drone). Q1-Q12 questionnaire with defaults so work proceeds without
+blocking on answers.
