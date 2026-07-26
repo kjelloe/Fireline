@@ -3,6 +3,11 @@
 *Living document — updated after each slice. Suite counts are double-run
 verified. Every completed slice is git-tagged.*
 
+**Session outcome: 6 of 7 Wave-1 slices shipped and tagged (9A, 9F, 9B,
+9D, 9E, 9G) — the seventh (9C cargo) is deliberately parked on a design
+question. Suite 306 → 329 tests, fixture v14 → v20, every slice
+double-run green with simwar + replay verification.**
+
 ## Session opening state
 
 - Playtest 3 PASSED → Wave 0 closed → **tagged `v1.0`** (the Command
@@ -97,6 +102,23 @@ entity system since standards.
    standard and the war again waits on the points horn — the standoff
    pattern persists across seeds, strengthening question 2. Downed AI crews
    redeploy and re-crew correctly (no more seat bleed-out).
+
+## Wave-1 close-out sim campaign (5 seeds × 12000 ticks, AI-only)
+
+- Seeds 2026 / 777 / 31337 / 4242 / 9001: **no war reached a decisive
+  winner by tick 12000** — every one settles into the mutual-carry standoff
+  or a points grind (team B ahead in 5/5, worth a look at spawn/relay
+  symmetry). This is now a 5-seed pattern: question 2 (standoff release
+  valve) is the highest-value balance decision on the table.
+- New-system exposure in AI wars: downed operators cycle healthily
+  (8–10 downs, every one redeployed — no seat leaks). **Drones never
+  launch** — regents rarely idle off-supply (patrols keep them moving,
+  garage assets sit in base), so the anti-camping system is, correctly, a
+  human-behavior tax. **Mines and Slow Manufacture never fire** in AI wars
+  (no AI mine doctrine yet; teams never drop below 6 operable). All three
+  are pinned by unit/component tests instead — but none of the three has
+  AI-vs-AI battlefield mileage yet; first human playtest will be their
+  real exposure.
 
 ## Questions accumulated for your return
 
