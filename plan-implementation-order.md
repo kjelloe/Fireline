@@ -131,3 +131,42 @@ tap the unit to stop). Everything else: defaults confirmed.
 
 Answer any subset — numbered answers ("Q1: default, Q7: 20s...") are enough.
 Everything unanswered proceeds on the stated default when its wave arrives.
+
+---
+
+## Round-2 rulings — ANSWERED 2026-07-26 (dev-prompts prompt 16)
+
+All sixteen night-session questions ruled. Design theme set by the user:
+**"We want the game world to be as alive as possible even with 1 or 2
+humans playing."** Alive-world work (AI doctrine) therefore outranks new
+human-facing systems in the order below.
+
+### Phase 11 — the Living World round (slice order)
+
+| # | Slice | Rulings | Notes |
+|---|---|---|---|
+| 11A | **Artillery turn retune** | Q4 | turnRate 5 → 2 (~6.4 s half turn). One-line + pins. |
+| 11B | **BF2 capture countdown** | Q3 | Contested = frozen. One team alone on a relay drains it to neutral (~3 s), then captures it (~3 s). Per-site progress hashed; step lengths configurable constants. |
+| 11C | **AI doctrine: hunt & guard** | Q1, Q2d, Q14 | Role-based garage crewing (any ROLE unfilled → crew a free asset, not just fixed pairings); fire doctrine prioritizes enemy standard-carriers; a unit stung by a drone shoots it down. |
+| 11D | **AI doctrine: alive world** | Q11, Q16 | Tanks mine chokepoints near owned relays; recoverer truck clears marked mines on its route; regents ping (raider need_escort, recoverer recovery_in_progress, scout mines_detected). Vocabulary grows: carrier_under_attack, road_blocked, safe_route. |
+| 11E | **AI rescue play** | Q5 | AI carriers pick up downed operators, AI trucks tow wrecks — LANDS ONLY IF the sim campaign shows it works and helps (compare seat health + war tempo across seeds vs 11D baseline). |
+| 11F | **Damaged sites + materiel (9C revived)** | Q9 | Relays/depots get hp; artillery can shell them (damaged sites stop projecting supply/capturing); trucks haul ONE materiel slot from base to repair. Design detail below. |
+| 11G | **Rescue autopilot option** | Q8 | Boarding/delivery stays automatic by default; gear/settings UI toggle; manual mode gets explicit board/unboard via hover icon (engine: per-operator autoRescue flag in hashed state + board/unboard commands). |
+| 11H | **Replay viewer** | Q15 | Client scrubber over the /replays store, reusing the spectator view path (10A shipped the live half). |
+
+Deferred by ruling: **Q2b** held-standard point bleed (arm it only if HUMAN
+standoffs appear in playtests); **Q6** carrier special weapons (mortar /
+sniper / spike-drop) — v2.x armament round; **Q8 hover-icon polish** beyond
+the minimal toggle if playtests demand more.
+
+### 11F design sketch (damaged sites, per Q9)
+
+- Sites gain `hp` (relay 60?) in hashed state; artillery `fire_order` may
+  target a site id (indirect siege role). At 0 the site is DAMAGED: stops
+  projecting supply, cannot be captured or flip, keeps its owner.
+- Trucks pick up 1 `materiel` at their home base (auto-load when idle in
+  base, like resupply), drive to a damaged site, auto-repair over ~5 s —
+  site returns at full hp. The truck role becomes tow + clear + repair.
+- MPG stays as-is (independent guarantee). Salvage-for-materiel deferred.
+- Open detail to confirm before building: can HOME BASES be shelled?
+  (proposal: no — bases stay sacred, only relays/depots.)
