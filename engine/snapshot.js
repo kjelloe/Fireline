@@ -27,6 +27,7 @@ export function hashState(state) {
     w.writeI32LE(a.towedBy); w.writeI32LE(a.recoverTimer); // added 8D
     w.writeU8(a.reloadTimer); // added 8E
     w.writeU8(a.heading); // added 9F
+    w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
@@ -41,6 +42,12 @@ export function hashState(state) {
     w.writeI32LE(st.homeCellX); w.writeI32LE(st.homeCellY);
     w.writeI32LE(st.carrierAssetId); w.writeI32LE(st.status);
     w.writeI32LE(st.droppedTimer); // added 9A
+  }
+  for (const d of (state.downed ?? [])) { // added 9B
+    w.writeI32LE(d.operatorId); w.writeI32LE(d.team);
+    w.writeI32LE(d.x); w.writeI32LE(d.y);
+    w.writeI32LE(d.targetX); w.writeI32LE(d.targetY);
+    w.writeI32LE(d.downTicks);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

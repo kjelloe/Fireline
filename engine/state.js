@@ -64,6 +64,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     id, type, team, state: ASSET_IDLE,
     x, y, targetX: x, targetY: y,
     heading: team === 1 ? 128 : 0, // brads: A faces east, B faces west (9F)
+    aboard1: -1, aboard2: -1, // 9B: carrier bunks (operator ids)
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery
@@ -154,6 +155,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     sites,
     bases,
     standards, // 8A: physical Command Standards
+    downed: [], // 9B: operators on foot
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

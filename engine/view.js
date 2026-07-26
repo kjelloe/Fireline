@@ -29,6 +29,11 @@ export function buildView(state, team) {
     id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
   }));
   const bases = state.bases.map((b) => ({ ...b }));
+  // 9B: downed operators are visible to their OWN team only (enemies cannot
+  // see or target them — follow-up ruling 1).
+  const downedOperators = state.downed
+    .filter((d) => d.team === team)
+    .map((d) => ({ ...d }));
   // 8A: Command Standards are a deliberate fog exception — both teams always
   // know both standards' position and status. The stolen flag IS the drama.
   const standards = state.standards.map((st) => ({ ...st }));
@@ -46,5 +51,6 @@ export function buildView(state, team) {
     sites,
     bases,
     standards,
+    downedOperators,
   };
 }

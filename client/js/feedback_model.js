@@ -27,6 +27,9 @@ export const REJECTION_TEXT = Object.freeze({
   "already towing": "You're already towing a wreck.",
   "wreck out of reach": "Get adjacent to the wreck to hook it up.",
   "needs a logistics truck": "Only a logistics truck can tow — switch to one.",
+  "not downed": "You are not on foot.",
+  "too far to crawl": "Too far — downed operators can only crawl a short way.",
+  "still recovering nerve": "Hold on — redeploy unlocks a few seconds after going down.",
   "war is over": "The war is over — next one starts shortly.",
 });
 
@@ -61,6 +64,12 @@ export function describeEvent(e, myTeam) {
       return e.team === myTeam ? "Our standard is safe at base." : "Enemy standard recovered to their base.";
     case "standard_scored":
       return e.byTeam === myTeam ? "STANDARD CAPTURED — VICTORY!" : "Enemy scored our standard.";
+    case "operator_downed": return `Operator ${e.operatorId} is DOWN — crawl to cover, redeploy, or await a carrier.`;
+    case "operator_rescued": return `Carrier ${e.byAssetId} picked up operator ${e.operatorId}!`;
+    case "operator_delivered": return `Operator ${e.operatorId} delivered safe — take a new asset.`;
+    case "operator_redeployed": return `Operator ${e.operatorId} redeployed — take a new asset.`;
+    case "operator_returned": return `Operator ${e.operatorId} made it back on foot.`;
+    case "crawl_ordered": return null;
     case "tow_started": return `Asset ${e.by} is towing wreck ${e.assetId}.`;
     case "recovery_started": return `Wreck ${e.assetId} in the repair bay.`;
     case "asset_restored": return `Asset ${e.assetId} restored to duty!`;

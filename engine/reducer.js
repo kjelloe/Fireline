@@ -5,13 +5,18 @@
 // "rejected" event and change nothing else.
 
 import {
-  OP_ABSENT, OP_ACTIVE,
+  OP_ABSENT, OP_ACTIVE, OP_DOWN,
   ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED,
 } from "./state.js";
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
-  CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CALL_MEDIC, CMD_RESPAWN, validate,
+  CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
+  CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
+import {
+  createDowned, downedFor, crawlRejection, boardableBy,
+  OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
+} from "./downed.js";
 import {
   towRejection, towedWreck, restoredHp, TOW_SPEED_NUM, TOW_SPEED_DEN, REPAIR_TICKS,
 } from "./recovery.js";
@@ -52,6 +57,7 @@ function copyState(state) {
     assets: state.assets.map((a) => ({ ...a })),
     sites: state.sites.map((s) => ({ ...s })),
     standards: state.standards.map((st) => ({ ...st })),
+    downed: state.downed.map((d) => ({ ...d })),
     events: [],
   };
 }
@@ -155,6 +161,16 @@ function applyFireOrder(next, command) {
     target.state = ASSET_DISABLED;
     next.teamScores[attacker.team] += SCORE_DISABLE;
     next.events.push({ type: "asset_disabled", assetId: target.id });
+    // 9B: the crew bails out as a downed operator (the wreck repairs to
+    // uncrewed — the human/AI seat carries on on foot).
+    if (target.operatorId !== -1) {
+      const seat = next.operators[target.operatorId];
+      seat.state = OP_DOWN;
+      seat.assetId = -1;
+      next.downed.push(createDowned(seat, target));
+      next.events.push({ type: "operator_downed", operatorId: seat.id });
+      target.operatorId = -1;
+    }
     // 8D: a disabled tower releases anything it was towing.
     const inTow = towedWreck(next, target.id);
     if (inTow) inTow.towedBy = -1;
@@ -169,6 +185,35 @@ function applyFireOrder(next, command) {
       next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
     }
   }
+  return next;
+}
+
+function applyCrawlOrder(next, command) {
+  const downed = downedFor(next, command.operatorId);
+  const why = crawlRejection(downed, command.targetCellX, command.targetCellY);
+  if (why) return reject(next, command, why);
+  downed.targetX = cellToWorld(command.targetCellX);
+  downed.targetY = cellToWorld(command.targetCellY);
+  next.events.push({
+    type: "crawl_ordered", operatorId: downed.operatorId,
+    targetX: downed.targetX, targetY: downed.targetY,
+  });
+  return next;
+}
+
+function freeSeat(next, operatorId, eventType, extra = {}) {
+  const seat = next.operators[operatorId];
+  seat.state = OP_ACTIVE;
+  seat.assetId = -1;
+  next.downed = next.downed.filter((d) => d.operatorId !== operatorId);
+  next.events.push({ type: eventType, operatorId, ...extra });
+}
+
+function applyRedeploy(next, command) {
+  const downed = downedFor(next, command.operatorId);
+  if (!downed) return reject(next, command, "not downed");
+  if (downed.downTicks < REDEPLOY_TICKS) return reject(next, command, "still recovering nerve");
+  freeSeat(next, command.operatorId, "operator_redeployed");
   return next;
 }
 
@@ -349,6 +394,58 @@ function applyAdvanceTick(next) {
     }
   }
 
+  // Downed-operator pass (9B): crawl, count, board carriers, deliver.
+  for (const d of [...next.downed]) {
+    d.downTicks += 1;
+    // Crawl toward target, axis-major at foot speed. No heading for feet.
+    let ddx = d.targetX - d.x;
+    let ddy = d.targetY - d.y;
+    let remaining = OPERATOR_SPEED;
+    if (absI32(ddx) >= absI32(ddy)) {
+      const mx = Math.min(absI32(ddx), remaining);
+      d.x += ddx < 0 ? -mx : mx; remaining -= mx;
+      const my = Math.min(absI32(ddy), remaining);
+      d.y += ddy < 0 ? -my : my;
+    } else {
+      const my = Math.min(absI32(ddy), remaining);
+      d.y += ddy < 0 ? -my : my; remaining -= my;
+      const mx = Math.min(absI32(ddx), remaining);
+      d.x += ddx < 0 ? -mx : mx;
+    }
+    if (d.downTicks >= OPERATOR_AUTO_RETURN_TICKS) {
+      freeSeat(next, d.operatorId, "operator_returned", { auto: true });
+    }
+  }
+  // Carrier boarding: adjacent friendly downed operators climb aboard.
+  for (const carrier of next.assets) {
+    if (getUnitStats(carrier.type).capacity <= 0) continue;
+    if (carrier.state === ASSET_DISABLED || carrier.state === ASSET_SALVAGED) continue;
+    let bunkable = boardableBy(next, carrier);
+    while (bunkable) {
+      if (carrier.aboard1 === -1) carrier.aboard1 = bunkable.operatorId;
+      else carrier.aboard2 = bunkable.operatorId;
+      next.downed = next.downed.filter((d) => d.operatorId !== bunkable.operatorId);
+      next.events.push({
+        type: "operator_rescued", operatorId: bunkable.operatorId, byAssetId: carrier.id,
+      });
+      bunkable = boardableBy(next, carrier);
+    }
+  }
+  // Delivery: an idle carrier in its own base unloads everyone aboard.
+  for (const carrier of next.assets) {
+    if (carrier.aboard1 === -1 && carrier.aboard2 === -1) continue;
+    if (carrier.state !== ASSET_IDLE || !inOwnBase(next, carrier)) continue;
+    for (const slot of ["aboard1", "aboard2"]) {
+      const operatorId = carrier[slot];
+      if (operatorId === -1) continue;
+      carrier[slot] = -1;
+      const seat = next.operators[operatorId];
+      seat.state = OP_ACTIVE;
+      seat.assetId = -1;
+      next.events.push({ type: "operator_delivered", operatorId });
+    }
+  }
+
   // Recovery pass (8D): a towed wreck reaching its own base enters the
   // repair bay; timers count down; repaired assets return at half hull.
   for (const wreck of next.assets) {
@@ -418,6 +515,8 @@ export function apply(state, command) {
     case CMD_MOVE_ORDER: return applyMoveOrder(next, command);
     case CMD_FIRE_ORDER: return applyFireOrder(next, command);
     case CMD_TOW_ORDER: return applyTowOrder(next, command);
+    case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
+    case CMD_REDEPLOY: return applyRedeploy(next, command);
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
     case CMD_RESPAWN:
       return next;

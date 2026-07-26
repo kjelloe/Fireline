@@ -722,3 +722,30 @@ vehicle handling to build on; artillery visibly labors through turns
 (5 brads/tick = 3.6 deg — very deliberate), scouts whip around.
 
 Suite 297/297 (x2). Tagged slice-9f.
+
+---
+
+## slice-9b — Downed operators, full operator_foot (night session, 2026-07-26)
+
+**The Rescue Update's heart (ruling Q3: full walking entities).**
+Engine: crews BAIL OUT when a crewed asset is disabled — seat goes OP_DOWN,
+wreck becomes crewless (8D wrecks now repair to UNCREWED; pre-staged wrecks
+with crew keep the old contract), `state.downed` entities (hashed) walk the
+field. Lifecycle: crawl (`crawl_order`, radius 3 cells, 6 units/tick, no
+heading — feet), fast redeploy (`redeploy`, gated 100 ticks, "still
+recovering nerve"), carrier rescue (capacity-2 `aboard1/aboard2` bunks,
+adjacent auto-board, idle-in-base delivery frees seats), auto-return at 600
+ticks. Downed operators are visible to their OWN team only and cannot be
+targeted (follow-up ruling 1). Events: operator_downed/rescued/delivered/
+redeployed/returned (+ feedback lines + metrics counters). 1A → v17.
+
+**AI down-management doctrine:** regents redeploy when the gate opens, then
+re-crew — fixed agents retake their PAIRED asset when operable+free;
+regented seats take the lowest free operable asset. Found by the v1 soak:
+without this, seats bled out of the war (24/32 active). Acceptance updated:
+all 32 seats participate as active, downed, or aboard.
+
+**Client:** downed figure render + labels ("YOU ARE DOWN — R TO REDEPLOY"),
+clicks crawl while down, R redeploys, hint bar updated. Strip → 16 tiles.
+
+Suite 306/306 (x2). Tagged slice-9b.

@@ -11,9 +11,16 @@ const SEED = 2026;
 const TICKS = 1500;
 const result = runV1Soak(SEED, TICKS);
 
-test("v1: all 32 operator slots are active and every asset is crewed", () => {
-  assert.equal(result.activeOperators, 32);
-  assert.equal(result.operatedAssets, 32);
+test("v1: all 32 operator seats participate (active, downed, or aboard)", () => {
+  // Since 9B, crews bail out of disabled assets: a seat may legitimately be
+  // OP_DOWN (walking or aboard a carrier) instead of driving. Nobody may be
+  // ABSENT, and the driving seats must match the crewed assets.
+  const s = result.server.state;
+  const absent = s.operators.filter((o) => o.state === 0).length;
+  assert.equal(absent, 0, "no seat abandoned the war");
+  const driving = s.operators.filter((o) => o.state === 1 && o.assetId !== -1).length;
+  assert.equal(driving, result.operatedAssets, "seat/asset links symmetric");
+  assert.ok(result.activeOperators >= 24, `${result.activeOperators} active seats`);
 });
 
 test("v1: the war is fought — relays change hands and assets fall", () => {

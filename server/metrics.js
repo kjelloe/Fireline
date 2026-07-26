@@ -15,6 +15,8 @@ export function createMetrics() {
     disables: 0,
     towsStarted: 0,
     recoveries: 0,
+    operatorsDowned: 0,
+    operatorsRescued: 0,
     fireOrdersRejected: 0,
     rejectionsByReason: {},
     firstContactTick: null,
@@ -34,6 +36,8 @@ export function createMetrics() {
             if (counters.firstContactTick === null) counters.firstContactTick = tick;
             break;
           case "tow_started": counters.towsStarted++; break;
+          case "operator_downed": counters.operatorsDowned++; break;
+          case "operator_rescued": counters.operatorsRescued++; break;
           case "asset_restored": counters.recoveries++; break;
           case "rejected":
             counters.rejectionsByReason[e.reason] =

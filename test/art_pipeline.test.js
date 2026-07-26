@@ -150,7 +150,7 @@ test("art: the demo asset strip renders deterministically as a valid PNG", () =>
   assert.deepEqual([...first.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10], "PNG signature");
   const width = first.readUInt32BE(16);
   const height = first.readUInt32BE(20);
-  assert.equal(width, 15 * 176, "one tile per procedural key + the red standard");
+  assert.equal(width, 16 * 176, "one tile per procedural key + the red standard");
   assert.equal(height, 176 + 18);
   execFileSync("node", [tool]);
   const second = readFileSync(stripPath);

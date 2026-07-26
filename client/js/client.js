@@ -37,6 +37,7 @@ let autoSelectSent = false; // post-playtest: crew a unit automatically on join
 const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
+const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -106,6 +107,7 @@ function init() {
       const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
     }
+    if (e.key === "r" || e.key === "R") send({ type: "redeploy" }); // 9B
     if (e.key === "x" || e.key === "X") {
       const enemyStd = interpolator.latest()?.standards?.find((st) => st.team !== joined?.team);
       if (enemyStd) freeCam.jumpTo(enemyStd.x / CELL, enemyStd.y / CELL);
@@ -241,6 +243,11 @@ function onPointerDown(event) {
 
   const view = interpolator.latest();
   const { cellX, cellY } = scenePointToCell(target.x, target.z);
+  // 9B: while your seat is down, clicks crawl instead of commanding vehicles.
+  if (view?.downedOperators?.some((d) => d.operatorId === joined.operatorId)) {
+    send({ type: "crawl_order", targetCellX: cellX, targetCellY: cellY });
+    return;
+  }
   const own = view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
   const cmd = buildCommandForClick(view, cellX, cellY, {
     fireRadiusCells: 1, myOperatorId: joined.operatorId,
@@ -622,6 +629,32 @@ function renderMinimap(view) {
   }
 }
 
+function updateDownedMeshes(view) {
+  const live = new Set();
+  for (const d of view.downedOperators ?? []) {
+    live.add(d.operatorId);
+    let mesh = downedMeshes.get(d.operatorId);
+    if (!mesh) {
+      mesh = buildProcedural("operator_down");
+      applyTeamColor(mesh, teamToken(ASSET_TOKENS, joined?.team ?? 0).color);
+      scene.add(mesh);
+      downedMeshes.set(d.operatorId, mesh);
+    }
+    mesh.position.set(d.x / CELL + 0.5, 0.05, d.y / CELL + 0.5);
+    upsertWorldLabel(`down${d.operatorId}`,
+      d.operatorId === joined?.operatorId ? "YOU ARE DOWN — R TO REDEPLOY" : "OPERATOR DOWN",
+      "#ffd75e", d.x / CELL + 0.5, 1.2, d.y / CELL + 0.5);
+  }
+  for (const [id, mesh] of downedMeshes) {
+    if (!live.has(id)) {
+      scene.remove(mesh);
+      downedMeshes.delete(id);
+      const label = worldLabels.get(`down${id}`);
+      if (label) { scene.remove(label.sprite); worldLabels.delete(`down${id}`); }
+    }
+  }
+}
+
 function upsertSiteMesh(site) {
   let mesh = siteMeshes.get(site.id);
   if (!mesh) {
@@ -664,6 +697,7 @@ function renderBattlefield() {
   }
   for (const site of view.sites ?? []) upsertSiteMesh(site);
   for (const st of view.standards ?? []) upsertStandardMesh(st);
+  updateDownedMeshes(view);
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);

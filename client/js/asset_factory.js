@@ -131,6 +131,17 @@ function buildWreck(kind) {
   return base;
 }
 
+function buildOperatorDown() {
+  const g = new THREE.Group();
+  const C = colors();
+  const body = box(0.14, 0.09, 0.34, C.hullShadow); body.position.set(0, 0.06, 0);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 5), mat(C.hullPaint));
+  head.position.set(0, 0.08, 0.22);
+  const panel = teamPanel(0.1, 0.03, 0.1); panel.position.set(0, 0.12, -0.05);
+  g.add(body, head, panel);
+  return g;
+}
+
 function buildStandard(dropped) {
   const g = new THREE.Group();
   const C = colors();
@@ -178,6 +189,7 @@ const BUILDERS = {
   wreck_artillery: () => buildWreck("wreck_artillery"),
   wreck_logistics: () => buildWreck("wreck_logistics"),
   wreck_carrier: () => buildWreck("wreck_carrier"),
+  operator_down: buildOperatorDown,
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),
   relay: buildRelay,
