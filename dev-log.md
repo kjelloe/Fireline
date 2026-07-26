@@ -941,3 +941,31 @@ edge per leg; needs a mirrored-teams harness to quantify). 1A → v25 (three
 repins: spawns, relays, fuel). 2A/8F/1I pins updated to the new map.
 
 Suite 351/351 (x2), campaign + replay OK. Tagged slice-11c.
+
+---
+
+## slice-11d — Alive-world doctrine (2026-07-26, prompt 16 Q11/Q16)
+
+The user's design goal verbatim: "We want the game world to be as alive as
+possible even with 1 or 2 humans playing."
+
+- **Tanks fortify** (Q11): idle within 3 cells of an owned relay (never on
+  the protected site cell, never in a base), rack loaded, ground clean →
+  lay a mine; a tank standing ON its just-captured relay steps one cell
+  south first so the fortify rule can fire.
+- **Trucks clear en route** (Q11): any AI truck adjacent to a MARKED enemy
+  mine defuses it — no clairvoyance, doctrine only sees marked mines.
+- **Regents ping** (Q16): raider calls need_escort while carrying, the
+  recoverer announces recovery_in_progress at the dropped standard, scouts
+  flag marked mines — throttled to one ping per seat per 30 s
+  (AI_PING_INTERVAL_TICKS, via the hashed lastPingTick).
+- **Vocabulary grows** (Q16): carrier_under_attack, road_blocked,
+  safe_route — engine kinds + client context options (carrier offers
+  CARRIER UNDER ATTACK, towing trucks ROAD BLOCKED, scouts SAFE ROUTE).
+
+Campaign result: mines now shape AI wars (deployed AND detonated with zero
+humans), and the winner column finally mixed — **team A takes seeds 777
+and 31337, B takes 4242**, two seeds run long with close scores. The
+5/5-team-B pattern is dead. No hashed-state change — no repin.
+
+Suite 356/356 (x2). Tagged slice-11d.

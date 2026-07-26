@@ -16,6 +16,9 @@ export const PING_KINDS = Object.freeze([
   "need_escort",          // standard runs / rescue tows want cover
   "recovery_in_progress", // truck calling its tow
   "mines_detected",       // scout marking danger ground
+  "carrier_under_attack", // the standard run is in trouble (Q16)
+  "road_blocked",         // route intel (Q16)
+  "safe_route",           // scout-marked clean path (Q16)
   "need_rescue",          // downed operator calling the carrier (OP_DOWN only)
 ]);
 

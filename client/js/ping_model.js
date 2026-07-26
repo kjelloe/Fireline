@@ -17,17 +17,29 @@ export function pingOptionsFor(view, operatorId) {
 
   const options = [];
   if ((view?.standards ?? []).some((st) => st.carrierAssetId === me.id)) {
-    options.push({ kind: "need_escort", label: "ESCORT THE STANDARD" });
+    options.push(
+      { kind: "need_escort", label: "ESCORT THE STANDARD" },
+      { kind: "carrier_under_attack", label: "CARRIER UNDER ATTACK" }
+    );
+  } else if (me.type === 4) {
+    options.push({ kind: "carrier_under_attack", label: "CARRIER UNDER ATTACK" });
   }
   const towing = (view?.friendlyAssets ?? []).some((a) => a.towedBy === me.id);
   if (towing) {
     options.push(
       { kind: "recovery_in_progress", label: "RECOVERY IN PROGRESS" },
-      { kind: "need_escort", label: "NEED ESCORT" }
+      { kind: "need_escort", label: "NEED ESCORT" },
+      { kind: "road_blocked", label: "ROAD BLOCKED" }
     );
   }
   if (me.type === 1) {
-    options.push({ kind: "mines_detected", label: "MINES DETECTED" });
+    options.push(
+      { kind: "mines_detected", label: "MINES DETECTED" },
+      { kind: "safe_route", label: "SAFE ROUTE MARKED" }
+    );
+  }
+  if (me.type === 3 && !towing) {
+    options.push({ kind: "road_blocked", label: "ROAD BLOCKED" });
   }
   for (const d of DEFAULTS) {
     if (options.length >= 3) break;
