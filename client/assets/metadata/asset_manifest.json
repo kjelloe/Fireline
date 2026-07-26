@@ -102,6 +102,20 @@
       "fallbackSprite": "assets/sprites/fallback/zone.svg",
       "minimapIcon": "assets/icons/svg/icon_zone.svg",
       "triBudget": 5000
+    },
+    "mine": {
+      "webglModel": "assets/models/objectives/objective_mine.glb",
+      "procedural": "mine",
+      "fallbackSprite": "assets/sprites/fallback/mine.svg",
+      "minimapIcon": "assets/icons/svg/icon_mine.svg",
+      "triBudget": 800
+    },
+    "drone": {
+      "webglModel": "assets/models/objectives/objective_drone.glb",
+      "procedural": "drone",
+      "fallbackSprite": "assets/sprites/fallback/drone.svg",
+      "minimapIcon": "assets/icons/svg/icon_drone.svg",
+      "triBudget": 900
     }
   },
   "reserved": {

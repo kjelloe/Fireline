@@ -1183,3 +1183,32 @@ same-seeds run past 6000 undecided. The 600-war census will say whether
 that is real. Known caveat noted: MPG rebuilds use unmirrored spawns.
 
 Suite 394/394. Tagged slice-11p.
+
+---
+
+## slice-11q — Art pass, round 1 (2026-07-26, prompt 19 "art pass start", Q9b)
+
+Upgraded procedural models — chunky low-poly with real character, all far
+inside their manifest triangle budgets:
+- TANK: twin track assemblies with visible road wheels, sloped glacis,
+  turret + mantlet, muzzle brake, cupola, antenna, twin exhausts.
+- SCOUT: open recon buggy — hood, roll cage, spare wheel on the tail,
+  whip antenna.
+- ARTILLERY: split trail legs with spades, two-stage tube + muzzle brake,
+  elevation quadrant, ammo crates on the deck.
+- LOGISTICS: crew cab with windshield/mirrors/bumper, laden bed (crates),
+  two-stage crane with cable and hook, six wheels.
+- CARRIER: reads as RESCUE at a glance — white cross beams on the roof
+  module, twin beacons, side skirts, sloped prow, ramp, crew hatches.
+- NEW factory keys `mine` (disc + sensor prongs + team panel) and `drone`
+  (quad pod + rotors + camera eye) — the client's inline mine/drone
+  geometry replaced with factory builds (team-panel tinting: own mines
+  team-colored, marked enemy mines red; drones spin slowly).
+
+Pipeline: mine/drone icons + fallback sprites generated (28 SVGs),
+manifest entries with budgets, asset strip now 18 tiles — regenerated
+`client/assets/preview/asset_strip.png` IS the review artifact: open it
+and judge; round 2 follows your verdict. team_panel tint contract and all
+art pins hold (strip width pin updated 16→18).
+
+Suite 394/394 (x2). Tagged slice-11q.

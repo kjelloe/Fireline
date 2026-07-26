@@ -72,6 +72,19 @@ const ICONS = {
     `<circle cx="32" cy="32" r="20" fill="none" stroke="${C.hullShadow}" stroke-width="6"/>` +
     `<path d="M32 32 L32 14 A18 18 0 0 1 48 26 Z" fill="${C.selection}"/>`
   ),
+  "icon_mine.svg": svg( // 11Q
+    `<ellipse cx="32" cy="40" rx="18" ry="8" fill="${C.hullShadow}"/>` +
+    `<circle cx="32" cy="36" r="5" fill="${C.danger}"/>` +
+    `<path d="M18 30 L14 24 M46 30 L50 24 M32 28 V20" stroke="${C.barrel}" stroke-width="3" stroke-linecap="round"/>`
+  ),
+  "icon_drone.svg": svg( // 11Q
+    `<rect x="26" y="26" width="12" height="12" rx="3" fill="${C.hullShadow}"/>` +
+    `<path d="M28 28 L14 14 M36 28 L50 14 M28 36 L14 50 M36 36 L50 50" stroke="${C.barrel}" stroke-width="3"/>` +
+    `<circle cx="14" cy="14" r="6" fill="none" stroke="${C.hullPaint}" stroke-width="3"/>` +
+    `<circle cx="50" cy="14" r="6" fill="none" stroke="${C.hullPaint}" stroke-width="3"/>` +
+    `<circle cx="14" cy="50" r="6" fill="none" stroke="${C.hullPaint}" stroke-width="3"/>` +
+    `<circle cx="50" cy="50" r="6" fill="none" stroke="${C.hullPaint}" stroke-width="3"/>`
+  ),
   "icon_recover.svg": svg(
     `<path d="M20 40 a12 12 0 1 1 4 9 M20 40 v-10 h10" stroke="${C.recover}" stroke-width="6" fill="none" stroke-linecap="round"/>`
   ),
@@ -98,6 +111,8 @@ const SPRITES = {
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],
   "zone.svg": ICONS["icon_zone.svg"],
+  "mine.svg": ICONS["icon_mine.svg"],   // 11Q
+  "drone.svg": ICONS["icon_drone.svg"], // 11Q
 };
 
 const iconDir = path.join(ASSETS, "icons", "svg");

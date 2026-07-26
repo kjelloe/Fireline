@@ -770,18 +770,17 @@ function updateMineMeshes(view) {
     live.add(m.id);
     let mesh = mineMeshes.get(m.id);
     if (!mesh) {
-      const geo = new THREE.CylinderGeometry(0.18, 0.22, 0.08, 10);
-      const mat = new THREE.MeshLambertMaterial();
-      mesh = new THREE.Mesh(geo, mat);
+      mesh = buildProcedural("mine"); // 11Q: factory model
       scene.add(mesh);
       mineMeshes.set(m.id, mesh);
     }
-    // Own mines read as ordnance (dark, team-ringed); marked enemy mines
-    // scream danger.
+    // Own mines read as ordnance (team-panel tinted); marked enemy mines
+    // scream danger (red panel).
     const own = m.team === joined?.team;
-    mesh.material.color.set(own ? 0x2a2a30 : 0xd03a2a);
-    mesh.material.emissive.set(own ? 0x000000 : (m.armed ? 0x551111 : 0x000000));
-    mesh.position.set(m.cellX + 0.5, 0.04, m.cellY + 0.5);
+    applyTeamColor(mesh, own
+      ? teamToken(ASSET_TOKENS, m.team).color
+      : "#d03a2a");
+    mesh.position.set(m.cellX + 0.5, 0, m.cellY + 0.5);
   }
   for (const [id, mesh] of mineMeshes) {
     if (!live.has(id)) {
@@ -797,23 +796,13 @@ function updateDroneMeshes(view, nowMs) {
     live.add(d.id);
     let mesh = droneMeshes.get(d.id);
     if (!mesh) {
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(0.3, 0.08, 0.3),
-        new THREE.MeshLambertMaterial({ color: 0x30343c })
-      );
-      const rotor = new THREE.Mesh(
-        new THREE.BoxGeometry(0.55, 0.03, 0.07),
-        new THREE.MeshLambertMaterial({ color: 0xcccccc })
-      );
-      rotor.position.y = 0.08;
-      body.add(rotor);
-      body.userData.rotor = rotor;
-      scene.add(body);
-      droneMeshes.set(d.id, body);
+      mesh = buildProcedural("drone"); // 11Q: factory quad
+      applyTeamColor(mesh, teamToken(ASSET_TOKENS, d.team).color);
+      scene.add(mesh);
+      droneMeshes.set(d.id, mesh);
     }
-    mesh = droneMeshes.get(d.id);
     mesh.position.set(d.x / CELL + 0.5, 1.1, d.y / CELL + 0.5);
-    mesh.userData.rotor.rotation.y = (nowMs % 1000) / 1000 * Math.PI * 8;
+    mesh.rotation.y = (nowMs % 2000) / 2000 * Math.PI * 2; // slow menace spin
   }
   for (const [id, mesh] of droneMeshes) {
     if (!live.has(id)) {
