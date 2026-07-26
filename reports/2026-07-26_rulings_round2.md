@@ -90,7 +90,14 @@ feedback loop). Q2b point-bleed still armed-but-deferred.
 
 Suite at **394/394**, 0I map fixture v2 (paths), 1A still v28 (no drift).
 
-**BATCH_PC via agent-mail: deferred by your instruction.** Semantics
+## Continuation window (after /add-dir of agent-mail)
+
+| Slice | What |
+|---|---|
+| `slice-11p` | BATCH_PC agent-mail lane, **round-trip verified locally**: `tools/agent-mail.py` deployed (single file), `batch_send.sh` queues sweep/mirror/matrix/perf jobs + collects results, `batch_worker.sh` is the batch-pc lane (refuses red suites, blocking flag-wait, auto-shards across cores, mails one-line summaries). MIRROR mode rebuilt as a TRUE world reflection (terrain + entities + headings mirrored, AI patrols swapped) — the naive team-swap made dead wars. **First 2-seed probe shows directional residue** (normal: A standard-captures ~tick 3500; mirrored same-seeds: undecided at 6000) — the 600-war census will quantify it. |
+| `slice-11q` | Art pass round 1 (Q9b): all five chassis rebuilt with real character (tank tracks/glacis/muzzle brake, scout roll-cage buggy, artillery split trails + two-stage tube, logistics crane + laden bed, carrier with white RESCUE cross + beacons); mine + drone join the factory and the client now uses them. **`client/assets/preview/asset_strip.png` (18 tiles) is the review artifact — open it and judge; round 2 follows your verdict.** |
+
+**Old note, superseded:** Semantics
 scoped from ../agent-mail/: the dev session posts jobs with `queue add
 --for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
 the job, executes (sim sweep / perf run), and reports results back as
