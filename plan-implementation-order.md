@@ -145,12 +145,12 @@ human-facing systems in the order below.
 
 | # | Slice | Rulings | Notes |
 |---|---|---|---|
-| 11A | **Artillery turn retune** | Q4 | turnRate 5 → 2 (~6.4 s half turn). One-line + pins. |
-| 11B | **BF2 capture countdown** | Q3 | Contested = frozen. One team alone on a relay drains it to neutral (~3 s), then captures it (~3 s). Per-site progress hashed; step lengths configurable constants. |
-| 11C | **AI doctrine: hunt & guard** | Q1, Q2d, Q14 | Role-based garage crewing (any ROLE unfilled → crew a free asset, not just fixed pairings); fire doctrine prioritizes enemy standard-carriers; a unit stung by a drone shoots it down. |
-| 11D | **AI doctrine: alive world** | Q11, Q16 | Tanks mine chokepoints near owned relays; recoverer truck clears marked mines on its route; regents ping (raider need_escort, recoverer recovery_in_progress, scout mines_detected). Vocabulary grows: carrier_under_attack, road_blocked, safe_route. |
-| 11E | **AI rescue play** | Q5 | AI carriers pick up downed operators, AI trucks tow wrecks — LANDS ONLY IF the sim campaign shows it works and helps (compare seat health + war tempo across seeds vs 11D baseline). |
-| 11F | **Damaged sites + materiel (9C revived)** | Q9 | Relays/depots get hp; artillery can shell them (damaged sites stop projecting supply/capturing); trucks haul ONE materiel slot from base to repair. Design detail below. |
+| 11A ✅ | **Artillery turn retune** | Q4 | turnRate 5 → 2 (~6.4 s half turn). One-line + pins. |
+| 11B ✅ | **BF2 capture countdown** | Q3 | Contested = frozen. One team alone on a relay drains it to neutral (~3 s), then captures it (~3 s). Per-site progress hashed; step lengths configurable constants. |
+| 11C ✅ | **AI doctrine: hunt & guard** | Q1, Q2d, Q14 | Role-based garage crewing (any ROLE unfilled → crew a free asset, not just fixed pairings); fire doctrine prioritizes enemy standard-carriers; a unit stung by a drone shoots it down. |
+| 11D ✅ | **AI doctrine: alive world** | Q11, Q16 | Tanks mine chokepoints near owned relays; recoverer truck clears marked mines on its route; regents ping (raider need_escort, recoverer recovery_in_progress, scout mines_detected). Vocabulary grows: carrier_under_attack, road_blocked, safe_route. |
+| 11E ✅ (gate PASSED) | **AI rescue play** | Q5 | AI carriers pick up downed operators, AI trucks tow wrecks — LANDS ONLY IF the sim campaign shows it works and helps (compare seat health + war tempo across seeds vs 11D baseline). |
+| 11F ✅ | **Damaged sites + materiel (9C revived)** | Q9 | Relays/depots get hp; artillery can shell them (damaged sites stop projecting supply/capturing); trucks haul ONE materiel slot from base to repair. Design detail below. |
 | 11G | **Rescue autopilot option** | Q8 | Boarding/delivery stays automatic by default; gear/settings UI toggle; manual mode gets explicit board/unboard via hover icon (engine: per-operator autoRescue flag in hashed state + board/unboard commands). |
 | 11H | **Replay viewer** | Q15 | Client scrubber over the /replays store, reusing the spectator view path (10A shipped the live half). |
 

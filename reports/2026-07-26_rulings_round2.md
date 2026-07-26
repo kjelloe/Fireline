@@ -16,6 +16,7 @@
 | `slice-11c` | Q1 role-based garage crewing + Q2d anti-standard-carrier fire doctrine + Q14 drone swatting — plus everything the sims dragged out (below). |
 | `slice-11d` | Q11+Q16 alive world: tanks mine ground near owned relays, trucks clear marked mines en route, regents PING (raider need_escort, recoverer recovery_in_progress, scout mines_detected; 30 s per-seat throttle), vocabulary + client options grow (carrier_under_attack, road_blocked, safe_route). Mines now fire in AI-only wars. |
 | `slice-11e` | Q5 full AI rescue play, **sim gate PASSED**: trucks tow wrecks home every seed (up to 6 hulls restored), carriers deliver passengers and fetch walking downed teammates (that path mostly serves HUMAN downed players — AI seats redeploy in 10 s). The "AI never tows" pin is overruled. |
+| `slice-11f` | Q9 damaged sites + materiel: artillery shells relays (2 shells → dark flattened ruin — no supply, no fog, unflippable, keeps owner); trucks silently load one materiel crate in base and rebuild adjacent own/neutral ruins; AI trucks run repair errands. Bases stay sacred (Q19 default). |
 
 ## What the backend sims found (and forced)
 

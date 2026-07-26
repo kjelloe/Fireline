@@ -30,9 +30,22 @@ outcome. Renderer presents fog-filtered views only.
   16-31 AI regents.
 - Phase 8 modules: `engine/standards.js` (Command Standards — the primary
   objective), `engine/recovery.js` (tow-back), war lifecycle in
-  `server/index.js pump()`. Commands: join/select/move/fire/tow (+ inert
-  call_medic/respawn). Re-pin the 1A fixture with
-  `node tools/repin_1a.mjs "<reason>"` — it aborts on event drift.
+  `server/index.js pump()`.
+- Phase 9-11 modules: `engine/downed.js` (operators on foot), `engine/mines.js`,
+  `engine/drone.js` (anti-camping), `engine/pings.js` (team signals,
+  toTeam-scoped events), BF2 capture countdown + site hp in
+  `engine/sites.js`, materiel/repair + Slow Manufacture passes in the
+  reducer, AI doctrine (roles, capture-seek, rescue, mining, pings) in
+  `engine/ai_regency.js`. MAP: four mirrored relays (32/58/69/95),
+  mirrored spawns (A x=7, B x=120) — mirror symmetry is a tested balance
+  invariant; never move one side without its mirror.
+- Commands: join/select(confirm)/move/fire(asset|drone|site)/tow/crawl/
+  redeploy/deploy_mine/clear_mine/ping (+ inert call_medic/respawn).
+  Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
+  aborts on event drift (a NEW event inside the 14 steps is drift too:
+  prefer silent state changes for routine ticks, e.g. materiel loading).
+- Every gameplay slice ends with the backend sim gate — see the
+  `sim-campaign` skill. Batch sweeps: `node tools/sim_sweep.mjs N`.
 
 ## Workflow per change
 1. Identify the owning layer (shared/engine/server/client/test).
