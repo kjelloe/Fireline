@@ -769,3 +769,25 @@ Design note: the cargo/materiel half of old 9C is DEFERRED — it needs the
 damaged-sites design round (new question 9). MPG stands alone.
 
 Suite 312/312 (x2). Tagged slice-9d.
+
+---
+
+## slice-9e — Mines (night session, 2026-07-26)
+
+Slim model per ruling Q6, honoring the spec-04 mine contract (bounded route
+denial WITH counterplay). Tanks get an explicit `canMine` contract + 2-mine
+rack (`minesLeft`, hashed); `deploy_mine` lays on the tank's own cell —
+bases and sites are protected no-deploy ground. Arms in 30 ticks (no
+drive-by dropping), then detonates on enemy entry: 60 damage + suppression,
+lethal hits go through the extracted `disableAsset()` — the ONE disable path
+fire and mines now share, so crew bail-out/tow-release/standard-drop can
+never diverge. Counterplay: enemy scouts within 3 cells auto-mark
+(permanent team knowledge), trucks (`canClearMines`) clear adjacent
+marked/own mines via `clear_mine`. Fog safety: mine events broadcast no
+coordinates; positions travel only in team-filtered views (own always,
+enemy only once marked). Client: M/C keys, mine discs (dark = own, red =
+marked enemy), feedback lines, metrics. 1A → v19.
+
+AI regents do not yet lay or clear mines (question for the design round).
+
+Suite 320/320 (x2), simwar + replay OK. Tagged slice-9e.

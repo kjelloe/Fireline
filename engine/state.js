@@ -7,6 +7,7 @@
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
+import { MINES_PER_TANK } from "./mines.js";
 import { getUnitStats } from "./units.js";
 import { createStandards } from "./standards.js";
 
@@ -69,6 +70,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery
     reloadTimer: 0, // 8E fire cooldown
+    minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
   };
 }
 
@@ -176,6 +178,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     standards, // 8A: physical Command Standards
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
+    mines: [], // 9E: deployed mines
+    nextMineId: 0,
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

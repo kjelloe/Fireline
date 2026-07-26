@@ -14,7 +14,9 @@
       "canTow": false,
       "canCarryStandard": false,
       "capacity": 0,
-      "turnRate": 8
+      "turnRate": 8,
+      "canMine": true,
+      "canClearMines": false
     },
     "1": {
       "id": 1,
@@ -29,7 +31,9 @@
       "canTow": false,
       "canCarryStandard": false,
       "capacity": 0,
-      "turnRate": 14
+      "turnRate": 14,
+      "canMine": false,
+      "canClearMines": false
     },
     "2": {
       "id": 2,
@@ -44,7 +48,9 @@
       "canTow": false,
       "canCarryStandard": false,
       "capacity": 0,
-      "turnRate": 5
+      "turnRate": 5,
+      "canMine": false,
+      "canClearMines": false
     },
     "3": {
       "id": 3,
@@ -59,7 +65,9 @@
       "canTow": true,
       "canCarryStandard": false,
       "capacity": 0,
-      "turnRate": 10
+      "turnRate": 10,
+      "canMine": false,
+      "canClearMines": true
     },
     "4": {
       "id": 4,
@@ -74,7 +82,9 @@
       "canTow": false,
       "canCarryStandard": true,
       "capacity": 2,
-      "turnRate": 6
+      "turnRate": 6,
+      "canMine": false,
+      "canClearMines": false
     }
   }
 }

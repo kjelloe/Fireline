@@ -28,6 +28,7 @@ export function hashState(state) {
     w.writeU8(a.reloadTimer); // added 8E
     w.writeU8(a.heading); // added 9F
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
+    w.writeU8(a.minesLeft); // added 9E
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);
@@ -49,6 +50,12 @@ export function hashState(state) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetX); w.writeI32LE(d.targetY);
     w.writeI32LE(d.downTicks);
+  }
+  w.writeI32LE(state.nextMineId ?? 0); // added 9E
+  for (const m of (state.mines ?? [])) {
+    w.writeI32LE(m.id); w.writeI32LE(m.team);
+    w.writeI32LE(m.cellX); w.writeI32LE(m.cellY);
+    w.writeI32LE(m.armTimer); w.writeU8(m.marked);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

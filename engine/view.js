@@ -16,7 +16,7 @@ export function buildView(state, team) {
       ammo: a.ammo, fuel: a.fuel,
       towedBy: a.towedBy, recoverTimer: a.recoverTimer,
       reloadTimer: a.reloadTimer,
-      heading: a.heading,
+      heading: a.heading, minesLeft: a.minesLeft,
     }));
 
   const visible = computeVisible(state, team);
@@ -34,6 +34,13 @@ export function buildView(state, team) {
   const downedOperators = state.downed
     .filter((d) => d.team === team)
     .map((d) => ({ ...d }));
+  // 9E: a team sees its own mines always, enemy mines only once marked.
+  const mines = state.mines
+    .filter((m) => m.team === team || m.marked === 1)
+    .map((m) => ({
+      id: m.id, team: m.team, cellX: m.cellX, cellY: m.cellY,
+      armed: m.armTimer === 0, marked: m.marked === 1,
+    }));
   // 8A: Command Standards are a deliberate fog exception — both teams always
   // know both standards' position and status. The stolen flag IS the drama.
   const standards = state.standards.map((st) => ({ ...st }));
@@ -52,5 +59,6 @@ export function buildView(state, team) {
     bases,
     standards,
     downedOperators,
+    mines,
   };
 }

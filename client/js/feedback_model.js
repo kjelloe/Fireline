@@ -30,6 +30,15 @@ export const REJECTION_TEXT = Object.freeze({
   "not downed": "You are not on foot.",
   "too far to crawl": "Too far — downed operators can only crawl a short way.",
   "still recovering nerve": "Hold on — redeploy unlocks a few seconds after going down.",
+  "cannot deploy mines": "Only an assault tank carries mines.",
+  "no mines left": "Mine rack empty.",
+  "mine already here": "A mine already sits on this ground.",
+  "cannot mine a base zone": "Base zones are protected — no mining here.",
+  "cannot mine a site": "Sites are protected — no mining here.",
+  "cannot clear mines": "Only a logistics truck can clear mines.",
+  "no such mine": "No mine there.",
+  "too far to clear": "Get adjacent to the mine to clear it.",
+  "mine not marked": "Unknown minefield — a scout must mark it first.",
   "war is over": "The war is over — next one starts shortly.",
 });
 
@@ -56,6 +65,11 @@ export function describeEvent(e, myTeam) {
     case "site_captured":
       return e.team === myTeam ? `Relay ${e.siteId} secured.` : `Relay ${e.siteId} lost to the enemy!`;
     case "asset_disabled": return `Asset ${e.assetId} disabled.`;
+    case "mine_deployed":
+      return e.team === myTeam ? `Mine laid (${e.minesLeft} left in the rack).` : null;
+    case "mine_marked": return "Scouts marked an enemy mine.";
+    case "mine_detonated": return `MINE! Asset ${e.assetId} hit.`;
+    case "mine_cleared": return `Mine cleared by asset ${e.assetId}.`;
     case "resupplied": return `Asset ${e.assetId} resupplied.`;
     case "standard_taken":
       return e.byTeam === myTeam ? "WE HAVE THEIR STANDARD! Escort it home!" : "THEY TOOK OUR STANDARD! Stop the carrier!";

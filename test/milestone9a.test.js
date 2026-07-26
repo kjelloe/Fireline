@@ -19,6 +19,7 @@ test("9A carrier stats are pinned per ruling Q1", () => {
     speed: 24, range: 768, minRange: 0, hp: 120, damage: 5,
     indirect: false, reloadTicks: 25,
     canTow: false, canCarryStandard: true, capacity: 2, turnRate: 6,
+    canMine: false, canClearMines: false,
   });
 });
 

@@ -11,8 +11,13 @@ import {
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
+  CMD_DEPLOY_MINE, CMD_CLEAR_MINE,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
+import {
+  MINE_ARM_TICKS, MINE_DAMAGE, MINE_DETECT_RADIUS_CELLS,
+  deployRejection, clearRejection, isArmed,
+} from "./mines.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -65,6 +70,7 @@ function copyState(state) {
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
     manufacture: [...state.manufacture],
+    mines: state.mines.map((m) => ({ ...m })),
     events: [],
   };
 }
@@ -164,34 +170,91 @@ function applyFireOrder(next, command) {
     hpDelta: shot.hpDelta,
     targetHp: target.hp,
   });
-  if (target.hp === 0) {
-    target.state = ASSET_DISABLED;
-    next.teamScores[attacker.team] += SCORE_DISABLE;
-    next.events.push({ type: "asset_disabled", assetId: target.id });
-    // 9B: the crew bails out as a downed operator (the wreck repairs to
-    // uncrewed — the human/AI seat carries on on foot).
-    if (target.operatorId !== -1) {
-      const seat = next.operators[target.operatorId];
-      seat.state = OP_DOWN;
-      seat.assetId = -1;
-      next.downed.push(createDowned(seat, target));
-      next.events.push({ type: "operator_downed", operatorId: seat.id });
-      target.operatorId = -1;
-    }
-    // 8D: a disabled tower releases anything it was towing.
-    const inTow = towedWreck(next, target.id);
-    if (inTow) inTow.towedBy = -1;
-    // 8B: a disabled carrier drops the standard where it died.
-    const carried = assetCarries(next, target.id);
-    if (carried) {
-      carried.status = STD_DROPPED;
-      carried.carrierAssetId = -1;
-      carried.droppedTimer = 0;
-      carried.x = target.x;
-      carried.y = target.y;
-      next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
-    }
+  if (target.hp === 0) disableAsset(next, target, attacker.team);
+  return next;
+}
+
+// The one true disablement path — fire (1E) and mine detonations (9E) share
+// it so bail-out, tow release, and standard drops can never diverge.
+function disableAsset(next, target, scoringTeam) {
+  target.state = ASSET_DISABLED;
+  next.teamScores[scoringTeam] += SCORE_DISABLE;
+  next.events.push({ type: "asset_disabled", assetId: target.id });
+  // 9B: the crew bails out as a downed operator (the wreck repairs to
+  // uncrewed — the human/AI seat carries on on foot).
+  if (target.operatorId !== -1) {
+    const seat = next.operators[target.operatorId];
+    seat.state = OP_DOWN;
+    seat.assetId = -1;
+    next.downed.push(createDowned(seat, target));
+    next.events.push({ type: "operator_downed", operatorId: seat.id });
+    target.operatorId = -1;
   }
+  // 8D: a disabled tower releases anything it was towing.
+  const inTow = towedWreck(next, target.id);
+  if (inTow) inTow.towedBy = -1;
+  // 8B: a disabled carrier drops the standard where it died.
+  const carried = assetCarries(next, target.id);
+  if (carried) {
+    carried.status = STD_DROPPED;
+    carried.carrierAssetId = -1;
+    carried.droppedTimer = 0;
+    carried.x = target.x;
+    carried.y = target.y;
+    next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
+  }
+}
+
+// 9E: lay a mine on the asset's own cell (arms after MINE_ARM_TICKS).
+function applyDeployMine(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const cellX = worldToCellFloor(asset.x);
+  const cellY = worldToCellFloor(asset.y);
+  const why = deployRejection(next, asset, getUnitStats(asset.type), cellX, cellY);
+  if (why) return reject(next, command, why);
+  asset.minesLeft -= 1;
+  next.mines.push({
+    id: next.nextMineId, team: asset.team, cellX, cellY,
+    armTimer: MINE_ARM_TICKS, marked: 0,
+  });
+  next.nextMineId += 1;
+  // Fog safety: the event names no coordinates — positions travel only in
+  // the owning team's view.
+  next.events.push({
+    type: "mine_deployed", assetId: asset.id, team: asset.team,
+    minesLeft: asset.minesLeft,
+  });
+  return next;
+}
+
+// 9E: a truck defuses an adjacent mine it legitimately knows about.
+function applyClearMine(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const mine = next.mines.find((m) => m.id === command.mineId);
+  if (!mine) return reject(next, command, "no such mine");
+  const dist = chebyshevCells(asset, { x: cellToWorld(mine.cellX), y: cellToWorld(mine.cellY) });
+  const why = clearRejection(asset, getUnitStats(asset.type), mine, dist);
+  if (why) return reject(next, command, why);
+  next.mines = next.mines.filter((m) => m.id !== mine.id);
+  next.events.push({ type: "mine_cleared", mineId: mine.id, assetId: asset.id });
   return next;
 }
 
@@ -335,6 +398,47 @@ function applyAdvanceTick(next) {
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
+  // 9E mines: arm, then scout detection, then detonation on enemy entry.
+  for (const mine of next.mines) {
+    if (mine.armTimer > 0) mine.armTimer -= 1;
+    if (mine.marked === 1) continue;
+    const spotted = next.assets.some(
+      (a) => a.team !== mine.team &&
+        getUnitStats(a.type).name === "scout" &&
+        a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+        chebyshevCells(a, { x: cellToWorld(mine.cellX), y: cellToWorld(mine.cellY) }) <=
+          MINE_DETECT_RADIUS_CELLS
+    );
+    if (spotted) {
+      mine.marked = 1;
+      next.events.push({ type: "mine_marked", mineId: mine.id });
+    }
+  }
+  if (next.mines.length > 0) {
+    const detonated = new Set();
+    for (const mine of next.mines) {
+      if (!isArmed(mine)) continue;
+      const victim = next.assets.find(
+        (a) => a.team !== mine.team &&
+          a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+          worldToCellFloor(a.x) === mine.cellX && worldToCellFloor(a.y) === mine.cellY
+      );
+      if (!victim) continue;
+      detonated.add(mine.id);
+      victim.hp = Math.max(0, victim.hp - MINE_DAMAGE);
+      next.events.push({
+        type: "mine_detonated", mineId: mine.id, assetId: victim.id,
+        cellX: mine.cellX, cellY: mine.cellY, targetHp: victim.hp,
+      });
+      if (victim.hp === 0) {
+        disableAsset(next, victim, mine.team);
+      } else {
+        victim.suppressedTimer = SUPPRESSION_TICKS;
+      }
+    }
+    if (detonated.size > 0) next.mines = next.mines.filter((m) => !detonated.has(m.id));
+  }
+
   // Anti-deadlock (9A): a standard left dropped long enough returns home.
   for (const st of next.standards) {
     if (st.status !== STD_DROPPED) continue;
@@ -558,6 +662,8 @@ export function apply(state, command) {
     case CMD_FIRE_ORDER: return applyFireOrder(next, command);
     case CMD_TOW_ORDER: return applyTowOrder(next, command);
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
+    case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
+    case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
     case CMD_RESPAWN:

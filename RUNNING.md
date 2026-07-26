@@ -51,6 +51,11 @@ npm start                              # host machine
   and cannot fire. Idle in your base to resupply ammo/fuel; guns have per-
   chassis reload (tank 15 / scout 8 / artillery 40 ticks).
 - Wrecks are rescueable: tow them to your base, 10s repair, back at half hull.
+- Mines (9E): tanks carry 2 — press M to lay one on your own cell (arms in
+  3s, protected base/site cells refuse). It detonates on enemy entry (60
+  damage + suppression). Your team always sees its own mines; enemy scouts
+  within 3 cells auto-MARK them for their team, and a truck adjacent to a
+  marked (or own) mine clears it with C.
 - Your browser keeps a persistent player id: closing the tab hands your asset
   to AI regency, reopening reattaches you to the same operator slot.
 - Difficulty: `AI_DIFFICULTY=0|1|2 npm start` (easy/normal/hard).

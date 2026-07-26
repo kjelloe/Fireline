@@ -11,6 +11,8 @@ export const CMD_FIRE_ORDER     = "fire_order";
 export const CMD_TOW_ORDER      = "tow_order";
 export const CMD_CRAWL_ORDER    = "crawl_order";
 export const CMD_REDEPLOY       = "redeploy";
+export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
+export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
 export const CMD_RESPAWN        = "respawn";
 
@@ -61,6 +63,15 @@ export function validate(cmd) {
 
     case CMD_REDEPLOY:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_DEPLOY_MINE:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_CLEAR_MINE:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.mineId, 0xffff))  return { ok: false, reason: "invalid mineId" };
       return { ok: true };
 
     case CMD_CALL_MEDIC:

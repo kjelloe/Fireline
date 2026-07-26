@@ -23,6 +23,7 @@ export function makeAsset(id, spec) {
     ammo: spec.ammo ?? AMMO_MAX, fuel: spec.fuel ?? FUEL_MAX,
     towedBy: spec.towedBy ?? -1, recoverTimer: spec.recoverTimer ?? 0,
     aboard1: spec.aboard1 ?? -1, aboard2: spec.aboard2 ?? -1,
+    minesLeft: spec.minesLeft ?? ((spec.type ?? 0) === 0 ? 2 : 0), // 9E
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }
