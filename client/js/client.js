@@ -255,7 +255,11 @@ function connect() {
   socket.onmessage = (event) => {
     const msg = JSON.parse(event.data);
     if (msg.type === "s_map") {
-      cachedMap = { width: msg.width, height: msg.height, cells: Uint8Array.from(msg.mapCells) };
+      cachedMap = {
+        width: msg.width, height: msg.height,
+        cells: Uint8Array.from(msg.mapCells),
+        profile: msg.mapProfile ?? "frontier_corridor",
+      };
       if (terrainMesh) { scene.remove(terrainMesh); terrainMesh = null; } // new war terrain
     } else if (msg.type === "s_war_reset") {
       hideEndScreen();
@@ -465,8 +469,8 @@ function buildTerrain() {
   }
   // Art round 2c (prompt 25): instanced battlefield props — forest reads
   // as trees, rough as rocks, trails as trodden ruts, at a glance.
-  const props = propsFor(cells, size, size);
-  const byKind = { tree: [], rock: [], rut: [] };
+  const props = propsFor(cells, size, size, cachedMap.profile);
+  const byKind = { tree: [], rock: [], rut: [], water: [], rail: [], reed: [] };
   for (const pr of props) byKind[pr.kind]?.push(pr);
   const PROP_GEO = {
     tree: () => {
@@ -484,8 +488,26 @@ function buildTerrain() {
       g.translate(0, 0.06, 0);
       return g;
     },
+    water: () => {
+      const g = new THREE.BoxGeometry(1, 0.04, 1);
+      g.translate(0, 0.08, 0); // floats above the rough tile: reads as river
+      return g;
+    },
+    rail: () => {
+      const g = new THREE.BoxGeometry(0.12, 0.3, 1);
+      g.translate(0, 0.25, 0);
+      return g;
+    },
+    reed: () => {
+      const g = new THREE.ConeGeometry(0.06, 0.5, 4);
+      g.translate(0, 0.3, 0);
+      return g;
+    },
   };
-  const PROP_COLOR = { tree: 0x1f3a1f, rock: 0x6a6a5e, rut: 0x574a34 };
+  const PROP_COLOR = {
+    tree: 0x1f3a1f, rock: 0x6a6a5e, rut: 0x574a34,
+    water: 0x2a4a66, rail: 0x4a4136, reed: 0x3d5a2e,
+  };
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
   const up = new THREE.Vector3(0, 1, 0);
@@ -1098,6 +1120,34 @@ function updateDownedMeshes(view) {
   }
 }
 
+// 14A: one-time war dressing — antenna clutter at relays, plinths at the
+// standard homes. Rebuilt when the war (terrain) changes.
+let dressingGroup = null;
+let dressingKey = "";
+function updateWarDressing(view) {
+  const key = `${cachedMap?.profile ?? ""}:${(view.sites ?? []).map((s) => s.id).join(",")}` +
+    `:${(view.standards ?? []).map((st) => `${st.homeCellX},${st.homeCellY}`).join("|")}`;
+  if (key === dressingKey) return;
+  dressingKey = key;
+  if (dressingGroup) scene.remove(dressingGroup);
+  dressingGroup = new THREE.Group();
+  const dark = new THREE.MeshLambertMaterial({ color: 0x2e2e38 });
+  const pale = new THREE.MeshLambertMaterial({ color: 0x8a8a72 });
+  for (const s of view.sites ?? []) {
+    for (const [dx, dz, w, h] of [[-0.9, 0.4, 0.25, 0.35], [0.8, -0.6, 0.3, 0.2], [0.7, 0.7, 0.2, 0.5]]) {
+      const crate = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), dark);
+      crate.position.set(s.cellX + 0.5 + dx, h / 2, s.cellY + 0.5 + dz);
+      dressingGroup.add(crate);
+    }
+  }
+  for (const st of view.standards ?? []) {
+    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.75, 0.12, 8), pale);
+    plinth.position.set(st.homeCellX + 0.5, 0.06, st.homeCellY + 0.5);
+    dressingGroup.add(plinth);
+  }
+  scene.add(dressingGroup);
+}
+
 function upsertSiteMesh(site) {
   let mesh = siteMeshes.get(site.id);
   if (!mesh) {
@@ -1140,6 +1190,7 @@ function renderBattlefield() {
     if (!seen.has(id)) { scene.remove(mesh); assetMeshes.delete(id); }
   }
   for (const site of view.sites ?? []) upsertSiteMesh(site);
+  updateWarDressing(view);
   for (const st of view.standards ?? []) upsertStandardMesh(st);
   updateDownedMeshes(view);
   updateMineMeshes(view);

@@ -154,3 +154,29 @@ test("13E fog ghosts: born on vanish, cleared on return, faded on schedule", asy
   const gone = updateGhosts(ghosts, { visibleEnemies: [] }, 2000 + GHOST_TTL_MS + 1);
   assert.equal(gone.length, 0, "memory expires completely");
 });
+
+test("14A riverline dressing: water on the river, rails on bridges, nothing on frontier", async () => {
+  const { propsFor } = await import("../client/js/props_model.js");
+  const { generateRiverline } = await import("../engine/riverline.js");
+  const { generateFrontierCorridor } = await import("../engine/frontier_corridor.js");
+
+  const river = generateRiverline(42);
+  const props = propsFor(river.cells, river.width, river.height, "riverline");
+  const water = props.filter((p) => p.kind === "water");
+  const rails = props.filter((p) => p.kind === "rail");
+  assert.ok(water.length > 500, `the river reads as water (${water.length})`);
+  assert.ok(rails.length >= 12, `bridges have rails (${rails.length})`);
+  for (const w of water) {
+    assert.equal(river.cells[Math.floor(w.y) * river.width + Math.floor(w.x)], 3,
+      "water only over river rough");
+  }
+  for (const r of rails) {
+    assert.equal(river.cells[Math.floor(r.y) * river.width + Math.floor(r.x)], 1,
+      "rails only on bridge road");
+  }
+
+  const front = generateFrontierCorridor(42);
+  const fprops = propsFor(front.cells, front.width, front.height, "frontier_corridor");
+  assert.equal(fprops.some((p) => ["water", "rail", "reed"].includes(p.kind)), false,
+    "frontier gets no river dressing");
+});

@@ -212,6 +212,7 @@ export class NetworkTransport {
             width: map.width,
             height: map.height,
             mapCells: Array.from(map.cells),
+            mapProfile: this.server.state.mapProfile, // 14A: world dressing
         });
     }
 
