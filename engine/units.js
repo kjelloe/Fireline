@@ -22,7 +22,8 @@ export const UNIT_STATS = Object.freeze({
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
-    speed: 16, range: 3072, minRange: 768, hp: 80, damage: 30, indirect: true, reloadTicks: 40, canTow: false, canCarryStandard: false, capacity: 0, turnRate: 5,
+    // Q4 retune (prompt 16): ~6 s per half turn — siege guns swing SLOWLY.
+    speed: 16, range: 3072, minRange: 768, hp: 80, damage: 30, indirect: true, reloadTicks: 40, canTow: false, canCarryStandard: false, capacity: 0, turnRate: 2,
     canMine: false, canClearMines: false,
   }),
   // Spec roster middle path (playtest 2 decision): the Logistics Truck is the

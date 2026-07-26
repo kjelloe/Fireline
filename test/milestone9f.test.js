@@ -13,7 +13,7 @@ import { cellToWorld } from "../shared/fixedmath.js";
 test("9F turn rates are pinned per chassis", () => {
   assert.equal(getUnitStats(UNIT_TANK).turnRate, 8);
   assert.equal(getUnitStats(UNIT_SCOUT).turnRate, 14);
-  assert.equal(getUnitStats(UNIT_ARTILLERY).turnRate, 5);
+  assert.equal(getUnitStats(UNIT_ARTILLERY).turnRate, 2); // Q4: ~6 s half turn
   assert.equal(getUnitStats(3).turnRate, 10);
   assert.equal(getUnitStats(4).turnRate, 6);
 });

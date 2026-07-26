@@ -48,7 +48,7 @@
       "canTow": false,
       "canCarryStandard": false,
       "capacity": 0,
-      "turnRate": 5,
+      "turnRate": 2,
       "canMine": false,
       "canClearMines": false
     },

@@ -867,3 +867,14 @@ state touched — no repin. Main value tonight: the designer can WATCH
 AI-vs-AI wars live (the question-2 standoff) instead of reading sim logs.
 
 Suite 343/343 (x2), simwar + replay OK. Tagged slice-10a.
+
+---
+
+## slice-11a — Artillery turn retune (2026-07-26, prompt 16 Q4)
+
+turnRate 5 → 2: a half turn (128 brads) now takes 64 ticks ≈ 6.4 s — the
+user's "approx 6 seconds" ruling. Siege guns must be emplaced facing the
+threat; repositioning under fire is a real decision. Pins updated (9F stat
+table, data/units.json mirror). No hashed-state change, no repin.
+
+Suite 343/343. Tagged slice-11a.
