@@ -549,3 +549,28 @@ commands, postgame countdown exact, full standard-capture win over ws with
 rotation and standards home, pure-command raid replaying hash-exactly, and
 a 3000-tick hard-AI war with per-tick standard invariants. Plus module-graph
 regression (2F) and two ws settle-flakes hardened into poll-waits (2B).
+
+---
+
+## marker-0037 — Logistics Truck (roster middle path) + v1 plan refresh (2026-07-26)
+
+**Decision (playtest 2 follow-up, option c):** field the Logistics Truck now;
+defer Command Carrier / Sentinel / Infiltrator. **Tow is now a logistics
+role** — `towRejection` leads with "needs a logistics truck"; standard
+carrying stays any-chassis until the Command Carrier exists.
+
+**Engine:** `UNIT_LOGISTICS = 3` (speed 40, range 768, dmg 5, reload 20,
+hp 80, `canTow: true`; other chassis `canTow: false`). Reserves now cycle
+tank/scout/artillery/logistics → per team: 5 tanks, 4 scouts, 4 artillery,
+3 trucks (asset ids 0-7 untouched, pins hold). 1A fixture → v14.
+
+**Client:** click-to-tow only offered when driving a truck (others fall
+through to move); chassis name map + feedback text; truck procedural model
+(flatbed, cab, crane + hook, 6 wheels), manifest/anchors/icons entries —
+art_pipeline completeness tests enforced the whole checklist automatically.
+
+**Docs:** `plan-version1.md` rewritten to current status (+ NEW
+`plan-version1.html`, styled self-contained twin). v0.11.0. 272/272.
+
+**Process note (user):** helper scripts go to /tmp or ./debugging as files —
+no inline python/node heredocs in Bash (saved to memory).

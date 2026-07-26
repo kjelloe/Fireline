@@ -39,7 +39,7 @@ function atCell(entity, cellX, cellY, radiusCells = 0) {
 // Click semantics (8G): own selectable asset → select; visible live enemy →
 // fire; own wreck → tow; anywhere else → move. Priority in that order.
 export function buildCommandForClick(view, cellX, cellY, opts = {}) {
-  const { fireRadiusCells = 0, myOperatorId = null } = opts;
+  const { fireRadiusCells = 0, myOperatorId = null, canTow = true } = opts;
 
   const selectable = (view?.friendlyAssets ?? [])
     .filter((a) => a.state !== DISABLED && a.state !== SALVAGED)
@@ -56,7 +56,7 @@ export function buildCommandForClick(view, cellX, cellY, opts = {}) {
     return { type: "fire_order", targetAssetId: target.id };
   }
 
-  const wrecks = (view?.friendlyAssets ?? [])
+  const wrecks = !canTow ? [] : (view?.friendlyAssets ?? [])
     .filter((a) => (a.state === DISABLED || a.state === SALVAGED))
     .filter((a) => a.towedBy === -1 && a.recoverTimer === 0)
     .filter((a) => atCell(a, cellX, cellY))

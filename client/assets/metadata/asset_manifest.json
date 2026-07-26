@@ -1,5 +1,5 @@
 {
-  "note": "Asset manifest (assets/asset-spec.md §16). The renderer resolves visuals ONLY through this file: no hardcoded model paths in gameplay/render code. Resolution order per entry: webglModel (GLB, when the painted pass lands) -> procedural (asset_factory key) -> fallbackSprite. Engine roster today is tank/scout/artillery; every chassis can tow and carry the standard. infantry_carrier and vehicle_recovery slots are reserved for future chassis per the spec.",
+  "note": "Asset manifest (assets/asset-spec.md \u00a716). The renderer resolves visuals ONLY through this file: no hardcoded model paths in gameplay/render code. Resolution order per entry: webglModel (GLB, when the painted pass lands) -> procedural (asset_factory key) -> fallbackSprite. Engine roster: tank/scout/artillery/logistics \u2014 only the logistics truck tows (spec middle path); any chassis may carry the standard until the Command Carrier exists.",
   "units": {
     "unit_tank": {
       "webglModel": "assets/models/units/unit_vehicle_tank.glb",
@@ -21,6 +21,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_artillery.svg",
       "minimapIcon": "assets/icons/svg/icon_artillery.svg",
       "triBudget": 3500
+    },
+    "unit_logistics": {
+      "webglModel": "assets/models/units/unit_vehicle_logistics.glb",
+      "procedural": "logistics",
+      "fallbackSprite": "assets/sprites/fallback/unit_logistics.svg",
+      "minimapIcon": "assets/icons/svg/icon_logistics.svg",
+      "triBudget": 3000
     }
   },
   "wrecks": {
@@ -41,6 +48,13 @@
     "wreck_artillery": {
       "webglModel": "assets/models/wrecks/wreck_vehicle_artillery.glb",
       "procedural": "wreck_artillery",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    },
+    "wreck_logistics": {
+      "webglModel": "assets/models/wrecks/wreck_vehicle_logistics.glb",
+      "procedural": "wreck_logistics",
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2000
@@ -77,8 +91,10 @@
     }
   },
   "reserved": {
-    "unit_infantry_carrier": { "status": "future chassis — spec §8; engine has no infantry yet" },
-    "unit_vehicle_recovery": { "status": "future chassis — spec §8; today every chassis tows" }
+    "unit_infantry_carrier": {
+      "status": "future chassis \u2014 spec \u00a78; engine has no infantry yet"
+    },
+    "note": "vehicle_recovery role is now fielded as unit_logistics (spec middle path)"
   },
   "ui": {
     "icon_move": "assets/icons/svg/icon_move.svg",

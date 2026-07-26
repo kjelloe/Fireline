@@ -10,7 +10,8 @@
       "hp": 100,
       "damage": 20,
       "indirect": false,
-      "reloadTicks": 15
+      "reloadTicks": 15,
+      "canTow": false
     },
     "1": {
       "id": 1,
@@ -21,7 +22,8 @@
       "hp": 60,
       "damage": 10,
       "indirect": false,
-      "reloadTicks": 8
+      "reloadTicks": 8,
+      "canTow": false
     },
     "2": {
       "id": 2,
@@ -32,7 +34,20 @@
       "hp": 80,
       "damage": 30,
       "indirect": true,
-      "reloadTicks": 40
+      "reloadTicks": 40,
+      "canTow": false
+    },
+    "3": {
+      "id": 3,
+      "name": "logistics",
+      "speed": 40,
+      "range": 768,
+      "minRange": 0,
+      "hp": 80,
+      "damage": 5,
+      "indirect": false,
+      "reloadTicks": 20,
+      "canTow": true
     }
   }
 }

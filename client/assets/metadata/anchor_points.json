@@ -1,18 +1,71 @@
 {
-  "note": "Named attach offsets per chassis, in scene units (1 cell = 1 unit), y up, relative to unit origin (assets/asset-spec.md §10). Used for tow cables and carried-standard banners until GLB anchors exist.",
+  "note": "Named attach offsets per chassis, in scene units (1 cell = 1 unit), y up, relative to unit origin (assets/asset-spec.md \u00a710). Used for tow cables and carried-standard banners until GLB anchors exist.",
   "unit_tank": {
-    "towRear": [0, 0.18, -0.42],
-    "towFront": [0, 0.18, 0.42],
-    "banner": [0, 0.75, -0.15]
+    "towRear": [
+      0,
+      0.18,
+      -0.42
+    ],
+    "towFront": [
+      0,
+      0.18,
+      0.42
+    ],
+    "banner": [
+      0,
+      0.75,
+      -0.15
+    ]
   },
   "unit_scout": {
-    "towRear": [0, 0.14, -0.32],
-    "towFront": [0, 0.14, 0.32],
-    "banner": [0, 0.6, -0.1]
+    "towRear": [
+      0,
+      0.14,
+      -0.32
+    ],
+    "towFront": [
+      0,
+      0.14,
+      0.32
+    ],
+    "banner": [
+      0,
+      0.6,
+      -0.1
+    ]
   },
   "unit_artillery": {
-    "towRear": [0, 0.16, -0.45],
-    "towFront": [0, 0.16, 0.45],
-    "banner": [0, 0.55, -0.2]
+    "towRear": [
+      0,
+      0.16,
+      -0.45
+    ],
+    "towFront": [
+      0,
+      0.16,
+      0.45
+    ],
+    "banner": [
+      0,
+      0.55,
+      -0.2
+    ]
+  },
+  "unit_logistics": {
+    "towRear": [
+      0,
+      0.2,
+      -0.5
+    ],
+    "towFront": [
+      0,
+      0.2,
+      0.5
+    ],
+    "banner": [
+      0,
+      0.7,
+      -0.25
+    ]
   }
 }

@@ -18,7 +18,7 @@ function wreckSpec(cellX, extra = {}) {
 
 test("8D tow_order validation covers every rejection reason", () => {
   let s = sandbox([
-    { team: 0, cellX: 10 },              // 0 tower
+    { team: 0, cellX: 10, type: 3 },     // 0 tower (logistics truck)
     wreckSpec(11),                        // 1 adjacent friendly wreck
     wreckSpec(30),                        // 2 far wreck
     { team: 1, cellX: 11, state: ASSET_DISABLED, hp: 0 }, // 3 enemy wreck
@@ -26,6 +26,8 @@ test("8D tow_order validation covers every rejection reason", () => {
   ]);
   s = joinAndSelect(s, 0, 0, 0);
 
+  assert.equal(towRejection(s, { ...s.assets[0], type: 0 }, s.assets[1]),
+    "needs a logistics truck", "tow is a logistics role now");
   assert.equal(towRejection(s, s.assets[0], s.assets[2]), "wreck out of reach");
   assert.equal(towRejection(s, s.assets[0], s.assets[3]), "enemy wreck");
   assert.equal(towRejection(s, s.assets[0], s.assets[4]), "not a wreck");
@@ -42,21 +44,21 @@ test("8D tow_order validation covers every rejection reason", () => {
 
 test("8D towing halves speed and drags the wreck along", () => {
   let s = sandbox([
-    { team: 0, cellX: 10, state: ASSET_MOVING, targetX: cellToWorld(30) },
+    { team: 0, cellX: 10, type: 3, state: ASSET_MOVING, targetX: cellToWorld(30) },
     wreckSpec(11),
   ]);
   s = joinAndSelect(s, 0, 0, 0);
   s = apply(s, { type: "tow_order", operatorId: 0, wreckAssetId: 1 });
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 16, "tank 32 * 0.5 tow penalty");
+  assert.equal(s.assets[0].x - x0, 20, "truck 40 * 0.5 tow penalty");
   assert.equal(s.assets[1].x, s.assets[0].x, "wreck follows the tower");
 });
 
 test("8D full rescue: tow home, repair, return at half hull with crew intact", () => {
   let s = sandbox(
     [
-      { team: 0, cellX: 6, cellY: 1 },
+      { team: 0, cellX: 6, cellY: 1, type: 3 },
       wreckSpec(7, { cellY: 1, operatorId: 3 }),
     ],
     [], { bases: DEPOT }
@@ -87,7 +89,7 @@ test("8D full rescue: tow home, repair, return at half hull with crew intact", (
 
 test("8D disabling the tower releases the wreck where it stands", () => {
   let s = sandbox([
-    { team: 0, cellX: 10, hp: 20 }, // tower, one shot from death
+    { team: 0, cellX: 10, type: 3, hp: 20 }, // tower, one shot from death
     wreckSpec(11),
     { team: 1, cellX: 12 },          // gunner
   ]);
@@ -101,7 +103,7 @@ test("8D disabling the tower releases the wreck where it stands", () => {
 
 test("8D a recovering wreck cannot be towed again", () => {
   let s = sandbox(
-    [{ team: 0, cellX: 2, cellY: 1 }, wreckSpec(1, { cellY: 1, recoverTimer: 50 })],
+    [{ team: 0, cellX: 2, cellY: 1, type: 3 }, wreckSpec(1, { cellY: 1, recoverTimer: 50 })],
     [], { bases: DEPOT }
   );
   s = joinAndSelect(s, 0, 0, 0);

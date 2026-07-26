@@ -240,8 +240,10 @@ function onPointerDown(event) {
 
   const view = interpolator.latest();
   const { cellX, cellY } = scenePointToCell(target.x, target.z);
+  const own = view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
   const cmd = buildCommandForClick(view, cellX, cellY, {
     fireRadiusCells: 1, myOperatorId: joined.operatorId,
+    canTow: own ? own.type === 3 : false,
   });
   if (cmd.type === "select_asset") mySelectedAssetId = cmd.assetId;
   send(cmd);

@@ -61,9 +61,11 @@ test("8G clicking a clean wreck orders a tow; recovering wrecks are left alone",
     ],
     visibleEnemies: [],
   };
-  assert.deepEqual(buildCommandForClick(view, 6, 5, { myOperatorId: 0 }),
+  assert.deepEqual(buildCommandForClick(view, 6, 5, { myOperatorId: 0, canTow: true }),
     { type: "tow_order", wreckAssetId: 4 });
-  assert.deepEqual(buildCommandForClick(view, 8, 5, { myOperatorId: 0 }).type, "move_order");
+  assert.equal(buildCommandForClick(view, 6, 5, { myOperatorId: 0, canTow: false }).type,
+    "move_order", "non-truck drivers get a move, not a doomed tow");
+  assert.deepEqual(buildCommandForClick(view, 8, 5, { myOperatorId: 0, canTow: true }).type, "move_order");
 });
 
 test("8G teammate-operated assets are not select targets", () => {

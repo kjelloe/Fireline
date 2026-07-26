@@ -22,12 +22,12 @@ const settle = (ms = 60) => new Promise((r) => setTimeout(r, ms));
 
 // ── unit ──────────────────────────────────────────────────────────────────────
 
-test("phase8 unit: carrier and tow penalties stack (32 → 24 → 12)", () => {
+test("phase8 unit: carrier and tow penalties stack (40 → 30 → 15)", () => {
   // Base rect sits 20 cells south: close enough for supply, far enough that
   // the towed wreck is NOT "at base" (which would start repair and cut the tow).
   let s = sandbox(
     [
-      { team: 0, cellX: 10, state: ASSET_MOVING, targetX: cellToWorld(40) },
+      { team: 0, cellX: 10, type: 3, state: ASSET_MOVING, targetX: cellToWorld(40) },
       { team: 0, cellX: 11, state: ASSET_DISABLED, hp: 0 },
     ],
     [],
@@ -42,7 +42,7 @@ test("phase8 unit: carrier and tow penalties stack (32 → 24 → 12)", () => {
   assert.equal(s.standards[1].status, STD_CARRIED);
   const x0 = s.assets[0].x;
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x - x0, 12, "32 * 0.75 carrier * 0.5 tow = 12");
+  assert.equal(s.assets[0].x - x0, 15, "truck 40 * 0.75 carrier * 0.5 tow = 15");
 });
 
 // ── component ─────────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ test("phase8 component: two enemies on the standard, lowest asset id wins the gr
 test("phase8 component: disabling a tower-carrier drops the flag AND cuts the tow", () => {
   let s = sandbox(
     [
-      { team: 0, cellX: 10, hp: 20 },                       // carrier+tower
+      { team: 0, cellX: 10, type: 3, hp: 20 },              // carrier+tower (truck)
       { team: 0, cellX: 11, state: ASSET_DISABLED, hp: 0 }, // wreck in tow
       { team: 1, cellX: 12 },                                // gunner
     ],

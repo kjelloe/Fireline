@@ -35,9 +35,11 @@ const MAP_PROFILES = {
 // original 4v4 arrangement (0-3 team A col 7, 4-7 team B col 117 — positions
 // and chassis pinned by 1A/1B/1D tests). Ids 8-19 are team A reserves and
 // 20-31 team B reserves (32 field assets total — the v1 "32 players" scale).
-// Chassis mix everywhere: tank, tank, scout, artillery.
+// Original eight keep the pinned tank/tank/scout/artillery pattern; reserves
+// cycle all four chassis so each team fields logistics trucks (tow role).
 const SPAWN_ROWS = [56, 58, 60, 62];
 const SPAWN_TYPES = [0, 0, 1, 2];
+const RESERVE_TYPES = [0, 1, 2, 3];
 const TEAM_A_SPAWN_X = 7;
 const TEAM_B_SPAWN_X = 117;
 const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
@@ -80,7 +82,7 @@ function createFieldAssets() {
     let slot = 0;
     for (const col of cols) {
       for (const row of RESERVE_ROWS) {
-        assets.push(makeFieldAsset(id, SPAWN_TYPES[slot % 4], team, col, row));
+        assets.push(makeFieldAsset(id, RESERVE_TYPES[slot % 4], team, col, row));
         id++;
         slot++;
       }

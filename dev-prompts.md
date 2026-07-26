@@ -101,3 +101,13 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 1. Playtest 2 PASSED on legibility and pacing (hint useful; ×2 pace right).
 2. Backlog: optional direct tank control mode (Firepower homage) — later, client-input-mode design.
 3. Identity note: perspective currently reads "low-poly Syndicate with tanks"; revisit camera in art pass.
+
+### Prompt 10 — Roster middle path + plan refresh
+
+> go c middle path. Then update plan-version1.md and make a .html as well please
+> (mid-run: Ok do note, write scripts in /tmp or in ./debugging rather than inline python script)
+
+**Decisions captured:**
+1. Roster option (c): Logistics Truck fielded now (tow becomes its exclusive role); Command Carrier / Sentinel / Infiltrator deferred; standard carrying stays any-chassis until the Carrier exists.
+2. `plan-version1.md` rewritten to current status; `plan-version1.html` styled twin created.
+3. Process: helper scripts as files in /tmp or ./debugging, never inline heredocs (memory saved).

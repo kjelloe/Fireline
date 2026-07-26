@@ -81,10 +81,29 @@ function buildArtillery() {
   return g;
 }
 
+function buildLogistics() {
+  const g = new THREE.Group();
+  const C = colors();
+  const bed = box(0.46, 0.1, 0.6, C.hullPaint); bed.position.set(0, 0.24, -0.14);
+  const cab = box(0.42, 0.26, 0.26, C.hullShadow); cab.position.set(0, 0.3, 0.28);
+  const crane = cyl(0.03, 0.04, 0.5, 6, C.barrel, "wornMetal");
+  crane.rotation.x = -0.9; crane.position.set(0.12, 0.45, -0.28);
+  const hook = box(0.06, 0.08, 0.06, C.barrel, "wornMetal"); hook.position.set(0.12, 0.3, -0.52);
+  for (const [x, z] of [[-0.24, 0.24], [0.24, 0.24], [-0.24, -0.1], [0.24, -0.1], [-0.24, -0.38], [0.24, -0.38]]) {
+    const wheel = cyl(0.1, 0.1, 0.08, 8, C.wheel, "wornMetal");
+    wheel.rotation.z = Math.PI / 2; wheel.position.set(x, 0.1, z);
+    g.add(wheel);
+  }
+  const panel = teamPanel(0.34, 0.04, 0.2); panel.position.set(0, 0.45, 0.28);
+  g.add(bed, cab, crane, hook, panel);
+  return g;
+}
+
 // Wrecks: same footprint, slumped/tilted/darkened, identifiable (spec §10).
 function buildWreck(kind) {
   const base = kind === "wreck_scout" ? buildScout()
-    : kind === "wreck_artillery" ? buildArtillery() : buildTank();
+    : kind === "wreck_artillery" ? buildArtillery()
+    : kind === "wreck_logistics" ? buildLogistics() : buildTank();
   const C = colors();
   base.traverse((node) => {
     if (node.isMesh) {
@@ -138,9 +157,11 @@ const BUILDERS = {
   tank: buildTank,
   scout: buildScout,
   artillery: buildArtillery,
+  logistics: buildLogistics,
   wreck_tank: () => buildWreck("wreck_tank"),
   wreck_scout: () => buildWreck("wreck_scout"),
   wreck_artillery: () => buildWreck("wreck_artillery"),
+  wreck_logistics: () => buildWreck("wreck_logistics"),
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),
   relay: buildRelay,

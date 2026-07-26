@@ -15,7 +15,7 @@ import { sandbox } from "./helpers.js";
 
 test("3A stat table is pinned", () => {
   assert.deepEqual(getUnitStats(UNIT_TANK), {
-    id: 0, name: "tank", speed: 32, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15,
+    id: 0, name: "tank", speed: 32, range: 1280, minRange: 0, hp: 100, damage: 20, indirect: false, reloadTicks: 15, canTow: false,
   });
   assert.equal(getUnitStats(UNIT_SCOUT).speed, 56);
   assert.equal(getUnitStats(UNIT_SCOUT).hp, 60);
@@ -34,9 +34,10 @@ test("3A frontier spawn mix cycles tank/tank/scout/artillery per team", () => {
   for (const team of [0, 1]) {
     const teamAssets = s.assets.filter((a) => a.team === team);
     assert.equal(teamAssets.length, 16);
-    assert.equal(teamAssets.filter((a) => a.type === 0).length, 8, "8 tanks");
+    assert.equal(teamAssets.filter((a) => a.type === 0).length, 5, "5 tanks");
     assert.equal(teamAssets.filter((a) => a.type === 1).length, 4, "4 scouts");
     assert.equal(teamAssets.filter((a) => a.type === 2).length, 4, "4 artillery");
+    assert.equal(teamAssets.filter((a) => a.type === 3).length, 3, "3 logistics trucks");
   }
   assert.equal(s.assets[2].hp, 60, "scout spawns with scout hp");
   assert.equal(s.assets[3].hp, 80, "artillery spawns with artillery hp");

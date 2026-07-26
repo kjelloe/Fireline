@@ -36,6 +36,7 @@ function adjacentCells(a, b) {
 
 // Why a tow cannot start, or null when it can.
 export function towRejection(state, tower, wreck) {
+  if (!getUnitStats(tower.type).canTow) return "needs a logistics truck";
   if (!wreck) return "no such wreck";
   if (!isWreck(wreck)) return "not a wreck";
   if (wreck.team !== tower.team) return "enemy wreck";

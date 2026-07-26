@@ -26,6 +26,7 @@ export const REJECTION_TEXT = Object.freeze({
   "already recovering": "That wreck is already in the repair bay.",
   "already towing": "You're already towing a wreck.",
   "wreck out of reach": "Get adjacent to the wreck to hook it up.",
+  "needs a logistics truck": "Only a logistics truck can tow — switch to one.",
   "war is over": "The war is over — next one starts shortly.",
 });
 
