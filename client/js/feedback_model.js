@@ -1,69 +1,22 @@
+import { t, hasKey } from "./strings.js";
 // client/js/feedback_model.js — order feedback + war resolution text (slice 8H).
 // Pure mapping from reducer events to human-readable, team-perspective text.
 // Every rejection reason the reducer can emit has a line here (pinned by test).
 
-export const REJECTION_TEXT = Object.freeze({
-  "operator already active": "That command seat is taken.",
-  "operator not active": "Join the war first.",
-  "no such asset": "No such asset.",
-  "asset belongs to other team": "That asset fights for the enemy.",
-  "asset already operated": "A teammate is driving that one.",
-  "no asset selected": "Take an asset first (click one or press Next asset).",
-  "asset not operable": "Your asset is out of action.",
-  "no such target": "No such target.",
-  "friendly target": "Hold fire — that one is ours.",
-  "target not operable": "Target is already a wreck.",
-  "reloading": "Weapon reloading.",
-  "out of ammo": "Out of ammo — resupply at base.",
-  "out of supply": "Out of supply — hold a relay or fall back.",
-  "target out of range": "Target out of range.",
-  "target not spotted": "No spotter on that target.",
-  "no line of sight": "No line of sight.",
-  "no such wreck": "Nothing to tow there.",
-  "not a wreck": "That unit doesn't need a tow.",
-  "enemy wreck": "We don't tow enemy scrap.",
-  "already under tow": "Someone already has that wreck in tow.",
-  "already recovering": "That wreck is already in the repair bay.",
-  "already towing": "You're already towing a wreck.",
-  "wreck out of reach": "Get adjacent to the wreck to hook it up.",
-  "needs a logistics truck": "Only a logistics truck can tow — switch to one.",
-  "not downed": "You are not on foot.",
-  "too far to crawl": "Too far — downed operators can only crawl a short way.",
-  "still recovering nerve": "Hold on — redeploy unlocks a few seconds after going down.",
-  "cannot deploy mines": "Only an assault tank carries mines.",
-  "no mines left": "Mine rack empty.",
-  "mine already here": "A mine already sits on this ground.",
-  "cannot mine a base zone": "Base zones are protected — no mining here.",
-  "cannot mine a site": "Sites are protected — no mining here.",
-  "cannot clear mines": "Only a logistics truck can clear mines.",
-  "no such mine": "No mine there.",
-  "too far to clear": "Get adjacent to the mine to clear it.",
-  "mine not marked": "Unknown minefield — a scout must mark it first.",
-  "unknown ping kind": "That signal is not in the book.",
-  "ping cooling down": "Signal lamp recharging — a moment.",
-  "only rescue pings while down": "On foot you can only call for rescue.",
-  "ping needs a target cell": "Pick a spot on the map to signal about.",
-  "takeover needs confirmation":
-    "That asset carries real responsibility — press ENTER to confirm the takeover, ESC to cancel.",
-  "not a carrier": "That is not a rescue carrier.",
-  "no bunk free": "Both bunks are taken.",
-  "carrier out of reach": "Crawl next to the carrier to board.",
-  "not aboard": "You are not aboard a carrier.",
-  "unknown option": "No such setting.",
-  "invalid value": "That setting takes on or off.",
-  "invalid throttle": "Bad drive input.",
-  "invalid turn": "Bad drive input.",
-  "no such site": "No such site.",
-  "cannot breach sites": "Only artillery can breach infrastructure.",
-  "site already damaged": "That site is already in ruins.",
-  "no such drone": "That drone is already gone.",
-  "cannot track aircraft": "Artillery cannot track aircraft — use a direct gun.",
-  "war is over": "The war is over — next one starts shortly.",
+// 15B: rejection texts live in strings.js catalogs (en/no). This proxy
+// keeps the historic REJECTION_TEXT contract (8H sweeps it) while t()
+// serves the active locale.
+export const REJECTION_TEXT = new Proxy({}, {
+  get: (_, reason) =>
+    typeof reason === "string" && hasKey(`rej.${reason}`) ? t(`rej.${reason}`) : undefined,
+  has: (_, reason) => typeof reason === "string" && hasKey(`rej.${reason}`),
 });
 
 export function describeRejection(reason) {
-  return REJECTION_TEXT[reason] ?? `Order rejected: ${reason}`;
+  if (hasKey(`rej.${reason}`)) return t(`rej.${reason}`);
+  return t("rej.fallback", { reason });
 }
+
 
 const WIN_REASON_TEXT = Object.freeze({
   0: "war interrupted",

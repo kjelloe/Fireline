@@ -17,6 +17,7 @@ import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
+import { t, setLocale, getLocale } from "./strings.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
@@ -121,9 +122,7 @@ function init() {
       directMode = !directMode;
       if (!directMode) { for (const k in driveHeld) driveHeld[k] = false; }
       sendDriveIntent();
-      pushEvent(directMode
-        ? "DIRECT DRIVE — W/S throttle, A/D steer, G to exit"
-        : "Direct drive off — click-to-move restored.");
+      pushEvent(directMode ? t("ui.direct_on") : t("ui.direct_off"));
       if (directMode) freeCam.followMode(true);
       return;
     }
@@ -200,6 +199,19 @@ function init() {
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
   document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
+  // 15B: locale — restore, and offer the switch in ⚙.
+  setLocale(localStorage.getItem("mf_locale") ?? "en");
+  const localeSel = document.getElementById("opt-locale");
+  if (localeSel) {
+    localeSel.value = getLocale();
+    localeSel.onchange = (e) => {
+      setLocale(e.target.value);
+      localStorage.setItem("mf_locale", e.target.value);
+      lastTaskKey = ""; // force HUD rebuilds in the new language
+      for (const [, entry] of worldLabels) scene.remove(entry.sprite);
+      worldLabels.clear();
+    };
+  }
   // 11G: settings panel.
   const settingsOverlay = document.getElementById("settings-overlay");
   document.getElementById("btn-settings").onclick = () => {
@@ -265,14 +277,14 @@ function connect() {
       hideEndScreen();
       mySelectedAssetId = null;
       autoSelectSent = false; // re-crew automatically in the new war
-      pushEvent("A new war has begun!");
+      pushEvent(t("ui.new_war"));
     } else if (msg.type === "s_server_closing") {
       pushEvent("server shutting down");
     } else if (msg.type === "s_spectating") { // 10A: omniscient read-only seat
       joined = { operatorId: -1, team: -1, spectator: true };
       autoSelectSent = true; // nothing to crew
       document.getElementById("join-overlay").style.display = "none";
-      pushEvent("Spectating — you see everything, you touch nothing.");
+      pushEvent(t("ui.spectating"));
     } else if (msg.type === "s_joined") {
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
@@ -286,7 +298,7 @@ function connect() {
           autoSelectSent = true;
           mySelectedAssetId = target;
           send(buildSelectCommand(target));
-          pushEvent(`You are crewing asset ${target} — click ground to move`);
+          pushEvent(t("ui.crewing", { id: target }));
         } else if ((msg.view.friendlyAssets ?? []).some((a) => a.operatorId === joined.operatorId)) {
           autoSelectSent = true; // rejoin case: already crewed
         }
@@ -772,32 +784,34 @@ function upsertWorldLabel(key, text, colorHex, x, y, z) {
 
 function updateWorldLabels(view) {
   for (const site of view.sites ?? []) {
-    const who = site.owner === -1 ? "NEUTRAL" : site.owner === joined?.team ? "YOURS" : "ENEMY";
+    const who = site.owner === -1 ? t("label.who_neutral")
+      : site.owner === joined?.team ? t("label.who_yours") : t("label.who_enemy");
     let color = site.owner === -1 ? "#cccccc"
       : site.owner === joined?.team ? "#9fe89f" : "#f0a0a0";
     let detail = null;
     if (site.hp === 0) {
-      detail = "DAMAGED — truck + materiel rebuilds";
+      detail = t("label.relay_damaged");
       color = "#c9b28a";
     } else if (site.captureProgress > 0 && site.capturingTeam !== -1) {
       // 11U: the flip countdown, live over the flag.
-      const phase = site.owner === -1 ? "RAISING" : "DROPPING";
       const secs = Math.ceil((30 - site.captureProgress) / 10);
       const hostile = site.capturingTeam !== joined?.team;
-      detail = `${phase} ${secs}s${hostile ? " — DEFEND!" : ""}`;
+      detail = hostile && site.owner !== -1
+        ? t("label.relay_dropping", { s: secs })
+        : t("label.relay_raising", { s: secs });
       color = hostile ? "#ffb066" : "#f5e96b";
     }
     upsertWorldLabel(`site${site.id}`,
-      detail ? `RELAY — ${who}\n${detail}` : `RELAY — ${who}`, color,
+      detail ? `${t("label.relay", { who })}\n${detail}` : t("label.relay", { who }), color,
       site.cellX + 0.5, 2.1, site.cellY + 0.5);
   }
   for (const st of view.standards ?? []) {
     const mine = st.team === joined?.team;
-    let text = mine ? "YOUR STANDARD" : "ENEMY STANDARD — STEAL IT";
+    let text = mine ? t("label.std_yours") : t("label.std_enemy");
     if (st.status === 2) { // DROPPED: the auto-return countup matters
       const secs = Math.max(0, Math.ceil((600 - (st.droppedTimer ?? 0)) / 10));
-      text = (mine ? "YOUR STANDARD IS DOWN" : "ENEMY STANDARD IN THE OPEN") +
-        `\nauto-returns in ${secs}s`;
+      text = (mine ? t("label.std_yours_down") : t("label.std_enemy_open")) +
+        "\n" + t("label.std_returns", { s: secs });
     }
     upsertWorldLabel(`std${st.team}`, text,
       mine ? "#9fe89f" : "#ffd75e",
@@ -807,7 +821,7 @@ function updateWorldLabels(view) {
   for (const a of view.friendlyAssets ?? []) {
     const key = `repair${a.id}`;
     if (a.recoverTimer > 0) {
-      upsertWorldLabel(key, `REPAIRING ${Math.ceil(a.recoverTimer / 10)}s`, "#8fd4ff",
+      upsertWorldLabel(key, t("label.repairing", { s: Math.ceil(a.recoverTimer / 10) }), "#8fd4ff",
         a.x / CELL + 0.5, 1.5, a.y / CELL + 0.5);
     } else {
       const entry = worldLabels.get(key);
@@ -947,15 +961,15 @@ function updateActionBanner(view) {
   if (myDown) {
     const wait = Math.ceil((100 - (myDown.downTicks ?? 0)) / 10);
     if (wait > 0) {
-      text = `YOU ARE DOWN — redeploy in ${wait}s`;
+      text = t("banner.down_wait", { s: wait });
     } else {
-      text = "REDEPLOY NOW (R) — or crawl to a carrier";
+      text = t("banner.down_ready");
       bannerAction = () => send({ type: "redeploy" });
     }
   } else {
     const wreck = adjacentTowableWreck(view);
     if (wreck) {
-      text = `TOW ASSET ${wreck.id} (T)`;
+      text = t("banner.tow", { id: wreck.id });
       bannerAction = () => send({ type: "tow_order", wreckAssetId: wreck.id });
     }
   }
@@ -1106,8 +1120,8 @@ function updateDownedMeshes(view) {
     const canBoard = mine && adjacentBoardableCarrier(view);
     upsertWorldLabel(`down${d.operatorId}`,
       mine
-        ? (canBoard ? "CARRIER HERE — B TO BOARD" : "YOU ARE DOWN — R TO REDEPLOY")
-        : "OPERATOR DOWN",
+        ? (canBoard ? t("label.board_here") : t("label.you_down"))
+        : t("label.operator_down"),
       "#ffd75e", d.x / CELL + 0.5, 1.2, d.y / CELL + 0.5);
   }
   for (const [id, mesh] of downedMeshes) {

@@ -180,3 +180,40 @@ test("14A riverline dressing: water on the river, rails on bridges, nothing on f
   assert.equal(fprops.some((p) => ["water", "rail", "reed"].includes(p.kind)), false,
     "frontier gets no river dressing");
 });
+
+test("15B locale catalogs are key-identical and parameterized strings fill", async () => {
+  const { CATALOGS, t, setLocale, hasKey } = await import("../client/js/strings.js");
+  assert.deepEqual(Object.keys(CATALOGS.no).sort(), Object.keys(CATALOGS.en).sort(),
+    "en and no cover the same keys — no half-translated UI");
+  try {
+    setLocale("no");
+    assert.equal(t("ping.attack"), "ANGRIP HER");
+    assert.equal(t("task.recover", { id: 7 }), "Berg enhet 7 — tau den hjem");
+    const { describeRejection } = await import("../client/js/feedback_model.js");
+    assert.equal(describeRejection("out of ammo"), "Tom for ammunisjon — etterforsyn i basen.");
+    assert.equal(describeRejection("gremlins"), "Ordre avvist: gremlins", "fallback localizes too");
+  } finally {
+    setLocale("en");
+  }
+  assert.equal(t("rej.out of ammo"), "Out of ammo — resupply at base.");
+  assert.equal(hasKey("rej.out of ammo"), true);
+  assert.equal(hasKey("rej.nonsense"), false);
+  assert.equal(setLocale("klingon"), "en", "unknown locales refuse politely");
+});
+
+test("15B the models speak the active locale", async () => {
+  const { setLocale } = await import("../client/js/strings.js");
+  const { pingOptionsFor } = await import("../client/js/ping_model.js");
+  try {
+    setLocale("no");
+    const opts = pingOptionsFor({ friendlyAssets: [], downedOperators: [], standards: [] }, 0);
+    assert.equal(opts[0].label, "ANGRIP HER");
+    const tasks = tasksFor({
+      team: 0, standards: [], downedOperators: [{ operatorId: 3, x: 0, y: 0 }],
+      friendlyAssets: [], sites: [],
+    }, null);
+    assert.ok(tasks[0].label.startsWith("Redd operatør 3"));
+  } finally {
+    setLocale("en");
+  }
+});

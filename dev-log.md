@@ -1392,3 +1392,31 @@ NOTED for later (prompt 25): art 2b motion (tracks, recoil, tracers,
 rotor blur) and 2d baked sprite fallbacks.
 
 Suite 418/418 (x2). Tagged slice-11x, slice-11y.
+
+---
+
+## slice-14a / slice-13e / slice-15b — Wave-3 openers (2026-07-27, prompt 27)
+
+**13E fog ghosts**: pure `ghosts_model.js` — a spotted enemy that slips
+into fog leaves a fading spectral hull at its last pose for 10 s; born
+only from what the view delivered, cleared instantly on reappearance,
+nothing crosses the wire. Rendered as translucent faction-less memories.
+
+**14A props round 2**: `s_map` now carries `mapProfile` (public info);
+riverline dresses itself — water sheen tiles over the river band, rails
+on every bridge span, reeds along the banks (all deterministic,
+cell-hash placed, terrain-correctness tested); every relay gets crate
+clutter and both standard homes get plinths (one-time war dressing,
+rebuilt on rotation).
+
+**15B string extraction, part 1**: `client/js/strings.js` — t(key,
+params) over key-identical en/no catalogs (~110 strings: every rejection
+reason, ping labels, mission cards, banners, world labels, UI toasts).
+REJECTION_TEXT became a locale-aware proxy so the historic 8H sweep
+contract holds; ping/tasks/client speak the active locale; ⚙ gains a
+Language/Språk selector persisted in localStorage (switching flushes
+labels + HUD). Norwegian is a full first-class catalog, parity-enforced
+by test. PART 2 remains: describeEvent's ~30 parameterized feed lines
+and the static index.html/briefing text.
+
+Suite 422/422 (x2). Tagged slice-13e, slice-14a, slice-15b.
