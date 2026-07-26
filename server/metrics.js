@@ -21,6 +21,8 @@ export function createMetrics() {
     minesDeployed: 0,
     minesDetonated: 0,
     minesCleared: 0,
+    dronesLaunched: 0,
+    dronesDowned: 0,
     fireOrdersRejected: 0,
     rejectionsByReason: {},
     firstContactTick: null,
@@ -46,6 +48,8 @@ export function createMetrics() {
           case "mine_deployed": counters.minesDeployed++; break;
           case "mine_detonated": counters.minesDetonated++; break;
           case "mine_cleared": counters.minesCleared++; break;
+          case "drone_launched": counters.dronesLaunched++; break;
+          case "drone_downed": counters.dronesDowned++; break;
           case "asset_restored": counters.recoveries++; break;
           case "rejected":
             counters.rejectionsByReason[e.reason] =

@@ -77,3 +77,18 @@ test("8G teammate-operated assets are not select targets", () => {
   };
   assert.equal(buildCommandForClick(view, 3, 3, { myOperatorId: 0 }).type, "move_order");
 });
+
+test("9G clicking an enemy drone fires at it, above any asset on the cell", () => {
+  const view = {
+    team: 0,
+    friendlyAssets: [],
+    visibleEnemies: [{ id: 20, state: 0, x: 6 * CELL, y: 5 * CELL }],
+    drones: [
+      { id: 2, team: 1, x: 6 * CELL, y: 5 * CELL },
+      { id: 3, team: 0, x: 7 * CELL, y: 5 * CELL }, // friendly drone: never a target
+    ],
+  };
+  assert.deepEqual(buildCommandForClick(view, 6, 5, { myOperatorId: 0 }),
+    { type: "fire_order", targetDroneId: 2 });
+  assert.equal(buildCommandForClick(view, 7, 5, { myOperatorId: 0 }).type, "move_order");
+});

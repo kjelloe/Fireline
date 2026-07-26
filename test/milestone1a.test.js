@@ -36,6 +36,7 @@ function stateHash(s) {
     w.writeU8(a.heading); // added 9F
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
     w.writeU8(a.minesLeft); // added 9E
+    w.writeI32LE(a.campTicks); // added 9G
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
@@ -63,6 +64,12 @@ function stateHash(s) {
     w.writeI32LE(m.id); w.writeI32LE(m.team);
     w.writeI32LE(m.cellX); w.writeI32LE(m.cellY);
     w.writeI32LE(m.armTimer); w.writeU8(m.marked);
+  }
+  w.writeI32LE(s.nextDroneId ?? 0); // added 9G
+  for (const d of (s.drones ?? [])) {
+    w.writeI32LE(d.id); w.writeI32LE(d.team);
+    w.writeI32LE(d.x); w.writeI32LE(d.y);
+    w.writeI32LE(d.targetAssetId); w.writeI32LE(d.ageTicks); w.writeI32LE(d.hitTimer);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

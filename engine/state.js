@@ -71,6 +71,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery
     reloadTimer: 0, // 8E fire cooldown
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
+    campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
   };
 }
 
@@ -180,6 +181,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     mines: [], // 9E: deployed mines
     nextMineId: 0,
+    drones: [], // 9G: anti-camping drones aloft
+    nextDroneId: 0,
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

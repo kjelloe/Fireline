@@ -39,6 +39,7 @@ const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
+const droneMeshes = new Map(); // droneId -> Mesh (9G)
 const eventFeed = [];
 let liveVfx = [];
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -679,6 +680,38 @@ function updateMineMeshes(view) {
   }
 }
 
+function updateDroneMeshes(view, nowMs) {
+  const live = new Set();
+  for (const d of view.drones ?? []) {
+    live.add(d.id);
+    let mesh = droneMeshes.get(d.id);
+    if (!mesh) {
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(0.3, 0.08, 0.3),
+        new THREE.MeshLambertMaterial({ color: 0x30343c })
+      );
+      const rotor = new THREE.Mesh(
+        new THREE.BoxGeometry(0.55, 0.03, 0.07),
+        new THREE.MeshLambertMaterial({ color: 0xcccccc })
+      );
+      rotor.position.y = 0.08;
+      body.add(rotor);
+      body.userData.rotor = rotor;
+      scene.add(body);
+      droneMeshes.set(d.id, body);
+    }
+    mesh = droneMeshes.get(d.id);
+    mesh.position.set(d.x / CELL + 0.5, 1.1, d.y / CELL + 0.5);
+    mesh.userData.rotor.rotation.y = (nowMs % 1000) / 1000 * Math.PI * 8;
+  }
+  for (const [id, mesh] of droneMeshes) {
+    if (!live.has(id)) {
+      scene.remove(mesh);
+      droneMeshes.delete(id);
+    }
+  }
+}
+
 function updateDownedMeshes(view) {
   const live = new Set();
   for (const d of view.downedOperators ?? []) {
@@ -749,6 +782,7 @@ function renderBattlefield() {
   for (const st of view.standards ?? []) upsertStandardMesh(st);
   updateDownedMeshes(view);
   updateMineMeshes(view);
+  updateDroneMeshes(view, performance.now());
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);

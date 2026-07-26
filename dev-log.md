@@ -791,3 +791,25 @@ marked enemy), feedback lines, metrics. 1A → v19.
 AI regents do not yet lay or clear mines (question for the design round).
 
 Suite 320/320 (x2), simwar + replay OK. Tagged slice-9e.
+
+---
+
+## slice-9g — Anti-camping drone (night session, 2026-07-26)
+
+Ruling Q7 (modern drone over the helicopter homage — helicopter may return
+as a skin). Camping = idling OUTSIDE your own supply umbrella: per-asset
+`campTicks` (hashed) counts 300 ticks, then the enemy's nearest owned relay
+launches a drone at you (no enemy relay = no drone; the toll restarts the
+clock, one drone per target). First flying entity: terrain-blind straight
+integer chase at speed 72 (outruns every chassis), public to BOTH teams
+(loud and low — no fog games), stings 4 hp every 10 ticks on station,
+lethal stings go through the shared `disableAsset()` path. Counterplay is
+the design: MOVE (or resupply) and it recalls instantly; or shoot it —
+`fire_order {targetDroneId}` downs it in one hit from any direct gun
+(artillery "cannot track aircraft"); 600-tick endurance, and a stubborn
+camper just draws the next one. Flight runs before launches so spawn
+positions pin deterministically. Client: hovering rotor meshes, click a
+drone to shoot it (outranks the asset under it), feed lines, metrics.
+1A → v20.
+
+Suite 329/329 (x2), simwar + replay OK. Tagged slice-9g.

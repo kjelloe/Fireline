@@ -56,6 +56,11 @@ npm start                              # host machine
   damage + suppression). Your team always sees its own mines; enemy scouts
   within 3 cells auto-MARK them for their team, and a truck adjacent to a
   marked (or own) mine clears it with C.
+- Anti-camping drone (9G): idle outside your supply umbrella for 30s and the
+  enemy's nearest owned relay launches a drone at you — fast, terrain-blind,
+  visible to everyone. It stings for light damage until you MOVE (or get back
+  in supply); any direct-fire gun downs it with one shot (click it) —
+  artillery cannot track aircraft.
 - Your browser keeps a persistent player id: closing the tab hands your asset
   to AI regency, reopening reattaches you to the same operator slot.
 - Difficulty: `AI_DIFFICULTY=0|1|2 npm start` (easy/normal/hard).

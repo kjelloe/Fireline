@@ -39,6 +39,8 @@ export const REJECTION_TEXT = Object.freeze({
   "no such mine": "No mine there.",
   "too far to clear": "Get adjacent to the mine to clear it.",
   "mine not marked": "Unknown minefield — a scout must mark it first.",
+  "no such drone": "That drone is already gone.",
+  "cannot track aircraft": "Artillery cannot track aircraft — use a direct gun.",
   "war is over": "The war is over — next one starts shortly.",
 });
 
@@ -70,6 +72,11 @@ export function describeEvent(e, myTeam) {
     case "mine_marked": return "Scouts marked an enemy mine.";
     case "mine_detonated": return `MINE! Asset ${e.assetId} hit.`;
     case "mine_cleared": return `Mine cleared by asset ${e.assetId}.`;
+    case "drone_launched":
+      return "DRONE UP — someone idled too long off supply. Move or shoot it down.";
+    case "drone_hit": return `Drone stinging asset ${e.assetId} — move!`;
+    case "drone_downed": return `Drone downed by asset ${e.byAssetId}.`;
+    case "drone_recalled": return "The drone broke off.";
     case "resupplied": return `Asset ${e.assetId} resupplied.`;
     case "standard_taken":
       return e.byTeam === myTeam ? "WE HAVE THEIR STANDARD! Escort it home!" : "THEY TOOK OUR STANDARD! Stop the carrier!";

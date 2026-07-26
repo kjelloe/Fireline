@@ -41,6 +41,10 @@ export function buildView(state, team) {
       id: m.id, team: m.team, cellX: m.cellX, cellY: m.cellY,
       armed: m.armTimer === 0, marked: m.marked === 1,
     }));
+  // 9G: drones are loud, low, and public — both teams always see them.
+  const drones = state.drones.map((d) => ({
+    id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
+  }));
   // 8A: Command Standards are a deliberate fog exception — both teams always
   // know both standards' position and status. The stolen flag IS the drama.
   const standards = state.standards.map((st) => ({ ...st }));
@@ -60,5 +64,6 @@ export function buildView(state, team) {
     standards,
     downedOperators,
     mines,
+    drones,
   };
 }

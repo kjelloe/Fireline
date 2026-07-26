@@ -19,6 +19,10 @@ import {
   deployRejection, clearRejection, isArmed,
 } from "./mines.js";
 import {
+  CAMP_TICKS, DRONE_LIFETIME, DRONE_HIT_INTERVAL, DRONE_DAMAGE,
+  DRONE_STATION_CELLS, launchSiteFor, stepDrone,
+} from "./drone.js";
+import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
 } from "./downed.js";
@@ -71,6 +75,7 @@ function copyState(state) {
     downed: state.downed.map((d) => ({ ...d })),
     manufacture: [...state.manufacture],
     mines: state.mines.map((m) => ({ ...m })),
+    drones: state.drones.map((d) => ({ ...d })),
     events: [],
   };
 }
@@ -136,6 +141,25 @@ function applyFireOrder(next, command) {
   }
   if (attacker.state === ASSET_DISABLED || attacker.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
+  }
+  // 9G: shooting at a drone. Drones are public and airborne: no spotting or
+  // LOS gates, but indirect tubes cannot track aircraft, and normal ammo/
+  // reload/supply/range discipline still applies. One hit downs it.
+  if (command.targetDroneId !== undefined) {
+    const drone = next.drones.find((d) => d.id === command.targetDroneId);
+    if (!drone) return reject(next, command, "no such drone");
+    if (getUnitStats(attacker.type).indirect) {
+      return reject(next, command, "cannot track aircraft");
+    }
+    if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
+    if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+    if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
+    if (!inFireRange(attacker, drone)) return reject(next, command, "target out of range");
+    attacker.ammo -= SUPPLY_FIRE_COST;
+    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    next.drones = next.drones.filter((d) => d.id !== drone.id);
+    next.events.push({ type: "drone_downed", droneId: drone.id, byAssetId: attacker.id });
+    return next;
   }
   const target = next.assets[command.targetAssetId];
   if (!target) return reject(next, command, "no such target");
@@ -437,6 +461,64 @@ function applyAdvanceTick(next) {
       }
     }
     if (detonated.size > 0) next.mines = next.mines.filter((m) => !detonated.has(m.id));
+  }
+
+  // 9G flight runs BEFORE launches: a fresh drone sits on its pad for
+  // one tick (deterministic spawn position, no same-tick teleport).
+  if (next.drones.length > 0) {
+    const gone = new Set();
+    for (const drone of next.drones) {
+      drone.ageTicks += 1;
+      const target = next.assets[drone.targetAssetId];
+      // Recall: endurance spent, target gone/moving/back in supply — the
+      // counterplay is simply to stop camping.
+      if (
+        drone.ageTicks >= DRONE_LIFETIME ||
+        !target || target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED ||
+        target.state === ASSET_MOVING || inSupply(next, target)
+      ) {
+        gone.add(drone.id);
+        next.events.push({ type: "drone_recalled", droneId: drone.id });
+        continue;
+      }
+      stepDrone(drone, target.x, target.y);
+      if (chebyshevCells(drone, target) > DRONE_STATION_CELLS) {
+        drone.hitTimer = 0;
+        continue;
+      }
+      drone.hitTimer += 1;
+      if (drone.hitTimer < DRONE_HIT_INTERVAL) continue;
+      drone.hitTimer = 0;
+      target.hp = Math.max(0, target.hp - DRONE_DAMAGE);
+      next.events.push({
+        type: "drone_hit", droneId: drone.id, assetId: target.id, targetHp: target.hp,
+      });
+      if (target.hp === 0) disableAsset(next, target, drone.team);
+    }
+    if (gone.size > 0) next.drones = next.drones.filter((d) => !gone.has(d.id));
+  }  // 9G anti-camping: idling outside your own supply umbrella draws a drone
+  // from the enemy's nearest owned relay.
+  for (const asset of next.assets) {
+    if (asset.state === ASSET_IDLE && !inSupply(next, asset)) {
+      asset.campTicks += 1;
+    } else {
+      asset.campTicks = 0;
+    }
+    if (asset.campTicks < CAMP_TICKS) continue;
+    asset.campTicks = 0; // pay the toll, restart the clock
+    if (next.drones.some((d) => d.targetAssetId === asset.id)) continue;
+    const pad = launchSiteFor(next, asset, chebyshevCells);
+    if (!pad) continue; // enemy owns no relay — nowhere to launch from
+    next.drones.push({
+      id: next.nextDroneId, team: asset.team === 0 ? 1 : 0,
+      x: cellToWorld(pad.cellX), y: cellToWorld(pad.cellY),
+      targetAssetId: asset.id, ageTicks: 0, hitTimer: 0,
+    });
+    next.nextDroneId += 1;
+    next.events.push({
+      type: "drone_launched", droneId: next.nextDroneId - 1,
+      targetAssetId: asset.id, siteId: pad.id,
+    });
   }
 
   // Anti-deadlock (9A): a standard left dropped long enough returns home.

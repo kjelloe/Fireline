@@ -51,6 +51,16 @@ export function buildCommandForClick(view, cellX, cellY, opts = {}) {
     return { type: "select_asset", assetId: selectable[0].id };
   }
 
+  // 9G: drones hover above everything — an enemy drone under the click is
+  // the target, even over an enemy asset on the same cell.
+  const drone = (view?.drones ?? [])
+    .filter((d) => d.team !== view?.team)
+    .filter((d) => atCell(d, cellX, cellY, fireRadiusCells))
+    .sort((a, b) => a.id - b.id)[0];
+  if (drone) {
+    return { type: "fire_order", targetDroneId: drone.id };
+  }
+
   const target = enemyAtCell(view, cellX, cellY, fireRadiusCells);
   if (target) {
     return { type: "fire_order", targetAssetId: target.id };

@@ -68,11 +68,13 @@ verified. Every completed slice is git-tagged.*
 | 9F Turn-rate movement | ✅ tagged `slice-9f` |
 | 9C Cargo/materiel economy | ⬜ deferred — needs the damaged-sites design round (question 9) |
 | 9D Minimum Playability Guarantee | ✅ tagged `slice-9d` (Slow Manufacture wreck-rebuild) |
-| 9E Mines | ⬜ not started |
-| 9G Drone | ⬜ not started |
+| 9E Mines | ✅ tagged `slice-9e` (deploy/arm/detonate, scout-mark, truck-clear) |
+| 9G Drone | ✅ tagged `slice-9g` (anti-camping drone, first flying entity) |
 
-Four of seven Wave-1 slices landed, fully tested and tagged, suite at
-**312/312** (every count double-run verified). The three shipped slices are
+Six of seven Wave-1 slices landed, fully tested and tagged, suite at
+**329/329** (every count double-run verified). The only remaining Wave-1
+item is 9C cargo/materiel, deliberately parked on question 9 (it needs the
+damaged-sites design round before an economy earns its place). The three shipped slices are
 the load-bearing ones: the carrier changes the objective game, the movement
 model changes feel everywhere, and downed operators are the largest new
 entity system since standards.
@@ -131,6 +133,20 @@ entity system since standards.
    losing-team guarantee without an economy.
 10. **MPG numbers**: threshold 6 operable / 900-tick cadence / half-hull
     rebuild — sanity-check in play.
+11. **AI mine doctrine**: regents neither lay nor clear mines yet. Minimal
+    doctrine idea: tanks mine chokepoints near owned relays; the recoverer
+    truck clears marked mines on its route. Worth a slice, or leave mines
+    human-only until the next playtest?
+12. **Mine numbers**: 2 per tank / 30-tick arm / 60 damage / scout-mark at
+    3 cells / truck-clear adjacent — sanity-check in play (Q6 defaults).
+13. **Drone numbers** (Q7 defaults): 30 s unsupplied idling draws one; speed
+    72; 4 hp sting per second on station; 60 s endurance; one-shot to down;
+    artillery can't target it. A stubborn camper draws drone after drone —
+    intended. Sanity-check the pressure level in play.
+14. **AI vs drones**: regents currently ignore drones (they rarely camp —
+    their duty cycle keeps them moving — but a stranded/unsupplied AI unit
+    will eat stings without shooting back). Add "shoot the drone stinging
+    me" to the fire doctrine?
 
 ## How to review this session
 
