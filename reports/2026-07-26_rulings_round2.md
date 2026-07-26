@@ -65,9 +65,31 @@ close horn-bound wars.** The "team B wins everything" era is over; question
     standard scoring be harder (e.g. require the carrier to IDLE at home
     briefly, interruptible)?
 
-## Still queued from prompt 16
+## Prompt-19 window (the 2-hour run) — six more slices
 
-11F damaged sites + materiel (Q9 — design sketch in the plan, one open
-question: can bases be shelled? Q19) → 11G rescue autopilot option (Q8) →
-11H replay viewer (Q15). Q2b point-bleed stays armed-but-deferred pending
-human standoff evidence.
+| Slice | What |
+|---|---|
+| `slice-11g` | Q8 rescue autopilot option: auto-boarding by default, ⚙ settings toggle, B board / U unboard, per-seat hashed flag. |
+| `slice-11i` | War-rotation regression: a rotated war is spotless and byte-identical to a cold start — every phase-9/10/11 system checked. |
+| `slice-11h` | Q15 replay viewer: /replay.html re-simulates archived wars LOCALLY (deterministic engine) — byte-exact scrubbing, top-down tactical canvas, play/pause/×1/×4/×16, war picker. |
+| `slice-11k` | Recognition scoring (confirmed table): tow 8 / delivery 10 / return 10 / standard 25 / relay 10 / kill 5; rescue > kill; public scoreboard + end-screen HONORS. Mine/drone kills and auto-returns award nobody. |
+| `slice-11l` | Q10 direct control, ALL chassis: G toggles WASD tank controls — authoritative intent physics (turn at chassis rate, half-speed reverse, all multipliers apply). Chase-cam rotation deferred (ortho camera stays fixed — question below). |
+| `slice-11m` | Second map prep: `MAP=riverline npm start` — river + three bridges, relays in mirrored pairs N/S, terrain mirror-symmetric BY CONSTRUCTION; the mirror invariant is now a TEST across all registered layouts; profile survives rotation and rides replay meta. |
+
+Suite 362 → **390/390**, fixture v26 → v28. Art pass NOT started —
+deliberately left for a fresh session (visual work, wants your strip
+feedback loop). Q2b point-bleed still armed-but-deferred.
+
+## Newer questions (21+)
+
+21. **Chase cam** (from 11L): true rotating chase-cam in the orthographic
+    top-down reads disorienting; current direct drive keeps the fixed
+    tactical camera. Options: (a) keep fixed cam for direct drive,
+    (b) rotate the world under the tank (real chase), (c) build chase cam
+    later with the perspective/art pass. My lean: (a) now, (c) later.
+22. **Riverline pace**: AI wars on riverline reach the horn undecided
+    (relays sit off the standard route, bridges slow raids). Tune after
+    your first playtest — or should relays move closer to the road?
+23. **Direct-drive fire**: while in direct mode, clicking enemies still
+    fires (unchanged). Original Firepower had a fire key — want SPACE to
+    fire at the nearest spotted enemy in range as the homage completion?
