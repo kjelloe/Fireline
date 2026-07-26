@@ -69,3 +69,10 @@ tow and carry).
 Acceptance criteria coverage is tested in `test/art_pipeline.test.js`
 (budgets, team color+symbol, state→visual mapping, resolution order, no
 hardcoded paths, HTTP serving).
+
+## Licensing of contributed assets
+
+Contributed assets (GLBs, textures, audio) are accepted under the
+repository's MIT license by default; artists who prefer attribution may
+contribute under CC-BY 4.0 instead — state the choice in the PR and add a
+credit line to this file. Anything else needs discussion first.

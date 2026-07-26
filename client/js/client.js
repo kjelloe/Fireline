@@ -18,6 +18,8 @@ import { tasksFor } from "./tasks_model.js";
 import { propsFor } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { t, setLocale, getLocale } from "./strings.js";
+import { factionFor } from "../../shared/factions.js";
+import { factionFor } from "../../shared/factions.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
@@ -438,9 +440,9 @@ function pushEvent(text) {
 function updateOpInfo(msg) {
   const info = document.getElementById("op-info");
   if (!joined) { info.innerText = "Not joined"; return; }
-  const teamName = joined.team === 0 ? "A" : "B";
   const tick = msg ? msg.tick : "-";
-  info.innerText = `Op ${joined.operatorId} | Team ${teamName} | Tick ${tick}`;
+  const who = joined.spectator ? "Spectator" : factionFor(joined.team).short; // 12A
+  info.innerText = `Op ${joined.operatorId} | ${who} | Tick ${tick}`;
   if (msg) document.getElementById("status-bar").innerText = `Hash ${msg.stateHash}`;
 }
 

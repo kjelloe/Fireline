@@ -18,6 +18,12 @@ function connect(port) {
 }
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
+// Load-tolerant wait (the ws-test rule: poll, never trust one settle).
+async function until(cond, ms = 3000) {
+  const t0 = Date.now();
+  while (!cond() && Date.now() - t0 < ms) await settle(20);
+  return cond();
+}
 
 async function withServer(fn) {
   const appServer = createAppServer({ mapSeed: 42, enableAi: false });
@@ -61,14 +67,14 @@ test("10A ws spectators receive full snapshots and cannot act", async () => {
     player.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
     const booth = await connect(port);
     booth.ws.send(JSON.stringify({ type: "c_spectate" }));
-    await settle();
+    await until(() => booth.messages.some((m) => m.type === "s_map"));
 
     assert.ok(booth.messages.some((m) => m.type === "s_spectating"));
     assert.ok(booth.messages.some((m) => m.type === "s_map"), "terrain shipped once");
 
     appServer.gameServer.step();
     appServer.transport.broadcastSnapshots(appServer.gameServer.getLatestSnapshot());
-    await settle();
+    await until(() => booth.messages.some((m) => m.type === "s_snapshot"));
     const snap = booth.messages.filter((m) => m.type === "s_snapshot").at(-1);
     assert.ok(snap, "spectator gets per-tick snapshots");
     assert.equal(snap.view.spectator, true);
@@ -76,7 +82,7 @@ test("10A ws spectators receive full snapshots and cannot act", async () => {
 
     // Read-only: any command bounces without touching the war.
     booth.ws.send(JSON.stringify({ type: "move_order", targetCellX: 1, targetCellY: 1, seq: 9 }));
-    await settle();
+    await until(() => booth.messages.some((m) => m.type === "s_rejected"));
     const bounce = booth.messages.filter((m) => m.type === "s_rejected").at(-1);
     assert.equal(bounce?.reason, "spectators only watch");
 

@@ -39,12 +39,12 @@ test("art: team identity carries BOTH color and symbol (spec §7 colorblind rule
   assert.ok(tokens.teams.length >= 2);
   for (const team of tokens.teams) {
     assert.match(team.color, /^#[0-9a-f]{6}$/i);
-    assert.ok(["square", "triangle", "circle", "diamond"].includes(team.symbol));
+    assert.ok(["shield", "arrow", "square", "triangle", "circle", "diamond"].includes(team.symbol));
     const iconPath = new URL(`client/assets/icons/svg/team_${team.symbol}.svg`, root);
     assert.ok(existsSync(iconPath), `symbol icon for team ${team.name}`);
   }
-  assert.equal(teamToken(tokens, 1).name, "red");
-  assert.equal(teamToken(tokens, 99).name, "green", "unknown team falls back safely");
+  assert.equal(teamToken(tokens, 1).name, "outliers"); // 12A faction ruling
+  assert.equal(teamToken(tokens, 99).name, "directorate", "unknown team falls back safely");
 });
 
 test("art: every procedural stand-in respects its manifest poly budget", () => {

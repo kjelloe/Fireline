@@ -1420,3 +1420,28 @@ by test. PART 2 remains: describeEvent's ~30 parameterized feed lines
 and the static index.html/briefing text.
 
 Suite 422/422 (x2). Tagged slice-13e, slice-14a, slice-15b.
+
+---
+
+## slice-12a — Faction identity: The Directorate vs The Outliers (2026-07-27, prompt 29)
+
+The designer's ruling, landed exactly as directed — IDENTITY ONLY, zero
+gameplay change, zero hashed-state change, no repin:
+- `shared/factions.js`: names, palettes (Directorate slate #5a6472 /
+  police blue #4a7dc9 / pale cyan; Outliers terracotta #c96a4a /
+  sun-bleached tan / warm yellow), symbols, tactical identities, the two
+  approved tone lines, blurbs, and the unique-unit/ability names
+  (Sentinel / Deploy Hardpoint; Skimmer / Riverline Drive).
+- Style tokens: team colors + symbols are now the faction ones — every
+  unit tint, panel, minimap dot, and the 11Y paint scheme re-key
+  automatically. New symbol SVGs: GRID SHIELD (order, territory) and
+  OFFSET ARROW through a broken circle (movement outside the system).
+- Join screen sells the choice ("fortify · contain · stabilize" vs
+  "bypass · improvise · disrupt"); the briefing opens with your faction's
+  line; op-info says Directorate/Outliers, not Team A/B.
+- Asset strip regenerated in faction colors. Art pins updated
+  (green/red → directorate/outliers; symbol whitelist grew).
+- 10A ws test hardened to poll-waits (load flake, same family as before).
+
+Suite 422/422 (x2). Tagged slice-12a. Next per directive: 12B Sentinel,
+12C Skimmer, each replacing one garage slot, no 17th asset.
