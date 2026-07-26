@@ -50,7 +50,8 @@ test("11M riverline states build with their own relays and remember the profile"
   assert.equal(s.mapProfile, "riverline");
   assert.deepEqual(
     s.sites.map((x) => [x.cellX, x.cellY]),
-    [[44, 32], [83, 32], [44, 95], [83, 95]]
+    [[44, 32], [83, 32], [44, 95], [83, 95], [58, 63], [69, 63]],
+    "four flank relays + the bridge pair (prompt 25 ruling b)"
   );
   assert.equal(s.assets.length, 32, "same roster on every map");
 

@@ -1348,3 +1348,21 @@ of load-sensitive fixed thresholds.
 Gate: winners stay mixed; three of five seeds become long high-scoring
 slugfests (185-190 on seed 777) — the flank patrols generate real
 contact. Suite 416/416 (x2). Tagged slice-11v.
+
+---
+
+## slice-11w — Riverline bridge relays (2026-07-26, prompt 25 ruling b)
+
+The central crossing gets a relay PAIR (58<->69, exact mirrors) — six
+relays on riverline, the bridges now the contested heart. Mirror
+invariant covered automatically by the 11M layout sweep. HONEST GATE
+RESULT: wars are livelier (relay churn at the bridges, 80-80 to 115-100
+scores) but still reach the horn undecided across 3 seeds — the bridge
+pair alone does not unlock standard captures; a carrier raid across a
+single contested choke rarely completes. Open item for the next design
+round: riverline standard-run viability (candidates: move standard homes
+nearer the road, a south-bridge route bias for raiders, or accept that
+riverline is the points-war map until the amphibious Infiltrator opens
+the river itself).
+
+Suite 416/416. Tagged slice-11w.

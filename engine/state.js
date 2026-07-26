@@ -150,10 +150,13 @@ export const MAP_LAYOUTS = Object.freeze({
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),
   riverline: Object.freeze({
-    // Mirrored pairs north and south of the road: 44<->83.
+    // Mirrored pairs north and south of the road (44<->83), plus the
+    // BRIDGE pair at the central crossing (58<->69, prompt 25 ruling b):
+    // the bridges are the contested heart of this map.
     relayCells: [
       { cellX: 44, cellY: 32 }, { cellX: 83, cellY: 32 },
       { cellX: 44, cellY: 95 }, { cellX: 83, cellY: 95 },
+      { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),
