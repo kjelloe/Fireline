@@ -24,12 +24,18 @@ export function createReplayPlayer(record, { checkpointEvery = 200 } = {}) {
   // ends). Records new checkpoints on the way.
   function seek(tick) {
     const target = Math.max(0, Math.min(tick, lastTick()));
+    // STRICTLY below the target tick: a checkpoint recorded mid-cluster
+    // (between same-tick commands) sits PAST the between-ticks observation
+    // point; returning it directly would show a half-applied tick. Seeking
+    // from strictly-below always crosses the advance boundary and stops
+    // exactly where the live hash was taken. (Found when 11V's extra AI
+    // commands shifted a checkpoint into a tick's command cluster.)
     let best = checkpoints[0];
     for (const cp of checkpoints) {
-      if (cp.state.tick <= target && cp.index >= best.index) best = cp;
+      if (cp.state.tick < target && cp.index >= best.index) best = cp;
     }
     // Reuse the live cursor when it is closer (forward play path).
-    if (cursor.state.tick <= target && cursor.index >= best.index) best = cursor;
+    if (cursor.state.tick < target && cursor.index >= best.index) best = cursor;
     let { index, state } = best;
     while (state.tick < target && index < log.length) {
       state = apply(state, log[index].cmd);

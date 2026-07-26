@@ -1319,3 +1319,32 @@ Suite 411/411 (x2). Tagged slice-11t.
    ("REPAIRING 4s"), dropped standards ("auto-returns in 38s").
 
 Suite 412/412 (x2). Tagged slice-11u.
+
+---
+
+## slice-11v — AI doctrine: bike / mortar / paths (2026-07-26, prompt 24)
+
+Approved trio, all sim-gated:
+- **Courier**: the recoverer role now goes to the FASTEST controlled seat
+  (ties: lowest operator) — a crewed bike is automatically the standard
+  courier; and a dropped own standard pulls the garage bike into service
+  (role-crewing rule between carrier and fire-support priority).
+- **Replacement fire support**: a team with no crewed operable indirect
+  tube crews a free mortar/artillery from the garage — dead artillery no
+  longer means silent guns for the rest of the war.
+- **Trails**: light chassis (fast + not heavy: scout, bike) patrol
+  LIGHT routes along the woodland trails (frontier rows 40/86 flanking
+  loops; riverline leans up and down the relay trail columns) — heavy
+  hulls keep the road. Mirrored tables, mirror-mode aware.
+
+Along the way, two latent bugs shaken out: the replay scrubber's
+checkpoint selection could return a MID-TICK state (checkpoint recorded
+between same-tick commands; `<=` → strictly `<` so seeks always cross the
+advance boundary — found because 11V's extra AI commands shifted a
+checkpoint into a command cluster), and the 11J flood test now asserts
+the rate-limit PROPERTY (rejected+queued accounts for the flood) instead
+of load-sensitive fixed thresholds.
+
+Gate: winners stay mixed; three of five seeds become long high-scoring
+slugfests (185-190 on seed 777) — the flank patrols generate real
+contact. Suite 416/416 (x2). Tagged slice-11v.

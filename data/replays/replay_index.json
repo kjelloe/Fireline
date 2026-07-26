@@ -107,6 +107,24 @@
       "reason": 4,
       "finalHash": "6ee91dd96768a35e",
       "finishedAt": "2026-07-26T19:07:41.461Z"
+    },
+    {
+      "id": "war-3121175947-7e597cae0f13",
+      "mapSeed": 3121175947,
+      "ticks": 3569,
+      "winner": 1,
+      "reason": 4,
+      "finalHash": "f92b1ef396aa80de",
+      "finishedAt": "2026-07-26T19:14:10.291Z"
+    },
+    {
+      "id": "war-3489868765-d0f7d63b1581",
+      "mapSeed": 3489868765,
+      "ticks": 2803,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "ea08fb9cc0fca9ac",
+      "finishedAt": "2026-07-26T19:19:22.026Z"
     }
   ]
 }
