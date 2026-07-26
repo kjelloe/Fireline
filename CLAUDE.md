@@ -38,7 +38,13 @@ outcome. Renderer presents fog-filtered views only.
   reducer, AI doctrine (roles, capture-seek, rescue, mining, pings) in
   `engine/ai_regency.js`. MAP: four mirrored relays (32/58/69/95),
   mirrored spawns (A x=7, B x=120) — mirror symmetry is a tested balance
-  invariant; never move one side without its mirror.
+  invariant; never move one side without its mirror. Second profile
+  `riverline` (MAP= env); per-profile layout in `MAP_LAYOUTS`.
+- Roster (7 chassis, ids 0-6): tank/scout/artillery/logistics/carrier/
+  bike/mortar. Per team: 4/3/2/3/2/1/1. Contract flags are EXPLICIT on
+  every chassis: canTow, canCarryStandard, capacity, canMine,
+  canClearMines, heavy (11N paths), canCapture (11R — bikes neither
+  capture nor contest), siege (11R — only artillery breaches sites).
 - Commands: join/select(confirm)/move/fire(asset|drone|site)/tow/crawl/
   redeploy/deploy_mine/clear_mine/ping (+ inert call_medic/respawn).
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it

@@ -184,6 +184,15 @@ the minimal toggle if playtests demand more.
 | 11I | **War-lifecycle regression test** | Integration test that a war ROTATION (game_over → postgame → reset) cleanly resets phase-9/11 state: mines, drones, ruins, materiel, camp clocks, manufacture timers, ping cooldowns. Nothing verifies this today. |
 | 11J | **Ops hardening** (plan 2.6) | Per-connection command rate limit, /version manifest (tag + fixtureVersion), feature-flag env plumbing. |
 
+### Delivered beyond the plan (prompt 19-22 windows)
+
+11K Recognition scoring · 11L direct control (all chassis) + 11O
+targeting · 11M riverline map · 11N path terrain · 11P batch-pc
+agent-mail lane + true mirror mode · 11Q art pass round 1 (APPROVED) ·
+11R Scout Bike · 11S Mortar Carrier. Suite at 406. Still queued:
+Sentinel/Infiltrator faction pair (own campaign, mirror-sweep gated),
+AI doctrine for bike/mortar/paths, chase cam (with art pass round 2).
+
 ### Awaiting rulings (see questions in reports/2026-07-26_rulings_round2.md + prompt-18 answer)
 
 - Q17 fuel 4000 ratification; Q19 bases-shellable (currently sacred);

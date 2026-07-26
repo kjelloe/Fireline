@@ -106,3 +106,21 @@ test("11L validation and determinism", () => {
   };
   assert.equal(run(), run());
 });
+
+test("11L+9E a direct-driver rolling onto an armed enemy mine detonates it", () => {
+  let s = sandbox([
+    { team: 0, cellX: 10, cellY: 10 },
+    { team: 0, cellX: 50 },
+    { team: 1, cellX: 40 },
+  ], [], { bases: OFF_BASES });
+  s = joinAndSelect(s, 0, 0, 0);
+  s.mines.push({ id: 0, team: 1, cellX: 12, cellY: 10, armTimer: 0, marked: 0 });
+  s = apply(s, { type: "drive", operatorId: 0, throttle: 1, turn: 0 });
+  let boom = false;
+  for (let i = 0; i < 60 && !boom; i++) { // off-supply half speed: ~32 ticks to reach it
+    s = apply(s, { type: "advance_tick" });
+    boom = s.events.some((e) => e.type === "mine_detonated");
+  }
+  assert.equal(boom, true, "the wheel gives no immunity to mines");
+  assert.ok(s.assets[0].hp < 100);
+});

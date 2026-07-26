@@ -65,6 +65,12 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- New garage chassis (11R/11S): press Next-asset to find the SCOUT BIKE
+  (fastest thing in the war, dies to anything, can't capture or even
+  contest relays — courier, spotter, standard-recovery sprinter) and the
+  MORTAR CARRIER (mobile indirect fire: 7-cell reach, 2-cell dead zone,
+  needs a team spotter, cannot breach relays — that stays artillery's
+  job). The AI never crews them — they are yours.
 - Second map (11M): `MAP=riverline npm start` — a rough-water river splits
   the field, three road bridges cross it, relays sit in mirrored pairs
   north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half

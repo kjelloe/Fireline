@@ -7,6 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { WebSocket } from "ws";
 import { UNIT_STATS, getUnitStats, UNIT_LOGISTICS } from "../engine/units.js";
+import { apply } from "../engine/reducer.js";
 import { GameServer } from "../engine/server.js";
 import { createAppServer } from "../server/index.js";
 import { createInitialState } from "../engine/state.js";
@@ -130,6 +131,52 @@ test("roster integration: a tank ordering a tow over ws gets the teaching reject
       .flatMap((m) => m.view.events)
       .find((e) => e.type === "rejected" && e.cmd === "tow_order");
     assert.equal(rejection?.reason, "needs a logistics truck");
+  } finally {
+    await appServer.stop();
+  }
+});
+
+test("roster component: every fielded chassis is selectable and drivable (11R/11S garage sweep)", () => {
+  // Roster mistakes (a type with no stats, a garage unit that rejects
+  // selection) should fail HERE, not in a playtest garage.
+  const s0 = createInitialState(42, "frontier_corridor");
+  const types = [...new Set(s0.assets.map((a) => a.type))].sort();
+  assert.deepEqual(types, [0, 1, 2, 3, 4, 5, 6], "seven chassis fielded");
+  for (const type of types) {
+    const asset = s0.assets.find((a) => a.type === type && a.team === 0 && a.operatorId === -1);
+    assert.ok(asset, `type ${type} has a free team-0 unit`);
+    let s = createInitialState(42, "frontier_corridor");
+    s = apply(s, { type: "join_operator", operatorId: 0, team: 0 });
+    s = apply(s, { type: "select_asset", operatorId: 0, assetId: asset.id, confirm: true });
+    assert.equal(s.assets[asset.id].operatorId, 0, `type ${type} selectable`);
+    s = apply(s, { type: "drive", operatorId: 0, throttle: 1, turn: 0 });
+    const x0 = s.assets[asset.id].x;
+    s = apply(s, { type: "advance_tick" });
+    assert.ok(s.assets[asset.id].x !== x0, `type ${type} drives`);
+  }
+});
+
+test("roster integration: the drive command works over the wire (11L ws gap)", async () => {
+  const appServer = createAppServer({ mapSeed: 42, enableAi: false });
+  const addr = await appServer.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+  try {
+    const ws = new WebSocket(`ws://localhost:${addr.port}`);
+    const messages = [];
+    ws.on("message", (d) => messages.push(JSON.parse(d)));
+    await new Promise((r) => ws.on("open", r));
+    ws.send(JSON.stringify({ type: "c_join", team: 0 }));
+    await new Promise((r) => setTimeout(r, 60));
+    appServer.gameServer.step();
+    ws.send(JSON.stringify({ type: "select_asset", assetId: 0, confirm: true }));
+    await new Promise((r) => setTimeout(r, 60));
+    appServer.gameServer.step();
+    ws.send(JSON.stringify({ type: "drive", throttle: 1, turn: 0 }));
+    await new Promise((r) => setTimeout(r, 60));
+    const x0 = appServer.gameServer.state.assets[0].x;
+    appServer.gameServer.step();
+    appServer.gameServer.step();
+    assert.ok(appServer.gameServer.state.assets[0].x > x0, "the wheel turns over ws");
+    ws.close();
   } finally {
     await appServer.stop();
   }
