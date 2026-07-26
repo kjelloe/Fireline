@@ -16,6 +16,7 @@ import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model
 import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor } from "./props_model.js";
+import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
@@ -44,6 +45,8 @@ const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
+let fogGhosts = []; // 13E: last-seen enemy contacts
+const ghostMeshes = new Map(); // enemyId -> Mesh (13E)
 let lastSelectAttempt = -1; // 10B
 let pendingTakeover = -1;   // 10B: asset awaiting Enter-confirm
 const teamPings = []; // 10C: recent own-team pings for world labels
@@ -1032,6 +1035,39 @@ function updatePingLabels(view) {
   }
 }
 
+// 13E fog ghosts: translucent last-seen hulls, fading over 10 s.
+function updateGhostMeshes(nowMs) {
+  const live = new Set();
+  for (const g of fogGhosts) {
+    const alpha = ghostOpacity(g, nowMs);
+    if (alpha <= 0) continue;
+    live.add(g.id);
+    let mesh = ghostMeshes.get(g.id);
+    if (!mesh) {
+      const resolved = resolveVisual(ASSET_MANIFEST, visualKeyFor(g));
+      mesh = buildProcedural(resolved.key ?? "tank") ?? buildProcedural("tank");
+      mesh.traverse((n) => {
+        if (n.isMesh) {
+          n.material = n.material.clone();
+          n.material.transparent = true;
+          n.material.color.set(0x9fb4c8); // spectral, faction-less memory
+        }
+      });
+      scene.add(mesh);
+      ghostMeshes.set(g.id, mesh);
+    }
+    mesh.position.set(g.x / CELL + 0.5, 0, g.y / CELL + 0.5);
+    mesh.rotation.y = Math.PI / 2 - ((g.heading ?? 0) * Math.PI * 2) / 256;
+    mesh.traverse((n) => { if (n.isMesh) n.material.opacity = alpha * 0.45; });
+  }
+  for (const [id, mesh] of ghostMeshes) {
+    if (!live.has(id)) {
+      scene.remove(mesh);
+      ghostMeshes.delete(id);
+    }
+  }
+}
+
 function updateDownedMeshes(view) {
   const live = new Set();
   for (const d of view.downedOperators ?? []) {
@@ -1112,6 +1148,8 @@ function renderBattlefield() {
   updateDirectRing(view);
   updateTaskStrip(view);
   updateActionBanner(view);
+  fogGhosts = updateGhosts(fogGhosts, view, performance.now());
+  updateGhostMeshes(performance.now());
   updateWorldLabels(view);
   updateOverlays(view);
   updateHealthBars(view);

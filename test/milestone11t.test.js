@@ -132,3 +132,25 @@ test("11X props are deterministic, terrain-correct, and density-bounded", async 
   assert.ok(trees > forestCells / 6 && trees < forestCells / 2,
     `tree density sane (${trees} of ${forestCells} forest cells)`);
 });
+
+test("13E fog ghosts: born on vanish, cleared on return, faded on schedule", async () => {
+  const { updateGhosts, ghostOpacity, GHOST_TTL_MS } = await import("../client/js/ghosts_model.js");
+  const enemy = { id: 20, type: 0, team: 1, x: 5 * CELL, y: 5 * CELL, heading: 64 };
+
+  let ghosts = updateGhosts([], { visibleEnemies: [enemy] }, 1000);
+  assert.equal(ghosts.length, 1);
+  assert.equal(ghostOpacity(ghosts[0], 1000), 0, "no ghost while the real thing shows");
+
+  ghosts = updateGhosts(ghosts, { visibleEnemies: [] }, 2000);
+  assert.equal(ghosts[0].visible, false, "vanished: the memory remains");
+  assert.deepEqual({ x: ghosts[0].x, h: ghosts[0].heading }, { x: 5 * CELL, h: 64 },
+    "frozen at the last seen pose");
+  assert.ok(ghostOpacity(ghosts[0], 2000) > 0.85, "fresh memory is strong");
+  assert.ok(ghostOpacity(ghosts[0], 2000 + GHOST_TTL_MS / 2) < 0.6, "and it fades");
+
+  const back = updateGhosts(ghosts, { visibleEnemies: [enemy] }, 3000);
+  assert.equal(back.filter((g) => g.id === 20 && !g.visible).length, 0, "reappearance clears the ghost");
+
+  const gone = updateGhosts(ghosts, { visibleEnemies: [] }, 2000 + GHOST_TTL_MS + 1);
+  assert.equal(gone.length, 0, "memory expires completely");
+});
