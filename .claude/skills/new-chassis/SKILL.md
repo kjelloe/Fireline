@@ -5,16 +5,28 @@ description: Add a new vehicle chassis/unit type to More Firepower end to end (e
 
 # Adding a chassis
 
+**Phase-11 additions to the checklist:** direct control (11L) works for
+any chassis automatically (speed/turnRate drive it). The art factory
+needs a builder + manifest entry + strip-width pin bump (11Q pattern).
+If the chassis is a FACTION UNIQUE (Sentinel/Infiltrator), it breaks the
+mirror-symmetry balance invariant BY DESIGN — the pair must be balanced
+against each other and gated with the mirror sweep
+(`MIRROR=1 tools/sim_sweep.mjs`), not assumed fair.
+
 Worked example: the Logistics Truck (marker-0037, `dev-log.md`). The test
 suite enforces most of this checklist — run `npm test` early and let failures
 point at what's missing.
 
 ## 1. Engine
 - `engine/units.js`: `UNIT_<NAME> = <next id>` + a frozen stats entry.
-  EVERY field explicit: speed/range/minRange/hp/damage/reloadTicks,
-  `indirect`, `canTow` — `roster_gaps.test.js` rejects implicit booleans.
-  New capability flags (e.g. `canCarryStandard` for the Carrier ruling)
-  follow the same pattern: explicit on ALL chassis.
+  EVERY field explicit — the full contract as of phase 11:
+  speed/range/minRange/hp/damage/reloadTicks/turnRate, `indirect`,
+  `canTow`, `canCarryStandard`, `capacity`, `canMine`, `canClearMines`,
+  `heavy` (11N: path-terrain penalty). `roster_gaps.test.js` and the
+  3A/9A pins reject implicit booleans. New capability flags (canCapture,
+  amphibious, deployable...) follow the same pattern: explicit on ALL
+  chassis, pinned in 3A, mirrored into data/units.json (regenerate it —
+  see dev-log 11A for the one-liner).
 - Fielding: `engine/state.js` spawn tables. Asset ids 0-7 are pinned
   (tank/tank/scout/artillery per team) — new chassis go into the reserve
   cycle (`RESERVE_TYPES`) or new slots ≥32 (which changes OPERATOR pairing —
