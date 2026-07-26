@@ -13,7 +13,12 @@ import { computeVisible } from "./los.js";
 import { inFireRange } from "./combat.js";
 import { inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
+import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
+
+// Objective doctrine (backend standard-war sims): each team's scout agent is
+// the designated raider. Deterministic by construction.
+const RAIDER_ASSET = Object.freeze({ 0: 2, 1: 6 });
 
 export const AI_OPERATOR_FIRST = 16;
 export const AI_OPERATOR_COUNT = 16;
@@ -132,6 +137,29 @@ export class AIRegency {
       if (!controlled.has(id)) controlled.set(id, null);
     }
 
+    // Per-team designated roles, computed fresh every tick from live state
+    // (both rules found by backend sims: a global recoverer pick left one team
+    // unable to recover; a dead scout left a team unable to raid again).
+    // recoverer: lowest controlled operator driving an operable team asset.
+    // raider: the team scout if alive, else the highest such operator's asset.
+    const recovererFor = { 0: -1, 1: -1 };
+    const raiderFor = { 0: -1, 1: -1 };
+    const scoutAlive = { 0: false, 1: false };
+    for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+      const op = state.operators[operatorId];
+      if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+      const a = state.assets[op.assetId];
+      if (!a || a.operatorId !== operatorId || isWreck(a)) continue;
+      if (recovererFor[a.team] === -1) recovererFor[a.team] = operatorId;
+      if (a.id === RAIDER_ASSET[a.team]) scoutAlive[a.team] = true;
+      // Fallback raiders come only from fixed agents: a lone regented slot
+      // (dropped human) plays relays, it does not solo-raid across the map.
+      if (agent) raiderFor[a.team] = a.id;
+    }
+    for (const team of [0, 1]) {
+      if (scoutAlive[team]) raiderFor[team] = RAIDER_ASSET[team];
+    }
+
     for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
       const operator = state.operators[operatorId];
       if (operator.state !== OP_ACTIVE || operator.assetId === -1) continue;
@@ -153,13 +181,29 @@ export class AIRegency {
         }
       }
 
-      // Movement doctrine: fixed agents patrol (hard difficulty pushes for
-      // relays instead); regented assets seek the nearest unowned relay.
+      // Movement doctrine, in priority order:
+      //   1. Standard carrier heads home to score.
+      //   2. Team's lowest controlled asset recovers a dropped own standard.
+      //   3. The designated raider (scout) goes for the grounded enemy standard.
+      //   4. Fixed agents patrol (hard difficulty pushes relays); regented
+      //      assets seek the nearest unowned relay.
       if (asset.state !== ASSET_IDLE) continue;
       let target = null;
-      if (agent && this.difficulty !== AI_HARD) {
+      if (state.standards.length === 2) {
+        const ownStd = state.standards[asset.team];
+        const enemyStd = state.standards[asset.team === 0 ? 1 : 0];
+        if (enemyStd.status === STD_CARRIED && enemyStd.carrierAssetId === asset.id) {
+          target = [ownStd.homeCellX, ownStd.homeCellY]; // escort yourself home
+        } else if (ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
+          target = [worldToCellFloor(ownStd.x), worldToCellFloor(ownStd.y)];
+        } else if (asset.id === raiderFor[asset.team] &&
+                   (enemyStd.status === STD_AT_BASE || enemyStd.status === STD_DROPPED)) {
+          target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
+        }
+      }
+      if (!target && agent && this.difficulty !== AI_HARD) {
         target = patrolTarget(agent, state.tick);
-      } else {
+      } else if (!target) {
         const relay = nearestUnownedRelay(state, asset);
         if (relay) target = [relay.cellX, relay.cellY];
         else if (agent) target = patrolTarget(agent, state.tick);

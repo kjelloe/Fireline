@@ -13,6 +13,7 @@ import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver } from "./feedback_model.js";
+import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
 import {
@@ -350,7 +351,15 @@ function upsertAssetMesh(a, friendly) {
     assetMeshes.set(a.id, mesh);
   }
   mesh.position.set(a.x / CELL + 0.5, 0, a.y / CELL + 0.5);
-  if (typeof a.heading === "number") mesh.rotation.y = -a.heading; // 4D: face motion
+  // 4D headings, smoothed: axis-major movement flips 90 degrees near
+  // diagonals, so turn gradually instead of snapping (playtest 3 fix).
+  if (typeof a.heading === "number") {
+    const target = -a.heading;
+    const prev = mesh.userData.smoothedHeading ?? target;
+    const maxStep = TURN_RATE_RAD_PER_SEC / 60;
+    mesh.userData.smoothedHeading = smoothHeading(prev, target, maxStep);
+    mesh.rotation.y = mesh.userData.smoothedHeading;
+  }
   if (friendly && a.operatorId === joined?.operatorId) {
     mesh.scale.setScalar(1.15);
   } else if (a.state !== STATE_DISABLED) {

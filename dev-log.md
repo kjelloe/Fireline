@@ -591,3 +591,38 @@ native port), E meta/live-ops (profiles/recognition, spectator + replay
 viewer, achievements, rotation/biomes, campaign/offline, telemetry,
 modding/workshop, custom modes, tournaments, ops hardening).
 Suggested V2.0 cut: "The Rescue Update". Four designer tensions flagged.
+
+---
+
+## marker-0039 — Rulings, AI objective doctrine, backend sims, wiggle fix (2026-07-26)
+
+**Rulings applied to plan-version2 (.md + .html):** (1) no-lobby stays the
+entry point, lobbies → Version 3 after real play experience; (2) artillery
+confirmed permanent; (3) standard carrying goes Carrier-exclusive when the
+Carrier ships, validated FIRST via AI-only backend sims; (4) anti-camping:
+modern DRONE recommended over a literal helicopter (new-IP rule, diorama
+aesthetic, EW synergy; helicopter as later skin) — pending veto.
+
+**AI objective doctrine (`engine/ai_regency.js`):** designated scout raiders
+steal grounded enemy standards, carriers escort themselves home, per-team
+recoverers reclaim dropped standards, roles re-designate deterministically
+when assets die (fallback raiders drawn from fixed agents only — lone
+regented slots keep playing relays). Two real bugs found BY the sims and
+fixed: a global recoverer pick left team B unable to recover; the
+scout-alive sentinel got clobbered so fallback raiding never engaged.
+
+**Backend sim harness:** `npm run simwar` (SEED/TICKS/DIFFICULTY env) — full
+AI-vs-AI standard wars with event timeline + replay verification. Findings
+logged in the plan: mutual-steal standoffs possible, contested-relay
+ownership churns tick-to-tick, lazy role reassignment stalls raids.
+
+**Playtest 3 wiggle fix:** `client/js/heading.js` (shortest-arc bounded-rate
+smoothing, pure + tested) wired into the renderer; authoritative turn-rate
+model queued as V2.x in the plan.
+
+**Consolidation:** `new-chassis` skill (checklist proven by the truck slice);
+`roster_gaps.test.js` (chassis contract completeness incl. explicit canTow,
+truck fielding pins, AI-never-tows pin, ws truck rescue incl. same-tick
+depot handoff, teaching rejection for tank tows); `ai_objective.test.js`
+(raider/carrier/recoverer/reassignment + determinism + heading math).
+Memories + manifest note refreshed. v0.12.0. Suite 283/283 (x2).

@@ -120,3 +120,22 @@ User prompts driving development, recorded verbatim in order. New prompts are ap
 1. `plan-version2.md` + `plan-version2.html` written: five tracks (roster/roles, battlefield depth, coordination, presentation/platforms, meta/live-ops) compiled from specs 01-06, phase 5-7 plans, future roadmap, asset spec, and user requests.
 2. Suggested V2.0 cut named "The Rescue Update" (Carrier, downed operators, cargo economy, mines, pings/tasks, art pass, spectator/replay viewer, profiles, direct-control mode).
 3. Four designer tensions flagged (5E lobbies vs no-lobby, artillery's roster status, carrier-exclusive standard carrying, helicopter-pressure equivalent).
+
+### Prompt 12 — Consolidation round 3 + three design rulings
+
+> Thanks. Does any docs, MD files or memories need updates with the latest discoveries? And any skills needing to be created? Any any more unit, component and integration tests needed. Also let's keep no-lobby philosophy as an entry point and add lobbys later, call it version 3, when we have more experience playing the game. We can add artillery. And yes could we add Firepower's helicopter for anti-camping role or should we go more modern with a drone as anti camping?
+
+**Decisions captured:**
+1. No-lobby stays THE entry point; lobbies deferred to **Version 3**, revisited only after real play experience.
+2. Artillery is CONFIRMED as a permanent roster member (tension resolved).
+3. Anti-camping role approved in principle; helicopter-vs-drone put to Claude — recommendation: modern DRONE (fits new-IP rule, toy-diorama aesthetic, EW-track synergy, cheap silhouette), helicopter reserved as possible later skin/variant. Pending user veto.
+4. Consolidation: roster gap tests, `new-chassis` skill, plan-version2 updated with rulings + V3 stub, memories refreshed.
+
+### Prompt 12b/12c — mid-run additions
+
+> Ah, sorry, yes standard-carrying goes Carrier-exclusive for now, and we have to simulate plays in the backend, to se how that plays out with game AI agents only
+> Also, when playtesting last i noticed that all the units wiggled back and forth when they changed direction 90 degrees, when moving. For the final movement we have to have gradual turning of course, not 90 degrees jumps when turning a bit left, then a bit right.
+
+**Decisions captured:**
+1. Standard carrying: Carrier-exclusive once the Command Carrier ships; evaluate via AI-only backend sims first (harness: `npm run simwar`, AI objective doctrine shipped).
+2. Movement wiggle: client gradual-turn smoothing shipped now; authoritative per-chassis turn-rate model queued V2.x.

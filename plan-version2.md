@@ -83,16 +83,37 @@ That cut completes the spec's core promise ("the defining experience is
 recovery") while staying inside systems the engine already hosts seams for.
 Estimated 12–16 slices at the established cadence.
 
-## Known tensions to resolve with the designer
+## Design rulings (2026-07-26, dev-prompts prompt 12)
 
-1. **Lobbies (phase plan 5E) vs the no-lobby philosophy** (spec 01 §7 and the
-   shipped join flow) — recommend dropping 5E in favor of the balance-aware
-   battle picker in Track C.
-2. **Artillery** exists in-engine but not in the spec roster — keep, rename,
-   or fold into the Assault Vehicle family when factions land?
-3. **Standard carrying**: exclusive to the Command Carrier when it ships, or
-   any-chassis-with-penalty as today? (Spec leans Carrier-exclusive escort
-   gameplay; today's rule is friendlier to small player counts.)
-4. **Helicopters** from the original Firepower (anti-camping pressure) have no
-   spec equivalent — worth a designer call whether some QRF/harassment event
-   fills that emotional slot.
+1. **No-lobby stays THE entry point.** Lobbies/matchmaking move to
+   **Version 3**, to be revisited only after real play experience (see below).
+2. **Artillery is confirmed** as a permanent roster member.
+3. **Standard carrying goes Command-Carrier-exclusive when the Carrier
+   ships** — validated FIRST by AI-only backend simulations. The harness now
+   exists: `npm run simwar` runs full AI-vs-AI standard wars (objective
+   doctrine: designated raiders, carriers escorting home, per-team
+   recoverers, lazy role reassignment). Early sim findings already logged:
+   mutual-steal standoffs are possible, relay ownership can churn tick-to-
+   tick when contested, and raider death without reassignment stalls the
+   war — all inputs to the Carrier-exclusive evaluation.
+4. **Anti-camping role: modern DRONE recommended** (pending veto) over a
+   literal Firepower helicopter — fits the new-IP rule, the toy-diorama
+   aesthetic (rotor toy on a stick), the Infiltrator/EW systems track, and a
+   cheap unmistakable silhouette; the helicopter can return later as a skin
+   or faction variant. Mechanic sketch: idle too long outside your supply
+   umbrella → an autonomous harassment drone spawns from the nearest enemy
+   relay, pesters (light damage, breaks suppression camping), expires or is
+   shot down. Deterministic, seeded, engine-side.
+
+## Also queued from playtests (engine feel)
+
+- **Vehicle heading & turn-rate model (V2.x)** — playtest 3: axis-major
+  movement makes units wiggle at near-diagonals. Client-side gradual-turn
+  smoothing shipped as mitigation (marker-0039); the real fix is authoritative
+  heading state with per-chassis turn rates (also unlocks the direct-control
+  homage mode's feel).
+
+## Version 3 (parking lot — needs play experience first)
+
+- Lobbies/matchmaking (old 5E) as an OPTIONAL entry beside the no-lobby flow.
+- Whatever the LAN/balance sessions prove the game still needs.
