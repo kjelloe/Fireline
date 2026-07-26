@@ -9,6 +9,7 @@ export const UNIT_ARTILLERY = 2;
 export const UNIT_LOGISTICS = 3;
 export const UNIT_CARRIER = 4;
 export const UNIT_BIKE = 5;    // 11R: scout bike
+export const UNIT_MORTAR = 6;  // 11S: mortar carrier
 
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
@@ -63,6 +64,19 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false,
     canCapture: false, siege: false,
+  }),
+  // 11S (prompt 22): the Mortar Carrier — artillery's little brother that
+  // keeps up with a push. Indirect fire on the move-and-stop rhythm:
+  // shorter reach and lighter shells than the siege gun, but nearly twice
+  // the mobility and a fast tube. NOT a siege piece (Q9: only artillery
+  // breaches infrastructure).
+  [UNIT_MORTAR]: Object.freeze({
+    id: UNIT_MORTAR, name: "mortar",
+    speed: 28, range: 1792, minRange: 512, hp: 60, damage: 15, indirect: true, reloadTicks: 25,
+    canTow: false, canCarryStandard: false, capacity: 0, turnRate: 12,
+    canMine: false, canClearMines: false,
+    heavy: false,
+    canCapture: true, siege: false,
   }),
 });
 

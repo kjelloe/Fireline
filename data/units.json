@@ -120,6 +120,26 @@
       "heavy": false,
       "canCapture": false,
       "siege": false
+    },
+    "6": {
+      "id": 6,
+      "name": "mortar",
+      "speed": 28,
+      "range": 1792,
+      "minRange": 512,
+      "hp": 60,
+      "damage": 15,
+      "indirect": true,
+      "reloadTicks": 25,
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0,
+      "turnRate": 12,
+      "canMine": false,
+      "canClearMines": false,
+      "heavy": false,
+      "canCapture": true,
+      "siege": false
     }
   }
 }

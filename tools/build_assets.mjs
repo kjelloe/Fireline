@@ -72,6 +72,11 @@ const ICONS = {
     `<circle cx="32" cy="32" r="20" fill="none" stroke="${C.hullShadow}" stroke-width="6"/>` +
     `<path d="M32 32 L32 14 A18 18 0 0 1 48 26 Z" fill="${C.selection}"/>`
   ),
+  "icon_mortar.svg": svg( // 11S
+    `<rect x="14" y="44" width="36" height="8" rx="2" fill="${C.hullShadow}"/>` +
+    `<rect x="26" y="14" width="12" height="30" rx="4" fill="${C.barrel}" transform="rotate(24 32 44)"/>` +
+    `<path d="M46 12 q6 8 2 16" stroke="${C.danger}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+  ),
   "icon_bike.svg": svg( // 11R
     `<circle cx="18" cy="44" r="10" fill="none" stroke="${C.wheel}" stroke-width="4"/>` +
     `<circle cx="46" cy="44" r="10" fill="none" stroke="${C.wheel}" stroke-width="4"/>` +
@@ -113,6 +118,7 @@ const SPRITES = {
   "unit_logistics.svg": ICONS["icon_logistics.svg"],
   "unit_carrier.svg": ICONS["icon_carrier.svg"],
   "unit_bike.svg": ICONS["icon_bike.svg"], // 11R
+  "unit_mortar.svg": ICONS["icon_mortar.svg"], // 11S
   "wreck.svg": ICONS["icon_wreck.svg"],
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],

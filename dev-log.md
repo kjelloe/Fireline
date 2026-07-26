@@ -1234,3 +1234,24 @@ tiles. 1A → v29.
 
 Suite 394/394 (x2, 399 with the new file), simwar + replay OK.
 Tagged slice-11r.
+
+---
+
+## slice-11s — The Mortar Carrier (2026-07-26, prompt 22)
+
+New chassis id 6: artillery's little brother — indirect fire that keeps
+up with a push. speed 28 / turnRate 12 (nearly twice the siege gun's
+mobility), range 1792 / minRange 512 / damage 15 / reload 25 (junior in
+reach, punch, and dead zone — all pinned relative to artillery, so a
+future artillery retune can't silently invert the relationship). Bound
+by the spotter doctrine like all indirect tubes; `siege: false` — the
+11R flag doing its job: mortars cannot breach infrastructure (Q9), and
+being indirect they cannot track aircraft. Fielding: garage slot idx 6
+traded from artillery to mortar (ids 14/26). Roster per team is now:
+4 tanks / 3 scouts / 2 artillery / 3 trucks / 2 carriers / 1 bike /
+1 mortar. Art: stubby high-angle tube + baseplate + shell-arc icon;
+strip → 22 tiles. 1A → v30.
+
+Sim gate: AI-war outcomes byte-identical to baseline (both new chassis
+are garage stock — humans and role-crewing reach them, fixed AI pairings
+don't). Suite 403/403 (x2). Tagged slice-11s.

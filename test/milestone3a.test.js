@@ -40,7 +40,8 @@ test("3A frontier spawn mix cycles tank/tank/scout/artillery per team", () => {
     assert.equal(teamAssets.filter((a) => a.type === 0).length, 4, "4 tanks (11R: one traded for the bike)");
     assert.equal(teamAssets.filter((a) => a.type === 5).length, 1, "1 scout bike (11R)");
     assert.equal(teamAssets.filter((a) => a.type === 1).length, 3, "3 scouts");
-    assert.equal(teamAssets.filter((a) => a.type === 2).length, 3, "3 artillery");
+    assert.equal(teamAssets.filter((a) => a.type === 2).length, 2, "2 artillery (11S: one traded for the mortar)");
+    assert.equal(teamAssets.filter((a) => a.type === 6).length, 1, "1 mortar carrier (11S)");
     assert.equal(teamAssets.filter((a) => a.type === 3).length, 3, "3 logistics trucks");
     assert.equal(teamAssets.filter((a) => a.type === 4).length, 2, "2 command carriers");
   }

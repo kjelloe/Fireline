@@ -214,7 +214,8 @@ function buildCarrier() {
 
 // Wrecks: same footprint, slumped/tilted/darkened, identifiable (spec §10).
 function buildWreck(kind) {
-  const base = kind === "wreck_bike" ? buildBike()
+  const base = kind === "wreck_mortar" ? buildMortar()
+    : kind === "wreck_bike" ? buildBike()
     : kind === "wreck_scout" ? buildScout()
     : kind === "wreck_artillery" ? buildArtillery()
     : kind === "wreck_logistics" ? buildLogistics()
@@ -302,6 +303,30 @@ function buildBike() {
   return g;
 }
 
+function buildMortar() {
+  // 11S: a light tracked chassis with a stubby high-angle tube and a
+  // baseplate — reads as "runs with the column, lobs over it".
+  const g = new THREE.Group();
+  const C = colors();
+  const tracks = box(0.52, 0.12, 0.6, C.wheel, "wornMetal"); tracks.position.y = 0.07;
+  const hull = box(0.44, 0.14, 0.56, C.hullPaint); hull.position.y = 0.18;
+  const bay = box(0.34, 0.1, 0.3, C.hullShadow); bay.position.set(0, 0.28, -0.06);
+  const baseplate = cyl(0.14, 0.17, 0.05, 8, C.barrel, "wornMetal");
+  baseplate.position.set(0, 0.3, -0.06);
+  const tube = cyl(0.06, 0.075, 0.4, 8, C.barrel, "wornMetal");
+  tube.rotation.x = Math.PI / 2 - 1.15; tube.position.set(0, 0.48, 0.04);
+  const bipod = cyl(0.015, 0.02, 0.24, 5, C.hullShadow);
+  bipod.rotation.x = -0.7; bipod.position.set(0.08, 0.4, 0.14);
+  for (const [x, z] of [[-0.14, -0.2], [0.14, -0.2]]) {
+    const crate = box(0.1, 0.08, 0.12, C.crate ?? C.hullPaint);
+    crate.position.set(x, 0.36, z);
+    g.add(crate);
+  }
+  const panel = teamPanel(0.24, 0.04, 0.12); panel.position.set(0, 0.28, 0.22);
+  g.add(tracks, hull, bay, baseplate, tube, bipod, panel);
+  return g;
+}
+
 function buildMine() {
   const g = new THREE.Group();
   const C = colors();
@@ -350,6 +375,8 @@ const BUILDERS = {
   wreck_carrier: () => buildWreck("wreck_carrier"),
   bike: buildBike,                              // 11R
   wreck_bike: () => buildWreck("wreck_bike"),   // 11R
+  mortar: buildMortar,                            // 11S
+  wreck_mortar: () => buildWreck("wreck_mortar"), // 11S
   operator_down: buildOperatorDown,
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),
