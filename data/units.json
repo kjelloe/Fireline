@@ -13,7 +13,8 @@
       "reloadTicks": 15,
       "canTow": false,
       "canCarryStandard": false,
-      "capacity": 0
+      "capacity": 0,
+      "turnRate": 8
     },
     "1": {
       "id": 1,
@@ -27,7 +28,8 @@
       "reloadTicks": 8,
       "canTow": false,
       "canCarryStandard": false,
-      "capacity": 0
+      "capacity": 0,
+      "turnRate": 14
     },
     "2": {
       "id": 2,
@@ -41,7 +43,8 @@
       "reloadTicks": 40,
       "canTow": false,
       "canCarryStandard": false,
-      "capacity": 0
+      "capacity": 0,
+      "turnRate": 5
     },
     "3": {
       "id": 3,
@@ -55,7 +58,8 @@
       "reloadTicks": 20,
       "canTow": true,
       "canCarryStandard": false,
-      "capacity": 0
+      "capacity": 0,
+      "turnRate": 10
     },
     "4": {
       "id": 4,
@@ -69,7 +73,8 @@
       "reloadTicks": 25,
       "canTow": false,
       "canCarryStandard": true,
-      "capacity": 2
+      "capacity": 2,
+      "turnRate": 6
     }
   }
 }

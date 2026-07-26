@@ -190,13 +190,48 @@ function applyTowOrder(next, command) {
   return next;
 }
 
+// 9F: heading-based movement. Headings are brads (0-255, 0 = +x east,
+// 64 = +y south). Vehicles pivot in place toward the bearing (per-chassis
+// turnRate brads/tick), then drive along one of 16 fixed directions with a
+// fixed-point velocity table. Pure integer math.
+const DIR_COS = [256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98, 0, 98, 181, 237];
+const DIR_SIN = [0, 98, 181, 237, 256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98];
+
+// Sector 0..15 of the vector (dx, dy) using rational tan boundaries.
+function bearing16(dx, dy) {
+  const ax = absI32(dx);
+  const ay = absI32(dy);
+  // Octant sectors via |dy|/|dx| against tan(11.25/33.75/56.25/78.75) deg.
+  let sector;
+  if (ay * 256 <= ax * 51) sector = 0;
+  else if (ay * 256 <= ax * 171) sector = 1;
+  else if (ax * 256 > ay * 171) sector = 2;
+  else if (ax * 256 > ay * 51) sector = 3;
+  else sector = 4;
+  // Map octant sector to the full 16 directions by quadrant.
+  let dir;
+  if (dx >= 0 && dy >= 0) dir = sector;              // E..S
+  else if (dx < 0 && dy >= 0) dir = 8 - sector;      // S..W
+  else if (dx < 0 && dy < 0) dir = 8 + sector;       // W..N
+  else dir = (16 - sector) % 16;                     // N..E
+  return dir;
+}
+
+function turnToward(heading, desiredBrads, turnRate) {
+  let diff = (desiredBrads - heading) & 255;
+  if (diff > 128) diff -= 256; // shortest arc in [-128, 127]
+  if (absI32(diff) <= turnRate) return desiredBrads;
+  return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
+}
+
 function stepAsset(asset, map, supplied, carrying, towing) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
 
+  const stats = getUnitStats(asset.type);
   const terrain = map.cells[cellY * map.width + cellX];
-  let step = floorDivI32(getUnitStats(asset.type).speed * speedMultiplier(terrain), 256);
+  let step = floorDivI32(stats.speed * speedMultiplier(terrain), 256);
   if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN); // 8B
   if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN); // 8D
@@ -204,22 +239,26 @@ function stepAsset(asset, map, supplied, carrying, towing) {
 
   const dx = asset.targetX - asset.x;
   const dy = asset.targetY - asset.y;
-  let remaining = step;
 
-  // Axis-major movement: spend the step on the larger displacement first.
-  if (absI32(dx) >= absI32(dy)) {
-    const mx = Math.min(absI32(dx), remaining);
-    asset.x += dx < 0 ? -mx : mx;
-    remaining -= mx;
-    const my = Math.min(absI32(dy), remaining);
-    asset.y += dy < 0 ? -my : my;
-  } else {
-    const my = Math.min(absI32(dy), remaining);
-    asset.y += dy < 0 ? -my : my;
-    remaining -= my;
-    const mx = Math.min(absI32(dx), remaining);
-    asset.x += dx < 0 ? -mx : mx;
+  // Close enough: snap and stop (prevents orbiting a near target).
+  if (absI32(dx) + absI32(dy) <= step) {
+    asset.x = asset.targetX;
+    asset.y = asset.targetY;
+    asset.state = ASSET_IDLE;
+    return;
   }
+
+  const desired = bearing16(dx, dy) * 16;
+  asset.heading = turnToward(asset.heading, desired, stats.turnRate);
+
+  // Facing too far off the bearing: pivot in place this tick.
+  let off = (desired - asset.heading) & 255;
+  if (off > 128) off = 256 - off;
+  if (off > 32) return;
+
+  const dir = (floorDivI32(asset.heading + 8, 16)) & 15;
+  asset.x += floorDivI32(step * DIR_COS[dir], 256);
+  asset.y += floorDivI32(step * DIR_SIN[dir], 256);
 
   if (asset.x === asset.targetX && asset.y === asset.targetY) {
     asset.state = ASSET_IDLE;

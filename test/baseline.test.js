@@ -153,8 +153,8 @@ test("visible enemy records leak no hp, target, or operator info", () => {
   const enemy = view.visibleEnemies[0];
   assert.deepEqual(
     Object.keys(enemy).sort(),
-    ["id", "state", "team", "type", "x", "y"],
-    "enemy view record must stay minimal"
+    ["heading", "id", "state", "team", "type", "x", "y"],
+    "enemy view record stays minimal (heading is externally observable)"
   );
 });
 

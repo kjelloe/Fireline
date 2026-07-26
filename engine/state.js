@@ -63,6 +63,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
   return {
     id, type, team, state: ASSET_IDLE,
     x, y, targetX: x, targetY: y,
+    heading: team === 1 ? 128 : 0, // brads: A faces east, B faces west (9F)
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery

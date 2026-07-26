@@ -26,6 +26,7 @@ export function hashState(state) {
     w.writeI32LE(a.ammo); w.writeI32LE(a.fuel); // added 1J
     w.writeI32LE(a.towedBy); w.writeI32LE(a.recoverTimer); // added 8D
     w.writeU8(a.reloadTimer); // added 8E
+    w.writeU8(a.heading); // added 9F
   }
   for (const s of state.sites) { // added 1I
     w.writeI32LE(s.id); w.writeI32LE(s.type); w.writeI32LE(s.owner);

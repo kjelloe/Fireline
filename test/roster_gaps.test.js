@@ -16,7 +16,7 @@ const settle = (ms = 60) => new Promise((r) => setTimeout(r, ms));
 
 test("roster unit: every chassis states its full contract explicitly", () => {
   for (const [type, stats] of Object.entries(UNIT_STATS)) {
-    for (const field of ["speed", "range", "minRange", "hp", "damage", "reloadTicks"]) {
+    for (const field of ["speed", "range", "minRange", "hp", "damage", "reloadTicks", "turnRate"]) {
       assert.equal(typeof stats[field], "number", `${stats.name}.${field} is a number`);
     }
     assert.equal(typeof stats.indirect, "boolean", `${stats.name}.indirect explicit`);

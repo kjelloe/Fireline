@@ -16,6 +16,7 @@ export function makeAsset(id, spec) {
   return {
     id, type: spec.type ?? 0, team: spec.team ?? 0, state: spec.state ?? ASSET_IDLE,
     x, y,
+    heading: spec.heading ?? ((spec.team ?? 0) === 1 ? 128 : 0),
     targetX: spec.targetX ?? x, targetY: spec.targetY ?? y,
     hp: spec.hp ?? 100, operatorId: spec.operatorId ?? -1,
     moveProgress: 0, suppressedTimer: spec.suppressedTimer ?? 0,

@@ -16,12 +16,13 @@ export function buildView(state, team) {
       ammo: a.ammo, fuel: a.fuel,
       towedBy: a.towedBy, recoverTimer: a.recoverTimer,
       reloadTimer: a.reloadTimer,
+      heading: a.heading,
     }));
 
   const visible = computeVisible(state, team);
   const visibleEnemies = state.assets
     .filter((a) => visible.has(a.id))
-    .map((a) => ({ id: a.id, type: a.type, team: a.team, state: a.state, x: a.x, y: a.y }));
+    .map((a) => ({ id: a.id, type: a.type, team: a.team, state: a.state, x: a.x, y: a.y, heading: a.heading }));
 
   // Relay infrastructure and base zones are public knowledge.
   const sites = state.sites.map((s) => ({

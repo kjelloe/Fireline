@@ -698,3 +698,27 @@ not AT_BASE), auto-return doesn't apply to CARRIED. War resolves only at
 the 18000-tick points horn → QUESTION for designer.
 
 Suite 291/291 (x2). Tagged slice-9a.
+
+---
+
+## slice-9f — Authoritative heading + turn-rate movement (night session, 2026-07-26)
+
+**Engine (Q11, Wave 1):** headings are brads (u8, 0=east, 64=south) in hashed
+state; per-chassis turnRate (tank 8, scout 14, artillery 5, truck 10,
+carrier 6 brads/tick). Movement rewritten from axis-major to
+pivot-then-drive: integer bearing16 (rational tan boundaries), shortest-arc
+turn clamped by turnRate, 16-direction fixed-point velocity table, drive only
+within 45 degrees of bearing, snap-arrival (|dx|+|dy| <= step) prevents
+orbiting. Aligned straight-line motion is bit-identical to before, so every
+historical movement pin (7*256+32 etc.) survives. 1A fixture → v16.
+
+**Views/client:** both friendly and enemy records expose heading (a vehicle's
+facing is externally observable); renderer converts brads → radians and keeps
+the visual smoothing as the last-step filter. The playtest-3 wiggle is now
+fixed at the SOURCE: units physically arc through turns.
+
+**Feel notes for the user:** direct-control mode (Wave 3.3) now has real
+vehicle handling to build on; artillery visibly labors through turns
+(5 brads/tick = 3.6 deg — very deliberate), scouts whip around.
+
+Suite 297/297 (x2). Tagged slice-9f.

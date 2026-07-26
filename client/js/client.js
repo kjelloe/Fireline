@@ -351,14 +351,18 @@ function upsertAssetMesh(a, friendly) {
     assetMeshes.set(a.id, mesh);
   }
   mesh.position.set(a.x / CELL + 0.5, 0, a.y / CELL + 0.5);
-  // 4D headings, smoothed: axis-major movement flips 90 degrees near
-  // diagonals, so turn gradually instead of snapping (playtest 3 fix).
-  if (typeof a.heading === "number") {
-    const target = -a.heading;
-    const prev = mesh.userData.smoothedHeading ?? target;
-    const maxStep = TURN_RATE_RAD_PER_SEC / 60;
-    mesh.userData.smoothedHeading = smoothHeading(prev, target, maxStep);
-    mesh.rotation.y = mesh.userData.smoothedHeading;
+  // 9F: the engine now owns headings (brads 0-255). Convert and smooth the
+  // last visual step; fall back to motion-derived heading for old snapshots.
+  const brads = typeof a.heading === "number" && a.heading >= 0 && a.heading <= 255
+    ? a.heading : null;
+  {
+    const target = brads !== null ? -(brads * Math.PI * 2) / 256 : null;
+    if (target !== null) {
+      const prev = mesh.userData.smoothedHeading ?? target;
+      const maxStep = TURN_RATE_RAD_PER_SEC / 60;
+      mesh.userData.smoothedHeading = smoothHeading(prev, target, maxStep);
+      mesh.rotation.y = mesh.userData.smoothedHeading;
+    }
   }
   if (friendly && a.operatorId === joined?.operatorId) {
     mesh.scale.setScalar(1.15);
