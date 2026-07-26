@@ -80,6 +80,22 @@ Suite 362 → **390/390**, fixture v26 → v28. Art pass NOT started —
 deliberately left for a fresh session (visual work, wants your strip
 feedback loop). Q2b point-bleed still armed-but-deferred.
 
+## Prompt-20 rulings (Q21-23) — landed
+
+| Slice | What |
+|---|---|
+| — | Q21 chase cam: (a) fixed tactical camera for direct drive NOW (already true), (b) rotating chase cam scheduled with the art/perspective pass. |
+| `slice-11n` | Q22 PATH terrain: dirt roads / woodland trails at ~1.2x for every chassis EXCEPT the heavy tank (rough speed on trails — explicit `heavy` contract flag). Mirrored trails on BOTH maps (frontier flanking loops, riverline relay trails); mirror invariant tested. A scout does 67 units/tick on a trail where a tank does 16 — light chassis now genuinely flank. |
+| `slice-11o` | Q23 direct-drive targeting: red range circle rides your unit; clicks become weapons-only with 3-cell aim assist (drones included); empty ground does nothing — a stray click can never drive you off your line. |
+
+Suite at **394/394**, 0I map fixture v2 (paths), 1A still v28 (no drift).
+
+**BATCH_PC via agent-mail: deferred by your instruction.** Semantics
+scoped from ../agent-mail/: the dev session posts jobs with `queue add
+--for batch-pc`, the worker lane on the gaming PC runs `flag wait`, takes
+the job, executes (sim sweep / perf run), and reports results back as
+mail with the CSV path; ack settles it. Will wire when you set the PC up.
+
 ## Newer questions (21+)
 
 21. **Chase cam** (from 11L): true rotating chase-cam in the orthographic
