@@ -20,7 +20,6 @@ import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import { factionFor } from "../../shared/factions.js";
-import { factionFor } from "../../shared/factions.js";
 import { activePings } from "../../engine/pings.js";
 import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
@@ -637,9 +636,10 @@ function upsertAssetMesh(a, friendly) {
         new THREE.MeshStandardMaterial({ color: 0x888888 }));
     mesh.userData.visualKey = visualKey;
     applyTeamColor(mesh, teamToken(ASSET_TOKENS, a.team).color);
-    // 11Y: faction paint scheme + per-hull weathering (wrecks stay ashen).
+    // 11Y/14B: faction paint (hulls toward the faction PRIMARY) + the
+    // insignia decal on the panel. Wrecks stay ashen.
     if (!visualKey.startsWith("wreck_")) {
-      applyFactionScheme(mesh, teamToken(ASSET_TOKENS, a.team).color, a.id);
+      applyFactionScheme(mesh, factionFor(a.team), a.id);
     }
     scene.add(mesh);
     assetMeshes.set(a.id, mesh);

@@ -125,6 +125,15 @@
       "reason": 0,
       "finalHash": "ea08fb9cc0fca9ac",
       "finishedAt": "2026-07-26T19:19:22.026Z"
+    },
+    {
+      "id": "war-2026-375ffbe026ea",
+      "mapSeed": 2026,
+      "ticks": 2849,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "1c9ca63957238d3a",
+      "finishedAt": "2026-07-27T00:50:34.199Z"
     }
   ]
 }

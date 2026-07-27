@@ -1555,3 +1555,31 @@ bind table instead of hardcoded letters. Colorblind-safe team symbols
 were already in (shield/arrow per faction).
 
 Suite 438/438 (x2). Tagged slice-15c.
+
+---
+
+## slice-14b + guards — faction palette r2, parse gate, join smoke (2026-07-27)
+
+**14B faction palette round 2**: `applyFactionScheme` now takes the full
+faction object — hulls lerp toward the faction PRIMARY (Directorate
+slate, Outlier terracotta; the identity color stays on the panel), and
+`applyInsignia` draws the faction symbol (grid shield / offset arrow) as
+a canvas-texture DECAL on every team panel — headless-safe no-op where
+no DOM exists (node tests, strip renderer). Hex-arg compatibility kept.
+Analyzer gained the 12D `--factionswap` mode: reports the SENTINEL-side
+win rate across normal+swapped runs — over 58% or under 42% = the unique
+pair needs tuning; ready for the nightly CSVs.
+
+**Playtest-5 incident**: a duplicate `factionFor` import (two overlapping
+12A patch runs) crashed the client at LOAD with a SyntaxError — and no
+node test imports client.js, so nothing caught it. Two guards added:
+1. `test/client_sources.test.js` — every client module must PARSE as an
+   ES module (`node --input-type=module --check`); this class of bug now
+   fails in milliseconds, always-on, no browser.
+2. `tools/client_smoke.mjs` (user's suggestion) — the Playwright
+   join-flow smoke: loads the client in Chromium, joins BOTH factions +
+   spectator, dismisses the briefing, asserts the war ticks and ZERO
+   page errors. Optional (exit 2 without playwright); documented in
+   BATCH_PC.md as the pre-playtest check on the gaming PC.
+
+Suite 440/440 (x2). Tagged slice-14b.

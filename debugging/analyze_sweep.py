@@ -73,9 +73,38 @@ def compare_mirror(normal, mirror):
     print(f"  decision changed by mirroring (decided<->undecided): {changed_decision}")
 
 
+def compare_factions(normal, swap):
+    # 12D: with uniques traded (Sentinel<->Skimmer), a fair pair keeps win
+    # rates steady; a shift that TRACKS the swap is chassis imbalance.
+    print("\n== FACTION-SWAP ANALYSIS (12D gate) ==")
+    n = normal["a"] + normal["b"]
+    s = swap["a"] + swap["b"]
+    if not n or not s:
+        print("  not enough decided wars to judge")
+        return
+    a_norm = normal["a"] / n
+    a_swap = swap["a"] / s
+    # Sentinel sits WEST (team A) normally, EAST after the swap.
+    sentinel_rate = (normal["a"] + swap["b"]) / (n + s)
+    print(f"  team A win rate: normal {100*a_norm:.1f}%  swapped {100*a_swap:.1f}%")
+    print(f"  SENTINEL-side win rate across both runs: {100*sentinel_rate:.1f}%")
+    if abs(sentinel_rate - 0.5) > 0.08:
+        who = "Sentinel" if sentinel_rate > 0.5 else "Skimmer"
+        print(f"  VERDICT: the {who} side over-performs — the unique pair needs tuning.")
+    else:
+        print("  VERDICT: unique pair within band — side/seed effects dominate.")
+
+
 def main():
     if len(sys.argv) < 2:
-        sys.exit(__doc__ or "usage: analyze_sweep.py <sweep.csv> [mirror.csv]")
+        sys.exit(__doc__ or "usage: analyze_sweep.py <sweep.csv> [mirror.csv] [--factionswap swap.csv]")
+    if "--factionswap" in sys.argv:
+        i = sys.argv.index("--factionswap")
+        normal = summarize(load(sys.argv[1]), sys.argv[1])
+        swap = summarize(load(sys.argv[i + 1]), sys.argv[i + 1])
+        if normal and swap:
+            compare_factions(normal, swap)
+        return
     normal = summarize(load(sys.argv[1]), sys.argv[1])
     if len(sys.argv) > 2:
         mirror = summarize(load(sys.argv[2]), sys.argv[2])

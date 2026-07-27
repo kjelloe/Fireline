@@ -221,3 +221,32 @@ test("11Y the faction scheme paints hulls apart, deterministically, panel-safe",
   });
   assert.deepEqual(metals, metalsRaw, "metal is metal on every faction");
 });
+
+test("14B the scheme accepts a faction object and stays headless-safe", async () => {
+  const { applyFactionScheme, applyInsignia } = await import("../client/js/asset_factory.js");
+  const { FACTIONS } = await import("../shared/factions.js");
+  const hullColors = (group) => {
+    const out = [];
+    group.traverse((n) => {
+      if (n.isMesh && n.name !== "team_panel" && n.userData.paintToken === "paintedMatte") {
+        out.push(n.material.color.getHexString());
+      }
+    });
+    return out;
+  };
+  // Faction-object path: hulls lerp toward the PRIMARY (slate vs terracotta).
+  const dir = buildProcedural("tank");
+  const out = buildProcedural("tank");
+  applyFactionScheme(dir, FACTIONS[0], 4);
+  applyFactionScheme(out, FACTIONS[1], 4);
+  assert.notDeepEqual(hullColors(dir), hullColors(out), "primaries read apart");
+
+  // Hex path still works (11Y compatibility).
+  const legacy = buildProcedural("tank");
+  applyFactionScheme(legacy, "#57c46b", 4);
+  assert.ok(hullColors(legacy).length > 0);
+
+  // Insignia is a graceful no-op without a DOM (this test IS headless).
+  assert.equal(typeof document, "undefined", "node test environment");
+  applyInsignia(buildProcedural("tank"), FACTIONS[0]); // must not throw
+});

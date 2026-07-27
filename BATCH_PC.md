@@ -132,6 +132,19 @@ from side bias. Analysis on the dev machine:
 **Priority order if time is short:** sweep 600 → factionswap 300 →
 mirror 600 → perf → difficulty matrix.
 
+## Job 1.5 — client join-flow smoke (any machine with playwright)
+
+```bash
+node tools/client_smoke.mjs   # ~15 s: loads the client in Chromium, joins
+                              # BOTH factions + spectator, dismisses the
+                              # briefing, verifies the war ticks and that
+                              # ZERO page errors fire. Run before any
+                              # playtest session on a machine that has
+                              # playwright — it catches load-order and
+                              # DOM-wiring breakage that node tests
+                              # structurally cannot.
+```
+
 ## Job 2 — client render perf (GPU)
 
 ```bash

@@ -462,15 +462,64 @@ export function buildProcedural(key) {
 // team panel) toward the faction hue, with a small per-asset value
 // jitter as weathering — no two hulls in a column read identical.
 // Deterministic from assetId; applyTeamColor stays panel-only (pinned).
-export function applyFactionScheme(group, factionColorHex, assetId = 0) {
-  const faction = new THREE.Color(factionColorHex);
+export function applyFactionScheme(group, factionOrHex, assetId = 0) {
+  // 14B: accepts a faction object ({colors:{primary}, symbol}) or a bare
+  // hex (11Y compatibility). Hulls lerp toward the faction PRIMARY —
+  // Directorate slate, Outlier terracotta — with per-hull weathering.
+  const primaryHex = typeof factionOrHex === "string"
+    ? factionOrHex
+    : factionOrHex?.colors?.primary ?? "#888888";
+  const primary = new THREE.Color(primaryHex);
   const jitter = 0.92 + ((assetId * 2654435761 >>> 0) % 100) / 100 * 0.16;
   group.traverse((node) => {
     if (!node.isMesh || node.name === "team_panel") return;
     if (node.userData.paintToken !== "paintedMatte") return;
     node.material = node.material.clone();
-    node.material.color.lerp(faction, 0.3).multiplyScalar(jitter);
+    node.material.color.lerp(primary, 0.3).multiplyScalar(jitter);
   });
+  if (typeof factionOrHex === "object" && factionOrHex?.symbol) {
+    applyInsignia(group, factionOrHex);
+  }
+}
+
+// 14B: the faction symbol as a decal on the team panel — grid shield or
+// offset arrow, drawn onto a canvas texture. Headless-safe: silently a
+// no-op where no DOM canvas exists (node tests, strip renderer).
+export function applyInsignia(group, faction) {
+  if (typeof document === "undefined") return;
+  let panel = null;
+  group.traverse((n) => { if (n.isMesh && n.name === "team_panel") panel = n; });
+  if (!panel) return;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.strokeStyle = ctx.fillStyle = "rgba(20,20,26,0.85)";
+  ctx.lineWidth = 5;
+  if (faction.symbol === "shield") {
+    ctx.beginPath();
+    ctx.moveTo(32, 10); ctx.lineTo(50, 17); ctx.lineTo(50, 34);
+    ctx.quadraticCurveTo(50, 46, 32, 54);
+    ctx.quadraticCurveTo(14, 46, 14, 34); ctx.lineTo(14, 17); ctx.closePath();
+    ctx.stroke();
+    ctx.lineWidth = 2.5;
+    for (const x of [25, 39]) { ctx.beginPath(); ctx.moveTo(x, 14); ctx.lineTo(x, 50); ctx.stroke(); }
+    for (const y of [24, 36]) { ctx.beginPath(); ctx.moveTo(17, y); ctx.lineTo(47, y); ctx.stroke(); }
+  } else {
+    ctx.beginPath();
+    ctx.arc(30, 34, 18, -0.4, Math.PI * 1.6);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(34, 30); ctx.lineTo(54, 10);
+    ctx.moveTo(54, 10); ctx.lineTo(42, 10);
+    ctx.moveTo(54, 10); ctx.lineTo(54, 22);
+    ctx.stroke();
+  }
+  panel.material = panel.material.clone();
+  panel.material.map = new THREE.CanvasTexture(canvas);
+  panel.material.needsUpdate = true;
 }
 
 // Tint the team-panel slot without touching the painted body.
