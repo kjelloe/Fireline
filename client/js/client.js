@@ -10,6 +10,10 @@ import { diffVisibleEnemies, visibleEnemyIds } from "./fog_culler.js";
 import { supplyOverlays, weaponRangeOverlay, healthBars } from "./overlay_model.js";
 import { mapEventsToCues } from "./audio_cues.js";
 import { mapEventsToVfx, pruneVfx, vfxAge } from "./vfx_cues.js";
+import {
+  mapEventsToMotion, recoilKick, tracerPoint, dustStep, motionAge, pruneMotion,
+  MOTION_TTL_MS,
+} from "./motion_cues.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
@@ -74,6 +78,10 @@ let toastUntil = 0;
 let boardCollapsed = localStorage.getItem("mf_board_collapsed") === "1";
 const eventFeed = [];
 let liveVfx = [];
+// 14C motion pass: cues (recoil/tracer/dust) + per-hull dust bookkeeping.
+let liveMotion = [];
+const motionMeshes = new Map(); // tracer/dust cue -> Mesh
+const dustTrack = new Map(); // assetId -> { x, z, lastEmitMs }
 const vfxMeshes = new Map(); // effect object -> Mesh
 const barMeshes = new Map(); // asset id -> Sprite
 let overlayGroup = null;
@@ -417,6 +425,7 @@ function connect() {
       handleEvents(msg.view.events ?? []);
       for (const cue of mapEventsToCues(msg.view.events, msg.view)) playCue(cue.cue);
       liveVfx.push(...mapEventsToVfx(msg.view.events, msg.view, performance.now()));
+      liveMotion.push(...mapEventsToMotion(msg.view.events, msg.view, performance.now()));
       updateOpInfo(msg);
     } else if (msg.type === "s_rejected") {
       pushEvent(`rejected: ${msg.reason}`);
@@ -890,6 +899,14 @@ function upsertAssetMesh(a, friendly) {
   } else if (a.state !== STATE_DISABLED) {
     mesh.scale.setScalar(1);
   }
+  // 14C: recoil — a fired hull kicks back along its own barrel line
+  // (forward is +z after rotation.y), then eases exactly home.
+  for (const cue of liveMotion) {
+    if (cue.kind !== "recoil" || cue.assetId !== a.id) continue;
+    const k = recoilKick(motionAge(cue, performance.now())) * 0.12;
+    mesh.position.x -= Math.sin(mesh.rotation.y) * k;
+    mesh.position.z -= Math.cos(mesh.rotation.y) * k;
+  }
   return mesh;
 }
 
@@ -1001,6 +1018,57 @@ function updateVfx(nowMs) {
     const grow = fx.kind === "capture_pulse" ? 1 + age * 3 : 1 + age * 1.5;
     mesh.scale.set(grow, grow, grow);
     mesh.material.opacity = 1 - age;
+  }
+}
+
+// 14C: tracers + dust. Recoil rides the asset upsert; this owns the rest.
+function updateMotion(nowMs) {
+  // Dust: a puff behind any hull that is actually rolling.
+  for (const [id, mesh] of assetMeshes) {
+    const prev = dustTrack.get(id);
+    const { x, z } = mesh.position;
+    if (!prev) { dustTrack.set(id, { x, z, lastEmitMs: 0 }); continue; }
+    const movedSq = (x - prev.x) ** 2 + (z - prev.z) ** 2;
+    const step = dustStep(prev.lastEmitMs, nowMs, movedSq);
+    if (step.emit) {
+      liveMotion.push({ kind: "dust", at: { x, y: z }, bornMs: nowMs, ttlMs: MOTION_TTL_MS.dust });
+    }
+    dustTrack.set(id, { x, z, lastEmitMs: step.lastEmitMs });
+  }
+  for (const [id] of dustTrack) if (!assetMeshes.has(id)) dustTrack.delete(id);
+
+  liveMotion = pruneMotion(liveMotion, nowMs);
+  const alive = new Set(liveMotion);
+  for (const [cue, mesh] of motionMeshes) {
+    if (!alive.has(cue)) { scene.remove(mesh); motionMeshes.delete(cue); }
+  }
+  for (const cue of liveMotion) {
+    if (cue.kind === "recoil") continue;
+    let mesh = motionMeshes.get(cue);
+    if (!mesh) {
+      mesh = cue.kind === "tracer"
+        ? new THREE.Mesh(
+            new THREE.SphereGeometry(0.08, 6, 6),
+            new THREE.MeshBasicMaterial({ color: 0xffc966 }))
+        : new THREE.Mesh(
+            new THREE.CircleGeometry(0.14, 8),
+            new THREE.MeshBasicMaterial({ color: 0xb9a184, transparent: true, opacity: 0.5 }));
+      if (cue.kind === "dust") {
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.set(cue.at.x, 0.03, cue.at.y);
+      }
+      scene.add(mesh);
+      motionMeshes.set(cue, mesh);
+    }
+    const age = motionAge(cue, nowMs);
+    if (cue.kind === "tracer") {
+      const p = tracerPoint(cue.from, cue.to, age);
+      mesh.position.set(p.x, 0.3 + p.h, p.y);
+    } else {
+      const grow = 1 + age * 2.2;
+      mesh.scale.set(grow, grow, grow);
+      mesh.material.opacity = 0.5 * (1 - age);
+    }
   }
 }
 
@@ -1254,6 +1322,16 @@ function updateDroneMeshes(view, nowMs) {
     if (!mesh) {
       mesh = buildProcedural("drone"); // 11Q: factory quad
       applyTeamColor(mesh, teamToken(ASSET_TOKENS, d.team).color);
+      // 14C: rotor blur disc — a faint spinning shadow that sells flight.
+      const rotor = new THREE.Mesh(
+        new THREE.CircleGeometry(0.26, 14),
+        new THREE.MeshBasicMaterial({
+          color: 0x1c1c1c, transparent: true, opacity: 0.3, side: THREE.DoubleSide,
+        }));
+      rotor.rotation.x = -Math.PI / 2;
+      rotor.position.y = 0.14;
+      rotor.name = "rotorDisc";
+      mesh.add(rotor);
       scene.add(mesh);
       droneMeshes.set(d.id, mesh);
     }
@@ -1887,6 +1965,7 @@ function renderBattlefield() {
   updateOverlays(view);
   updateHealthBars(view);
   updateVfx(performance.now());
+  updateMotion(performance.now());
   renderMinimap(interpolator.latest());
 
   // 8G: follow tracks your asset; manual pan/zoom takes over seamlessly.

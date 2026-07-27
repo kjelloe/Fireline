@@ -1848,3 +1848,20 @@ east side is systematically stronger. Engine fair; layout needs a
 symmetrization pass someday.
 
 Suite 466/466 (x2). 5-seed gate byte-identical to pre-16B. Tagged slice-16b.
+
+## slice-14c1 — motion pass batch 1 (art 2b PROMOTED, 2026-07-27)
+
+User promoted 2b/2d from "noted". Batch 1, all client-side and event-
+driven on the vfx_cues contract (pure `motion_cues.js`, renderer owns
+meshes): turret RECOIL on fire_resolved (kick back along the barrel
+line, eases exactly home — curve pinned 0 at both ends, peak at 20%),
+SHELL-ARC TRACERS for indirect chassis (parabolic apex mid-flight;
+fog-honest: both ends must be visible, no arcs out of nowhere), DUST
+puffs behind rolling hulls (cadence model: real movement + interval),
+and the drone ROTOR BLUR disc. Tests cover the curves, the fog rules,
+and the cadence; parse gate + wiring nets green. Batch 2 remains:
+track-scroll illusion (needs texture work on procedural hulls).
+NOTE: Playwright smoke is dormant on this machine too (never a
+package.json dep) — installing it is the user's dependency call.
+
+Suite 472/472 (x2 pending commit ritual). Tagged slice-14c1.
