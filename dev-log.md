@@ -1657,3 +1657,17 @@ Suite 445/445 (x2). Tagged slice-14i.
     carrying its distance. Seatless garage viewers still see everything.
 
 Suite 446/446 (x2). Tagged slice-14j.
+
+---
+
+## 14J' — order markers gone low-poly (2026-07-27, prompt 39)
+
+The billboarded glyph sprites read as pasted images — replaced with flat
+low-poly GROUND meshes in the game's own art language: a gold travel
+chevron (two blades + tip, ROTATED to point along your direction of
+travel), a red four-wedge attack reticle biting inward around a center
+diamond, a cyan recovery clamp (prongs + crossbar), a green field
+diamond for takes. RTS-style confirm: shrink into place in 180 ms, hold,
+fade flat by 1.1 s. Pure presentation.
+
+Suite 446/446 (x2). Committed on slice-14j.

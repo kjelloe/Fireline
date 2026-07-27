@@ -73,8 +73,10 @@ npm start                              # host machine
   the status panel gained ⌖ center-on-me. Base buildings and relay
   clutter never cover roads or trails.
 - Command UX (14I): hover any vacant friendly for its name tag + ⓘ stats
-  (the seed of the encyclopedia); every click-order stamps a fading glyph
-  at the spot (► move · ✚ fire · ⛓ tow); the lower-center STATUS PANEL
+  (the seed of the encyclopedia); every click-order drops a low-poly
+  ground marker that shrinks into place and fades — gold travel chevron
+  (pointing your direction of travel), red four-wedge attack reticle,
+  cyan recovery clamp, green take-diamond; the lower-center STATUS PANEL
   answers "why am I not firing" — HP/ammo/fuel bars plus the exact
   blocker (out of ammo/fuel/supply, reload countdown, suppressed,
   deployed) and a REQUEST SUPPLIES ping when you run dry. Every unit

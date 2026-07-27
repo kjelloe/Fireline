@@ -1363,35 +1363,99 @@ function showCodex(type) {
   document.getElementById("codex-close").onclick = () => { el.style.display = "none"; };
 }
 
-// 14I: a brief glyph at the click point — the order made visible.
-const ORDER_GLYPHS = {
-  move_order: ["►", "#f5e96b"],
-  fire_order: ["✚", "#ff6b52"],
-  tow_order: ["⛓", "#7fd4ff"],
-  crawl_order: ["►", "#ffd75e"],
-  select_asset: ["✓", "#9fe89f"],
+// 14J' (prompt 39): order confirms are LOW-POLY GROUND MARKERS in the
+// game's own art language — flat meshes that shrink into place and fade,
+// never billboarded sprites.
+function flatMat(colorHex) {
+  return new THREE.MeshBasicMaterial({
+    color: colorHex, transparent: true, opacity: 0.95, side: THREE.DoubleSide,
+  });
+}
+function makeOrderMarker(kind) {
+  const g = new THREE.Group();
+  if (kind === "move" || kind === "crawl") {
+    // A gold road chevron: two blades meeting at the tip, pointing +z.
+    const color = kind === "move" ? 0xf5c84a : 0xffd75e;
+    for (const side of [-1, 1]) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, 0.12), flatMat(color));
+      blade.position.set(side * 0.16, 0.05, -0.1);
+      blade.rotation.y = side * -Math.PI / 4;
+      g.add(blade);
+    }
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.3, 3), flatMat(color));
+    tip.rotation.x = Math.PI / 2;
+    tip.position.set(0, 0.05, 0.18);
+    g.add(tip);
+  } else if (kind === "fire") {
+    // A red reticle: four wedges biting inward + a center diamond.
+    for (let i = 0; i < 4; i++) {
+      const wedge = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.26, 3), flatMat(0xd8452e));
+      wedge.rotation.x = Math.PI / 2;
+      const a = (i / 4) * Math.PI * 2;
+      wedge.position.set(Math.sin(a) * 0.55, 0.05, Math.cos(a) * 0.55);
+      wedge.rotation.y = -a + Math.PI; // point inward
+      g.add(wedge);
+    }
+    const core = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.03, 0.14), flatMat(0xd8452e));
+    core.rotation.y = Math.PI / 4;
+    core.position.y = 0.05;
+    g.add(core);
+  } else if (kind === "tow") {
+    // A cyan recovery clamp: two prongs and a crossbar.
+    for (const side of [-1, 1]) {
+      const prong = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.5), flatMat(0x5ec4e8));
+      prong.position.set(side * 0.3, 0.05, 0.05);
+      g.add(prong);
+    }
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.03, 0.1), flatMat(0x5ec4e8));
+    bar.position.set(0, 0.05, -0.22);
+    g.add(bar);
+  } else { // select/take: a green field diamond.
+    const ring = new THREE.Mesh(new THREE.RingGeometry(0.34, 0.46, 4), flatMat(0x57c46b));
+    ring.rotation.x = -Math.PI / 2;
+    ring.rotation.z = Math.PI / 4;
+    ring.position.y = 0.05;
+    g.add(ring);
+  }
+  return g;
+}
+const ORDER_KIND = {
+  move_order: "move", crawl_order: "crawl", fire_order: "fire",
+  tow_order: "tow", select_asset: "select",
 };
 function spawnOrderMarker(cmd, cellX, cellY) {
-  const g = ORDER_GLYPHS[cmd.type];
-  if (!g) return;
-  const sprite = makeTextSprite(g[0], g[1]);
-  sprite.scale.set(1.2, 1.2, 1);
-  sprite.position.set(cellX + 0.5, 0.6, cellY + 0.5);
-  scene.add(sprite);
-  orderMarkers.push({ sprite, bornMs: performance.now() });
+  const kind = ORDER_KIND[cmd.type];
+  if (!kind) return;
+  const marker = makeOrderMarker(kind);
+  marker.position.set(cellX + 0.5, 0, cellY + 0.5);
+  // Movement chevrons point along the travel direction from your asset.
+  if (kind === "move" || kind === "crawl") {
+    const me = interpolator.latest()?.friendlyAssets?.find(
+      (a) => a.operatorId === joined?.operatorId);
+    if (me) {
+      const dx = cellX + 0.5 - me.x / CELL;
+      const dz = cellY + 0.5 - me.y / CELL;
+      marker.rotation.y = Math.atan2(dx, dz);
+    }
+  }
+  scene.add(marker);
+  orderMarkers.push({ marker, bornMs: performance.now() });
 }
 function updateOrderMarkers(nowMs) {
   for (let i = orderMarkers.length - 1; i >= 0; i--) {
     const m = orderMarkers[i];
     const age = nowMs - m.bornMs;
     if (age > 1100) {
-      scene.remove(m.sprite);
+      scene.remove(m.marker);
       orderMarkers.splice(i, 1);
-    } else {
-      m.sprite.material.opacity = 1 - age / 1100;
-      m.sprite.material.transparent = true;
-      m.sprite.position.y = 0.6 + age / 1100 * 0.5;
+      continue;
     }
+    // RTS confirm: shrink into place fast, then fade out flat.
+    const settle = Math.min(1, age / 180);
+    const size = 1.6 - 0.6 * settle;
+    m.marker.scale.set(size, 1, size);
+    const fade = age < 500 ? 1 : 1 - (age - 500) / 600;
+    m.marker.traverse((n) => { if (n.isMesh) n.material.opacity = 0.95 * fade; });
   }
 }
 
