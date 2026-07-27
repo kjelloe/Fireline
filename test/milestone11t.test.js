@@ -332,3 +332,36 @@ test("14I need_supplies is a legal standing ping in both catalogs", async () => 
   assert.ok(PING_KINDS.includes("need_supplies"));
   assert.ok("ping.need_supplies" in CATALOGS.en && "ping.need_supplies" in CATALOGS.no);
 });
+
+test("14J mission cards fit the asset: capability filter, one per kind, distance", () => {
+  const CELLP = 256;
+  const view = {
+    team: 0,
+    standards: [],
+    friendlyAssets: [
+      { id: 1, type: 0, operatorId: 9, x: 10 * CELLP, y: 10 * CELLP, towedBy: -1, recoverTimer: 0 }, // my tank
+      { id: 2, state: 2, x: 12 * CELLP, y: 10 * CELLP, towedBy: -1, recoverTimer: 0 },
+      { id: 3, state: 2, x: 40 * CELLP, y: 10 * CELLP, towedBy: -1, recoverTimer: 0 },
+    ],
+    downedOperators: [{ operatorId: 5, x: 14 * CELLP, y: 10 * CELLP }],
+    sites: [{ id: 0, owner: 0, capturingTeam: 1, hp: 60, cellX: 20, cellY: 10 }],
+  };
+  // A tank: no tow, no bunks — recover and rescue cards are NOT its missions.
+  const tank = tasksFor(view, 9);
+  const kinds = tank.map((x) => x.kind);
+  assert.equal(kinds.includes("recover"), false, "tanks don't tow");
+  assert.equal(kinds.includes("rescue"), false, "tanks have no bunks");
+  assert.ok(kinds.includes("defend_relay"), "combat cards remain");
+
+  // A truck sees ONE recover card — the nearest of the two wrecks.
+  view.friendlyAssets[0].type = 3;
+  const truck = tasksFor(view, 9);
+  const recovers = truck.filter((x) => x.kind === "recover");
+  assert.equal(recovers.length, 1, "one card per kind");
+  assert.equal(recovers[0].cellX, 12, "the nearest wreck wins");
+  assert.equal(typeof recovers[0].distance, "number");
+
+  // Seatless viewers (garage) still see the full board.
+  const garage = tasksFor(view, 99).map((x) => x.kind);
+  assert.ok(garage.includes("recover") && garage.includes("rescue"));
+});

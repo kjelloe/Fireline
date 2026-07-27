@@ -1632,3 +1632,28 @@ Also: the DOM-id regression net caught its first dynamic-id case
 ws test moved to poll-waits (flake family).
 
 Suite 445/445 (x2). Tagged slice-14i.
+
+---
+
+## slice-14j — Playtest-6 mission UX, items 5-10 (2026-07-27, prompt 38)
+
+5. **Mission toasts + team board**: your Recognition score rising IS a
+   mission completing — the client diffs your public score and toasts
+   "MISSION COMPLETE +N pts" center screen (2.6 s fade). Left side: the
+   collapsible TEAM TOP 5 (public scoreboard, humans and regents,
+   collapse state persisted).
+6. **Roads are sacred**: base buildings and relay clutter check their
+   footprint against the terrain and never cover road or trail cells
+   (the fuel tanks that used to sit on the base's road strip are gone).
+7. NOT BUILT — design question answered in the session notes: garage
+   stock as session/difficulty config (queued as engine-config slice;
+   NPC drivers arrive naturally with 12E).
+8. **⌖ center-on-me** button on the status panel (same as F).
+9. **Golden target rings**: applicable mission targets within 15 cells
+   get a pulsing gold ground ring — follow the gold, do the mission.
+10. **Missions fit the asset**: capability filter (recover/repair need a
+    truck, rescue needs bunks; combat/standard cards for everyone), ONE
+    card per kind (nearest instance wins), up to FIVE visible, each card
+    carrying its distance. Seatless garage viewers still see everything.
+
+Suite 446/446 (x2). Tagged slice-14j.

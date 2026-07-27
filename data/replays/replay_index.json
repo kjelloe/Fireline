@@ -143,6 +143,15 @@
       "reason": 0,
       "finalHash": "f5c82b62e540c7c1",
       "finishedAt": "2026-07-27T01:05:54.054Z"
+    },
+    {
+      "id": "war-2026-827df64fe7ce",
+      "mapSeed": 2026,
+      "ticks": 11826,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "b0aa48ccd1cfd942",
+      "finishedAt": "2026-07-27T01:25:45.163Z"
     }
   ]
 }

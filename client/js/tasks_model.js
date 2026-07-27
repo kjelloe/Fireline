@@ -1,4 +1,5 @@
 import { t } from "./strings.js";
+import { UNIT_STATS } from "../../engine/units.js";
 // client/js/tasks_model.js — public tasks (plan 2.4, spec 02 §15) as a
 // PURE view-model. Tasks derive from the team's fog-filtered view, so
 // they can never leak what the team doesn't legitimately know — the
@@ -90,7 +91,32 @@ export function tasksFor(view, myOperatorId = null) {
       });
     }
   }
-  tasks.sort((x, y) => x.priority - y.priority ||
+  // 14J (playtest 6.10): missions fit the asset you are driving.
+  // - capability filter: recover/repair need a truck, rescue pickup needs
+  //   bunks; combat/standard cards apply to everyone.
+  // - one card per KIND: the nearest instance to your asset wins.
+  const my = (view?.friendlyAssets ?? []).find((a) => a.operatorId === myOperatorId);
+  const dist = (task) => my
+    ? Math.max(Math.abs(cellOf(my.x) - task.cellX), Math.abs(cellOf(my.y) - task.cellY))
+    : 0;
+  let fitted = tasks;
+  if (my) {
+    const stats = UNIT_STATS[my.type] ?? {};
+    fitted = tasks.filter((task) => {
+      if (task.kind === "recover" || task.kind === "repair_site") return !!stats.canTow;
+      if (task.kind === "rescue") return (stats.capacity ?? 0) > 0;
+      return true; // stop_thief/secure/escort/defend/towing_now: everyone
+    });
+  }
+  const byKind = new Map();
+  for (const task of fitted) {
+    const held = byKind.get(task.kind);
+    if (!held || dist(task) < dist(held)) byKind.set(task.kind, task);
+  }
+  const out = [...byKind.values()];
+  out.sort((x, y) => x.priority - y.priority ||
     x.cellX - y.cellX || x.cellY - y.cellY);
-  return tasks.map((t, i) => ({ ...t, id: `${t.kind}:${t.cellX},${t.cellY}`, rank: i }));
+  return out.map((t, i) => ({
+    ...t, id: `${t.kind}:${t.cellX},${t.cellY}`, rank: i, distance: dist(t),
+  }));
 }

@@ -65,6 +65,13 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Mission UX (14J): completing recognized work toasts MISSION COMPLETE
+  +N pts center screen; the collapsible TEAM TOP 5 board sits on the
+  left; mission cards now FIT your asset (a tank never sees tow
+  missions), show one per kind (nearest first) with up to five visible;
+  golden pulsing rings mark applicable mission targets within 15 cells;
+  the status panel gained ⌖ center-on-me. Base buildings and relay
+  clutter never cover roads or trails.
 - Command UX (14I): hover any vacant friendly for its name tag + ⓘ stats
   (the seed of the encyclopedia); every click-order stamps a fading glyph
   at the spot (► move · ✚ fire · ⛓ tow); the lower-center STATUS PANEL
