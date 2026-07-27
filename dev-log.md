@@ -1936,3 +1936,21 @@ honest surprise:
   question but not the 4070 number we wanted).
 
 Suite 481/481 (x2). 5-seed gate healthy. Tagged slice-16c.
+
+## slice-16d — equivariant heading snap (2026-07-27)
+
+The divergence probe (dbg_mirror_diverge.mjs) caught its first culprit
+at TICK 2: headings exactly between two 16-dir sectors (h ≡ 8 mod 16)
+always rounded clockwise — h=248 snapped to pure east (cos 256) while
+its mirror 136 snapped to a diagonal (cos -237). Fix: `dirForHeading`
+tie-breaks to the EVEN direction index, which commutes with both
+reflections. Probe now runs 80 ticks of EXACT mirror equivariance (the
+tick-81 divergence is a transform artifact: anchor-preserving
+reflection vs mid-cell floor sampling — analyzed direction-symmetric
+in-world, so not a fairness bug). Frontier post-fix 48.0/46.3 (fair);
+riverline mirror pairs now flip at a perfect 100.0%. BUT the east edge
+itself SURVIVES (B 57.9% of decided) — mechanism still at large;
+subsystem-ablation bisection is next (dbg_ablate_sweep.mjs:
+nowater/nopaths/nomines/nodrones).
+
+Suite 481/481 (x2 with prior run). Gate healthy.

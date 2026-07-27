@@ -603,6 +603,21 @@ function applyTowOrder(next, command) {
 const DIR_COS = [256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98, 0, 98, 181, 237];
 const DIR_SIN = [0, 98, 181, 237, 256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98];
 
+// Heading -> 16-direction snap. A heading EXACTLY between two sectors
+// (h ≡ 8 mod 16) used to round clockwise, which is not mirror-safe: 248
+// snapped to pure east (cos 256) while its mirror 136 snapped to a
+// diagonal (cos -237) — the divergence probe caught the asymmetry at
+// tick 2 of a riverline war. Tie-break: the EVEN direction index, which
+// commutes with both the E-W and N-S reflections.
+function dirForHeading(heading) {
+  const h = heading & 255;
+  if ((h & 15) === 8) {
+    const lo = (h >> 4) & 15;
+    return (lo & 1) === 0 ? lo : (lo + 1) & 15;
+  }
+  return (floorDivI32(h + 8, 16)) & 15;
+}
+
 // Sector 0..15 of the vector (dx, dy) using rational tan boundaries.
 function bearing16(dx, dy) {
   const ax = absI32(dx);
@@ -651,7 +666,7 @@ function driveStep(asset, map, supplied, carrying, towing) {
   if (asset.driveThrottle < 0) step = floorDivI32(step, 2); // reverse gear
   if (step <= 0) return;
 
-  const dir = (floorDivI32(asset.heading + 8, 16)) & 15;
+  const dir = dirForHeading(asset.heading);
   const sign = asset.driveThrottle < 0 ? -1 : 1;
   const maxX = (map.width - 1) * 256 + 255;
   const maxY = (map.height - 1) * 256 + 255;
@@ -695,7 +710,7 @@ function stepAsset(asset, map, supplied, carrying, towing) {
   if (off > 128) off = 256 - off;
   if (off > 32) return;
 
-  const dir = (floorDivI32(asset.heading + 8, 16)) & 15;
+  const dir = dirForHeading(asset.heading);
   asset.x += truncDivI32(step * DIR_COS[dir], 256);
   asset.y += truncDivI32(step * DIR_SIN[dir], 256);
 
