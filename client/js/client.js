@@ -177,6 +177,10 @@ function init() {
 
   // 8G: free camera controls (11L: direct mode claims WASD first).
   window.addEventListener("keydown", (e) => {
+    // 15C binds — declared FIRST: this handler once read k before this
+    // line existed below it, and the TDZ throw killed EVERY keypress
+    // (caught by the Playwright smoke the day it ran locally).
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (k === BINDS.directDrive) {
       directMode = !directMode;
       if (!directMode) { for (const k in driveHeld) driveHeld[k] = false; }
@@ -197,7 +201,6 @@ function init() {
       const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
     }
-    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key; // 15C binds
     if (k === BINDS.redeploy) send({ type: "redeploy" }); // 9B
     // 11G manual rescue: B boards the adjacent carrier, U hops out.
     if (k === BINDS.board) {

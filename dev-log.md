@@ -1888,3 +1888,18 @@ Three consumers seeded:
   the PC's perf harness run (playwright install pending there).
 
 Suite 479/479 (x2). Tagged slice-14d.
+
+## keybind hotfix — the smoke gate's first local catch (2026-07-27)
+
+Playwright landed on the dev machine and `node tools/client_smoke.mjs`
+failed on its FIRST run: "Cannot access 'k' before initialization" on
+every join path. Real pre-existing bug from the 15C keybinds refactor —
+the keydown handler tested `k === BINDS.directDrive` twenty lines ABOVE
+`const k = ...`, so the TDZ throw killed EVERY keypress since 15C
+(direct-drive toggle, redeploy, board/unboard, camera keys). Parse gate
+can't see TDZ; only a real browser could. Declaration moved to the top
+of the handler; smoke now green end to end (both factions join, briefing
+shows, war ticks, zero page errors). The smoke gate joins the standard
+client-slice ritual now that it runs locally.
+
+Suite 479/479 (x2). Smoke OK.
