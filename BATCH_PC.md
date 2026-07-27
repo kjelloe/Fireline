@@ -23,7 +23,13 @@ there); the gaming PC points its remote at the dev machine.
 
 ```bash
 # DEV machine (WSL) — start/confirm the hub any time:
-bash tools/hub_up.sh          # binds 0.0.0.0:8971, prints the WSL IP
+bash tools/hub_up.sh          # starts the hub AND verifies the whole
+                              # Windows path: portproxy freshness (the
+                              # WSL IP changes every reboot — a stale
+                              # proxy black-holes the hub silently) and
+                              # the firewall rule. It prints the exact
+                              # admin commands when something is off.
+                              # "Worker can't reach the hub" => run this FIRST.
 ```
 
 Because the hub lives inside WSL2, the DEV machine's WINDOWS side needs
