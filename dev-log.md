@@ -1865,3 +1865,26 @@ NOTE: Playwright smoke is dormant on this machine too (never a
 package.json dep) — installing it is the user's dependency call.
 
 Suite 472/472 (x2 pending commit ritual). Tagged slice-14c1.
+
+## slice-14d — baked sprites (art 2d PROMOTED, 2026-07-27)
+
+The strip tool's software rasterizer moved VERBATIM into
+`tools/soft_raster.mjs` (asset_strip.png byte-identical across the move
+— md5 pinned before/after). New `npm run sprites` bakes every
+procedural key into 16-heading rotation sheets (64px frames, both team
+tints, 308K total, deterministic): frame f == heading brads f*16, so
+`sprite_frames.js frameForBrads` is a one-liner both sides pin by test.
+Three consumers seeded:
+- `sprite_renderer.js` — the 2D canvas fallback. Engages ONLY when
+  WebGL is absent (probe) or ?renderer=2d: spectator-grade terrain +
+  sprites view with an i18n notice; the 3D path is untouched by
+  construction (fallback short-circuits init). Cue arrays prune in the
+  2D loop too (they'd have grown unbounded). buildDrawList is pure and
+  fog-honest (tested: wrecks pick wreck sheets, world coords get the
+  half-cell offset like the 3D client).
+- Minimap unit icons: YOUR hull now renders as its baked frame,
+  heading and all — the seed; other dots stay dots.
+- fps-floor AUTO-engage (the perf-data half of the ruling) waits for
+  the PC's perf harness run (playwright install pending there).
+
+Suite 479/479 (x2). Tagged slice-14d.

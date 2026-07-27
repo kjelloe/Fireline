@@ -6,13 +6,13 @@
 // Output: client/assets/preview/asset_strip.png    Run: npm run strip
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { deflateSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as THREE from "three";
 import {
   setStyleTokens, buildProcedural, proceduralKeys, applyTeamColor,
 } from "../client/js/asset_factory.js";
+import { hex, trianglesOf, makeProjector, makeShader, encodePng } from "./soft_raster.mjs";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tokens = JSON.parse(readFileSync(path.join(ROOT, "client/assets/metadata/style_tokens.json")));
@@ -27,51 +27,9 @@ const PITCH = 0.6;         // ~34 degrees — the diorama band from the art spec
 const BG = hex(tokens.terrainPalette?.open ?? "#77995a");
 const PANEL = [24, 24, 32];
 
-function hex(h) {
-  return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-}
-
-// ── triangle extraction ───────────────────────────────────────────────────────
-function trianglesOf(group) {
-  group.updateMatrixWorld(true);
-  const tris = [];
-  group.traverse((node) => {
-    if (!node.isMesh) return;
-    const geo = node.geometry;
-    const pos = geo.attributes.position;
-    const color = node.material.color;
-    const rgb = [color.r * 255, color.g * 255, color.b * 255];
-    const read = (i) => new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(node.matrixWorld);
-    const count = geo.index ? geo.index.count : pos.count;
-    for (let i = 0; i < count; i += 3) {
-      const a = read(geo.index ? geo.index.getX(i) : i);
-      const b = read(geo.index ? geo.index.getX(i + 1) : i + 1);
-      const c = read(geo.index ? geo.index.getX(i + 2) : i + 2);
-      tris.push({ a, b, c, rgb });
-    }
-  });
-  return tris;
-}
-
-// ── projection + shading ──────────────────────────────────────────────────────
-const LIGHT = new THREE.Vector3(-0.35, 0.9, 0.5).normalize();
-
-function project(p) {
-  const x1 = p.x * Math.cos(YAW) + p.z * Math.sin(YAW);
-  const z1 = -p.x * Math.sin(YAW) + p.z * Math.cos(YAW);
-  const sy = p.y * Math.cos(PITCH) - z1 * Math.sin(PITCH);
-  const depth = p.y * Math.sin(PITCH) + z1 * Math.cos(PITCH);
-  return { sx: x1, sy, depth };
-}
-
-function shade(tri) {
-  const n = new THREE.Vector3()
-    .subVectors(tri.b, tri.a)
-    .cross(new THREE.Vector3().subVectors(tri.c, tri.a))
-    .normalize();
-  const k = 0.55 + 0.45 * Math.abs(n.dot(LIGHT));
-  return tri.rgb.map((v) => Math.min(255, Math.round(v * k)));
-}
+// ── projection + shading (shared core, strip's own constants) ─────────────────
+const project = makeProjector(YAW, PITCH);
+const shade = makeShader(new THREE.Vector3(-0.35, 0.9, 0.5));
 
 // ── rasterizer ────────────────────────────────────────────────────────────────
 function drawTile(buf, stripW, xOff, tris) {
@@ -155,49 +113,6 @@ function drawLabel(buf, stripW, xOff, yOff, text) {
   }
 }
 
-// ── PNG encoder ───────────────────────────────────────────────────────────────
-const CRC_TABLE = (() => {
-  const t = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-
-function crc32(bytes) {
-  let c = 0xffffffff;
-  for (const b of bytes) c = CRC_TABLE[(c ^ b) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-function chunk(type, data) {
-  const len = Buffer.alloc(4);
-  len.writeUInt32BE(data.length);
-  const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
-  const crc = Buffer.alloc(4);
-  crc.writeUInt32BE(crc32(body));
-  return Buffer.concat([len, body, crc]);
-}
-
-function encodePng(width, height, rgba) {
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(width, 0);
-  ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8; ihdr[9] = 6; // 8-bit RGBA
-  const raw = Buffer.alloc((width * 4 + 1) * height);
-  for (let y = 0; y < height; y++) {
-    raw[y * (width * 4 + 1)] = 0; // filter none
-    rgba.copy(raw, y * (width * 4 + 1) + 1, y * width * 4, (y + 1) * width * 4);
-  }
-  return Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    chunk("IHDR", ihdr),
-    chunk("IDAT", deflateSync(raw, { level: 9 })),
-    chunk("IEND", Buffer.alloc(0)),
-  ]);
-}
 
 // ── compose the strip ─────────────────────────────────────────────────────────
 const keys = proceduralKeys();

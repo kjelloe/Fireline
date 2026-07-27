@@ -14,6 +14,8 @@ import {
   mapEventsToMotion, recoilKick, tracerPoint, dustStep, motionAge, pruneMotion,
   MOTION_TTL_MS,
 } from "./motion_cues.js";
+import { createSpriteRenderer } from "./sprite_renderer.js";
+import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
@@ -114,7 +116,20 @@ function playCue(cue) {
   } catch { /* audio unavailable */ }
 }
 
+// 14D: WebGL probe — absent (or ?renderer=2d) boots the sprite fallback,
+// a spectator-grade 2D view. The 3D path stays completely untouched.
+function webglAvailable() {
+  try {
+    const probe = document.createElement("canvas");
+    return !!(probe.getContext("webgl2") || probe.getContext("webgl"));
+  } catch { return false; }
+}
+
 function init() {
+  if (new URLSearchParams(location.search).get("renderer") === "2d" || !webglAvailable()) {
+    init2dFallback();
+    return;
+  }
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x101018);
 
@@ -1219,6 +1234,18 @@ function updateWorldLabels(view) {
   }
 }
 
+// 14D: lazy sprite-sheet cache for minimap icons (and future 2D uses).
+const minimapSheets = new Map();
+function minimapSheet(key, team) {
+  const name = sheetName(key, team);
+  if (!minimapSheets.has(name)) {
+    const img = new Image();
+    img.src = `assets/sprites/${name}`;
+    minimapSheets.set(name, img);
+  }
+  return minimapSheets.get(name);
+}
+
 function renderMinimap(view) {
   const canvas = document.getElementById("minimap");
   const ctx = canvas.getContext("2d");
@@ -1255,6 +1282,17 @@ function renderMinimap(view) {
     ctx.beginPath();
     ctx.arc(st.x * k, st.y * k, 3.4, 0, Math.PI * 2);
     ctx.fill();
+  }
+  // 14D seed: YOUR hull is its baked sprite frame, heading and all —
+  // the first minimap unit icon; the rest stay dots for now.
+  const me = (view.friendlyAssets ?? []).find((a) => a.operatorId === joined?.operatorId);
+  if (me) {
+    const img = minimapSheet(visualKeyFor(me).replace(/^unit_/, ""), me.team);
+    if (img?.complete && img.naturalWidth > 0) {
+      const r = frameRect(16, me.heading);
+      ctx.drawImage(img, r.sx, r.sy, r.sw, r.sh,
+        (me.x / 256) * k - 8, (me.y / 256) * k - 8, 16, 16);
+    }
   }
   if (model.viewport) {
     ctx.strokeStyle = "rgba(255,255,255,0.5)";
@@ -2000,6 +2038,37 @@ function animate() {
   requestAnimationFrame(animate);
   renderBattlefield();
   renderer.render(scene, camera);
+}
+
+// 14D: the 2D sprite fallback — baked rotation sheets on a plain canvas.
+// Spectator-grade (orders need the 3D picker); beats a black screen on
+// machines without WebGL, and it is the seed of the minimap unit icons.
+let sprite2d = null;
+function init2dFallback() {
+  const container = document.getElementById("canvas-container");
+  const canvas = document.createElement("canvas");
+  container.appendChild(canvas);
+  const note = document.createElement("div");
+  note.style.cssText = "position:absolute;top:8px;left:8px;color:#ddd;font:12px monospace;background:#000a;padding:4px 8px;";
+  note.textContent = t("page.fallback2d");
+  container.appendChild(note);
+  sprite2d = createSpriteRenderer({
+    canvas,
+    terrainColors: TERRAIN_COLORS.map((c) => `#${c.toString(16).padStart(6, "0")}`),
+  });
+  sprite2d.load().then(() => {
+    connect();
+    animate2d();
+  });
+}
+
+function animate2d() {
+  requestAnimationFrame(animate2d);
+  // The event handlers keep pushing cues; without the 3D loop nothing
+  // prunes them — do it here or the arrays grow for the whole war.
+  liveVfx = pruneVfx(liveVfx, performance.now());
+  liveMotion = pruneMotion(liveMotion, performance.now());
+  sprite2d.draw(interpolator.latest(), cachedMap);
 }
 
 init();

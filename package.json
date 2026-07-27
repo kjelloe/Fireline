@@ -13,6 +13,7 @@
     "sim1g": "node test/headless/sim1g.js",
     "sim2a": "node test/headless/sim2a.js",
     "strip": "node tools/render_asset_strip.mjs",
+    "sprites": "node tools/bake_sprites.mjs",
     "simwar": "node test/headless/sim_standard_war.js",
     "simv1": "node -e \"import('./test/headless/soak_v1.js').then(({runV1Soak})=>{const r=runV1Soak(2026,3000);console.log(JSON.stringify({activeOperators:r.activeOperators,captures:r.captures,disables:r.disables,replayOk:r.liveHash===r.replayHash,ticksPerSecond:r.ticksPerSecond,scores:r.server.state.teamScores},null,1))})\"",
     "test": "node --test --test-concurrency=4 test/*.test.js"

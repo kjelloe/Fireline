@@ -1,0 +1,80 @@
+{
+  "tile": 64,
+  "sheets": {
+    "tank": {
+      "frames": 16
+    },
+    "scout": {
+      "frames": 16
+    },
+    "artillery": {
+      "frames": 16
+    },
+    "logistics": {
+      "frames": 16
+    },
+    "carrier": {
+      "frames": 16
+    },
+    "wreck_tank": {
+      "frames": 16
+    },
+    "wreck_scout": {
+      "frames": 16
+    },
+    "wreck_artillery": {
+      "frames": 16
+    },
+    "wreck_logistics": {
+      "frames": 16
+    },
+    "wreck_carrier": {
+      "frames": 16
+    },
+    "bike": {
+      "frames": 16
+    },
+    "wreck_bike": {
+      "frames": 16
+    },
+    "mortar": {
+      "frames": 16
+    },
+    "wreck_mortar": {
+      "frames": 16
+    },
+    "sentinel": {
+      "frames": 16
+    },
+    "wreck_sentinel": {
+      "frames": 16
+    },
+    "skimmer": {
+      "frames": 16
+    },
+    "wreck_skimmer": {
+      "frames": 16
+    },
+    "operator_down": {
+      "frames": 16
+    },
+    "standard_upright": {
+      "frames": 1
+    },
+    "standard_dropped": {
+      "frames": 1
+    },
+    "relay": {
+      "frames": 1
+    },
+    "command_zone": {
+      "frames": 1
+    },
+    "mine": {
+      "frames": 1
+    },
+    "drone": {
+      "frames": 16
+    }
+  }
+}
