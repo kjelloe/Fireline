@@ -161,6 +161,123 @@
       "reason": 3,
       "finalHash": "5d65421aca18f256",
       "finishedAt": "2026-07-27T02:04:49.844Z"
+    },
+    {
+      "id": "war-1188793051-361faa4800fe",
+      "mapSeed": 1188793051,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "e943bc4b1ceb5861",
+      "finishedAt": "2026-07-27T02:35:29.276Z"
+    },
+    {
+      "id": "war-3424666900-ba6af99dbc84",
+      "mapSeed": 3424666900,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "ae9b955dd40b87a2",
+      "finishedAt": "2026-07-27T03:06:08.732Z"
+    },
+    {
+      "id": "war-3121175947-4551477153e4",
+      "mapSeed": 3121175947,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "91ce8a799650081a",
+      "finishedAt": "2026-07-27T03:36:48.144Z"
+    },
+    {
+      "id": "war-3489868765-96aa6ab28ee5",
+      "mapSeed": 3489868765,
+      "ticks": 18000,
+      "winner": -1,
+      "reason": 3,
+      "finalHash": "0dfd1fd2bce41471",
+      "finishedAt": "2026-07-27T04:07:27.456Z"
+    },
+    {
+      "id": "war-3835467147-eab79617b1e0",
+      "mapSeed": 3835467147,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "e1b4476dacceec98",
+      "finishedAt": "2026-07-27T04:38:06.866Z"
+    },
+    {
+      "id": "war-543519052-0376d3a4c156",
+      "mapSeed": 543519052,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "7d6ce11ef14ec6db",
+      "finishedAt": "2026-07-27T05:08:46.216Z"
+    },
+    {
+      "id": "war-3906918658-0f7d8cafebb0",
+      "mapSeed": 3906918658,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "3e25e07a5ae43528",
+      "finishedAt": "2026-07-27T05:39:25.558Z"
+    },
+    {
+      "id": "war-1777683242-1dc60a65de9a",
+      "mapSeed": 1777683242,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "3a3782d6739ba180",
+      "finishedAt": "2026-07-27T06:10:04.884Z"
+    },
+    {
+      "id": "war-2783773656-6ac07a245048",
+      "mapSeed": 2783773656,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "2e0a51b285154d40",
+      "finishedAt": "2026-07-27T06:40:44.387Z"
+    },
+    {
+      "id": "war-1954157896-c9bb6d2157ea",
+      "mapSeed": 1954157896,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "13aa46d525ac09b0",
+      "finishedAt": "2026-07-27T07:11:23.739Z"
+    },
+    {
+      "id": "war-457416989-7203643333bb",
+      "mapSeed": 457416989,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "618f780136b49b6c",
+      "finishedAt": "2026-07-27T07:42:03.225Z"
+    },
+    {
+      "id": "war-1123455950-2259a8db1548",
+      "mapSeed": 1123455950,
+      "ticks": 18000,
+      "winner": 0,
+      "reason": 3,
+      "finalHash": "47cf4049e9cba9bb",
+      "finishedAt": "2026-07-27T08:12:42.431Z"
+    },
+    {
+      "id": "war-986521660-a116210b5259",
+      "mapSeed": 986521660,
+      "ticks": 18000,
+      "winner": 1,
+      "reason": 3,
+      "finalHash": "1e504996de74e779",
+      "finishedAt": "2026-07-27T08:43:21.248Z"
     }
   ]
 }

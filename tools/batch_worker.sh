@@ -59,6 +59,18 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   bWins=$(tail -n +2 "$OUT/${label}.csv" | awk -F, '$5==1' | wc -l)
   $AM send --from $ME --to dev --tag done \
     "$label done on $TAG: $wars wars, A wins $aWins, B wins $bWins, rest undecided. CSV: $OUT/${label}.csv"
+  mail_csv "$OUT/${label}.csv"
+}
+
+# Ship a CSV home as mail: first line names the file, the rest is data.
+mail_csv() {
+  local file=$1
+  [ -f "$file" ] || return 0
+  local tmp
+  tmp=$(mktemp)
+  { echo "#file:$(basename "$file")"; cat "$file"; } > "$tmp"
+  $AM send --from $ME --to dev --tag csv --body-file "$tmp" >/dev/null
+  rm -f "$tmp"
 }
 
 handle_job() { # $1 = JSON body
@@ -76,6 +88,13 @@ handle_job() { # $1 = JSON body
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 "$d" "matrix_d$d" ;;
+    sendresults)
+      # Retroactive: mail home every CSV already on this disk.
+      local sent=0 2>/dev/null || sent=0
+      for f in "$OUT"/*.csv; do
+        [ -f "$f" ] && mail_csv "$f" && sent=$((sent+1))
+      done
+      $AM send --from $ME --to dev --tag done "sendresults: mailed $sent CSVs from $TAG" ;;
     perf)
       $AM status --as $ME "running perf harness on $TAG" >/dev/null
       if node tools/perf_harness.mjs > "$OUT/perf_run.log" 2>&1; then
