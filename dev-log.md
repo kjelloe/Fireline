@@ -1954,3 +1954,23 @@ subsystem-ablation bisection is next (dbg_ablate_sweep.mjs:
 nowater/nopaths/nomines/nodrones).
 
 Suite 481/481 (x2 with prior run). Gate healthy.
+
+## riverline investigation — checkpoint verdict (2026-07-27)
+
+Ablation bisection (160 wars each vs baseline B 57.9% of decided):
+nowater B 46.5% (EDGE GONE) · nopaths B 46.8% (EDGE GONE) ·
+nomines B 57.6% (intact). The east edge requires WATER and TRAILS
+TOGETHER; mines are innocent. Everything cheap to audit is now clean:
+terrain symmetric by construction, movement truncDiv-symmetric (16c),
+heading snap equivariant (16d), patrol tables exact mirrors, bearing16
+equivariant in all quadrants (one rare turnToward 180°-tie chirality
+noted, mirror-odd fix sketched: turn away from map center). The
+remaining mechanism lives in the WAR SHAPE: trails deliver units to the
+outer relays, cross-river capture-seek then FORDS the water band in a
+straight line (no pathfinding), and that traffic pattern pays the east.
+
+SEQUENCING CALL: 13C route graph (already the ruled next lane) replaces
+straight-line fording with road/bridge routing — the exact dynamics
+this edge lives in. Riverline balance gets RE-MEASURED after 13C
+rather than micro-tuned against behavior that is about to be deleted.
+The ablation harness stays in debugging/ for that re-measurement.
