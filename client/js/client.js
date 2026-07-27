@@ -250,6 +250,9 @@ function init() {
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
   document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
+  // 15B part 3: the static page speaks the active locale too.
+  applyPageStrings();
+
   // 14K: the field encyclopedia (playtest 6.1's "option button").
   const encBtn = document.getElementById("btn-encyclopedia");
   const encOverlay = document.getElementById("encyclopedia-overlay");
@@ -316,6 +319,7 @@ function init() {
       lastTaskKey = ""; // force HUD rebuilds in the new language
       for (const [, entry] of worldLabels) scene.remove(entry.sprite);
       worldLabels.clear();
+      applyPageStrings(); // 15B part 3: the static chrome follows too
     };
   }
   // 11G: settings panel.
@@ -431,6 +435,26 @@ function sendDriveIntent() {
   if (key === lastDriveSent) return;
   lastDriveSent = key;
   send({ type: "drive", throttle, turn });
+}
+
+// 15B part 3: retranslate the static page chrome (join screen, buttons,
+// hint bar). Called at boot and on locale change.
+function applyPageStrings() {
+  const setText = (id, key) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = t(key);
+  };
+  const pitch = document.querySelector("#join-overlay p");
+  if (pitch) pitch.textContent = t("page.pitch");
+  setText("btn-join-a", "page.join_a");
+  setText("btn-join-b", "page.join_b");
+  setText("btn-spectate", "page.spectate");
+  setText("btn-briefing-ok", "page.move_out");
+  setText("btn-next-asset", "page.next_asset");
+  setText("btn-recenter", "page.center");
+  setText("hint-bar", "page.hints");
+  const replayLink = document.querySelector('a[href="/replay.html"]');
+  if (replayLink) replayLink.textContent = t("page.replays");
 }
 
 // 15C: apply contrast + font scale via a body class and CSS variable.

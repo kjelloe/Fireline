@@ -1705,3 +1705,15 @@ parity-enforced like everything else. The hover ⓘ panel and this browser
 read the same module.
 
 Suite 449/449 (x2). Tagged slice-14k.
+
+---
+
+## 15B part 3 — the static page follows the locale (2026-07-27 night 2)
+
+The last en-only surface: the join screen pitch and faction buttons, the
+briefing/next-asset/center buttons, the replay link, and the hint bar
+now retranslate at boot AND on a live locale switch (applyPageStrings).
+The hint bar was also tightened while extracting it. i18n coverage is
+now total: every string a player can see flows through the catalogs.
+
+Suite 449/449 (x2). Committed on slice-15a/14k line.
