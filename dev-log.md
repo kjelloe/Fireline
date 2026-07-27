@@ -1735,3 +1735,27 @@ NOT wired — awaiting the user's verdict on the proposed numbers
 (easy 8/600, normal 6/900, hard 4/1500 — see night-2 clarifications).
 
 Suite 450/450 (x2). Tagged slice-13f.
+
+## batch-fix — collector read the wrong field (2026-07-27)
+
+The results-by-mail loop got its first live run and failed usefully:
+the worker (updated to c7f3ea5 by the user) mailed all three nightly
+CSVs correctly — tagged, `#file:` headers, 1500 wars — but `collect`
+reported "no csv mails". Two schema bugs in `tools/batch_collect.py`:
+it read `m["body"]` where the store field is `m["text"]`, and it acked
+via a stored `hash` field that does not exist (hashes are DERIVED,
+`msg_hash()`; ack now goes by `#id`). The regression test passed while
+the tool failed because its fixtures invented the same wrong schema —
+the test now carries one line copied VERBATIM from a live store record
+so fixture-schema drift is impossible by construction.
+
+Pipeline then ran clean end to end: queue sendresults → worker mails
+3 CSVs → collect extracts → analyzer. Per-seed findings on 933064d:
+- MIRROR (Q18): 511 both-decided pairs, only 47.6% flip winner under
+  full world reflection (bias-free target 100%); 268 pairs keep the
+  SAME winner — the outcome is decided by something reflection-
+  invariant, i.e. execution order. Confirms the tick-parity diagnosis.
+- FACTIONSWAP (12D gate): decided-war A rate 57.0% normal vs 57.4%
+  swapped; Sentinel-side 52.2% overall — unique pair within band.
+
+Suite 451/451 (x2).

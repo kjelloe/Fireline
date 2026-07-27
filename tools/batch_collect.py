@@ -24,7 +24,8 @@ for line in open(LOG):
         continue
     if m.get("tag") != "csv":
         continue
-    body = m.get("body", "")
+    # the store schema names the payload field "text" (see agent-mail send)
+    body = m.get("text", "")
     if not body.startswith("#file:"):
         continue
     header, _, data = body.partition("\n")
@@ -35,8 +36,8 @@ for line in open(LOG):
     with open(path, "w") as f:
         f.write(data if data.endswith("\n") else data + "\n")
     written.append(name)
-    if m.get("hash") and len(sys.argv) <= 1:  # never ack a test store
-        hashes.append("@" + m["hash"])
+    if m.get("id") is not None and len(sys.argv) <= 1:  # never ack a test store
+        hashes.append(f"#{m['id']}")  # hashes are derived, never stored; ack by id
 if written:
     print(f"extracted: {', '.join(sorted(set(written)))} -> reports/sweeps/")
     if hashes:
