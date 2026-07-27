@@ -16,7 +16,11 @@ test("component: every getElementById target exists in index.html", () => {
   const ids = [...client.matchAll(/getElementById\("([^"]+)"\)/g)].map((m) => m[1]);
   assert.ok(ids.length >= 15, `swept ${ids.length} DOM lookups`);
   for (const id of new Set(ids)) {
-    assert.ok(html.includes(`id="${id}"`), `index.html is missing id="${id}"`);
+    // Static ids live in index.html; dynamically-created ones must appear
+    // as id="..." inside a client.js template string (innerHTML creation).
+    const isStatic = html.includes(`id="${id}"`);
+    const isDynamic = client.includes(`id="${id}"`) || client.includes(`id=\"${id}\"`);
+    assert.ok(isStatic || isDynamic, `no element ever carries id="${id}"`);
   }
 });
 

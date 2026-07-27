@@ -1601,3 +1601,34 @@ wiring), and every literal t("key") must resolve in the en catalog
 (typo'd keys render raw). Memory + plan updated.
 
 Suite 443/443 (x2). Tagged slice-14g.
+
+---
+
+## slice-14i — Playtest-6 command UX (2026-07-27, prompt 37)
+
+1. **Hover takeover + the encyclopedia seed**: hovering a vacant friendly
+   raycasts to a name tag ("SCOUT BIKE — vacant · click to take") with an
+   ⓘ shortcut opening the inline stats panel — `codex.js`, pure, derives
+   every line from the UNIT_STATS contract + role blurbs; the future
+   encyclopedia option button reads the same module.
+2. **Order glyphs**: every click-order stamps a fading, rising glyph at
+   the clicked cell — ► move (gold), ✚ fire (red), ⛓ tow (cyan), ✓ take.
+3. **The status panel** (lower center): `status_model.js`, pure — HP/
+   ammo/fuel bars and the exact why-nots, worst first: OUT OF AMMO/FUEL/
+   SUPPLY (client-side supply mirror for display), reload and suppression
+   countdowns, hardpoint state; REQUEST SUPPLIES button pings the new
+   `need_supplies` kind (the AI resupply runner already hunts needy
+   assets — the ping tells the humans). en+no throughout.
+4. **The facing question** (east "backing in"): the brads→rotation math
+   is provably side-symmetric — if east were 180° off, west would be too.
+   Suspicion: the fixed SE camera hides east-side barrels (pointing away)
+   so correct facing reads backwards. Instrument, not guess: every unit
+   now carries a GOLD FACING CHEVRON at its nose. If playtest 7 still
+   reads east as reversed, the flip is one line — but the chevron will
+   almost certainly acquit the math and convict the silhouette.
+
+Also: the DOM-id regression net caught its first dynamic-id case
+(btn-request-supplies) and learned about innerHTML-created elements; 2B
+ws test moved to poll-waits (flake family).
+
+Suite 445/445 (x2). Tagged slice-14i.

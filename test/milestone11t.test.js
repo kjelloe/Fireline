@@ -294,3 +294,41 @@ test("14G map detailing: dashes on road, bushes in forest, compounds mirror", as
     assert.equal(a[i].y, b[i].y, `${a[i].kind} same depth`);
   }
 });
+
+test("14I codex and status models answer the commander's questions", async () => {
+  const { codexFor } = await import("../client/js/codex.js");
+  const { statusFor } = await import("../client/js/status_model.js");
+
+  const carrier = codexFor(4);
+  assert.equal(carrier.name, "carrier");
+  assert.ok(carrier.traits.includes("carries the standard"));
+  assert.ok(carrier.traits.includes("2 rescue bunks"));
+  const bike = codexFor(5);
+  assert.ok(bike.traits.includes("cannot capture relays"));
+  const sentinel = codexFor(7);
+  assert.ok(String(sentinel.lines.find(([k]) => k === "range")[1]).includes("deployed"));
+  assert.equal(codexFor(99), null, "unknown chassis: no entry, no crash");
+
+  // Status: the exact why-nots, worst first.
+  const dry = statusFor({ id: 3, type: 0, hp: 40, ammo: 0, fuel: 0, reloadTimer: 0,
+    suppressedTimer: 0, deployed: 0, deployTimer: 0 });
+  const keys = dry.reasons.map((r) => r.key);
+  assert.ok(keys.includes("status.no_fuel") && keys.includes("status.no_ammo"));
+  assert.equal(dry.canRequestSupplies, true, "the fuel-mission button appears");
+
+  const fine = statusFor({ id: 3, type: 0, hp: 100, ammo: 12, fuel: 4000, reloadTimer: 7,
+    suppressedTimer: 0, deployed: 0, deployTimer: 0 });
+  assert.deepEqual(fine.reasons.map((r) => r.key), ["status.reloading"]);
+  assert.equal(fine.canRequestSupplies, false);
+
+  const unsupplied = statusFor({ id: 3, type: 0, hp: 100, ammo: 12, fuel: 4000, reloadTimer: 0,
+    suppressedTimer: 0, deployed: 0, deployTimer: 0 }, { inSupplyNow: false });
+  assert.equal(unsupplied.reasons[0].key, "status.no_supply");
+});
+
+test("14I need_supplies is a legal standing ping in both catalogs", async () => {
+  const { PING_KINDS } = await import("../engine/pings.js");
+  const { CATALOGS } = await import("../client/js/strings.js");
+  assert.ok(PING_KINDS.includes("need_supplies"));
+  assert.ok("ping.need_supplies" in CATALOGS.en && "ping.need_supplies" in CATALOGS.no);
+});

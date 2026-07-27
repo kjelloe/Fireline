@@ -16,6 +16,11 @@ function connect(port) {
 }
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
+async function until(cond, ms = 3000) {
+  const t0 = Date.now();
+  while (!cond() && Date.now() - t0 < ms) await settle(20);
+  return cond();
+}
 
 async function withServer(fn) {
   const appServer = createAppServer({ mapSeed: 42, enableAi: false });
@@ -32,9 +37,9 @@ test("2B join without operatorId gets a server-assigned slot", async () => {
     const a = await connect(port);
     const b = await connect(port);
     a.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
-    await settle();
+    await until(() => a.messages.some((m) => m.type === "s_joined"));
     b.ws.send(JSON.stringify({ type: "c_join", team: 1 }));
-    await settle();
+    await until(() => b.messages.some((m) => m.type === "s_joined"));
 
     const joinedA = a.messages.find((m) => m.type === "s_joined");
     const joinedB = b.messages.find((m) => m.type === "s_joined");

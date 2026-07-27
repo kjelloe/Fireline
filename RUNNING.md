@@ -65,6 +65,13 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Command UX (14I): hover any vacant friendly for its name tag + ⓘ stats
+  (the seed of the encyclopedia); every click-order stamps a fading glyph
+  at the spot (► move · ✚ fire · ⛓ tow); the lower-center STATUS PANEL
+  answers "why am I not firing" — HP/ammo/fuel bars plus the exact
+  blocker (out of ammo/fuel/supply, reload countdown, suppressed,
+  deployed) and a REQUEST SUPPLIES ping when you run dry. Every unit
+  carries a gold facing chevron at its nose.
 - Map detailing (14G): bases are real compounds now — faction-tinted HQ
   with an identity roof, garages, fuel tanks, mast, landing pad, corner
   posts (both HQs face the front). Roads carry worn center-line dashes,

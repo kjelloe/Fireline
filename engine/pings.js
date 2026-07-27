@@ -19,6 +19,7 @@ export const PING_KINDS = Object.freeze([
   "carrier_under_attack", // the standard run is in trouble (Q16)
   "road_blocked",         // route intel (Q16)
   "safe_route",           // scout-marked clean path (Q16)
+  "need_supplies",        // 14I: the fuel/ammo mission request
   "need_rescue",          // downed operator calling the carrier (OP_DOWN only)
 ]);
 
