@@ -365,3 +365,28 @@ test("14J mission cards fit the asset: capability filter, one per kind, distance
   const garage = tasksFor(view, 99).map((x) => x.kind);
   assert.ok(garage.includes("recover") && garage.includes("rescue"));
 });
+
+test("15A touch model: arrow controller, tap classification, pinch", async () => {
+  const { arrowDrive, bradDelta, ARROW_BRADS, classifyTouch, pinchFactor } =
+    await import("../client/js/touch_model.js");
+
+  // Shortest-arc steering, including the wraparound.
+  assert.deepEqual(arrowDrive(0, 64), { throttle: 1, turn: 1 }, "east->south: clockwise");
+  assert.deepEqual(arrowDrive(0, 192), { throttle: 1, turn: -1 }, "east->north: shortest arc");
+  assert.deepEqual(arrowDrive(250, 6), { throttle: 1, turn: 1 }, "wraparound steers forward");
+  assert.deepEqual(arrowDrive(60, 64), { throttle: 1, turn: 0 }, "deadband: drive straight");
+  assert.equal(bradDelta(250, 6), 12);
+  assert.equal(bradDelta(6, 250), -12);
+  assert.equal(Object.keys(ARROW_BRADS).length, 8, "eight compass arrows");
+  assert.equal(ARROW_BRADS.s, 64, "screen-down is engine south");
+
+  // Taps are short and still; everything else pans.
+  assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 14, y: 12 }, 180), "tap");
+  assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 80, y: 12 }, 180), "drag");
+  assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 12, y: 10 }, 900), "drag", "slow press is not a tap");
+
+  // Pinch is clamped sane.
+  assert.equal(pinchFactor(100, 50), 2);
+  assert.equal(pinchFactor(50, 200), 0.5);
+  assert.equal(pinchFactor(0, 50), 1, "degenerate distances are ignored");
+});

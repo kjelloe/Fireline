@@ -1671,3 +1671,23 @@ diamond for takes. RTS-style confirm: shrink into place in 180 ms, hold,
 fade flat by 1.1 s. Pure presentation.
 
 Suite 446/446 (x2). Committed on slice-14j.
+
+---
+
+## slice-15a — Mobile touch (2026-07-27 night 2, ruling Q10)
+
+The ruled mobile scheme, wired end to end: an 8-direction STEERING PAD
+(bottom-left, touch devices only) — tap an arrow and the unit sets off
+in that compass direction, a per-frame controller converting (current
+heading, desired heading) into drive intents through the SAME
+authoritative 11L command as desktop WASD; tap YOUR OWN unit (raycast
+hit) or the red ■ to stop, per the ruling. Canvas gestures: tap =
+the normal order path, one-finger drag = camera pan, two-finger pinch =
+zoom (clamped). All decision math lives in pure `touch_model.js` —
+shortest-arc brad steering with deadband, tap/drag classification,
+pinch factors — headless-tested including the wraparound cases. The
+page already carried the viewport meta and touch-action:none from the
+old 6C prep. HONEST LIMIT: feel needs a real device — first mobile
+playtest will tune pad size/position/deadband.
+
+Suite 448/448 (x2). Tagged slice-15a.

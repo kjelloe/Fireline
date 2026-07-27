@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>More Firepower</title>
     <style>
@@ -25,6 +26,14 @@
     </style>
 <style>
   :root { --ui-scale: 1; }
+  canvas { touch-action: none; }
+  .tp-btn {
+    position: absolute; width: 44px; height: 44px; border-radius: 10px;
+    background: rgba(20,24,32,0.75); color: #f5e96b; border: 1px solid #444;
+    font: bold 18px sans-serif; display: flex; align-items: center;
+    justify-content: center; user-select: none; -webkit-user-select: none;
+  }
+  .tp-btn:active { background: rgba(80,90,60,0.9); }
   #hint-bar, #objective-strip, #event-feed, #op-info, #supply-bar,
   #task-strip, #action-banner, #status-bar {
     font-size: calc(1em * var(--ui-scale));
@@ -68,6 +77,12 @@
             <button class="btn" id="btn-recenter">Center</button>
             <button class="btn" id="btn-settings" title="Options">⚙</button>
         </div>
+    </div>
+    <div id="touch-pad" style="display:none; position:absolute; left:14px; bottom:90px; z-index:6; width:150px; height:150px;">
+        <!-- 15A: 8-direction steering pad + center stop (ruling Q10) -->
+    </div>
+    <div id="touch-pad" style="display:none; position:absolute; left:14px; bottom:90px; z-index:6; width:150px; height:150px;">
+        <!-- 15A: 8-direction steering pad + center stop (ruling Q10) -->
     </div>
     <div id="mission-toast" style="display:none; position:absolute; top:32%; left:50%; transform:translateX(-50%); color:#f5e96b; font:bold 26px sans-serif; text-shadow:0 2px 8px #000; z-index:8; pointer-events:none;"></div>
     <div id="team-board" style="position:absolute; left:10px; top:120px; background:rgba(8,10,14,0.8); color:#d8e6c8; padding:6px 10px; border-radius:8px; font:12px sans-serif; z-index:5; min-width:150px;">

@@ -65,6 +65,11 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Mobile touch (15A, ruling Q10): on touch devices an 8-direction
+  steering pad appears bottom-left — tap an arrow and your unit sets off
+  that way (steering itself at its chassis' turn rate); tap YOUR OWN
+  unit (or the red ■) to stop. Tap anywhere = the normal order click;
+  one-finger drag pans; pinch zooms. Feel verdict needs a real device.
 - Mission UX (14J): completing recognized work toasts MISSION COMPLETE
   +N pts center screen; the collapsible TEAM TOP 5 board sits on the
   left; mission cards now FIT your asset (a tank never sees tow
