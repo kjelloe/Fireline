@@ -1759,3 +1759,20 @@ Pipeline then ran clean end to end: queue sendresults → worker mails
   swapped; Sentinel-side 52.2% overall — unique pair within band.
 
 Suite 451/451 (x2).
+
+## slice-16a — tick-parity execution order (question 18 fix, 2026-07-27)
+
+USER GO on the census diagnosis. AI doctrine commands used to resolve in
+ascending operator order every tick — team A's seats always struck first,
+a ~6-point edge that survived full world reflection and faction-swapping
+(1500 nightly wars; per-seed flip rate 47.6% where bias-free = 100%).
+Fix in `ai_regency.js plan()`: the EMISSION loop now leads with team
+(tick & 1), ascending operator id within a team; role-computation loops
+stay in stable order (per-team, no cross-team strike). No reducer change,
+no fixture repin — the 1A script has no AI. `test/tick_parity.test.js`
+pins the alternation from the authoritative command log over a 3000-tick
+war plus same-seed determinism. 5-seed gate: mixed standard-capture
+winners (2026→B@3859, 31337→A@4131), close long wars, all systems firing.
+Local 600+600 verification sweep launched; PC re-sweep after next push.
+
+Suite 453/453 (x2).

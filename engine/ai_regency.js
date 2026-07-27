@@ -257,7 +257,18 @@ export class AIRegency {
       }
     }
 
-    for (const [operatorId, agent] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+    // Question 18 fix: commands used to resolve in ascending operator order
+    // every tick, so team A's seats always struck first — a ~6-point edge
+    // that survived full world reflection AND faction-swapping (nightly
+    // census, 1500 wars). The lead team now alternates by tick parity;
+    // within a team, ascending operator id keeps iteration stable.
+    const leadTeam = state.tick & 1;
+    const emitOrder = [...controlled.entries()].sort((a, b) => {
+      const ta = state.operators[a[0]].team === leadTeam ? 0 : 1;
+      const tb = state.operators[b[0]].team === leadTeam ? 0 : 1;
+      return ta - tb || a[0] - b[0];
+    });
+    for (const [operatorId, agent] of emitOrder) {
       const operator = state.operators[operatorId];
 
       // 9B down-management: redeploy once the timer allows; after redeploy or
