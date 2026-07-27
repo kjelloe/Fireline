@@ -23,6 +23,20 @@
         #event-feed { position: absolute; top: 48px; left: 10px; font-size: 12px; color: #9ab; pointer-events: none; max-width: 40%; }
         #event-feed div { margin-bottom: 2px; text-shadow: 0 1px 2px #000; }
     </style>
+<style>
+  :root { --ui-scale: 1; }
+  #hint-bar, #objective-strip, #event-feed, #op-info, #supply-bar,
+  #task-strip, #action-banner, #status-bar {
+    font-size: calc(1em * var(--ui-scale));
+  }
+  body.high-contrast #hint-bar, body.high-contrast #objective-strip,
+  body.high-contrast #event-feed, body.high-contrast #op-info,
+  body.high-contrast #supply-bar, body.high-contrast #status-bar {
+    background: #000 !important; color: #fff !important;
+  }
+  body.high-contrast #action-banner { background: #000; border: 2px solid #fff; }
+  body.high-contrast #task-strip div { background: #000 !important; color: #fff !important; }
+</style>
 </head>
 <body>
     <div id="join-overlay">
@@ -67,6 +81,20 @@
             When off: while down, crawl next to a friendly carrier and press
             <b>B</b> to board. Press <b>U</b> to hop out of a carrier anywhere.
         </p>
+        <label style="color:#cdc; font-family:sans-serif; font-size:14px; cursor:pointer;">
+            <input type="checkbox" id="opt-contrast">
+            High contrast / Høy kontrast
+        </label>
+        <label style="color:#cdc; font-family:sans-serif; font-size:14px;">
+            Text size / Tekststørrelse:
+            <select id="opt-fontscale">
+                <option value="1">100%</option>
+                <option value="1.25">125%</option>
+                <option value="1.5">150%</option>
+            </select>
+        </label>
+        <div style="color:#887; font-family:sans-serif; font-size:12px;">Keys / Taster:</div>
+        <div id="opt-binds" style="max-width:420px; text-align:center;"></div>
         <label style="color:#cdc; font-family:sans-serif; font-size:14px;">
             Language / Språk:
             <select id="opt-locale">

@@ -240,3 +240,24 @@ test("15B part 2: event feed and end screen speak the active locale", async () =
   assert.equal(describeEvent({ type: "mine_deployed", team: 1, minesLeft: 1 }, 0), null,
     "enemy mine lays stay silent (fog)");
 });
+
+test("15C keybinds: defaults, overrides, and corrupt storage all behave", async () => {
+  const { DEFAULT_BINDS, loadBinds, saveBinds } = await import("../client/js/keybinds.js");
+  const mem = new Map();
+  const storage = {
+    getItem: (k) => mem.get(k) ?? null,
+    setItem: (k, v) => mem.set(k, v),
+  };
+  assert.deepEqual(loadBinds(storage), DEFAULT_BINDS, "fresh storage = defaults");
+
+  const binds = loadBinds(storage);
+  binds.tow = "y";
+  saveBinds(binds, storage);
+  assert.equal(loadBinds(storage).tow, "y", "override persists");
+  assert.equal(loadBinds(storage).redeploy, "r", "others keep defaults");
+
+  mem.set("mf_binds", "{corrupt");
+  assert.deepEqual(loadBinds(storage), DEFAULT_BINDS, "corrupt storage falls back");
+  mem.set("mf_binds", JSON.stringify({ tow: "TOO_LONG", mine: 5 }));
+  assert.deepEqual(loadBinds(storage), DEFAULT_BINDS, "invalid values rejected");
+});

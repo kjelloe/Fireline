@@ -95,6 +95,13 @@ npm start                              # host machine
   (deterministic engine), so you can scrub anywhere instantly. Top-down
   tactical view, play/pause (space), ×1/×4/×16, arrow keys jump ±100
   ticks. Human-crewed units get a white box.
+- Field logistics (13A): trucks carry a full asset's worth of fuel+ammo,
+  reloaded silently at base — pull alongside a thirsty teammate and press
+  V (or click the banner) to transfer. AI trucks run resupply errands to
+  dry artillery on their own.
+- Accessibility (15C): the ⚙ panel has high contrast, text size
+  (100/125/150%), remappable action keys (click an action, press a key),
+  and the language switch. All persisted per browser.
 - Rescue autopilot (11G): carriers auto-scoop adjacent downed teammates by
   default. The ⚙ options panel can turn that off per player — then crawl
   beside a carrier and press B to board; U hops you out anywhere.

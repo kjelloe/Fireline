@@ -18,6 +18,7 @@ import { tasksFor } from "./tasks_model.js";
 import { propsFor } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { t, setLocale, getLocale } from "./strings.js";
+import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import { factionFor } from "../../shared/factions.js";
 import { factionFor } from "../../shared/factions.js";
 import { activePings } from "../../engine/pings.js";
@@ -53,6 +54,7 @@ const ghostMeshes = new Map(); // enemyId -> Mesh (13E)
 let lastSelectAttempt = -1; // 10B
 let pendingTakeover = -1;   // 10B: asset awaiting Enter-confirm
 const teamPings = []; // 10C: recent own-team pings for world labels
+let BINDS = loadBinds(); // 15C: remappable action keys
 // 11L direct control (G toggles): WASD becomes tank controls.
 let directMode = false;
 const driveHeld = { w: false, a: false, s: false, d: false };
@@ -120,7 +122,7 @@ function init() {
 
   // 8G: free camera controls (11L: direct mode claims WASD first).
   window.addEventListener("keydown", (e) => {
-    if (e.key === "g" || e.key === "G") {
+    if (k === BINDS.directDrive) {
       directMode = !directMode;
       if (!directMode) { for (const k in driveHeld) driveHeld[k] = false; }
       sendDriveIntent();
@@ -140,15 +142,16 @@ function init() {
       const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
     }
-    if (e.key === "r" || e.key === "R") send({ type: "redeploy" }); // 9B
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key; // 15C binds
+    if (k === BINDS.redeploy) send({ type: "redeploy" }); // 9B
     // 11G manual rescue: B boards the adjacent carrier, U hops out.
-    if (e.key === "b" || e.key === "B") {
+    if (k === BINDS.board) {
       const carrier = adjacentBoardableCarrier(interpolator.latest());
       if (carrier) send({ type: "board_carrier", carrierAssetId: carrier.id });
     }
-    if (e.key === "u" || e.key === "U") send({ type: "unboard" });
+    if (k === BINDS.unboard) send({ type: "unboard" });
     // 12B: H toggles the Sentinel's hardpoint.
-    if (e.key === "h" || e.key === "H") {
+    if (k === BINDS.hardpoint) {
       const me = interpolator.latest()?.friendlyAssets?.find(
         (a) => a.operatorId === joined?.operatorId);
       if (me?.type === 7) {
@@ -156,13 +159,13 @@ function init() {
       }
     }
     // 11U: T tows the adjacent claimable wreck (same as the banner).
-    if (e.key === "t" || e.key === "T") {
+    if (k === BINDS.tow) {
       const wreck = adjacentTowableWreck(interpolator.latest());
       if (wreck) send({ type: "tow_order", wreckAssetId: wreck.id });
     }
     // 13A: V transfers cargo to the neediest adjacent friendly (F is
     // camera-follow — hands off).
-    if (e.key === "v" || e.key === "V") {
+    if (k === BINDS.transfer) {
       const needy = adjacentNeedyFriendly(interpolator.latest());
       if (needy) send({ type: "transfer_cargo", targetAssetId: needy.id });
     }
@@ -174,14 +177,14 @@ function init() {
     if (e.key === "Escape") pendingTakeover = -1;
     // 9E: M lays a mine under the tank; C clears the nearest adjacent
     // known mine with a truck.
-    if (e.key === "m" || e.key === "M") send({ type: "deploy_mine" });
+    if (k === BINDS.mine) send({ type: "deploy_mine" });
     // 10C: 1/2/3 send context pings (what they mean depends on your seat).
     if (e.key === "1" || e.key === "2" || e.key === "3") {
       const opts = pingOptionsFor(interpolator.latest(), joined?.operatorId);
       const pick = opts[Number(e.key) - 1];
       if (pick) send({ type: "ping", kind: pick.kind });
     }
-    if (e.key === "c" || e.key === "C") {
+    if (k === BINDS.clearMine) {
       const v = interpolator.latest();
       const mine = nearestAdjacentMine(v);
       if (mine) send({ type: "clear_mine", mineId: mine.id });
@@ -215,6 +218,29 @@ function init() {
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
   document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
+  // 15C: a11y — restore contrast/scale, wire the ⚙ controls.
+  applyA11y();
+  const contrastEl = document.getElementById("opt-contrast");
+  if (contrastEl) {
+    contrastEl.checked = localStorage.getItem("mf_contrast") === "1";
+    contrastEl.onchange = (e) => {
+      localStorage.setItem("mf_contrast", e.target.checked ? "1" : "0");
+      applyA11y();
+    };
+  }
+  const scaleEl = document.getElementById("opt-fontscale");
+  if (scaleEl) {
+    scaleEl.value = localStorage.getItem("mf_fontscale") ?? "1";
+    scaleEl.onchange = (e) => {
+      localStorage.setItem("mf_fontscale", e.target.value);
+      applyA11y();
+    };
+  }
+  const bindsEl = document.getElementById("opt-binds");
+  if (bindsEl) {
+    renderBindRows(bindsEl);
+  }
+
   // 15B: locale — restore, and offer the switch in ⚙.
   setLocale(localStorage.getItem("mf_locale") ?? "en");
   const localeSel = document.getElementById("opt-locale");
@@ -341,6 +367,40 @@ function sendDriveIntent() {
   if (key === lastDriveSent) return;
   lastDriveSent = key;
   send({ type: "drive", throttle, turn });
+}
+
+// 15C: apply contrast + font scale via a body class and CSS variable.
+function applyA11y() {
+  const contrast = localStorage.getItem("mf_contrast") === "1";
+  document.body.classList.toggle("high-contrast", contrast);
+  const scale = Number(localStorage.getItem("mf_fontscale") ?? "1");
+  document.documentElement.style.setProperty("--ui-scale", String(scale));
+}
+
+// 15C: one row per action — click, press a key, done.
+function renderBindRows(container) {
+  container.innerHTML = "";
+  for (const action of Object.keys(DEFAULT_BINDS)) {
+    const row = document.createElement("button");
+    row.className = "btn";
+    row.style.cssText = "font-size:12px; padding:2px 8px; margin:2px;";
+    row.textContent = `${action}: ${BINDS[action].toUpperCase()}`;
+    row.onclick = () => {
+      row.textContent = `${action}: press a key…`;
+      const grab = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        if (ev.key.length === 1) {
+          BINDS[action] = ev.key.toLowerCase();
+          saveBinds(BINDS);
+        }
+        window.removeEventListener("keydown", grab, true);
+        renderBindRows(container);
+      };
+      window.addEventListener("keydown", grab, true);
+    };
+    container.appendChild(row);
+  }
 }
 
 function joinTeam(team) {

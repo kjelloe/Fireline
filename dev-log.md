@@ -1539,3 +1539,19 @@ runners at work (777 now 145-130), winners stay mixed — PASS. Also
 hardened the 6A ws test to poll-waits (load flake family).
 
 Suite 437/437 (x2). Tagged slice-13a.
+
+---
+
+## slice-15c — a11y basics (2026-07-27, prompt 31)
+
+All ⚙-panel, all persisted, zero engine: HIGH CONTRAST mode (black
+panels, white text on every HUD surface via a body class), TEXT SIZE
+100/125/150% (one CSS variable scales every HUD element), and REMAPPABLE
+ACTION KEYS — a pure `keybinds.js` table (redeploy/tow/board/unboard/
+mine/clear/transfer/hardpoint/direct-drive) with click-then-press rows
+in the panel; camera and mode keys stay fixed. Corrupt or invalid
+storage falls back to defaults by test. The client key handler reads the
+bind table instead of hardcoded letters. Colorblind-safe team symbols
+were already in (shield/arrow per faction).
+
+Suite 438/438 (x2). Tagged slice-15c.
