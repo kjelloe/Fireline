@@ -1776,3 +1776,18 @@ winners (2026→B@3859, 31337→A@4131), close long wars, all systems firing.
 Local 600+600 verification sweep launched; PC re-sweep after next push.
 
 Suite 453/453 (x2).
+
+## slice-13g — difficulty presets + the dropped-options regression (2026-07-27)
+
+USER ratified the night-2 numbers: easy 8/600, normal 6/900 (= today),
+hard 4/1500. `RULE_PRESETS` in engine/state.js — "normal" IS the
+DEFAULT_RULES object (identity test-pinned, not just deep-equal), so the
+default session can never drift. `RULES=easy|normal|hard npm start`
+resolves via `rulesForPreset` (throws on garbage); /version reports the
+running law. The slice also uncovered and fixed a real regression:
+createAppServer never forwarded mapProfile OR rules into GameServer —
+`MAP=riverline npm start` silently served frontier (11M/13F tests all
+drove GameServer directly, so nothing caught the app layer). Regression
+test drives createAppServer with riverline+hard and reads the state back.
+
+Suite 457/457 (x2). Tagged slice-13g.

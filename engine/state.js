@@ -198,6 +198,24 @@ export const DEFAULT_RULES = Object.freeze({
   mpgTicks: 900,     // ...and rebuilds on this cadence
 });
 
+// 13G (playtest 6.7 ruling): named difficulty presets over the session
+// rules. "normal" IS DEFAULT_RULES — a test pins that identity so the
+// default session can never drift. Easier = rebuild sooner and while
+// stronger; harder = only a gutted team rebuilds, and slowly.
+export const RULE_PRESETS = Object.freeze({
+  easy: Object.freeze({ mpgMinOperable: 8, mpgTicks: 600 }),
+  normal: DEFAULT_RULES,
+  hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500 }),
+});
+
+export function rulesForPreset(name) {
+  const preset = RULE_PRESETS[name];
+  if (!preset) {
+    throw new RangeError(`unknown rules preset: ${name} (have: ${Object.keys(RULE_PRESETS).join(", ")})`);
+  }
+  return preset;
+}
+
 export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules = null) {
   let map;
   let assets;

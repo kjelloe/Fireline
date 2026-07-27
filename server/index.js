@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { WebSocketServer } from "ws";
 import { GameServer } from "../engine/server.js";
+import { rulesForPreset } from "../engine/state.js";
 import { NetworkTransport } from "../engine/transport.js";
 import { PHASE_OVER } from "../engine/victory.js";
 import { mix32 } from "../shared/prng.js";
@@ -57,6 +58,7 @@ export function createAppServer(options = {}) {
       name: "more-firepower",
       version: pkgVersion,
       fixtureVersion,
+      rules: gameServer.state.rules, // 13G: which law this war runs under
       mapProfile: gameServer.state.mapProfile,
       mapSeed: gameServer.state.mapSeed,
       aiDifficulty: options.aiDifficulty ?? 1,
@@ -70,6 +72,9 @@ export function createAppServer(options = {}) {
     enableAi: options.enableAi ?? true,
     aiDifficulty: options.aiDifficulty ?? 1,
     snapshotCapacity: options.snapshotCapacity ?? 30,
+    // 13G: these were silently dropped here — MAP=riverline served frontier.
+    mapProfile: options.mapProfile ?? "frontier_corridor",
+    rules: options.rules ?? null,
   });
   const transport = new NetworkTransport(gameServer, wss);
 
@@ -192,9 +197,10 @@ if (isMain) {
   const mapSeed = Number(process.env.MAP_SEED ?? 2026);
   const aiDifficulty = Number(process.env.AI_DIFFICULTY ?? 1);
   const mapProfile = process.env.MAP ?? "frontier_corridor"; // 11M
-  const appServer = createAppServer({ mapSeed, aiDifficulty, mapProfile });
+  const rules = rulesForPreset(process.env.RULES ?? "normal"); // 13G presets
+  const appServer = createAppServer({ mapSeed, aiDifficulty, mapProfile, rules });
   appServer.start(port).then((addr) => {
-    console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty})`);
+    console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty}, rules ${process.env.RULES ?? "normal"})`);
   });
   for (const signal of ["SIGTERM", "SIGINT"]) {
     process.once(signal, () => {
