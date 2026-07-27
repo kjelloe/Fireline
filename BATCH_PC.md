@@ -164,10 +164,16 @@ note GPU utilization if you can. On this machine the interesting
 questions are: median fps at the theater scene, and whether draw calls
 scale with label count (the world-label sprites are the suspect).
 
-## Getting results back
+## Getting results back (over the mail, prompt 41)
 
-Commit nothing from the PC. Copy `reports/sweeps/*.csv` (and the perf
-JSON) back to the dev machine — paste or drop them into
-`reports/sweeps/` here and tell Claude which tag produced them; analysis
-scripts live in `debugging/` and the findings go into the next session
-report.
+The worker now MAILS each merged CSV home (tag `csv`, `#file:` header);
+on the dev machine `bash tools/batch_send.sh collect` settles the
+summaries AND extracts the CSVs into `reports/sweeps/` from the local
+store. `bash tools/batch_send.sh sendresults` queues a retroactive
+"mail me everything on your disk" job. Perf JSON still copies by hand.
+
+**Keep the worker current:** the PC worker only knows the job kinds its
+CHECKOUT shipped with — after new worker features land here, the ritual
+on the PC is `git pull && bash tools/batch_worker.sh` (Ctrl-C the old
+one first). A stale worker politely refuses unknown jobs by mail — that
+refusal names its commit, which is your version check.

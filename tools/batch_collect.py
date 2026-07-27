@@ -8,8 +8,9 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LOG = os.path.join(ROOT, ".agent-mail", "messages.jsonl")
-OUT = os.path.join(ROOT, "reports", "sweeps")
+# Overridable for tests: batch_collect.py [store.jsonl] [outdir]
+LOG = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, ".agent-mail", "messages.jsonl")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ROOT, "reports", "sweeps")
 
 if not os.path.exists(LOG):
     sys.exit(0)
@@ -34,7 +35,7 @@ for line in open(LOG):
     with open(path, "w") as f:
         f.write(data if data.endswith("\n") else data + "\n")
     written.append(name)
-    if m.get("hash"):
+    if m.get("hash") and len(sys.argv) <= 1:  # never ack a test store
         hashes.append("@" + m["hash"])
 if written:
     print(f"extracted: {', '.join(sorted(set(written)))} -> reports/sweeps/")
