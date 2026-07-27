@@ -16,27 +16,30 @@ The gaming PC is likely Windows. Split the workloads:
   `node tools\perf_harness.mjs` after `npm i -D playwright` +
   `npx playwright install chromium` in a native clone.
 
-**Hub topology:** the gaming PC ALREADY runs an agent-mail hub for a
-sibling project — hubs are per-repo stores, so firepower gets its OWN hub
-instance ON THE GAMING PC, on a DIFFERENT port (the sibling likely owns
-8970):
+**Hub topology (FINAL, prompt 32):** firepower's hub runs on the DEV
+machine, port 8971 (the sibling project keeps 8970 on the gaming PC).
+The dev machine's local CLI uses the store directly (no remote file
+there); the gaming PC points its remote at the dev machine.
 
 ```bash
-# gaming PC, inside the firepower clone (WSL):
-python3 tools/agent-mail.py serve --port 8971 &
-echo "http://localhost:8971" > .agent-mail/remote
+# DEV machine (WSL) — start/confirm the hub any time:
+bash tools/hub_up.sh          # binds 0.0.0.0:8971, prints the WSL IP
 ```
 
-The dev machine points at it over the LAN — outbound from WSL2 just
-works, so the old portproxy dance is unnecessary:
+Because the hub lives inside WSL2, the DEV machine's WINDOWS side needs
+two one-time ADMIN PowerShell commands (WSL IP changes after reboots —
+re-run the portproxy line with the fresh IP from hub_up.sh):
+
+```powershell
+netsh interface portproxy add v4tov4 listenport=8971 listenaddress=0.0.0.0 connectport=8971 connectaddress=<WSL-IP>
+netsh advfirewall firewall add rule name="firepower agent-mail hub" dir=in action=allow protocol=TCP localport=8971
+```
 
 ```bash
-# dev machine:
-echo "http://<gaming-pc>:8971" > .agent-mail/remote
+# GAMING PC (WSL clone):
+echo "http://<dev-machine-lan-ip>:8971" > .agent-mail/remote
+bash tools/batch_worker.sh
 ```
-
-Windows firewall on the gaming PC must allow inbound 8971 (the same
-allowance the sibling hub already has for its port).
 
 ## One-time setup on the PC
 
