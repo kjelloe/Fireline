@@ -15,7 +15,7 @@ import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
-import { propsFor } from "./props_model.js";
+import { propsFor, baseCompound } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
@@ -558,7 +558,7 @@ function buildTerrain() {
   // Art round 2c (prompt 25): instanced battlefield props — forest reads
   // as trees, rough as rocks, trails as trodden ruts, at a glance.
   const props = propsFor(cells, size, size, cachedMap.profile);
-  const byKind = { tree: [], rock: [], rut: [], water: [], rail: [], reed: [] };
+  const byKind = { tree: [], rock: [], rut: [], water: [], rail: [], reed: [], dash: [], bush: [] };
   for (const pr of props) byKind[pr.kind]?.push(pr);
   const PROP_GEO = {
     tree: () => {
@@ -591,10 +591,22 @@ function buildTerrain() {
       g.translate(0, 0.3, 0);
       return g;
     },
+    dash: () => { // 14G: road center-line
+      const g = new THREE.BoxGeometry(0.45, 0.015, 0.1);
+      g.translate(0, 0.06, 0);
+      return g;
+    },
+    bush: () => { // 14G: forest undergrowth
+      const g = new THREE.SphereGeometry(0.22, 5, 4);
+      g.scale(1, 0.55, 1);
+      g.translate(0, 0.1, 0);
+      return g;
+    },
   };
   const PROP_COLOR = {
     tree: 0x1f3a1f, rock: 0x6a6a5e, rut: 0x574a34,
     water: 0x2a4a66, rail: 0x4a4136, reed: 0x3d5a2e,
+    dash: 0xa8a184, bush: 0x2c4a26, // 14G
   };
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
@@ -1273,6 +1285,38 @@ function updateWarDressing(view) {
     const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.75, 0.12, 8), pale);
     plinth.position.set(st.homeCellX + 0.5, 0.06, st.homeCellY + 0.5);
     dressingGroup.add(plinth);
+  }
+  // 14G: base compounds — each headquarters becomes a real place. All
+  // presentation: deterministic layout mirrored so both HQs face the front.
+  const BUILDING = {
+    hq: { geo: () => new THREE.BoxGeometry(2.4, 1.3, 1.6), y: 0.65 },
+    shed: { geo: () => new THREE.BoxGeometry(1.6, 0.8, 1.1), y: 0.4 },
+    tank_fuel: { geo: () => new THREE.CylinderGeometry(0.45, 0.45, 1.1, 8), y: 0.55 },
+    mast: { geo: () => new THREE.CylinderGeometry(0.06, 0.1, 2.6, 5), y: 1.3 },
+    pad: { geo: () => new THREE.CylinderGeometry(1.1, 1.1, 0.06, 10), y: 0.03 },
+    post: { geo: () => new THREE.BoxGeometry(0.18, 0.7, 0.18), y: 0.35 },
+  };
+  for (const b of view.bases ?? []) {
+    const faction = factionFor(b.team);
+    const wall = new THREE.MeshLambertMaterial({
+      color: new THREE.Color(faction.colors.primary).multiplyScalar(0.55),
+    });
+    const roof = new THREE.MeshLambertMaterial({
+      color: new THREE.Color(faction.colors.secondary).multiplyScalar(0.7),
+    });
+    for (const piece of baseCompound(b, b.team === 1)) {
+      const spec = BUILDING[piece.kind];
+      if (!spec) continue;
+      const mesh = new THREE.Mesh(spec.geo(), piece.kind === "hq" || piece.kind === "shed" ? wall : roof);
+      mesh.position.set(piece.x, spec.y, piece.y);
+      mesh.rotation.y = piece.rotation;
+      dressingGroup.add(mesh);
+      if (piece.kind === "hq") { // a roof cap in the faction identity color
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.7), roof);
+        cap.position.set(piece.x, 1.36, piece.y);
+        dressingGroup.add(cap);
+      }
+    }
   }
   scene.add(dressingGroup);
 }

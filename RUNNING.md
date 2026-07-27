@@ -65,6 +65,11 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Map detailing (14G): bases are real compounds now — faction-tinted HQ
+  with an identity roof, garages, fuel tanks, mast, landing pad, corner
+  posts (both HQs face the front). Roads carry worn center-line dashes,
+  forests grew undergrowth. Pure presentation — replays and determinism
+  untouched.
 - Mission cards (11T): the right-hand strip shows the team's top three
   public tasks, derived only from what your team legitimately knows —
   STOP THE THIEF, secure/escort the standard, rescue a walker, defend a

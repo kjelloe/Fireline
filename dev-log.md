@@ -1583,3 +1583,21 @@ node test imports client.js, so nothing caught it. Two guards added:
    BATCH_PC.md as the pre-playtest check on the gaming PC.
 
 Suite 440/440 (x2). Tagged slice-14b.
+
+---
+
+## slice-14g — Map detailing & buildings (2026-07-27, prompt 36)
+
+PURE PRESENTATION (zero engine, zero hash — the nightly's results stay
+valid): bases become real compounds — faction-tinted HQ block with an
+identity-color roof cap, two garage sheds, fuel tanks, antenna mast,
+landing pad, corner posts — laid out rect-relative and MIRRORED so both
+headquarters face the front line (tested exactly). Roads carry worn
+center-line dashes (~150/map), forests grew undergrowth bushes
+(~300/map) — all deterministic cell-hash placement, all instanced.
+Review round: two new regression nets from real incident classes —
+every getElementById target must exist in index.html (silent-null
+wiring), and every literal t("key") must resolve in the en catalog
+(typo'd keys render raw). Memory + plan updated.
+
+Suite 443/443 (x2). Tagged slice-14g.

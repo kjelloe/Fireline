@@ -261,3 +261,36 @@ test("15C keybinds: defaults, overrides, and corrupt storage all behave", async 
   mem.set("mf_binds", JSON.stringify({ tow: "TOO_LONG", mine: 5 }));
   assert.deepEqual(loadBinds(storage), DEFAULT_BINDS, "invalid values rejected");
 });
+
+test("14G map detailing: dashes on road, bushes in forest, compounds mirror", async () => {
+  const { propsFor, baseCompound } = await import("../client/js/props_model.js");
+  const { generateFrontierCorridor } = await import("../engine/frontier_corridor.js");
+  const map = generateFrontierCorridor(42);
+  const props = propsFor(map.cells, map.width, map.height);
+  const at = (x, y) => map.cells[Math.floor(y) * map.width + Math.floor(x)];
+  const dashes = props.filter((p) => p.kind === "dash");
+  const bushes = props.filter((p) => p.kind === "bush");
+  assert.ok(dashes.length > 50 && bushes.length > 100, "the field is detailed");
+  for (const d of dashes) assert.equal(at(d.x, d.y), 1, "dashes only on road");
+  for (const b of bushes) assert.equal(at(b.x, b.y), 2, "bushes only in forest");
+
+  // Compounds: deterministic, inside the rect, and the east base is the
+  // exact mirror of the west one (both HQs face the front line).
+  const west = { x: 6, y: 54, width: 18, height: 20 };
+  const east = { x: 104, y: 54, width: 18, height: 20 };
+  const a = baseCompound(west, false);
+  const b = baseCompound(east, true);
+  assert.deepEqual(a, baseCompound(west, false), "deterministic");
+  for (const piece of [...a, ...b]) {
+    const rect = a.includes(piece) ? west : east;
+    assert.ok(piece.x >= rect.x && piece.x <= rect.x + rect.width, `${piece.kind} inside x`);
+    assert.ok(piece.y >= rect.y && piece.y <= rect.y + rect.height, `${piece.kind} inside y`);
+  }
+  for (let i = 0; i < a.length; i++) {
+    const westOffset = a[i].x - west.x;
+    const eastOffset = b[i].x - east.x;
+    assert.ok(Math.abs(westOffset + eastOffset - west.width) < 0.001,
+      `${a[i].kind} mirrors across the front`);
+    assert.equal(a[i].y, b[i].y, `${a[i].kind} same depth`);
+  }
+});
