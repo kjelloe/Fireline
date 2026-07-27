@@ -1813,3 +1813,38 @@ batch_send the matching verb; run_sweep forwards MAP explicitly. Local
 300-war riverline census running — the open question is standard-run
 viability (2-seed smoke: both horn-bound at 18000). Suite 457/457
 (one ws load-flake under 8 sim shards, clean on re-run x2).
+
+## slice-16b — unique-chassis AI (DORMANT behind a flag, 2026-07-27)
+
+The uniques were dead content in AI wars: a probe showed the Sentinel
+uncrewed for ENTIRE wars (its garage id 18 never wins the lowest-free
+pick), so the anchor doctrine written for it never fired. Landed, all
+flag-gated off by default (`uniqueCrewing` option; `UNIQUES=1` in
+sim_sweep):
+- crewing rung: no crewed unique on the team + one free -> take it;
+  junior to carrier/courier/tube, and a fixed agent's own seat outranks
+  it. Fixed agents with dead pairs may now crew the unique (before:
+  they idled until MPG rebuilt the pair).
+- Sentinel doctrine: REACTIVE fortress — deploy only when anchored near
+  an owned site AND the team sees an enemy inside deployed reach; stow
+  when the threat clears / anchor lost / capture errand elsewhere;
+  stay-put guard kills move-order spam while deployed.
+
+Why dormant — the sweep evidence chain (all 300 seeds, frontier):
+1. standing-fortress first cut: A 78/19 — area denial with no mirror.
+2. 12D swap on that build: Sentinel-side 67.4% -> chassis+doctrine OP.
+3. threat-reactive tune: Sentinel-side 53.1% — CHASSIS GATE PASSES
+   (deploy uptime collapses to ~0-150 ticks/war).
+4. but mirror probe: A 59.7% aggregate BOTH worlds on seeds whose 16a
+   baseline is 47.5% — a ~12pt TEAM-linked residue, mechanism not
+   isolated (hypothesis: fastest-seat recoverer distorted by the
+   Skimmer + an unexplained A-keyed component). Fails the sim gate ->
+   ships dormant. Chase at batch scale with UNIQUES=1 sweeps.
+
+ALSO: riverline census landed its verdicts (300 + 300 mirrored):
+standard endings 19% (viable, not horn-locked); the 58.9% B edge FLIPS
+perfectly under mirroring (aggregate 50.4%) — the generated terrain's
+east side is systematically stronger. Engine fair; layout needs a
+symmetrization pass someday.
+
+Suite 466/466 (x2). 5-seed gate byte-identical to pre-16B. Tagged slice-16b.

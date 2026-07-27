@@ -20,6 +20,7 @@ const MAP = process.env.MAP || "frontier_corridor"; // 11M profiles
 const DIFFICULTY = Number(process.env.DIFFICULTY ?? 1);
 const MIRROR = process.env.MIRROR === "1";
 const FACTIONSWAP = process.env.FACTIONSWAP === "1"; // 12D: uniques trade sides
+const UNIQUES = process.env.UNIQUES === "1"; // 16B: unique crewing (dormant by default)
 const SHARDS = Number(process.env.SHARDS ?? 1);
 const SHARD = Number(process.env.SHARD ?? 0);
 const HORIZON = Number(process.env.TICKS ?? 18000);
@@ -30,7 +31,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
-    mapProfile: MAP,
+    mapProfile: MAP, uniqueCrewing: UNIQUES,
   });
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every

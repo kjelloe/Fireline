@@ -11,6 +11,7 @@ import {
 import {
   CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER, CMD_FIRE_ORDER,
   CMD_TOW_ORDER, CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
+  CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY,
 } from "./commands.js";
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
@@ -155,6 +156,7 @@ export const CAPTURE_SEEK_CELLS = 16;
 // 11D (Q11): tanks fortify ground this close to an owned relay (never the
 // site cell itself — that's protected); trucks clear marked mines they pass.
 export const MINE_FORTIFY_CELLS = 3;
+export const HARDPOINT_STATION_CELLS = 3; // 16B: Sentinel anchors this close to an owned relay
 // 11D (Q16): regents signal sparingly — one ping per seat per 30 s.
 export const AI_PING_INTERVAL_TICKS = 300;
 
@@ -172,6 +174,14 @@ export class AIRegency {
     this.regented = new Set(); // human operator slots under takeover (3C)
     // 6D: easy fires every other tick; hard swaps patrols for relay pushes.
     this.difficulty = options.difficulty ?? AI_NORMAL;
+    // 16B: unique-chassis crewing, DORMANT by default. The rung passes the
+    // 12D chassis gate (Sentinel-side 53.1% after the threat-reactive tune)
+    // but introduces a ~12pt TEAM-linked edge (A 59.7% aggregate across
+    // mirror worlds on seeds whose baseline is 47.5%) whose mechanism is
+    // not yet isolated — suspicion: fastest-seat recoverer distortion by
+    // the Skimmer plus an unexplained A-keyed component. Enable in sweeps
+    // (UNIQUES=1) to chase it at batch scale before it defaults on.
+    this.uniqueCrewing = options.uniqueCrewing === true;
   }
 
   assume(operatorId) {
@@ -319,16 +329,37 @@ export class AIRegency {
               getUnitStats(a.type).indirect);
           }
         }
+        // 16B faction identity: the unique chassis must not rot in the
+        // garage (sim probe: the Sentinel sat uncrewed for entire wars,
+        // so its anchor doctrine never fired). No crewed unique on the
+        // team and one is free -> take it before the default pick.
+        // Carrier/courier/tube roles stay senior — those win wars.
+        let roleUnique = null;
+        if (this.uniqueCrewing && !roleCarrier && !roleBike && !roleTube) {
+          const isUnique = (a) => {
+            const st = getUnitStats(a.type);
+            return st.deployable === true || st.amphibious === true;
+          };
+          const uniqueCrewed = state.assets.some((a) =>
+            a.team === team && a.operatorId !== -1 && !isWreck(a) && isUnique(a));
+          if (!uniqueCrewed) {
+            roleUnique = state.assets.find((a) =>
+              a.team === team && a.operatorId === -1 && !isWreck(a) && isUnique(a));
+          }
+        }
         if (roleCarrier) {
           pick = roleCarrier.id;
         } else if (roleBike) {
           pick = roleBike.id;
         } else if (roleTube) {
           pick = roleTube.id;
-        } else if (agent) {
-          const paired = state.assets[agent.assetId];
-          if (paired && paired.operatorId === -1 && !isWreck(paired)) pick = paired.id;
-        } else {
+        } else if (agent && state.assets[agent.assetId] &&
+                   state.assets[agent.assetId].operatorId === -1 &&
+                   !isWreck(state.assets[agent.assetId])) {
+          pick = agent.assetId; // a fixed agent's own seat outranks the unique
+        } else if (roleUnique) {
+          pick = roleUnique.id;
+        } else if (!agent) {
           const free = state.assets.find((a) =>
             a.team === team &&
             a.operatorId === -1 && !isWreck(a));
@@ -407,6 +438,42 @@ export class AIRegency {
           });
           continue;
         }
+      }
+      // 16B Sentinel doctrine (12B unique, unblocked by the 12D fairness
+      // gate): the hardpoint is a REACTIVE fortress, not a standing one.
+      // First cut deployed on every owned relay permanently and swept
+      // 78/19 on frontier — area denial with no Outlier mirror. Now it
+      // deploys only when anchored near an owned site AND the team SEES
+      // an enemy inside the deployed reach; threat gone (or anchor lost,
+      // or a capture errand elsewhere) -> stow and roll. Fire doctrine
+      // above stays first: a deployed Sentinel keeps shooting.
+      if (stats.deployable && asset.deployTimer === 0) {
+        const near = (site) =>
+          Math.max(Math.abs(site.cellX - cellX0), Math.abs(site.cellY - cellY0)) <= HARDPOINT_STATION_CELLS;
+        const anchored = state.sites.some((site) => site.owner === asset.team && near(site));
+        const reach = stats.deployedRange ?? 0;
+        const threatNear = state.assets.some((e) =>
+          e.team !== asset.team && e.team !== -1 && !isWreck(e) &&
+          visibleByTeam[asset.team].has(e.id) &&
+          Math.abs(e.x - asset.x) <= reach && Math.abs(e.y - asset.y) <= reach);
+        let capturerElsewhere = false;
+        for (const [key, op] of capturerFor) {
+          if (op !== operatorId) continue;
+          const site = state.sites[Number(key.split(":")[1])];
+          if (site && !near(site)) { capturerElsewhere = true; break; }
+        }
+        if (asset.deployed === 0 && asset.state === ASSET_IDLE &&
+            anchored && threatNear && !capturerElsewhere) {
+          commands.push({ type: CMD_DEPLOY_HARDPOINT, operatorId });
+          continue;
+        }
+        if (asset.deployed === 1 && (!anchored || !threatNear || capturerElsewhere)) {
+          commands.push({ type: CMD_UNDEPLOY, operatorId });
+          continue;
+        }
+        // Deployed and staying: guns already handled above; movement
+        // doctrine below would only emit orders the reducer rejects.
+        if (asset.deployed === 1) continue;
       }
       // Regents ping, sparingly (Q16): the raider calls for escort while
       // carrying; the recoverer announces its run; scouts flag marked mines.

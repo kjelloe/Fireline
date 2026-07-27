@@ -26,7 +26,7 @@ export class GameServer {
     this.clock = null;
     this.aiDifficulty = options.aiDifficulty ?? 1;
     this.ai = options.enableAi === true
-      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true })
+      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true, uniqueCrewing: options.uniqueCrewing === true })
       : null;
     // 1K: authoritative command log (client + AI + advance_tick, in order).
     this.commandLog = [];
