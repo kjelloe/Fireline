@@ -76,6 +76,7 @@ The centerpiece, and the one gated on the designer conversation.
 DONE 2026-07-27:          13E fog ghosts ✅ · 14A props r2 ✅ · 15B strings part 1 ✅ (part 2: describeEvent lines + static pages)
 DESIGNER RULING LANDED:   12A factions ✅ (Directorate/Outliers) · 12B Sentinel ✅ (Deploy Hardpoint) · 12C Skimmer ✅ (Riverline Drive, T_WATER)
 NEXT GATE:                12D faction-swap sweep campaign on the BATCH PC (the pair is UNTUNED); 14B faction palette r2 now unblocked
+ALSO DONE 2026-07-27:     15B part 2 ✅ (events/end/briefing en+no) · 13A cargo + 13B resupply runner ✅ (sim gate PASS) · 15C a11y ✅ (contrast/scale/keybinds)
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI
