@@ -26,19 +26,23 @@ test("rulesForPreset resolves names and refuses garbage", () => {
   assert.throws(() => rulesForPreset("nightmare"), /unknown rules preset/);
 });
 
-test("createAppServer forwards mapProfile and rules into the war", () => {
+test("createAppServer forwards mapProfile, rules, and uniqueCrewing into the war", () => {
   const dir = mkdtempSync(path.join(tmpdir(), "mf-presets-"));
   try {
     const appServer = createAppServer({
       mapSeed: 7,
-      enableAi: false,
+      enableAi: true,
       replayDir: dir,
       mapProfile: "riverline",
       rules: rulesForPreset("hard"),
+      uniqueCrewing: true,
     });
     assert.equal(appServer.gameServer.state.mapProfile, "riverline");
     assert.equal(appServer.gameServer.state.rules.mpgMinOperable, 4);
     assert.equal(appServer.gameServer.state.rules.mpgTicks, 1500);
+    // The dropped-options class: every GameServer option the app layer
+    // accepts must actually arrive (MAP=riverline once served frontier).
+    assert.equal(appServer.gameServer.ai.uniqueCrewing, true);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

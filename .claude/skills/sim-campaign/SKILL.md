@@ -19,9 +19,22 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, current baseline: **decisive standard-capture endings around
-tick 3400–4000 in most seeds** (some run long with close scores), *mixed*
-winners across seeds, tows ≥ 2, downs cycling with redeploys, replay OK.
+Healthy war, current baseline (post-16a, 600-war census): **~2 of the 5
+gate seeds end by standard capture around tick 3900–4200; the rest run
+long and close** — at census scale ~27% of frontier wars end by standard,
+the rest at the points horn, ~8% undecided, decided A-rate 48–52%.
+*Mixed* winners across seeds, tows ≥ 2, downs cycling with redeploys,
+replay OK. (The old "decisive endings in most seeds" wording misread a
+16B gate in 07/2026 — don't panic at 3 long seeds; compare against the
+census shares, and confirm tempo shifts with a 300-seed sweep before
+tuning anything.)
+
+Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
+`FACTIONSWAP=1` uniques trade sides, `MAP=riverline`, `UNIQUES=1`
+enables the dormant 16B unique-crewing. Analyzer semantics
+(`debugging/analyze_sweep.py`): TEAM bias = the same team keeps its edge
+in BOTH mirror worlds; a ~50% per-seed flip rate with balanced
+aggregates is fair chaos, NOT residue.
 
 ## Red flags and what they meant before
 

@@ -75,6 +75,7 @@ export function createAppServer(options = {}) {
     // 13G: these were silently dropped here — MAP=riverline served frontier.
     mapProfile: options.mapProfile ?? "frontier_corridor",
     rules: options.rules ?? null,
+    uniqueCrewing: options.uniqueCrewing === true, // 16B (dormant default)
   });
   const transport = new NetworkTransport(gameServer, wss);
 

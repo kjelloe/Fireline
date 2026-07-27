@@ -177,3 +177,13 @@ CHECKOUT shipped with — after new worker features land here, the ritual
 on the PC is `git pull && bash tools/batch_worker.sh` (Ctrl-C the old
 one first). A stale worker politely refuses unknown jobs by mail — that
 refusal names its commit, which is your version check.
+
+**Job kinds as of slice-16b:** `sweep`, `mirror`, `factionswap`,
+`riverline` (MAP=riverline census), `uniques` (16B unique-crewing ON;
+body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0` queues
+the swapped variant), `matrix`, `perf`, `sendresults`. The refusal
+message lists the kinds a running worker actually has.
+
+**Perf prerequisite (learned 2026-07-27):** the perf job needs Playwright
+ON THE WORKER MACHINE — first run failed with "is playwright installed?".
+One-time on the PC, in the repo: `npx playwright install chromium`.
