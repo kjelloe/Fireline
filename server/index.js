@@ -84,6 +84,7 @@ export function createAppServer(options = {}) {
     return replayStore.save({
       mapSeed: gameServer.state.mapSeed,
       mapProfile: gameServer.state.mapProfile, // 11M
+      rules: gameServer.state.rules, // 13F: replays must re-simulate the same law
       ticks: gameServer.state.tick,
       winner: gameServer.state.winner,
       reason: gameServer.state.winReason,

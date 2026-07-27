@@ -97,6 +97,7 @@ function copyState(state) {
     sites: state.sites.map((s) => ({ ...s })),
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
+    rules: { ...state.rules }, // 13F
     manufacture: [...state.manufacture],
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
@@ -1033,12 +1034,12 @@ function applyAdvanceTick(next) {
     const operable = next.assets.filter(
       (a) => a.team === team && a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED
     ).length;
-    if (operable >= MPG_MIN_OPERABLE) {
+    if (operable >= (next.rules?.mpgMinOperable ?? MPG_MIN_OPERABLE)) {
       next.manufacture[team] = 0;
       continue;
     }
-    if (next.manufacture[team] < MPG_TICKS) next.manufacture[team] += 1;
-    if (next.manufacture[team] < MPG_TICKS) continue;
+    if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) next.manufacture[team] += 1;
+    if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) continue;
     const wreck = next.assets.find(
       (a) => a.team === team &&
         (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) &&

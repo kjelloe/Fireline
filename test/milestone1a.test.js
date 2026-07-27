@@ -67,6 +67,7 @@ function stateHash(s) {
     w.writeI32LE(d.targetX); w.writeI32LE(d.targetY);
     w.writeI32LE(d.downTicks);
   }
+  w.writeI32LE(s.rules?.mpgMinOperable ?? 6); w.writeI32LE(s.rules?.mpgTicks ?? 900); // added 13F
   w.writeI32LE(s.nextMineId ?? 0); // added 9E
   for (const m of (s.mines ?? [])) {
     w.writeI32LE(m.id); w.writeI32LE(m.team);

@@ -5,9 +5,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { apply } from "../engine/reducer.js";
+import { hashState } from "../engine/snapshot.js";
 import { CARGO_FUEL_MAX, CARGO_AMMO_MAX, FUEL_MAX, AMMO_MAX } from "../engine/supply.js";
 import { AIRegency } from "../engine/ai_regency.js";
-import { hashState } from "../engine/snapshot.js";
 import { sandbox, joinAndSelect } from "./helpers.js";
 
 const OFF_BASES = [
@@ -104,4 +104,28 @@ test("13A cargo is hashed", () => {
   const b = sandbox([{ team: 0, cellX: 30, type: 3 }], [], { bases: OFF_BASES });
   b.assets[0].cargoFuel = 5;
   assert.notEqual(hashState(a), hashState(b));
+});
+
+test("13F session rules: defaults change nothing; custom rules change the law", async () => {
+  const { createInitialState, DEFAULT_RULES } = await import("../engine/state.js");
+  const { GameServer } = await import("../engine/server.js");
+  const { MPG_MIN_OPERABLE, MPG_TICKS } = await import("../engine/reducer.js");
+
+  // The exported constants and the default rules must never drift apart.
+  assert.deepEqual(DEFAULT_RULES, { mpgMinOperable: MPG_MIN_OPERABLE, mpgTicks: MPG_TICKS });
+  const plain = createInitialState(42, "frontier_corridor");
+  const explicit = createInitialState(42, "frontier_corridor", { ...DEFAULT_RULES });
+  assert.equal(hashState(plain), hashState(explicit), "defaults are byte-identical");
+
+  // Custom law: threshold 20 -> a full 16-asset team is ALWAYS below it,
+  // so the manufacture clock runs from tick one.
+  let s = createInitialState(42, "frontier_corridor", { mpgMinOperable: 20, mpgTicks: 50 });
+  for (let i = 0; i < 10; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.manufacture[0], 10, "the custom threshold drives the clock");
+  assert.notEqual(hashState(s), hashState(plain), "different law, different world");
+
+  // Rules survive war rotation.
+  const server = new GameServer({ mapSeed: 42, rules: { mpgMinOperable: 20, mpgTicks: 50 } });
+  server.resetWar(777);
+  assert.equal(server.state.rules.mpgMinOperable, 20, "rotation keeps the session law");
 });

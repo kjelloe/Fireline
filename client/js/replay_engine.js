@@ -11,7 +11,8 @@ import { createInitialState } from "../../engine/state.js";
 export function createReplayPlayer(record, { checkpointEvery = 200 } = {}) {
   const log = record.commandLog ?? [];
   const initial = createInitialState(
-    record.meta.mapSeed >>> 0, record.meta.mapProfile ?? "frontier_corridor");
+    record.meta.mapSeed >>> 0, record.meta.mapProfile ?? "frontier_corridor",
+    record.meta.rules ?? null);
   // checkpoints[i] = { index: entries applied, state } — ascending ticks.
   const checkpoints = [{ index: 0, state: initial }];
   let cursor = { index: 0, state: initial };

@@ -190,7 +190,15 @@ function createBases() {
 
 // mapArg: profile name string (standard scenario with field assets),
 // a prebuilt map object (empty sandbox for tests), or undefined (default profile).
-export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
+// 13F (playtest 6.7 plumbing): session-tunable rules, hashed. DEFAULTS
+// ARE TODAY'S CONSTANTS — passing nothing changes nothing. Difficulty
+// presets wire in when the user ratifies numbers (night-2 clarification 3).
+export const DEFAULT_RULES = Object.freeze({
+  mpgMinOperable: 6, // Slow Manufacture triggers below this many operable
+  mpgTicks: 900,     // ...and rebuilds on this cadence
+});
+
+export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules = null) {
   let map;
   let assets;
   let sites;
@@ -227,6 +235,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor") {
     bases,
     standards, // 8A: physical Command Standards
     mapProfile: typeof mapArg === "string" ? mapArg : "frontier_corridor", // 11M
+    rules: { ...DEFAULT_RULES, ...(rules ?? {}) }, // 13F: hashed session rules
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     mines: [], // 9E: deployed mines

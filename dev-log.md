@@ -1717,3 +1717,21 @@ The hint bar was also tightened while extracting it. i18n coverage is
 now total: every string a player can see flows through the catalogs.
 
 Suite 449/449 (x2). Committed on slice-15a/14k line.
+
+---
+
+## slice-13f — Session rules plumbing (2026-07-27 night 2, playtest 6.7)
+
+The behavior-neutral half of the garage-config question: `state.rules`
+(hashed — replays must re-simulate the same law) carrying
+mpgMinOperable/mpgTicks, defaulting EXACTLY to today's constants — a
+test pins that DEFAULT_RULES and the exported constants can never drift,
+and that a no-rules state hashes identically to an explicit-defaults
+one. GameServer({rules}) → survives war rotation; replay meta carries
+rules; the reducer's Slow Manufacture pass reads the session law.
+Custom-law test: threshold 20 puts a full team permanently below it —
+the clock runs from tick one. 1A → v35. DIFFICULTY PRESETS deliberately
+NOT wired — awaiting the user's verdict on the proposed numbers
+(easy 8/600, normal 6/900, hard 4/1500 — see night-2 clarifications).
+
+Suite 450/450 (x2). Tagged slice-13f.
