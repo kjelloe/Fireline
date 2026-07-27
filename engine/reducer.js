@@ -13,7 +13,7 @@ import {
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
-  CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY,
+  CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, validate,
 } from "./commands.js";
 import {
@@ -43,7 +43,10 @@ import {
   STD_AT_BASE, STD_CARRIED, STD_DROPPED, STD_SCORED,
   CARRIER_SPEED_NUM, CARRIER_SPEED_DEN, AUTO_RETURN_TICKS,
 } from "./standards.js";
-import { SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, FUEL_MAX, resupplyAt, inSupply } from "./supply.js";
+import {
+  SUPPLY_FIRE_COST, SUPPLY_MOVE_COST, FUEL_MAX, AMMO_MAX,
+  CARGO_FUEL_MAX, CARGO_AMMO_MAX, resupplyAt, inSupply,
+} from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
 import {
@@ -296,6 +299,42 @@ function disableAsset(next, target, scoringTeam) {
     carried.y = target.y;
     next.events.push({ type: "standard_dropped", standardId: carried.id, x: carried.x, y: carried.y });
   }
+}
+
+// 13A: field resupply — a truck tops an adjacent friendly up from its
+// cargo hold. Partial transfers are fine; an empty hold or a full target
+// each have their own honest rejection.
+function applyTransferCargo(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const truck = next.assets[operator.assetId];
+  if (!truck || truck.operatorId !== operator.id) return reject(next, command, "no asset selected");
+  if (truck.state === ASSET_DISABLED || truck.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  if (!getUnitStats(truck.type).canTow) return reject(next, command, "needs a logistics truck");
+  const target = next.assets[command.targetAssetId];
+  if (!target || target.id === truck.id) return reject(next, command, "no such target");
+  if (target.team !== truck.team) return reject(next, command, "friendly target");
+  if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
+    return reject(next, command, "target not operable");
+  }
+  if (chebyshevCells(truck, target) > 1) return reject(next, command, "cargo out of reach");
+  const fuel = Math.min(truck.cargoFuel, FUEL_MAX - target.fuel);
+  const ammo = Math.min(truck.cargoAmmo, AMMO_MAX - target.ammo);
+  if (fuel <= 0 && ammo <= 0) {
+    return reject(next, command,
+      truck.cargoFuel <= 0 && truck.cargoAmmo <= 0 ? "cargo hold empty" : "target is topped up");
+  }
+  truck.cargoFuel -= fuel;
+  truck.cargoAmmo -= ammo;
+  target.fuel += fuel;
+  target.ammo += ammo;
+  next.events.push({
+    type: "cargo_transferred", byAssetId: truck.id, assetId: target.id, fuel, ammo,
+  });
+  return next;
 }
 
 // 12B: Deploy Hardpoint (3 s each way, immobile and guns cold while the
@@ -1029,9 +1068,14 @@ function applyAdvanceTick(next) {
   for (const asset of next.assets) {
     if (!getUnitStats(asset.type).canTow) continue;
     if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) continue;
-    if (asset.materiel === 0 && asset.state === ASSET_IDLE && inOwnBase(next, asset)) {
-      asset.materiel = 1; // silent, like breathing — the crate is just there
-      continue;
+    if (asset.state === ASSET_IDLE && inOwnBase(next, asset)) {
+      // 13A: the hold refills at home, as silently as the materiel crate.
+      asset.cargoFuel = CARGO_FUEL_MAX;
+      asset.cargoAmmo = CARGO_AMMO_MAX;
+      if (asset.materiel === 0) {
+        asset.materiel = 1; // silent, like breathing — the crate is just there
+        continue;
+      }
     }
     if (asset.materiel !== 1) continue;
     const cx = worldToCellFloor(asset.x);
@@ -1098,6 +1142,7 @@ export function apply(state, command) {
     case CMD_CRAWL_ORDER: return applyCrawlOrder(next, command);
     case CMD_PING: return applyPing(next, command);
     case CMD_DRIVE: return applyDrive(next, command);
+    case CMD_TRANSFER_CARGO: return applyTransferCargo(next, command);
     case CMD_DEPLOY_HARDPOINT: return applyDeployHardpoint(next, command);
     case CMD_UNDEPLOY: return applyUndeploy(next, command);
     case CMD_SET_OPTION: return applySetOption(next, command);

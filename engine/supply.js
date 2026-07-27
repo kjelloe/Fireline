@@ -15,6 +15,10 @@ export const AMMO_MAX = 12;
 // bites (a tank gets ~4 crossings, a laden carrier ~1.25 round trips).
 export const FUEL_MAX = 4000;
 export const SUPPLY_FIRE_COST = 1;
+// 13A: a truck's field-resupply hold — exactly one asset's worth
+// (FUEL_MAX went 2400->4000 in 11C; the hold tracks it).
+export const CARGO_FUEL_MAX = 4000;
+export const CARGO_AMMO_MAX = 12;
 export const SUPPLY_MOVE_COST = 1;
 
 export function inOwnBase(state, asset) {

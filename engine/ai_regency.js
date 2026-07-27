@@ -14,6 +14,7 @@ import {
 } from "./commands.js";
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
+import { CMD_TRANSFER_CARGO } from "./commands.js"; // 13B
 import { computeVisible } from "./los.js";
 import { inFireRange } from "./combat.js";
 import { inSupply } from "./supply.js";
@@ -446,6 +447,35 @@ export class AIRegency {
           target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
         }
       }
+      // 13B resupply runner (prompt 31): a truck with cargo tops up the
+      // thirstiest nearby teammate — adjacent: transfer; else: drive to
+      // them. Tubes first (artillery/mortar burn ammo fastest).
+      if (stats.canTow && (asset.cargoFuel > 0 || asset.cargoAmmo > 0)) {
+        let needy = null;
+        let bestScore = 0;
+        for (const a of state.assets) {
+          if (a.team !== asset.team || a.id === asset.id || isWreck(a)) continue;
+          const wantAmmo = 12 - a.ammo;
+          const wantFuel = Math.max(0, 2400 - a.fuel);
+          if (a.ammo > 6 && a.fuel > 1200) continue; // not needy
+          const dist = Math.max(Math.abs(worldToCellFloor(a.x) - cellX0),
+                                Math.abs(worldToCellFloor(a.y) - cellY0));
+          if (dist > RESCUE_SEEK_CELLS) continue;
+          const tube = getUnitStats(a.type).indirect ? 2 : 1;
+          const score = tube * (wantAmmo * 200 + Math.floor(wantFuel / 12)) - dist;
+          if (score > bestScore) { bestScore = score; needy = a; }
+        }
+        if (needy) {
+          const dist = Math.max(Math.abs(worldToCellFloor(needy.x) - cellX0),
+                                Math.abs(worldToCellFloor(needy.y) - cellY0));
+          if (dist <= 1) {
+            commands.push({ type: CMD_TRANSFER_CARGO, operatorId, targetAssetId: needy.id });
+            continue;
+          }
+          if (!target) target = [worldToCellFloor(needy.x), worldToCellFloor(needy.y)];
+        }
+      }
+
       // 11F repair errands (Q9): a truck carrying materiel heads for a
       // damaged own/neutral site nearby; adjacency auto-repairs it.
       if (!target && stats.canTow && asset.materiel === 1) {

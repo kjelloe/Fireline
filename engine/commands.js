@@ -13,6 +13,7 @@ export const CMD_CRAWL_ORDER    = "crawl_order";
 export const CMD_REDEPLOY       = "redeploy";
 export const CMD_PING           = "ping";        // 10C
 export const CMD_DRIVE          = "drive";        // 11L direct control
+export const CMD_TRANSFER_CARGO = "transfer_cargo";     // 13A
 export const CMD_DEPLOY_HARDPOINT = "deploy_hardpoint"; // 12B
 export const CMD_UNDEPLOY       = "undeploy";           // 12B
 export const CMD_SET_OPTION     = "set_option";   // 11G
@@ -81,6 +82,11 @@ export function validate(cmd) {
 
     case CMD_REDEPLOY:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_TRANSFER_CARGO:
+      if (!isUint(cmd.operatorId, 31))    return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.targetAssetId, 63)) return { ok: false, reason: "invalid targetAssetId" };
       return { ok: true };
 
     case CMD_DEPLOY_HARDPOINT:

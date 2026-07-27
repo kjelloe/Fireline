@@ -40,6 +40,8 @@ export function describeEvent(e, myTeam) {
     case "rejected": return describeRejection(e.reason);
     case "operator_unboarded": return t("ev.operator_unboarded", { id: e.operatorId });
     case "option_set": return null;
+    case "cargo_transferred":
+      return t("ev.cargo_transferred", { by: e.byAssetId, id: e.assetId, fuel: e.fuel, ammo: e.ammo });
     case "hardpoint_deploying": return t("ev.hardpoint_deploying");
     case "hardpoint_active": return t("ev.hardpoint_active");
     case "hardpoint_undeploying": return t("ev.hardpoint_undeploying");

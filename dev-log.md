@@ -1516,3 +1516,26 @@ THERE on port 8971; the dev machine is outbound-only (WSL portproxy
 dance deleted).
 
 Suite 431/431 (x2, 432 with the new test). Tagged slice-15b2.
+
+---
+
+## slice-13a — Full cargo + the resupply runner (2026-07-27, prompt 31)
+
+Trucks now haul a field-resupply hold — one full asset's worth (4000
+fuel, tracking the 11C FUEL_MAX bump, + 12 shells) — reloaded SILENTLY
+when idle at home (the materiel pattern keeps the 1A event contract
+asleep) and delivered with `transfer_cargo` to an ADJACENT friendly:
+partial fills, hold pays exactly what the target takes, honest
+rejections (chassis/reach/empty hold/topped-up/enemy). The truck must
+drive home to refill, so the base-return rhythm survives field
+logistics. cargoFuel/cargoAmmo hashed (1A → v33, then v34 for the hold
+size). **13B rode along**: the AI resupply runner — a stocked truck
+tops up the thirstiest nearby teammate, tubes first (artillery/mortar
+burn ammo fastest); adjacent = transfer, else drive to them; slots
+between mine-clearing and towing in the errand order. Client: V key +
+"RESUPPLY ASSET N (V)" banner, cargo readout in the supply bar, en/no
+strings. Sim gate: decisive seeds identical, long seeds show the
+runners at work (777 now 145-130), winners stay mixed — PASS. Also
+hardened the 6A ws test to poll-waits (load flake family).
+
+Suite 437/437 (x2). Tagged slice-13a.

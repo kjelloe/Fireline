@@ -63,6 +63,7 @@ export function buildView(state, team) {
       materiel: a.materiel, // 11F
       driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
       deployed: a.deployed, deployTimer: a.deployTimer, // 12B
+      cargoFuel: a.cargoFuel, cargoAmmo: a.cargoAmmo, // 13A
     }));
 
   const visible = computeVisible(state, team);

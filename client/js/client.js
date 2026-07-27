@@ -160,6 +160,12 @@ function init() {
       const wreck = adjacentTowableWreck(interpolator.latest());
       if (wreck) send({ type: "tow_order", wreckAssetId: wreck.id });
     }
+    // 13A: V transfers cargo to the neediest adjacent friendly (F is
+    // camera-follow — hands off).
+    if (e.key === "v" || e.key === "V") {
+      const needy = adjacentNeedyFriendly(interpolator.latest());
+      if (needy) send({ type: "transfer_cargo", targetAssetId: needy.id });
+    }
     // 10B: Enter confirms a pending consequential takeover; Esc declines.
     if (e.key === "Enter" && pendingTakeover !== -1) {
       send({ type: "select_asset", assetId: pendingTakeover, confirm: true });
@@ -458,7 +464,8 @@ function updateSupplyBar(view) {
   const el = document.getElementById("supply-bar");
   const own = view?.friendlyAssets.find((a) => a.operatorId === joined?.operatorId);
   if (!own) { el.innerText = ""; return; }
-  el.innerText = `Asset ${own.id} | HP ${own.hp} | Ammo ${own.ammo} | Fuel ${own.fuel}`;
+  el.innerText = `Asset ${own.id} | HP ${own.hp} | Ammo ${own.ammo} | Fuel ${own.fuel}` +
+    (own.type === 3 ? ` | ${t("ui.cargo", { fuel: own.cargoFuel, ammo: own.cargoAmmo })}` : "");
 }
 
 function buildTerrain() {
@@ -1001,6 +1008,10 @@ function updateActionBanner(view) {
     if (wreck) {
       text = t("banner.tow", { id: wreck.id });
       bannerAction = () => send({ type: "tow_order", wreckAssetId: wreck.id });
+    } else if (me?.type === 3 && adjacentNeedyFriendly(view)) { // 13A
+      const needy = adjacentNeedyFriendly(view);
+      text = t("banner.resupply", { id: needy.id });
+      bannerAction = () => send({ type: "transfer_cargo", targetAssetId: needy.id });
     } else if (me?.type === 7 && me.deployTimer === 0) { // 12B
       text = me.deployed === 1 ? t("banner.undeploy") : t("banner.deploy");
       bannerAction = () => send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
@@ -1013,6 +1024,17 @@ function updateActionBanner(view) {
   } else {
     el.style.display = "none";
   }
+}
+
+// 13A: the neediest adjacent friendly, if I drive a stocked truck.
+function adjacentNeedyFriendly(view) {
+  const me = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  if (!me || me.type !== 3 || (me.cargoFuel <= 0 && me.cargoAmmo <= 0)) return null;
+  return (view?.friendlyAssets ?? []).find((a) =>
+    a.id !== me.id && a.state !== STATE_DISABLED && a.state !== 3 &&
+    (a.ammo < 12 || a.fuel < 2400) && (a.ammo <= 6 || a.fuel <= 1200) &&
+    Math.max(Math.abs(Math.floor(a.x / CELL) - Math.floor(me.x / CELL)),
+             Math.abs(Math.floor(a.y / CELL) - Math.floor(me.y / CELL))) <= 1) ?? null;
 }
 
 // 11U: the claimable friendly wreck beside my truck, if I drive one.

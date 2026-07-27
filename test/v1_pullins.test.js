@@ -73,13 +73,13 @@ test("6A terrain ships once via s_map; snapshots carry no mapCells", async () =>
   await withServer({}, async (appServer, port) => {
     const a = await connect(port);
     a.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
-    await settle();
+    await until(() => a.messages.some((m) => m.type === "s_map"));
     const mapMsg = a.messages.find((m) => m.type === "s_map");
     assert.equal(mapMsg.width, 128);
     assert.equal(mapMsg.mapCells.length, 128 * 128);
 
     appServer.transport.broadcastSnapshots(appServer.gameServer.step());
-    await settle();
+    await until(() => a.messages.some((m) => m.type === "s_snapshot"));
     const snap = a.messages.find((m) => m.type === "s_snapshot");
     assert.equal("mapCells" in snap.view, false, "static terrain stripped per tick");
     assert.ok(Array.isArray(snap.view.friendlyAssets));
