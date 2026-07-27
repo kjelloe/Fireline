@@ -31,6 +31,10 @@ if ! npm test >/dev/null 2>&1; then
   $AM send --from $ME --to dev --tag done "WORKER REFUSED: npm test is RED on $TAG — fix the tree before batching."
   exit 1
 fi
+# Online notice as MAIL (prompt 47): the dev side watches the store, so
+# "worker online on <commit>" is the signal to queue the next slate —
+# no human relay needed. Status alone is a board, not a notification.
+$AM send --from $ME --to dev --tag done "worker online on $TAG — suite green, $(nproc 2>/dev/null || echo '?') cores" >/dev/null
 $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
 
 cores=$(nproc 2>/dev/null || echo 4)
@@ -105,6 +109,16 @@ handle_job() { # $1 = JSON body
         [ -f "$f" ] && mail_csv "$f" && sent=$((sent+1))
       done
       $AM send --from $ME --to dev --tag done "sendresults: mailed $sent CSVs from $TAG" ;;
+    update)
+      # Self-update (prompt 47): pull and RE-EXEC — the fresh process
+      # re-validates the suite and mails "worker online on <new commit>".
+      # ff-only so a diverged PC checkout fails loudly instead of merging.
+      if git pull --ff-only >/dev/null 2>&1; then
+        $AM send --from $ME --to dev --tag done "updating: $TAG -> $(git describe --tags --always); re-exec" >/dev/null
+        exec bash "$0"
+      else
+        $AM send --from $ME --to dev --tag done "update FAILED on $TAG: git pull --ff-only refused (diverged checkout?) — manual fix needed on the PC"
+      fi ;;
     perf)
       $AM status --as $ME "running perf harness on $TAG" >/dev/null
       if node tools/perf_harness.mjs > "$OUT/perf_run.log" 2>&1; then
@@ -116,7 +130,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/uniques/matrix/perf/sendresults." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/uniques/matrix/perf/sendresults/update." ;;
   esac
   $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
 }

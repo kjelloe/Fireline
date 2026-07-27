@@ -1903,3 +1903,36 @@ shows, war ticks, zero page errors). The smoke gate joins the standard
 client-slice ritual now that it runs locally.
 
 Suite 479/479 (x2). Smoke OK.
+
+## slice-16c — mirror-symmetric movement + worker self-update (2026-07-27)
+
+Chasing the riverline east edge produced a REAL engine bug and an
+honest surprise:
+- REAL BUG, FIXED: movement stepped with floorDivI32 on signed trig
+  products — floor rounds toward -inf, so west/north diagonal movers
+  gained exactly 1 world-unit per tick over their mirrors (test-proven:
+  920 vs 880 over 40 ticks). Fix: `truncDivI32` (toward zero) for the
+  DIR_COS/DIR_SIN steps in both integration paths.
+  `test/move_symmetry.test.js` pins all four mirror pairs. NO 1A repin
+  needed — the fixture's script never runs a long diagonal. Frontier
+  post-fix: 52.5% A of decided (fair, no regression).
+- SURPRISE: riverline's east edge SURVIVES (B 57.3% of decided, flip
+  rate 99.6%, aggregate 49.9% team-fair). The generator was already
+  symmetric; movement now is too — so a THIRD side-linked mechanism
+  exists. Next diagnostic (designed, not yet run): the equivariance
+  divergence probe — run seed s normal and world-mirrored side by side
+  and binary-search the FIRST tick where the mirrored state stops being
+  the exact mirror; that names the asymmetric subsystem directly.
+  Suspects already identified: heading-snap tie (h=8 snaps to dir 1,
+  its mirror snaps to dir 8, not 7) and the east-rim clamp slack
+  (maxX=(w-1)*256+255 has no west preimage).
+- Worker self-update (prompt 47): `batch_send.sh update` → worker
+  `git pull --ff-only` + re-exec; fresh process re-validates the suite
+  and mails "worker online on <commit>" (online notice is now MAIL, not
+  just status — the dev side watches the store and queues on it). The
+  PC bounce ritual is one-time-only from here.
+- perf harness: forces ANGLE d3d11 (first PC run silently rendered on
+  SwiftShader — 6fps median software floor, useful for the 2D-fallback
+  question but not the 4070 number we wanted).
+
+Suite 481/481 (x2). 5-seed gate healthy. Tagged slice-16c.

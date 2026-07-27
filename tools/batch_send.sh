@@ -19,9 +19,10 @@ case "${1:-}" in
   riverline) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"riverline\",\"count\":${2:-100}}" ;;
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
+  update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
   matrix) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"matrix\",\"difficulty\":${2:-2},\"count\":${3:-100}}" ;;
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|perf|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|perf|update|collect|board [args]"; exit 1 ;;
 esac

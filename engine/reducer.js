@@ -72,7 +72,7 @@ function awardOperator(next, operatorId, points) {
   if (seat) seat.score += points;
 }
 import { speedMultiplier } from "./terrain.js";
-import { cellToWorld, worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
+import { cellToWorld, worldToCellFloor, absI32, floorDivI32, truncDivI32 } from "../shared/fixedmath.js";
 
 export { createInitialState } from "./state.js";
 import { fieldSpawnFor } from "./state.js";
@@ -655,8 +655,10 @@ function driveStep(asset, map, supplied, carrying, towing) {
   const sign = asset.driveThrottle < 0 ? -1 : 1;
   const maxX = (map.width - 1) * 256 + 255;
   const maxY = (map.height - 1) * 256 + 255;
-  asset.x = Math.min(maxX, Math.max(0, asset.x + sign * floorDivI32(step * DIR_COS[dir], 256)));
-  asset.y = Math.min(maxY, Math.max(0, asset.y + sign * floorDivI32(step * DIR_SIN[dir], 256)));
+  // truncDiv: mirror-symmetric stepping (floor rounded -inf-ward and gave
+  // west/north movers a free unit on diagonals — the riverline east edge).
+  asset.x = Math.min(maxX, Math.max(0, asset.x + sign * truncDivI32(step * DIR_COS[dir], 256)));
+  asset.y = Math.min(maxY, Math.max(0, asset.y + sign * truncDivI32(step * DIR_SIN[dir], 256)));
   asset.targetX = asset.x;
   asset.targetY = asset.y;
 }
@@ -694,8 +696,8 @@ function stepAsset(asset, map, supplied, carrying, towing) {
   if (off > 32) return;
 
   const dir = (floorDivI32(asset.heading + 8, 16)) & 15;
-  asset.x += floorDivI32(step * DIR_COS[dir], 256);
-  asset.y += floorDivI32(step * DIR_SIN[dir], 256);
+  asset.x += truncDivI32(step * DIR_COS[dir], 256);
+  asset.y += truncDivI32(step * DIR_SIN[dir], 256);
 
   if (asset.x === asset.targetX && asset.y === asset.targetY) {
     asset.state = ASSET_IDLE;

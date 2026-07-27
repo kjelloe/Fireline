@@ -102,9 +102,14 @@ async function main() {
 
   const browser = await chromium.launch({
     headless: !HEADED,
-    // Let Chromium use the real GPU (default headless uses it too on
-    // recent versions, but be explicit and forbid the software fallback).
-    args: ["--ignore-gpu-blocklist", "--enable-gpu-rasterization"],
+    // Let Chromium use the real GPU. The first PC run STILL fell back to
+    // SwiftShader (the summary's "gl" field is the tell) — headless
+    // needs ANGLE told which backend to use, not just the blocklist off.
+    // d3d11 is the Windows-native path; on Linux use ANGLE=gl.
+    args: [
+      "--ignore-gpu-blocklist", "--enable-gpu-rasterization", "--enable-gpu",
+      `--use-angle=${process.env.ANGLE ?? "d3d11"}`,
+    ],
   });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   await page.goto(url);

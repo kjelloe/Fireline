@@ -14,6 +14,15 @@ export function floorDivI32(a, b) {
   return Math.floor(a / b) | 0;
 }
 
+// Signed division rounded TOWARD ZERO — for quantities where negative
+// and positive must shrink by the same magnitude. floorDivI32 on a
+// signed product rounds -inf-ward, which made westward/northward
+// movement steps up to a unit longer than their mirrors (the riverline
+// east-edge root cause, 2026-07-27).
+export function truncDivI32(a, b) {
+  return Math.trunc(a / b) | 0;
+}
+
 export function absI32(v) {
   return v < 0 ? (-v | 0) : (v | 0);
 }
