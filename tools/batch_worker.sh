@@ -42,7 +42,7 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    FACTIONSWAP=${FACTIONSWAP:-0} MAP=${MAP:-frontier_corridor} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
@@ -86,6 +86,14 @@ handle_job() { # $1 = JSON body
       FACTIONSWAP=1 run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 factionswap ;;
     riverline)
       MAP=riverline run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 riverline ;;
+    uniques)
+      # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
+      local uq_swap uq_mirror
+      uq_swap=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
+      uq_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      UNIQUES=1 FACTIONSWAP=$uq_swap run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
+        "$uq_mirror" 1 "uniques$([ "$uq_swap" = 1 ] && echo _swap)$([ "$uq_mirror" = 1 ] && echo _mirror)" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -108,7 +116,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — the worker only runs sweep/mirror/matrix/perf." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/uniques/matrix/perf/sendresults." ;;
   esac
   $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
 }
