@@ -42,7 +42,7 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    FACTIONSWAP=${FACTIONSWAP:-0} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} MAP=${MAP:-frontier_corridor} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
@@ -84,6 +84,8 @@ handle_job() { # $1 = JSON body
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 1 1 mirror ;;
     factionswap)
       FACTIONSWAP=1 run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 factionswap ;;
+    riverline)
+      MAP=riverline run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 riverline ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")

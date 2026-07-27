@@ -16,10 +16,11 @@ case "${1:-}" in
   sweep)  $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sweep\",\"count\":${2:-100}}" ;;
   mirror) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"mirror\",\"count\":${2:-100}}" ;;
   factionswap) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"factionswap\",\"count\":${2:-100}}" ;;
+  riverline) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"riverline\",\"count\":${2:-100}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   matrix) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"matrix\",\"difficulty\":${2:-2},\"count\":${3:-100}}" ;;
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|perf|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|perf|collect|board [args]"; exit 1 ;;
 esac

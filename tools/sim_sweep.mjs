@@ -16,6 +16,7 @@
 import { GameServer } from "../engine/server.js";
 
 const COUNT = Number(process.argv[2] ?? 20);
+const MAP = process.env.MAP || "frontier_corridor"; // 11M profiles
 const DIFFICULTY = Number(process.env.DIFFICULTY ?? 1);
 const MIRROR = process.env.MIRROR === "1";
 const FACTIONSWAP = process.env.FACTIONSWAP === "1"; // 12D: uniques trade sides
@@ -29,6 +30,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
+    mapProfile: MAP,
   });
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every

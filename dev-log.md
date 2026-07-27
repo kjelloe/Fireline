@@ -1804,3 +1804,12 @@ same team keeping its edge in BOTH worlds. On the old baseline data
 the new verdict prints "TEAM BIAS — 58.3% A of decided regardless of
 side"; on post-fix data "decorrelated + balanced aggregates". PC-scale
 re-confirmation (600+600 on the worker) queues after the next push.
+
+## riverline census tooling (2026-07-27)
+
+`MAP=` env now reaches sim_sweep (GameServer mapProfile — the 13G
+app-layer fix's sibling gap), worker gains a `riverline` job kind and
+batch_send the matching verb; run_sweep forwards MAP explicitly. Local
+300-war riverline census running — the open question is standard-run
+viability (2-seed smoke: both horn-bound at 18000). Suite 457/457
+(one ws load-flake under 8 sim shards, clean on re-run x2).
