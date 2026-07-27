@@ -1791,3 +1791,16 @@ drove GameServer directly, so nothing caught the app layer). Regression
 test drives createAppServer with riverline+hard and reads the state back.
 
 Suite 457/457 (x2). Tagged slice-13g.
+
+## 16a VERIFIED — 1200-war local sweep (2026-07-27)
+
+Post-fix, 600 normal + 600 mirrored wars: aggregate A 550 / B 554
+(49.8% of decided) — the 57/43 first-strike edge is GONE, and the two
+worlds are symmetric with each other (A 44.5/B 47.7 normal vs A 47.2/
+B 44.7 mirrored). Analyzer verdict logic rewritten for the post-16a
+world: per-seed flip rate only measures CORRELATION of mirror pairs
+(fair chaos decorrelates to ~50%); what indicts a team bias is the
+same team keeping its edge in BOTH worlds. On the old baseline data
+the new verdict prints "TEAM BIAS — 58.3% A of decided regardless of
+side"; on post-fix data "decorrelated + balanced aggregates". PC-scale
+re-confirmation (600+600 on the worker) queues after the next push.

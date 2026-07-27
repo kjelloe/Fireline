@@ -65,11 +65,22 @@ def compare_mirror(normal, mirror):
     total = flipped + same
     print(f"  both-decided pairs: {total} — perfectly flipped {flipped}, SAME winner {same}")
     if total:
-        print(f"  flip rate {100 * flipped / total:.1f}% (bias-free target: 100%)")
-        if same / total > 0.1:
-            print("  VERDICT: significant directional residue — the floor-edge hypothesis has legs.")
+        print(f"  flip rate {100 * flipped / total:.1f}%")
+        # Post-16a reading (tick-parity landed): the per-seed flip rate only
+        # says how CORRELATED the mirrored war is with the original. What
+        # indicts a team bias is the AGGREGATE: the same team keeping its
+        # edge in both worlds. ~50% flip + ~50/50 aggregates = fair chaos.
+        a_all = normal["a"] + mirror["a"]
+        b_all = normal["b"] + mirror["b"]
+        decided = a_all + b_all
+        a_pct = 100 * a_all / decided if decided else 0
+        print(f"  aggregate across both worlds: A {a_all} / B {b_all} ({a_pct:.1f}% A of decided)")
+        if abs(a_pct - 50) > 4:
+            print("  VERDICT: TEAM BIAS — the same team keeps its edge regardless of side.")
+        elif flipped / total > 0.9:
+            print("  VERDICT: near-perfect flip — outcomes follow geometry; engine is side-sensitive but team-fair.")
         else:
-            print("  VERDICT: near-symmetric — remaining winner skew is seed terrain, not direction.")
+            print("  VERDICT: decorrelated + balanced aggregates — no team bias; mirror pairs diverge as fair chaos.")
     print(f"  decision changed by mirroring (decided<->undecided): {changed_decision}")
 
 
