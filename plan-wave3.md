@@ -78,6 +78,7 @@ DESIGNER RULING LANDED:   12A factions ✅ (Directorate/Outliers) · 12B Sentine
 NEXT GATE:                12D faction-swap sweep campaign on the BATCH PC (the pair is UNTUNED); 14B faction palette r2 now unblocked
 ALSO DONE 2026-07-27:     15B part 2 ✅ (events/end/briefing en+no) · 13A cargo + 13B resupply runner ✅ (sim gate PASS) · 15C a11y ✅ (contrast/scale/keybinds)
 DAY SESSION 2026-07-27:   16A tick-parity fairness ✅ (Q18 CLOSED, A 49.8%) · 13G difficulty presets ✅ (RULES= env) · riverline census ✅ (standard-viable 19%; EAST TERRAIN BIAS found — flips under mirror, needs generator symmetrization) · 16B unique crewing+Sentinel doctrine built but DORMANT (chassis gate passes 53.1%; unexplained ~12pt TEAM-linked A-edge → UNIQUES=1 sweeps to chase)
+PROMOTED SAME DAY:        14C motion batch 1 ✅ (recoil·tracers·dust·rotor) · 14D baked sprites ✅ (sheets+2D fallback+minimap seed; fps auto-engage awaits PC perf data) — batch 2 (track scroll) open
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI
