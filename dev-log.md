@@ -1691,3 +1691,17 @@ old 6C prep. HONEST LIMIT: feel needs a real device — first mobile
 playtest will tune pad size/position/deadband.
 
 Suite 448/448 (x2). Tagged slice-15a.
+
+---
+
+## slice-14k — The Field Encyclopedia (2026-07-27 night 2, playtest 6.1)
+
+The "option button at some point" — now. 📖 opens the FIELD
+ENCYCLOPEDIA: a card per chassis (all nine — stats and traits derived
+live from the engine contract via codex.js, so it can never drift from
+the truth) plus seven "how the war works" chapters: the Standard,
+supply, rescue, mines, the drone, relays, factions — each written en+no,
+parity-enforced like everything else. The hover ⓘ panel and this browser
+read the same module.
+
+Suite 449/449 (x2). Tagged slice-14k.

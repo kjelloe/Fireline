@@ -65,6 +65,10 @@ npm start                              # host machine
   booth — you see BOTH teams, every mine, all pings, full telemetry, and
   can touch nothing. Perfect for watching AI-vs-AI wars (start the server
   with AI enabled and just spectate).
+- Field Encyclopedia (14K): the 📖 button — every chassis card (stats +
+  traits, straight from the engine contract) and seven "how the war
+  works" chapters (standard, supply, rescue, mines, drone, relays,
+  factions). Full English and Norsk.
 - Mobile touch (15A, ruling Q10): on touch devices an 8-direction
   steering pad appears bottom-left — tap an arrow and your unit sets off
   that way (steering itself at its chassis' turn rate); tap YOUR OWN

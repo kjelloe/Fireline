@@ -18,6 +18,17 @@ const ROLES = {
   skimmer: "Outlier airboat: Riverline Drive — crosses water at trail speed.",
 };
 
+// 14K: every chassis, for the encyclopedia browser.
+export function codexAll() {
+  return Object.keys(UNIT_STATS).map((t) => codexFor(Number(t))).filter(Boolean);
+}
+
+// The mechanics chapters — content lives in the string catalogs (en/no).
+export const MECHANICS_PAGES = Object.freeze([
+  "enc.standard", "enc.supply", "enc.rescue", "enc.mines",
+  "enc.drone", "enc.sites", "enc.factions",
+]);
+
 export function codexFor(type) {
   const stats = UNIT_STATS[type];
   if (!stats) return null;

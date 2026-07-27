@@ -18,7 +18,7 @@ import { tasksFor } from "./tasks_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { statusFor } from "./status_model.js";
-import { codexFor } from "./codex.js";
+import { codexFor, codexAll, MECHANICS_PAGES } from "./codex.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
@@ -250,6 +250,38 @@ function init() {
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
   document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
+  // 14K: the field encyclopedia (playtest 6.1's "option button").
+  const encBtn = document.getElementById("btn-encyclopedia");
+  const encOverlay = document.getElementById("encyclopedia-overlay");
+  if (encBtn && encOverlay) {
+    encBtn.onclick = () => {
+      if (encOverlay.style.display === "block") {
+        encOverlay.style.display = "none";
+        return;
+      }
+      encOverlay.style.display = "block";
+      const unitCard = (c) =>
+        `<div style="background:#181824; border-radius:8px; padding:10px 14px; width:250px;">` +
+        `<b style="color:#f5e96b;">${c.name.toUpperCase()}</b>` +
+        `<div style="color:#9ab; font-size:12px; margin:3px 0;">${c.role}</div>` +
+        c.lines.map(([k, v]) => `<div style="font-size:12px;">${k}: <b>${v}</b></div>`).join("") +
+        (c.traits.length ? `<div style="font-size:11px; color:#f5e96b; margin-top:3px;">${c.traits.join(" · ")}</div>` : "") +
+        `</div>`;
+      encOverlay.innerHTML =
+        `<div style="max-width:860px; margin:0 auto; font-family:sans-serif; color:#d8e6c8;">` +
+        `<h2 style="letter-spacing:2px;">${t("enc.title")} <span id="enc-close" style="float:right; cursor:pointer; color:#7fd4ff;">×</span></h2>` +
+        `<h3 style="color:#f5e96b;">${t("enc.units")}</h3>` +
+        `<div style="display:flex; flex-wrap:wrap; gap:10px;">` +
+        codexAll().map(unitCard).join("") + `</div>` +
+        `<h3 style="color:#f5e96b; margin-top:18px;">${t("enc.mechanics")}</h3>` +
+        MECHANICS_PAGES.map((key) =>
+          `<div style="background:#181824; border-radius:8px; padding:10px 14px; margin:8px 0; font-size:13px;">${t(key)}</div>`
+        ).join("") +
+        `</div>`;
+      document.getElementById("enc-close").onclick = () => { encOverlay.style.display = "none"; };
+    };
+  }
+
   // 15C: a11y — restore contrast/scale, wire the ⚙ controls.
   applyA11y();
   const contrastEl = document.getElementById("opt-contrast");

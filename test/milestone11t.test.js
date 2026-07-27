@@ -390,3 +390,15 @@ test("15A touch model: arrow controller, tap classification, pinch", async () =>
   assert.equal(pinchFactor(50, 200), 0.5);
   assert.equal(pinchFactor(0, 50), 1, "degenerate distances are ignored");
 });
+
+test("14K the encyclopedia covers every chassis and every mechanics page has text", async () => {
+  const { codexAll, MECHANICS_PAGES } = await import("../client/js/codex.js");
+  const { CATALOGS } = await import("../client/js/strings.js");
+  const all = codexAll();
+  assert.equal(all.length, 9, "nine chassis, nine entries");
+  for (const c of all) assert.ok(c.role.length > 10, `${c.name} has a role blurb`);
+  for (const key of MECHANICS_PAGES) {
+    assert.ok((CATALOGS.en[key] ?? "").length > 40, `${key} en`);
+    assert.ok((CATALOGS.no[key] ?? "").length > 40, `${key} no`);
+  }
+});
