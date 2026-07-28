@@ -81,7 +81,8 @@ DAY SESSION 2026-07-27:   16A tick-parity fairness ✅ (Q18 CLOSED, A 49.8%) · 
 PROMOTED SAME DAY:        14C motion batch 1 ✅ (recoil·tracers·dust·rotor) · 14D baked sprites ✅ (sheets+2D fallback+minimap seed; fps auto-engage awaits PC perf data) — batch 2 (track scroll) open
 2026-07-28:               BRAND ✅ Fireline Command ("Join the battle. Turn the front.") · 13C ROUTE GRAPH ✅ (equivariant Dijkstra waypoints, roleTruck lifeline; frontier FAIR 51.2 + 0 undecided; riverline west 73/27 EXPERIMENTAL pending graph tuning) · 15D UI acceptance harness ✅ (found buried HUD) · playtest 7 queue OPEN (items 11-21)
 PACING SEQUENCE LANDED:   17 collision ✅ · 11X escorts ✅ (assembly+follow+hold) · 11Y2 lateral relay web ✅ (8 relays) · 13H hybrid ticket bleed ✅ (endings 54/24/22, undecided ~1%, fair 48.8) · MPG full waves ✅ + base-derived rebuilds · 15E/15F2 client batch ✅ (items 12-21 minus verdicts) · 15G respawn law ✅ (fixture v38)
-NEXT (prompt-53 order):   16B uniques residue chase (data: Sentinel-side ~61, A-side ~65 on routed base) → riverline graph tuning → discovery service (specs/game-discovery.md, master colocates on game VM) → AT satchel
+PROMPT-53 ORDER DONE:     15G respawn law ✅ · 16B chase ✅ (mechanism = chassis ~11pt; doctrine fixes landed — water-aware Skimmer, no-squat Sentinel; STAYS DORMANT, designer stat question filed) · riverline ✅ (map-aware ticket majority; lean COLLAPSED 73/27→58/42, experimental) · 15H discovery ✅ (master index + announce + global list)
+NEXT:                     AT satchel (ruled) · riverline fine-tuning backlog · designer verdicts (Sentinel/Skimmer stats, item-12 marker) · perf on native Windows
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI

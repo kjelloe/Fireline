@@ -2235,4 +2235,4 @@ is configured. Pure row model (`server_list.js`) + 7 tests including a
 live end-to-end announce-probe-list loop; the TTL test caught a real
 first-announce rate-floor bug before it ever shipped.
 
-Suite 518/518 (x2). Smoke OK. UI acceptance OK. Tagged slice-15h.
+Suite 519/519 (x2). Smoke OK. UI acceptance OK. Tagged slice-15h.
