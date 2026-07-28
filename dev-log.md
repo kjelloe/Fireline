@@ -2581,3 +2581,26 @@ ticks — healthy, and the map's lean is no longer the story it was.
 Suite 560/560 (x2). AI siege/repair doctrine is NOT in this slice: the
 bridges exist and humans can use them, but regents do not yet choose to
 drop or rebuild one. That is 13E-2, and it carries its own sweep.
+
+## worker report mailing (2026-07-29, prompt 73)
+
+`reports/sweeps/` is gitignored, so mail is the ONLY way a result leaves
+the gaming PC — and until now only sweep CSVs travelled. The worker now
+mails any new or CHANGED report after every job: CSVs under tag `csv`,
+JSON under tag `report`, deduplicated by a `.mailed` manifest keyed on
+name+size+mtime, so the automatic pass is silent when nothing happened
+and `sendresults` (FORCE=1) still force-resends everything.
+
+The point of the automatic pass: `perf_native.ps1` driven from WSL
+writes into this same clone, so a native GPU run started by hand now
+comes home on the back of the next finished job, with nothing queued.
+
+Fixing only the sending half would have been useless — `batch_collect.py`
+filtered on the `csv` tag AND a `.csv` suffix, so every JSON report would
+have arrived at the dev machine and been dropped on the floor. Both ends
+now speak both tags, verified by a synthetic round trip.
+
+`debugging/test_worker_reports.sh` (12/12) extracts the functions and
+stubs the mail CLI, because this code runs unattended on another machine
+where a dedup bug either spams the store every job or silently ships
+nothing.

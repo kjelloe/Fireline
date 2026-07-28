@@ -205,6 +205,17 @@ runs; body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0`
 queues the swapped variant), `matrix`, `perf`, `sendresults`. The
 refusal message lists the kinds a running worker actually has.
 
+**Results come home automatically (prompt 73).** After EVERY job the
+worker mails any new or changed file in `reports/sweeps/` — CSVs under
+tag `csv`, JSON summaries under tag `report`. A manifest (`.mailed`)
+means unchanged files are not re-sent, so the automatic pass is quiet
+when nothing happened. This is what gets a **native perf run home**:
+`perf_native.ps1` driven from WSL writes into this same clone, so the
+next job the worker finishes ships `perf_summary.json` without anyone
+queueing anything. `bash tools/batch_send.sh sendresults` force-resends
+everything if a result is lost. `batch_collect.py` writes both tags into
+`reports/sweeps/` on the dev side.
+
 **Native GPU perf: use the PowerShell runner, not the worker job
 (prompt 71).** The `perf` job runs inside WSL, which cannot reach the
 discrete GPU, so Chromium falls back to SwiftShader and every number it

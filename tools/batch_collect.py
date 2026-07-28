@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-# tools/batch_collect.py — extract CSV mails (tag "csv", "#file:" header)
-# from the LOCAL agent-mail store into reports/sweeps/, then ack them.
+# tools/batch_collect.py — extract RESULT mails ("#file:" header) from the
+# LOCAL agent-mail store into reports/sweeps/, then ack them.
+# Tags: "csv" (sweep data) and, since prompt-73, "report" — the worker
+# now also ships JSON summaries, notably perf_summary.json from the
+# native GPU runner. Filtering on the csv tag alone silently dropped
+# those on the floor.
 # The dev machine hosts the hub, so the store is a local jsonl.
 import json
 import os
@@ -22,7 +26,7 @@ for line in open(LOG):
         m = json.loads(line)
     except json.JSONDecodeError:
         continue
-    if m.get("tag") != "csv":
+    if m.get("tag") not in ("csv", "report"):
         continue
     # the store schema names the payload field "text" (see agent-mail send)
     body = m.get("text", "")
@@ -30,7 +34,7 @@ for line in open(LOG):
         continue
     header, _, data = body.partition("\n")
     name = os.path.basename(header[len("#file:"):].strip())
-    if not name.endswith(".csv"):
+    if not name.endswith((".csv", ".json")):
         continue
     path = os.path.join(OUT, name)
     with open(path, "w") as f:
@@ -45,4 +49,4 @@ if written:
             ["python3", os.path.join(ROOT, "tools", "agent-mail.py"), "ack", *set(hashes), "--as", "dev"],
             capture_output=True)
 else:
-    print("no csv mails in the store")
+    print("no result mails in the store")

@@ -66,15 +66,61 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   mail_csv "$OUT/${label}.csv"
 }
 
-# Ship a CSV home as mail: first line names the file, the rest is data.
-mail_csv() {
-  local file=$1
-  [ -f "$file" ] || return 0
+# Ship a report home as mail: first line names the file, the rest is
+# data. Used for sweep CSVs and (prompt 73) for anything else that lands
+# in reports/ - notably perf_summary.json from the native GPU runner,
+# which writes into this same clone when perf_native.ps1 is driven from
+# WSL. reports/sweeps is gitignored, so mail is the ONLY way results
+# reach the dev machine.
+#
+# A manifest prevents re-sending: a file is mailed when it is new or has
+# changed (size or mtime), so the automatic pass after every job is
+# quiet when nothing happened. FORCE=1 re-sends regardless.
+MANIFEST="$OUT/.mailed"
+
+mail_file() { # $1 = path, $2 = tag (csv|report)
+  local file=$1 tag=${2:-report}
+  [ -f "$file" ] || return 1
+  local base sig
+  base=$(basename "$file")
+  sig="$base|$(stat -c '%s|%Y' "$file" 2>/dev/null || echo '?')"
+  if [ "${FORCE:-0}" != "1" ] && [ -f "$MANIFEST" ] && grep -qxF "$sig" "$MANIFEST"; then
+    return 1 # already mailed, unchanged
+  fi
   local tmp
   tmp=$(mktemp)
-  { echo "#file:$(basename "$file")"; cat "$file"; } > "$tmp"
-  $AM send --from $ME --to dev --tag csv --body-file "$tmp" >/dev/null
+  # Logs can be enormous; results never are. Cap the body so one runaway
+  # file cannot wedge the mail store.
+  { echo "#file:$base"; head -c 200000 "$file"; } > "$tmp"
+  $AM send --from $ME --to dev --tag "$tag" --body-file "$tmp" >/dev/null
   rm -f "$tmp"
+  # Record only AFTER a successful send, and drop any older line for the
+  # same file so the manifest cannot grow without bound.
+  if [ -f "$MANIFEST" ]; then
+    grep -vF "$base|" "$MANIFEST" > "$MANIFEST.tmp" 2>/dev/null || true
+    mv "$MANIFEST.tmp" "$MANIFEST"
+  fi
+  echo "$sig" >> "$MANIFEST"
+  return 0
+}
+
+mail_csv() { mail_file "$1" csv; }
+
+# Mail every NEW or CHANGED report on this disk. Called automatically
+# after each job, so a perf run (or anything else that drops a file in
+# reports/) reaches the dev machine without a follow-up job.
+mail_reports() {
+  local sent=0 f
+  for f in "$OUT"/*.csv "$OUT"/*.json; do
+    [ -f "$f" ] || continue
+    case "$(basename "$f")" in
+      .mailed) continue ;;
+    esac
+    if mail_file "$f" "$([ "${f##*.}" = csv ] && echo csv || echo report)"; then
+      sent=$((sent + 1))
+    fi
+  done
+  echo "$sent"
 }
 
 handle_job() { # $1 = JSON body
@@ -113,12 +159,12 @@ handle_job() { # $1 = JSON body
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 "$d" "matrix_d$d" ;;
     sendresults)
-      # Retroactive: mail home every CSV already on this disk.
-      local sent=0 2>/dev/null || sent=0
-      for f in "$OUT"/*.csv; do
-        [ -f "$f" ] && mail_csv "$f" && sent=$((sent+1))
-      done
-      $AM send --from $ME --to dev --tag done "sendresults: mailed $sent CSVs from $TAG" ;;
+      # Retroactive: mail home EVERY report on this disk (csv + json),
+      # ignoring the already-sent manifest - this kind exists precisely
+      # for "send it again, I lost it".
+      local sent
+      sent=$(FORCE=1 mail_reports)
+      $AM send --from $ME --to dev --tag done "sendresults: mailed $sent reports from $TAG" ;;
     update)
       # Self-update (prompt 47): pull and RE-EXEC — the fresh process
       # re-validates the suite and mails "worker online on <new commit>".
@@ -174,6 +220,9 @@ handle_job() { # $1 = JSON body
       if node tools/perf_harness.mjs > "$OUT/perf_run.log" 2>&1; then
         $AM send --from $ME --to dev --tag done \
           "perf done on $TAG: $(cat "$OUT/perf_summary.json" 2>/dev/null | head -c 400). CSV: $OUT/perf.csv"
+        # The artifacts themselves, not just a truncated inline blob.
+        mail_file "$OUT/perf_summary.json" report >/dev/null || true
+        mail_csv "$OUT/perf.csv" >/dev/null || true
       else
         $AM send --from $ME --to dev --tag done \
           "perf FAILED on $TAG — see $OUT/perf_run.log (is playwright installed?)"
@@ -182,6 +231,12 @@ handle_job() { # $1 = JSON body
       $AM send --from $ME --to dev --tag done \
         "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/matrix/perf/sendresults/update." ;;
   esac
+  # prompt-73: anything new in reports/ goes home automatically - a perf
+  # run started by hand on this machine no longer needs a follow-up job.
+  local extra
+  extra=$(mail_reports)
+  [ "${extra:-0}" -gt 0 ] && $AM send --from $ME --to dev --tag done \
+    "mailed $extra new report(s) from $TAG" >/dev/null
   $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
 }
 
