@@ -1,4 +1,4 @@
-# Running More Firepower
+# Running Fireline Command (dev name: More Firepower)
 
 Rebuilt baseline (see `dev-log.md` for the slice-by-slice history).
 

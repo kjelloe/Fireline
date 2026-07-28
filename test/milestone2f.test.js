@@ -112,7 +112,7 @@ test("2F server serves the client and vendored three.js", async () => {
   try {
     const page = await fetch(`http://localhost:${addr.port}/`);
     const html = await page.text();
-    assert.match(html, /More Firepower/);
+    assert.match(html, /Fireline Command/); // brand ruling, specs/title-and-naming.md
     assert.match(html, /\/vendor\/three\/build\/three\.module\.js/);
 
     const lib = await fetch(`http://localhost:${addr.port}/vendor/three/build/three.module.js`);

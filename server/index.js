@@ -201,7 +201,7 @@ if (isMain) {
   const rules = rulesForPreset(process.env.RULES ?? "normal"); // 13G presets
   const appServer = createAppServer({ mapSeed, aiDifficulty, mapProfile, rules });
   appServer.start(port).then((addr) => {
-    console.log(`More Firepower server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty}, rules ${process.env.RULES ?? "normal"})`);
+    console.log(`Fireline Command server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty}, rules ${process.env.RULES ?? "normal"})`);
   });
   for (const signal of ["SIGTERM", "SIGINT"]) {
     process.once(signal, () => {

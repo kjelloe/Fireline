@@ -1,7 +1,11 @@
-# More Firepower
+# Fireline Command
+
+**Join the battle. Turn the front.**
 
 **A deterministic, server-authoritative multiplayer wargame about *rescue* —
-inspired by the 1987 Amiga classic *Firepower*, built as a new IP.**
+inspired by classic tactical action games in broad spirit, built as a new IP.**
+*(Developed under the working name "More Firepower" — the repo, package, and
+technical identifiers keep that name; branding is presentation-only.)*
 
 You drop into a war that is already running — no lobby, no queue. Take a
 tank, a scout, a mortar carrier, or the humble logistics truck, and fight

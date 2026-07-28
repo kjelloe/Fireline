@@ -1,4 +1,4 @@
-# More Firepower — working rules
+# Fireline Command (dev name: More Firepower) — working rules
 
 Deterministic, server-authoritative wargame. The client never owns game
 logic; the reducer (`engine/reducer.js`, `apply(state, command)`) owns every

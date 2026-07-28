@@ -1974,3 +1974,18 @@ straight-line fording with road/bridge routing — the exact dynamics
 this edge lives in. Riverline balance gets RE-MEASURED after 13C
 rather than micro-tuned against behavior that is about to be deleted.
 The ablation harness stays in debugging/ for that re-measurement.
+
+## branding — Fireline Command (2026-07-28, specs/title-and-naming.md)
+
+Approved naming: title "Fireline Command", short "Fireline", catchphrase
+"Join the battle. Turn the front." PRESENTATION-ONLY per the brief: page
+titles, join-screen h1 + tagline (i18n keys page.title/page.tagline,
+en/no), package.json description, server console banner, README heading
+(dev-name continuity note kept), CLAUDE/RUNNING headings. Technical
+identifiers unchanged by design (package name, routes, state keys,
+tests, replay formats). The 2F test's brand assertion updated — it
+caught the rename exactly as intended. Smoke green (title renders, both
+factions join). The faction spec (faction-name-and-units.md) re-confirms
+the landed 12A-12C identity — no deltas.
+
+Suite 492/492. Tagged branding-fireline.

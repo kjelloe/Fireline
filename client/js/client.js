@@ -471,7 +471,9 @@ function applyPageStrings() {
     const el = document.getElementById(id);
     if (el) el.textContent = t(key);
   };
-  const pitch = document.querySelector("#join-overlay p");
+  setText("game-title", "page.title");
+  setText("game-tagline", "page.tagline");
+  const pitch = document.querySelector("#join-overlay p:not(#game-tagline)");
   if (pitch) pitch.textContent = t("page.pitch");
   setText("btn-join-a", "page.join_a");
   setText("btn-join-b", "page.join_b");
