@@ -1265,7 +1265,11 @@ function applyAdvanceTick(next) {
   // repin discipline); the pools are hashed and ride the view for UI.
   if (next.tickets) {
     const bleedTicks = next.rules?.ticketBleedTicks ?? 20;
-    const majority = next.rules?.ticketMajority ?? 5;
+    // The session law's majority is capped at this MAP's own majority —
+    // 5-of-8 on frontier, 4-of-6 on riverline; a smaller map must not
+    // need domination-grade holdings to bleed (13H, map-aware).
+    const mapMajority = ((next.sites.length / 2) | 0) + 1;
+    const majority = Math.min(next.rules?.ticketMajority ?? 5, mapMajority);
     if (bleedTicks > 0 && next.tick % bleedTicks === 0) {
       const owned = [0, 0];
       for (const site of next.sites) {

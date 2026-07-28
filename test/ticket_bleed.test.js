@@ -64,3 +64,11 @@ test("13H: tickets are hashed state", async () => {
   b.tickets = [b.tickets[0] - 1, b.tickets[1]];
   assert.notEqual(hashState(a), hashState(b));
 });
+
+test("13H: the majority requirement is capped by the MAP's own majority", () => {
+  // Session law says 5, but this sandbox has only 4 relays — holding 3
+  // (the map majority) must bleed.
+  let s = withRelays([0, 0, 0, 1], { ticketMajority: 5 });
+  for (let i = 0; i < 40; i++) s = apply(s, { type: "advance_tick" });
+  assert.ok(s.tickets[1] < 20, "3-of-4 bleeds despite the law saying 5");
+});

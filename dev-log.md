@@ -2201,4 +2201,19 @@ Drive gaining TRAIL affinity (path-speed parity with bikes) so the
 Outlier unique has a job on every map. Default wars untouched (flag
 off; exclusions moot without crewing) — gate unchanged.
 
+Suite 511/511.
+
+## riverline in the tickets era + map-aware majority (2026-07-28)
+
+13H's majority was frontier-tuned (5) — on 6-relay riverline that meant
+domination-grade holdings to bleed. The effective majority is now capped
+by the MAP's own majority (floor(sites/2)+1): 5-of-8 frontier, 4-of-6
+riverline. Test pinned. RE-MEASURE on the current build (300+300):
+the west lean COLLAPSED 73/27 -> ~58/42 in both worlds (aggregate
+47.7% team-fair, undecided 3-5%, median ~13k, endings tickets-led,
+standard ~11%) — the ticket meta diversified the war off the bridge
+choke that fed the lean. Riverline stays EXPERIMENTAL at a known 58/42;
+further graph tuning filed as campaign backlog (diminishing returns vs
+the discovery slice next in the ruled order).
+
 Suite 512/512.
