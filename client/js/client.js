@@ -365,6 +365,9 @@ function init() {
     renderer: () => renderer,
     scene: () => scene,
     labelCount: () => worldLabels.size,
+    cam: () => ({ ...freeCam.state }), // UI acceptance: camera assertions
+    joined: () => joined,
+    selectedAsset: () => mySelectedAssetId,
   };
 
   loadAssetMetadata().then(() => {

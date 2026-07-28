@@ -7,8 +7,8 @@
     <title>Fireline Command</title>
     <style>
         body { margin: 0; padding: 0; background: #111; color: #eee; font-family: sans-serif; overflow: hidden; touch-action: none; }
-        #canvas-container { position: absolute; width: 100%; height: 100%; }
-        #hud-top { position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+        #canvas-container { position: absolute; width: 100%; height: 100%; z-index: 0; }
+        #hud-top { position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 5; }
         .hud-group { pointer-events: auto; }
         .btn { background: #333; border: 1px solid #555; color: white; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 14px; }
         .btn:active { background: #555; }
@@ -79,9 +79,6 @@
             <button class="btn" id="btn-settings" title="Options">⚙</button>
             <button class="btn" id="btn-encyclopedia" title="Encyclopedia">📖</button>
         </div>
-    </div>
-    <div id="touch-pad" style="display:none; position:absolute; left:14px; bottom:90px; z-index:6; width:150px; height:150px;">
-        <!-- 15A: 8-direction steering pad + center stop (ruling Q10) -->
     </div>
     <div id="touch-pad" style="display:none; position:absolute; left:14px; bottom:90px; z-index:6; width:150px; height:150px;">
         <!-- 15A: 8-direction steering pad + center stop (ruling Q10) -->

@@ -1989,3 +1989,20 @@ factions join). The faction spec (faction-name-and-units.md) re-confirms
 the landed 12A-12C identity — no deltas.
 
 Suite 492/492. Tagged branding-fireline.
+
+## slice-15d — UI acceptance harness + the buried-HUD fix (2026-07-28, playtest 7)
+
+The playtest-7 directive ("UI buttons need acceptance tests that prove
+they trigger the right functions") built `tools/ui_acceptance.mjs`
+(Playwright: join, pan, click, assert через window.__mfDebug), and its
+FIRST run caught item 14's root cause: #canvas-container sits at the END
+of body, so the three.js canvas painted OVER every absolute HUD element
+without an explicit z-index — center-on-me (and next-asset, settings,
+encyclopedia) were unclickable. Fix: canvas z-index 0, hud-top z-index 5.
+Also found a DUPLICATE #touch-pad div (the patch-applied-twice class the
+parse gate can't see in HTML) — deduped. Harness covers: arrow pan,
+follow disengage/re-engage (item 14), next-asset cycling, encyclopedia.
+Harness caveat documented in-file: headless SwiftShader renders
+unthrottled rAF, so the test viewport stays small to keep frames cheap.
+
+Suite 490/490. Smoke OK. UI acceptance OK. Tagged slice-15d.
