@@ -57,9 +57,11 @@ outcome. Renderer presents fog-filtered views only.
   contest), siege (11R — only artillery breaches sites), deployable
   (12B Sentinel), amphibious (12C Skimmer).
 - Commands: join/select(confirm)/move/fire(asset|drone|site)/tow/crawl/
-  redeploy(+carrierAssetId 15F)/respawn(15)/deploy_mine/clear_mine/
-  ping/board_carrier/unboard/drive/deploy_hardpoint/undeploy/
-  transfer_cargo (+ inert call_medic).
+  redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
+  charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
+  deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
+  Faction uniques crew BY DEFAULT (16B live; UNIQUES=0 in sweeps
+  disables); default wars carry the sanctioned ~55/45 Directorate lean.
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
   aborts on event drift (a NEW event inside the 14 steps is drift too:
   prefer silent state changes for routine ticks, e.g. materiel loading).

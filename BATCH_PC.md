@@ -179,7 +179,9 @@ one first). A stale worker politely refuses unknown jobs by mail — that
 refusal names its commit, which is your version check.
 
 **Job kinds as of slice-16b:** `sweep`, `mirror`, `factionswap`,
-`riverline` (MAP=riverline census), `uniques` (16B unique-crewing ON;
+`riverline` (MAP=riverline census), `uniques` (EXPLICIT unique-crewing —
+since prompt-54 the default already has uniques ON, so plain sweeps
+include them; this kind remains for swap/mirror diagnosis runs;
 body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0` queues
 the swapped variant), `matrix`, `perf`, `sendresults`. The refusal
 message lists the kinds a running worker actually has.

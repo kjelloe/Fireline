@@ -24,8 +24,10 @@ back on return. Emission order alternates lead team by tick parity
 4. **roleTruck** — no crewed tower → grab a truck (13C lesson: a dead
    truck used to zero team tows for a whole war; 85→0 in one sweep).
 5. **Fixed agent's own paired asset**, when operable and free.
-6. **roleUnique** (16B, DORMANT flag) — no crewed faction unique →
-   grab it.
+6. **roleUnique** (16B, LIVE — default ON since prompt-54) — no crewed
+   faction unique and the map gives Riverline Drive a surface (water OR
+   trails) → grab it. The Sentinel never takes capture errands (it
+   defends via reactive deploys); the Skimmer races trails at 384.
 7. Regented seats fall back to lowest free operable asset.
 
 ## Errand priority (per idle asset, roughly in order)

@@ -30,8 +30,8 @@ never panic on 5 seeds; confirm tempo shifts with a 300-seed sweep
 before tuning anything.)
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
-`FACTIONSWAP=1` uniques trade sides, `MAP=riverline`, `UNIQUES=1`
-enables the dormant 16B unique-crewing. Analyzer semantics
+`FACTIONSWAP=1` uniques trade sides, `MAP=riverline`, `UNIQUES=0`
+disables the (default-ON) 16B unique-crewing for A/B runs. Analyzer semantics
 (`debugging/analyze_sweep.py`): TEAM bias = the same team keeps its edge
 in BOTH mirror worlds; a ~50% per-seed flip rate with balanced
 aggregates is fair chaos, NOT residue.
