@@ -406,6 +406,7 @@ function connect() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   socket = new WebSocket(`${protocol}//${window.location.host}`);
   socket.onmessage = (event) => {
+    hideReconnectBanner(); // any live message = the link is back (item 21)
     const msg = JSON.parse(event.data);
     if (msg.type === "s_map") {
       cachedMap = {
@@ -455,8 +456,56 @@ function connect() {
     }
   };
   socket.onclose = () => {
-    pushEvent("connection lost — refresh to rejoin");
+    pushEvent(t("net.lost_feed"));
+    showReconnectBanner();
   };
+}
+
+// Playtest-7 item 21: a disconnect gets a CENTRAL red banner and 30 s of
+// automatic reconnect attempts (every 3 s). After that, the banner turns
+// actionable — the global server list arrives with the discovery slice
+// (specs/game-discovery.md), so for now it offers retry + reload.
+let reconnectTimer = null;
+function showReconnectBanner() {
+  let el = document.getElementById("reconnect-banner");
+  if (!el) {
+    el = document.createElement("div");
+    el.id="reconnect-banner"; // (no spaces: the wiring net greps id="...")
+    el.style.cssText = "position:absolute;top:38%;left:50%;transform:translateX(-50%);" +
+      "background:rgba(140,20,20,0.94);color:#fff;padding:18px 34px;border-radius:10px;" +
+      "font:bold 18px sans-serif;z-index:11;text-align:center;min-width:320px;";
+    document.body.appendChild(el);
+  }
+  el.style.display = "block";
+  let secs = 30;
+  const tick = () => {
+    if (secs <= 0) {
+      el.innerHTML = `${t("net.gave_up")}<br><button class="btn" id="btn-retry-conn" style="margin-top:10px;">${t("net.retry")}</button>`;
+      document.getElementById("btn-retry-conn").onclick = () => { secs = 30; attempt(); };
+      clearInterval(reconnectTimer);
+      reconnectTimer = null;
+      return;
+    }
+    el.textContent = t("net.reconnecting", { s: secs });
+  };
+  const attempt = () => {
+    tick();
+    if (reconnectTimer) clearInterval(reconnectTimer);
+    reconnectTimer = setInterval(() => {
+      secs -= 1;
+      if (secs % 3 === 0 && secs > 0) {
+        try { connect(); } catch { /* next attempt */ }
+      }
+      tick();
+    }, 1000);
+  };
+  attempt();
+}
+
+function hideReconnectBanner() {
+  const el = document.getElementById("reconnect-banner");
+  if (el) el.style.display = "none";
+  if (reconnectTimer) { clearInterval(reconnectTimer); reconnectTimer = null; }
 }
 
 // 11L: stream the current WASD intent, only on change.
@@ -1978,6 +2027,9 @@ function updateWarDressing(view) {
     mast: { geo: () => new THREE.CylinderGeometry(0.06, 0.1, 2.6, 5), y: 1.3 },
     pad: { geo: () => new THREE.CylinderGeometry(1.1, 1.1, 0.06, 10), y: 0.03 },
     post: { geo: () => new THREE.BoxGeometry(0.18, 0.7, 0.18), y: 0.35 },
+    // Item 13: the supply depot — long warehouse + crate stacks.
+    warehouse: { geo: () => new THREE.BoxGeometry(2.8, 1.0, 1.4), y: 0.5 },
+    crates: { geo: () => new THREE.BoxGeometry(0.7, 0.5, 0.7), y: 0.25 },
   };
   for (const b of view.bases ?? []) {
     const faction = factionFor(b.team);

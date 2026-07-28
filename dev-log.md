@@ -2146,3 +2146,17 @@ tows 20/war. The pacing revolution the BF2 study promised.
   before touching working code.
 
 Suite 506/506. Smoke OK.
+
+## slice-15f2 — reconnect banner + supply depot (2026-07-28, items 21a + 13)
+
+- Item 21a: disconnect shows a CENTRAL red banner with a live 30 s
+  countdown, auto-reconnect attempts every 3 s (any server message
+  clears it); after 30 s it turns actionable (retry button; the global
+  server LIST arrives with the discovery slice per
+  specs/game-discovery.md — the sibling master-server pattern is
+  adopted as the blueprint). i18n en/no.
+- Item 13: the base gains a SUPPLY DEPOT — warehouse + crate stacks at
+  the base center, the exact cell rebuilds spawn at and hauls drop to,
+  so the item-18 golden dropoff ring lands on its doorstep.
+
+Suite 506/506. Smoke OK. Tagged slice-15f2.

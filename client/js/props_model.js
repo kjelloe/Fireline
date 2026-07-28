@@ -17,6 +17,12 @@ export function baseCompound(base, eastSide = false) {
   // the FRONT edge (the side facing mid-map), so mirroring is exact.
   const LAYOUT = [
     ["hq", 0.75, 0.28, 0, 1],
+    // Playtest-7 item 13: the supply DEPOT sits at the base center — the
+    // exact cell rebuilds spawn at and hauls drop to (the item-18 golden
+    // ring lands on its doorstep). Crates make "resupply here" legible.
+    ["warehouse", 0.5, 0.5, 0, 1],
+    ["crates", 0.42, 0.42, 0, 1],
+    ["crates", 0.58, 0.6, 0, 1],
     ["shed", 0.72, 0.62, 0, 1],
     ["shed", 0.72, 0.82, 0, 1],
     ["tank_fuel", 0.88, 0.5, 0, 1],
