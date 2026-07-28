@@ -19,15 +19,15 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, current baseline (post-16a, 600-war census): **~2 of the 5
-gate seeds end by standard capture around tick 3900–4200; the rest run
-long and close** — at census scale ~27% of frontier wars end by standard,
-the rest at the points horn, ~8% undecided, decided A-rate 48–52%.
-*Mixed* winners across seeds, tows ≥ 2, downs cycling with redeploys,
-replay OK. (The old "decisive endings in most seeds" wording misread a
-16B gate in 07/2026 — don't panic at 3 long seeds; compare against the
-census shares, and confirm tempo shifts with a 300-seed sweep before
-tuning anything.)
+Healthy war, current baseline (TICKETS ERA, post-13H clean census):
+endings split **tickets ~54% / Command Standard ~24% / points-horn
+~22%**, undecided ~1-2%, median decided war ~14,500 ticks, decided
+A-rate 47–53%, tows ~20/war on the 8-relay frontier web. Gate seeds:
+expect reason-5 (tickets) and reason-4 (standard) endings mixed with a
+couple of long wars; *mixed* winners; downs cycling with redeploys;
+replay OK. (History: the pre-13H wording here misread a 16B gate once —
+never panic on 5 seeds; confirm tempo shifts with a 300-seed sweep
+before tuning anything.)
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=riverline`, `UNIQUES=1`

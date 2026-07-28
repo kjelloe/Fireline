@@ -36,17 +36,30 @@ outcome. Renderer presents fog-filtered views only.
   toTeam-scoped events), BF2 capture countdown + site hp in
   `engine/sites.js`, materiel/repair + Slow Manufacture passes in the
   reducer, AI doctrine (roles, capture-seek, rescue, mining, pings) in
-  `engine/ai_regency.js`. MAP: four mirrored relays (32/58/69/95),
-  mirrored spawns (A x=7, B x=120) — mirror symmetry is a tested balance
-  invariant; never move one side without its mirror. Second profile
-  `riverline` (MAP= env); per-profile layout in `MAP_LAYOUTS`.
-- Roster (7 chassis, ids 0-6): tank/scout/artillery/logistics/carrier/
-  bike/mortar. Per team: 4/3/2/3/2/1/1. Contract flags are EXPLICIT on
-  every chassis: canTow, canCarryStandard, capacity, canMine,
-  canClearMines, heavy (11N paths), canCapture (11R — bikes neither
-  capture nor contest), siege (11R — only artillery breaches sites).
+  `engine/ai_regency.js` (+ escorts 11x, roleTruck ladder, route-graph
+  consumption). Phase 12-17 modules: `shared/factions.js` (Directorate/
+  Outliers identity), `engine/route_graph.js` (13C equivariant Dijkstra
+  waypoints), body collision + parity march order in the reducer (17),
+  hybrid ticket bleed 13H (hashed `tickets`, WIN_TICKETS=5), respawn law
+  15/15G (hashed respawnTicks/carrierSpawnAt/abandonTimer), session
+  rules 13F/13G/13H (`RULES=` presets). MAP: frontier has EIGHT mirrored
+  relays — road 32/58/69/95 + lateral 44/83 at rows 40/86 — mirrored
+  spawns (A x=7, B x=120). Mirror symmetry is a TESTED balance invariant
+  (specs/08): never move one side without its mirror, and tie-breaks
+  must commute with the mirror. Second profile `riverline` (MAP= env,
+  EXPERIMENTAL — west side lean pending graph tuning); per-profile
+  layout in `MAP_LAYOUTS`.
+- Roster (9 chassis, ids 0-8): tank/scout/artillery/logistics/carrier/
+  bike/mortar/sentinel/skimmer. Per team: 4/3/2/3/2/1/1 + the faction
+  unique in garage slot idx 10. Contract flags are EXPLICIT on every
+  chassis: canTow, canCarryStandard, capacity, canMine, canClearMines,
+  heavy (11N paths), canCapture (11R — bikes neither capture nor
+  contest), siege (11R — only artillery breaches sites), deployable
+  (12B Sentinel), amphibious (12C Skimmer).
 - Commands: join/select(confirm)/move/fire(asset|drone|site)/tow/crawl/
-  redeploy/deploy_mine/clear_mine/ping (+ inert call_medic/respawn).
+  redeploy(+carrierAssetId 15F)/respawn(15)/deploy_mine/clear_mine/
+  ping/board_carrier/unboard/drive/deploy_hardpoint/undeploy/
+  transfer_cargo (+ inert call_medic).
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
   aborts on event drift (a NEW event inside the 14 steps is drift too:
   prefer silent state changes for routine ticks, e.g. materiel loading).

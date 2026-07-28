@@ -47,10 +47,15 @@ back on return. Emission order alternates lead team by tick parity
 - Standard play: carrier raider goes for the grounded enemy standard;
   carriers head home to score; the fastest controlled seat recovers a
   dropped own standard.
-- **Escort doctrine (ruled, to build)**: the raid launches only with
-  ≥2 combat escorts moving alongside (~6 cells) OR through a sneak
-  window (enemy strength near the route under threshold); aborts if
-  the escorts die.
+- **Escort doctrine (LANDED, slice-11x)**: escort ASSEMBLY — when the
+  raider wants to launch, the two nearest idle-line combat seats (not
+  capturers/train/tubes) are designated and CONVERGE on the carrier;
+  the window opens at ≥2 escorts within 6 cells OR a sneak gap (fewer
+  than 2 enemies near the track); escorts FOLLOW pre-gate (re-target
+  the moment the carrier drifts >2 cells from their destination); a
+  raider whose window closes HOLDS if ≥2 escorts are inbound within 12
+  cells, else retreats home. Three probe-forced iterations — passive
+  windows never fire; stale-position followers get raiders killed.
 - Patrols: per-profile mirrored tables; light chassis ride the trails;
   hard difficulty pushes relays instead.
 - Pings: sparing (30 s/seat) — escort calls, recovery announcements,
