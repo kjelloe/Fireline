@@ -80,6 +80,15 @@ const PATROLS = Object.freeze({
     light0: [[44, 33], [44, 60], [44, 94], [44, 66]],
     light1: [[83, 33], [83, 60], [83, 94], [83, 66]],
   }),
+  blackwood: Object.freeze({
+    // 18A: heavies work the road and the alley mouths toward the
+    // deep-woods relays; lights run their side of the trail ring.
+    // Exact mirrors (11C law).
+    0: [[44, 63], [58, 52], [58, 75], [36, 63]],
+    1: [[83, 63], [69, 52], [69, 75], [91, 63]],
+    light0: [[36, 28], [58, 28], [58, 99], [36, 99]],
+    light1: [[91, 28], [69, 28], [69, 99], [91, 99]],
+  }),
 });
 
 function patrolTarget(agent, tick, profileName = "frontier_corridor", mirrored = false, light = false) {

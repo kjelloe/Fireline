@@ -68,6 +68,26 @@ const GRAPHS = Object.freeze({
       [4, 12, "open"], [12, 13, "road"], [13, 5, "open"],
     ],
   }),
+  blackwood: Object.freeze({
+    // 18A: one road, a trail ring, twin center alleys. "open" here means
+    // WOODS — the honest cross-country price keeps hulls on the network.
+    n: [
+      [24, 63], [103, 63],                       // 0 A-exit, 1 B-exit
+      [36, 63], [91, 63],                        // 2-3 ring-road junctions
+      [58, 63], [69, 63],                        // 4-5 alley-road junctions
+      [36, 28], [91, 28], [36, 99], [91, 99],    // 6-9 ring corner relays
+      [58, 28], [69, 28], [58, 99], [69, 99],    // 10-13 ring mid points
+      [58, 45], [69, 45], [58, 82], [69, 82],    // 14-17 deep-woods relays
+    ],
+    e: [
+      [0, 2, "road"], [2, 4, "road"], [4, 5, "road"], [5, 3, "road"], [3, 1, "road"],
+      [6, 10, "trail"], [10, 11, "trail"], [11, 7, "trail"],
+      [8, 12, "trail"], [12, 13, "trail"], [13, 9, "trail"],
+      [6, 2, "trail"], [2, 8, "trail"], [7, 3, "trail"], [3, 9, "trail"],
+      [14, 4, "trail"], [4, 16, "trail"], [15, 5, "trail"], [5, 17, "trail"],
+      [10, 14, "open"], [11, 15, "open"], [12, 16, "open"], [13, 17, "open"],
+    ],
+  }),
 });
 
 function cheb(ax, ay, bx, by) {

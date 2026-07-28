@@ -2315,3 +2315,33 @@ sim gate holds (the front shuffles mid-war fights without breaking
 tempo — the meta-flip is the point).
 
 Suite 529/529. Smoke OK. Tagged slice-16g.
+
+## slice-18a — blackwood, map 3 (2026-07-29, prompt 60)
+
+Map-design round first: specs/10_map_roster.md audits both maps against
+the designer's checklist (specs/gameplay-map-design.md). Verdicts: NO
+geometry changes to frontier (band-tuned baseline; its identity gap is
+B2's job) or riverline (13E bridges completes the chokepoint-counterplay
+pattern); roster gets identities instead of any one map getting all
+terrains. Full designs for maps 3+4, a 6-map bank, and a per-map
+promotion gate.
+
+Then map 3 landed: BLACKWOOD, the dense woodland profile. Forest
+dominates (west-half gen mirrored east — fairness by construction); the
+central corridor is the ONLY road; a trail ring (cols 36/91, rows
+28/99) plus twin center alleys (cols 58/69) carry the lights; 8 relays
+(ring corners + two DEEP-WOODS pairs off the road) with clearings
+carved around each. Heavies must leave the pavement or stand off —
+mines, scouts, satchels, and the Sentinel own this ground. Route-graph
+and patrol tables mirror-closed (auto-covered by the enumeration
+suites); trails satisfy the 16B runway gate.
+
+Local gate (30 wars + 30 mirrored): mixed winners 16/13/1, decided
+A-rate 55% (band edge — n=30 noise; PC battery decides promotion),
+mirror flips the edge as it must, undecided 1/60. Identity is REAL and
+different: quiet positional wars — downs 12/war vs frontier's 70, tows
+2.8 vs 21, tickets end 87% of wars, and wars run ~12% shorter. Whether
+"quiet" reads as tense or dull is a playtest question — flagged as the
+map's watch item alongside the 300-war battery.
+
+Suite 535/535 (x2). Tagged slice-18a. EXPERIMENTAL (MAP=blackwood).

@@ -6,6 +6,7 @@
 
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { generateRiverline } from "./riverline.js";
+import { generateBlackwood } from "./blackwood.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -32,6 +33,7 @@ export const TEAM_COUNT = 2;
 const MAP_PROFILES = {
   frontier_corridor: generateFrontierCorridor,
   riverline: generateRiverline, // 11M
+  blackwood: generateBlackwood, // 18A
 };
 
 // Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
@@ -181,6 +183,17 @@ export const MAP_LAYOUTS = Object.freeze({
       { cellX: 44, cellY: 32 }, { cellX: 83, cellY: 32 },
       { cellX: 44, cellY: 95 }, { cellX: 83, cellY: 95 },
       { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
+    ],
+    standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
+  }),
+  blackwood: Object.freeze({
+    // 18A (specs/10 §3): ring corners + the DEEP-WOODS pairs — the
+    // contested heart is off the road. 8 relays, ticket majority 5.
+    relayCells: [
+      { cellX: 36, cellY: 28 }, { cellX: 91, cellY: 28 },
+      { cellX: 36, cellY: 99 }, { cellX: 91, cellY: 99 },
+      { cellX: 58, cellY: 45 }, { cellX: 69, cellY: 45 },
+      { cellX: 58, cellY: 82 }, { cellX: 69, cellY: 82 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),

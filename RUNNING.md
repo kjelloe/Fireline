@@ -111,6 +111,12 @@ npm start                              # host machine
   north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half
   generated, east half mirrored). Wars there run slower — tuning follows
   your first playtest.
+- Third map (18A): `MAP=blackwood npm start` — the DENSE woodland map.
+  Forest dominates; the central corridor is the only road, a trail ring
+  plus twin center alleys carry the light chassis, and the contested
+  relays sit in clearings OFF the road. Mines, scouts, satchels, and the
+  Sentinel shine here; a mid-war weather front is genuinely scary.
+  Design of record: specs/10_map_roster.md.
 - Direct drive (11L+11O, the Firepower homage): press G — WASD becomes
   tank controls (W/S throttle with half-speed reverse, A/D steer at your
   chassis' turn rate; all chassis supported). A red targeting circle
@@ -162,6 +168,7 @@ docker run -p 8080:8080 -e MAP_SEED=2026 more-firepower
 ```bash
 PORT=8080 MAP_SEED=2026 AI_DIFFICULTY=1 npm start   # defaults shown
 MAP=riverline npm start                              # second profile (experimental)
+MAP=blackwood npm start                              # third profile (18A, experimental)
 RULES=easy|normal|hard npm start                     # 13G difficulty presets
 # Global discovery (colocation: run tools/master.js on the same VM):
 node tools/master.js --port 8972 &
