@@ -88,7 +88,7 @@ plus three experimental maps that have not earned promotion.
 | **Client feel batch (playtest 8)** | ✅ `slice-18d` — honest centre-on-me, war clock, fog notice, right-drag pan, stats key |
 | Audio identity | ⬜ V2.x — RULED synth-first (WebAudio patch manifest) |
 | Camera/diorama + chase cam | ⬜ V2.x |
-| Native perf numbers | ⬜ BLOCKED on a native-Windows run (the WSL harness only reaches SwiftShader) |
+| Native perf numbers | 🔜 UNBLOCKED — `tools/perf_native.ps1` runs the harness headed on Windows (invokable from WSL); awaits one run on the PC |
 | Roblox/Luau twin | Horizon |
 
 ## Track F — Meta & live ops

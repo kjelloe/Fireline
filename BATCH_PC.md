@@ -205,6 +205,30 @@ runs; body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0`
 queues the swapped variant), `matrix`, `perf`, `sendresults`. The
 refusal message lists the kinds a running worker actually has.
 
+**Native GPU perf: use the PowerShell runner, not the worker job
+(prompt 71).** The `perf` job runs inside WSL, which cannot reach the
+discrete GPU, so Chromium falls back to SwiftShader and every number it
+has ever produced measures a software rasteriser. For real numbers run
+`tools/perf_native.ps1` on the Windows side:
+
+```powershell
+# on the PC, from the repo root
+powershell -ExecutionPolicy Bypass -File tools\perf_native.ps1 -InstallDeps
+```
+
+```bash
+# or straight from WSL, without leaving the shell
+powershell.exe -ExecutionPolicy Bypass -File "$(wslpath -w tools/perf_native.ps1)"
+```
+
+It runs the SAME harness headed with ANGLE d3d11, refuses a node.exe
+that turns out to live inside WSL, and **exits 2 if the summary still
+names SwiftShader** — so a software run can never be mistaken for a
+native one. Output: `reports/sweeps/perf.csv`, `perf_summary.json`, and
+a timestamped copy per run. Note .ps1 files must stay pure ASCII
+(a test enforces it): PowerShell 5.1 reads BOM-less files as
+Windows-1252, and a single em dash silently terminates a string.
+
 **Perf prerequisite (learned 2026-07-27):** the perf job needs Playwright
 ON THE WORKER MACHINE — first run failed with "is playwright installed?".
 One-time on the PC, in the repo: `npx playwright install chromium`.

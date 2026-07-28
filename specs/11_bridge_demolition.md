@@ -109,10 +109,11 @@ the graph entirely, so the Skimmer keeps its shortcut.
 - Suite green double-run, fixture repinned to v41 with provenance,
   5-seed gate, then a riverline battery on the PC.
 
-## Open question for the designer
+## Repair rights: EITHER TEAM (ruled, prompt 70)
 
-Should a breached bridge be repairable by EITHER team, or only by the
-side that owns the nearer bank? "Either team" is simpler and creates
-tug-of-war moments; "owner only" makes demolition stickier and rewards
-holding ground. Recommendation: **either team** for v1 — it needs no new
-ownership concept, and the tug-of-war is the interesting version.
+Any team's truck may rebuild any breached span. No new ownership concept
+is needed, and the tug-of-war over a contested crossing — one side
+dropping it, the other rebuilding it under fire — is the version worth
+having. A consequence to watch in the sweep: with no ownership gate, a
+bridge next to a winning team's front may simply be rebuilt instantly
+every time; if that shows up, the lever is repair TIME, not rights.
