@@ -1103,27 +1103,32 @@ function applyAdvanceTick(next) {
     }
     if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) next.manufacture[team] += 1;
     if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) continue;
-    const wreck = next.assets.find(
+    // BF2-study ruling (prompt 51): rebuilds arrive as a FULL WAVE — every
+    // eligible wreck at once, so a gutted team counter-pushes as a
+    // formation instead of feeding hulls in one at a time.
+    const wrecks = next.assets.filter(
       (a) => a.team === team &&
         (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) &&
         a.towedBy === -1 && a.recoverTimer === 0
     );
-    if (!wreck) continue; // hold at threshold until a hull is available
-    const spawn = fieldSpawnFor(wreck.id, next.bases); // base-derived: mirror-honest
-    wreck.state = ASSET_IDLE;
-    wreck.hp = floorDivI32(getUnitStats(wreck.type).hp, 2);
-    wreck.x = cellToWorld(spawn.cellX);
-    wreck.y = cellToWorld(spawn.cellY);
-    wreck.targetX = wreck.x;
-    wreck.targetY = wreck.y;
-    wreck.heading = team === 1 ? 128 : 0;
-    wreck.operatorId = -1;
-    wreck.suppressedTimer = 0;
-    wreck.reloadTimer = 0;
-    wreck.ammo = 12;
-    wreck.fuel = FUEL_MAX;
+    if (!wrecks.length) continue; // hold at threshold until a hull is available
+    for (const wreck of wrecks) {
+      const spawn = fieldSpawnFor(wreck.id, next.bases); // base-derived: mirror-honest
+      wreck.state = ASSET_IDLE;
+      wreck.hp = floorDivI32(getUnitStats(wreck.type).hp, 2);
+      wreck.x = cellToWorld(spawn.cellX);
+      wreck.y = cellToWorld(spawn.cellY);
+      wreck.targetX = wreck.x;
+      wreck.targetY = wreck.y;
+      wreck.heading = team === 1 ? 128 : 0;
+      wreck.operatorId = -1;
+      wreck.suppressedTimer = 0;
+      wreck.reloadTimer = 0;
+      wreck.ammo = 12;
+      wreck.fuel = FUEL_MAX;
+      next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
+    }
     next.manufacture[team] = 0;
-    next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
   }
 
   // 11F materiel pass: an idle truck in its own base takes on one repair

@@ -6,7 +6,7 @@
 // connection dropped (the war keeps moving without them).
 
 import {
-  OP_ABSENT, OP_ACTIVE, ASSET_IDLE, ASSET_DISABLED, ASSET_SALVAGED,
+  OP_ABSENT, OP_ACTIVE, ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED,
 } from "./state.js";
 import {
   CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER, CMD_FIRE_ORDER,
@@ -100,6 +100,44 @@ function homeCellFor(state, team) {
 
 function isWreck(asset) {
   return asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED;
+}
+
+// Item 11 (playtest 7, ruled BOTH triggers): may the carrier raid NOW?
+// Group attack: >=2 crewed COMBAT hulls (not the logistics train) within
+// ESCORT_CELLS of the carrier. Sneak window: fewer than 2 enemy operable
+// hulls near the carrier->standard track (sampled at the midpoint and the
+// standard — cheap, deterministic, good enough for a window test).
+export const ESCORT_CELLS = 6;
+export const SNEAK_SCAN_CELLS = 12;
+function raidWindowOpen(state, carrier, visibleSet) {
+  const cx = worldToCellFloor(carrier.x);
+  const cy = worldToCellFloor(carrier.y);
+  let escorts = 0;
+  for (const a of state.assets) {
+    if (a.team !== carrier.team || a.id === carrier.id || isWreck(a)) continue;
+    if (a.operatorId === -1) continue;
+    const st = getUnitStats(a.type);
+    if (st.canTow || st.canCarryStandard) continue; // the guns, not the train
+    const d = Math.max(Math.abs(worldToCellFloor(a.x) - cx), Math.abs(worldToCellFloor(a.y) - cy));
+    if (d <= ESCORT_CELLS) escorts++;
+    if (escorts >= 2) return true;
+  }
+  const std = state.standards[carrier.team === 0 ? 1 : 0];
+  const sx = worldToCellFloor(std.x);
+  const sy = worldToCellFloor(std.y);
+  const mx = (cx + sx) >> 1;
+  const my = (cy + sy) >> 1;
+  let defenders = 0;
+  for (const e of state.assets) {
+    if (e.team === carrier.team || isWreck(e)) continue;
+    const ex = worldToCellFloor(e.x);
+    const ey = worldToCellFloor(e.y);
+    const nearMid = Math.max(Math.abs(ex - mx), Math.abs(ey - my)) <= SNEAK_SCAN_CELLS;
+    const nearStd = Math.max(Math.abs(ex - sx), Math.abs(ey - sy)) <= SNEAK_SCAN_CELLS;
+    if (nearMid || nearStd) defenders++;
+    if (defenders >= 2) return false;
+  }
+  return true; // thin defenses — the opportune moment
 }
 
 function nearestUnownedRelay(state, asset) {
@@ -285,6 +323,44 @@ export class AIRegency {
           capturerFor.set(`${team}:${site.id}`, bestOp);
         }
       }
+    }
+
+    // Item 11 escort ASSEMBLY (the active half of "group attack"): when
+    // the raider wants to launch but the window is closed, the two
+    // nearest idle-line combat seats (not capturers, not the logistics
+    // train, not tubes) are designated escorts and converge on the
+    // carrier; while the raid runs they ride along. Passive
+    // wait-for-luck windows never opened in sims (patrol phases scatter
+    // hulls by design) — assembly is what makes raids happen at all.
+    const escortFor = new Map(); // operatorId -> carrier asset id
+    const capturerOps = new Set(capturerFor.values());
+    for (const team of [0, 1]) {
+      const raiderId = raiderFor[team];
+      if (raiderId === -1) continue;
+      const carrier = state.assets[raiderId];
+      if (!carrier || isWreck(carrier)) continue;
+      const eStd = state.standards.length === 2 ? state.standards[team === 0 ? 1 : 0] : null;
+      if (!eStd) continue;
+      const wantRaid = eStd.status === STD_AT_BASE || eStd.status === STD_DROPPED;
+      const raiding = eStd.status === STD_CARRIED && eStd.carrierAssetId === raiderId;
+      if (!wantRaid && !raiding) continue;
+      const ccx = worldToCellFloor(carrier.x);
+      const ccy = worldToCellFloor(carrier.y);
+      const candidates = [];
+      for (const [opId] of controlled) {
+        const op = state.operators[opId];
+        if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+        const a = state.assets[op.assetId];
+        if (!a || a.team !== team || a.operatorId !== opId || isWreck(a)) continue;
+        const st = getUnitStats(a.type);
+        if (st.canTow || st.canCarryStandard || st.indirect) continue;
+        if (capturerOps.has(opId)) continue; // capturers keep capturing
+        const d = Math.max(Math.abs(worldToCellFloor(a.x) - ccx),
+                           Math.abs(worldToCellFloor(a.y) - ccy));
+        candidates.push([d, opId]);
+      }
+      candidates.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+      for (const [, opId] of candidates.slice(0, 2)) escortFor.set(opId, raiderId);
     }
 
     // Question 18 fix: commands used to resolve in ascending operator order
@@ -549,6 +625,64 @@ export class AIRegency {
       //   3. The designated raider (scout) goes for the grounded enemy standard.
       //   4. Fixed agents patrol (hard difficulty pushes relays); regented
       //      assets seek the nearest unowned relay.
+      // Item 11 abort (pre-gate — a mid-raid carrier is MOVING): a raider
+      // en route WITHOUT the standard whose window closed breaks off and
+      // rallies home instead of soloing into the guns.
+      if (asset.id === raiderFor[asset.team] && asset.state === ASSET_MOVING &&
+          state.standards.length === 2) {
+        const eStd = state.standards[asset.team === 0 ? 1 : 0];
+        const carryingIt = eStd.status === STD_CARRIED && eStd.carrierAssetId === asset.id;
+        const boundForStd = Math.max(
+          Math.abs(asset.targetX - eStd.x), Math.abs(asset.targetY - eStd.y)) < 1024;
+        if (!carryingIt && boundForStd &&
+            !raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
+          // Escorts still inbound (within 2x escort range): HOLD position
+          // and let them close — full retreat thrashed the raid to death.
+          const cx0 = worldToCellFloor(asset.x);
+          const cy0 = worldToCellFloor(asset.y);
+          let inbound = 0;
+          for (const a of state.assets) {
+            if (a.team !== asset.team || a.id === asset.id || isWreck(a)) continue;
+            if (a.operatorId === -1) continue;
+            const st = getUnitStats(a.type);
+            if (st.canTow || st.canCarryStandard) continue;
+            const d = Math.max(Math.abs(worldToCellFloor(a.x) - cx0),
+                               Math.abs(worldToCellFloor(a.y) - cy0));
+            if (d <= ESCORT_CELLS * 2) inbound++;
+          }
+          const rally = inbound >= 2 ? [cx0, cy0] : homeCellFor(state, asset.team);
+          if (rally) {
+            commands.push({
+              type: CMD_MOVE_ORDER, operatorId,
+              targetCellX: rally[0], targetCellY: rally[1],
+            });
+            continue;
+          }
+        }
+      }
+      // Item 11 escorts follow TIGHT (pre-gate): an escort whose carrier
+      // has drifted >2 cells from its current destination re-targets NOW,
+      // not on arrival at a stale rendezvous — lag is how the first
+      // implementation got every raider killed alone.
+      if (escortFor.has(operatorId)) {
+        const c = state.assets[escortFor.get(operatorId)];
+        if (c && !isWreck(c)) {
+          const ecx = worldToCellFloor(c.x);
+          const ecy = worldToCellFloor(c.y);
+          const myCx = worldToCellFloor(asset.x);
+          const myCy = worldToCellFloor(asset.y);
+          const gap = Math.max(Math.abs(myCx - ecx), Math.abs(myCy - ecy));
+          const destStale = Math.max(
+            Math.abs(worldToCellFloor(asset.targetX) - ecx),
+            Math.abs(worldToCellFloor(asset.targetY) - ecy)) > 2;
+          if (gap > 3 && (asset.state === ASSET_IDLE || destStale)) {
+            commands.push({
+              type: CMD_MOVE_ORDER, operatorId, targetCellX: ecx, targetCellY: ecy,
+            });
+            continue;
+          }
+        }
+      }
       if (asset.state !== ASSET_IDLE) continue;
       let target = null;
       if (state.standards.length === 2) {
@@ -560,7 +694,25 @@ export class AIRegency {
           target = [worldToCellFloor(ownStd.x), worldToCellFloor(ownStd.y)];
         } else if (asset.id === raiderFor[asset.team] &&
                    (enemyStd.status === STD_AT_BASE || enemyStd.status === STD_DROPPED)) {
-          target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
+          // Item 11 (ruled: BOTH triggers): the raid launches only as a
+          // group attack (>=2 combat escorts alongside) OR through a
+          // sneak window (thin defenses near the route). Otherwise the
+          // carrier stays with the pack (falls through to patrol).
+          if (raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
+            target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
+          }
+        }
+      }
+      // Item 11: designated escorts converge on the carrier, then ride
+      // along; inside 3 cells they hold formation (idle near the carrier
+      // is exactly what opens the group-attack window).
+      if (!target && escortFor.has(operatorId)) {
+        const c = state.assets[escortFor.get(operatorId)];
+        if (c && !isWreck(c)) {
+          const ecx = worldToCellFloor(c.x);
+          const ecy = worldToCellFloor(c.y);
+          const d = Math.max(Math.abs(cellX0 - ecx), Math.abs(cellY0 - ecy));
+          if (d > 3) target = [ecx, ecy];
         }
       }
       // 13B resupply runner (prompt 31): a truck with cargo tops up the

@@ -2075,3 +2075,31 @@ ALSO: specs 07 (rulings register), 08 (fairness & symmetry doctrine),
 09 (AI regency compendium) — the undocumented-design gap closed.
 
 Suite 495/495 (x2). Tagged slice-17.
+
+## slice-11x — escort doctrine + MPG waves (2026-07-28, items 11 + prompt-51)
+
+Escort doctrine (ruled BOTH triggers) in three iterations, each forced
+by a probe:
+1. Passive windows (hope 2 hulls are nearby) — raids NEVER fired:
+   patrol phases scatter hulls by design.
+2. Escort ASSEMBLY — the two nearest idle-line combat seats (not
+   capturers/train/tubes) converge on the carrier; raids launched but
+   the raider outran its guard: escorts re-planned only when idle, so
+   they chased STALE positions while the carrier soloed in and died.
+3. TIGHT FOLLOW (pre-gate re-target the moment the carrier drifts >2
+   cells from the escort's destination) + mid-raid HOLD (window closed
+   with >=2 escorts inbound: stop and wait; only a truly abandoned
+   raider retreats home).
+Plus MPG FULL-WAVE rebuilds (prompt-51 ruling): every eligible wreck
+returns together on the cadence — a gutted team counter-pushes as a
+formation, and rebuilt carriers restore the raid game mid-war.
+
+Verdict at this checkpoint: raids launch, route, hold, and abort
+correctly (traced); they rarely SURVIVE a fully-manned single front —
+which is the map's shape, not the doctrine: collision made one-front
+flag-running impossible by design. The ruled sequence continues into
+lateral relays (thin the front) + ticket bleed (relay pacing, standard
+as coup de grâce), then the tempo re-measure.
+
+Suite 501/501. Gate: competitive, dominations appearing (waves feed
+decisive pushes). Tagged slice-11x.
