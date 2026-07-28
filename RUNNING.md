@@ -156,3 +156,17 @@ npm start                              # host machine
 docker build -t more-firepower .
 docker run -p 8080:8080 -e MAP_SEED=2026 more-firepower
 ```
+
+## Server environment (current)
+
+```bash
+PORT=8080 MAP_SEED=2026 AI_DIFFICULTY=1 npm start   # defaults shown
+MAP=riverline npm start                              # second profile (experimental)
+RULES=easy|normal|hard npm start                     # 13G difficulty presets
+# Global discovery (colocation: run tools/master.js on the same VM):
+node tools/master.js --port 8972 &
+MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
+  PUBLIC_NAME="My war" npm start
+# The server echoes the master's verdict ("master says: listed" or the
+# port-forwarding reason). The join screen lists reachable servers.
+```

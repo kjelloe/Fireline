@@ -83,7 +83,9 @@ PROMOTED SAME DAY:        14C motion batch 1 ✅ (recoil·tracers·dust·rotor) 
 PACING SEQUENCE LANDED:   17 collision ✅ · 11X escorts ✅ (assembly+follow+hold) · 11Y2 lateral relay web ✅ (8 relays) · 13H hybrid ticket bleed ✅ (endings 54/24/22, undecided ~1%, fair 48.8) · MPG full waves ✅ + base-derived rebuilds · 15E/15F2 client batch ✅ (items 12-21 minus verdicts) · 15G respawn law ✅ (fixture v38)
 PROMPT-53 ORDER DONE:     15G respawn law ✅ · 16B chase ✅ (mechanism = chassis ~11pt; doctrine fixes landed — water-aware Skimmer, no-squat Sentinel; STAYS DORMANT, designer stat question filed) · riverline ✅ (map-aware ticket majority; lean COLLAPSED 73/27→58/42, experimental) · 15H discovery ✅ (master index + announce + global list)
 2026-07-29:               16E trail affinity ✅ (Riverline Drive races trails 384) → 16B DEFAULT ON ✅ (swap gate 54.5 in band; sanctioned ~55/45 lean) · 16F AT satchel ✅ (fixture v39)
-NEXT:                     13D dynamic edges (mine-aware routing) · 12E NPC layer · riverline fine-tuning backlog · designer Qs: 12F POW exchange, 14F audio, band tightening · user: item-12 verdict, native perf
+13D ✅ dynamic edges (mine-aware routing; faction-era fairness methodology in specs/08)
+2026-07-29 cont:          BAND TUNED ✅ (416+hp120, fixture v40, normal-world 51.3) · 16G weather fronts ✅ · designer evals ✅ (7 build candidates + idea bank) · prompt-56/58 rulings (POW raidable site, synth audio, underdog premium)
+NEXT:                     bridges (riverline signature) · B1 meaningful deaths · B3 mercy/overtime · B2 node classes · salvage · Last Convoy · 12E NPCs · fillers B4/B7
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI

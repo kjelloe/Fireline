@@ -61,7 +61,9 @@ outcome. Renderer presents fog-filtered views only.
   charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
   Faction uniques crew BY DEFAULT (16B live; UNIQUES=0 in sweeps
-  disables); default wars carry the sanctioned ~55/45 Directorate lean.
+  disables); band-tuned to normal-world ~51/49 (trail affinity 416,
+  Sentinel hp 120). Weather fronts (16G): seed-scheduled sensor-halving
+  in `engine/los.js weatherWindow` — pure function, never hashed.
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
   aborts on event drift (a NEW event inside the 14 steps is drift too:
   prefer silent state changes for routine ticks, e.g. materiel loading).

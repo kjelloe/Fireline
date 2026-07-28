@@ -39,9 +39,11 @@ local-only file by choice; this register records the *decisions*.
   slot; never a 17th asset. Asymmetry gated by the faction-swap sweep.
 - **Unique AI crewing (16B): LIVE, default ON** (prompt-54): Riverline
   Drive gained TRAIL AFFINITY (T_PATH 384, amphibious only) and the
-  swap gate closed at 54.5% Sentinel-side. RULED (prompt-56): TIGHTEN
-  the band toward 52/48 — sweep-tune trail-affinity value up and/or
-  Sentinel mobile-hp down.
+  swap gate closed at 54.5% Sentinel-side. Band-tightening (prompt-56)
+  EXECUTED: trail affinity 416 + Sentinel hp 120 (fixture v40) —
+  NORMAL-WORLD split 51.3% (the 52/48 target where players live); the
+  swap metric saturates at 53.6 (stat levers exhausted; structural
+  option filed: Skimmer capture-speed affinity — designer's call).
 
 ## Fairness (the non-negotiables)
 
@@ -88,6 +90,15 @@ local-only file by choice; this register records the *decisions*.
   instantly; rescue raids become a mission card.
 - **14F audio (prompt-56): SYNTH FIRST** — WebAudio patch manifest per
   chassis×event; samples may drop into the same manifest later.
+
+- **Weather fronts (16G, LANDED — gameplay-evolved #4b)**: once per
+  war, seed-scheduled (pure function, mid-war band, 90 s), every sensor
+  halves for both teams; edges announce themselves. No hashed state.
+- **Gameplay-evolved triage** (prompts 57/57-ext): build candidates
+  ruled/queued — weather ✅, bridges, salvage, Last Convoy, meaningful
+  deaths (B1), mercy/overtime (B3), node classes (B2), awards+recap
+  (B4/B7), comm wheel (B5), neutral drop (B6); ~30 idea-bank entries in
+  reports/2026-07-29_gameplay_extensive_eval.md.
 
 ## AI doctrine rulings
 

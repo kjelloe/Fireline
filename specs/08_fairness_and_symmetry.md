@@ -64,6 +64,15 @@ the NORMAL world). Verdict rules of thumb:
   mirrored ~66% A on frontier, 2026-07-29) — filed as methodology
   curiosity; investigate only if it ever leaks into the normal world.
 
+## 3.6 Stat levers saturate; worlds diverge in meaning
+
+Band-tuning lesson (2026-07-29): marginal stat levers (hp, terrain
+speed) move a structural advantage ~0.2-0.4pt per pull — when a chassis'
+edge comes from a ROLE (the anchor in the tickets meta), reaching a
+target on the swap metric can cost the identity. Judge against the
+NORMAL world first (players live there), and prefer structural levers
+(new jobs, role exclusions) over stat grinding past saturation.
+
 ## 4. Known accepted residues
 
 - Mid-cell terrain sampling is not exactly mirror-equivariant under the
