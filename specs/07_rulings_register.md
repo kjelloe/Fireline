@@ -37,8 +37,11 @@ local-only file by choice; this register records the *decisions*.
   Hardpoint) vs The Outliers (terracotta/tan, offset arrow, Skimmer /
   Riverline Drive). Identity-only in 12A; uniques replace a garage
   slot; never a 17th asset. Asymmetry gated by the faction-swap sweep.
-- **Unique AI crewing** (16B) is DORMANT until its team-linked residue
-  is solved; then it defaults ON (user ruling).
+- **Unique AI crewing (16B): LIVE, default ON** (prompt-54): Riverline
+  Drive gained TRAIL AFFINITY (T_PATH 384, amphibious only) and the
+  swap gate closed at 54.5% Sentinel-side. Default wars carry the
+  sanctioned ~55/45 Directorate lean; designer may tighten the band
+  (levers: affinity value, Sentinel mobile-hp).
 
 ## Fairness (the non-negotiables)
 
@@ -72,8 +75,9 @@ local-only file by choice; this register records the *decisions*.
 - **Field respawn (15F): crewed carriers only**, per-operator cooldown.
 - **Lateral relays**: frontier gains two mirrored pairs on the trail
   loops — (44,40)/(83,40) and (44,86)/(83,86) — an 8-relay conquest web.
-- **AT satchel**: one per downed operator, adjacent-cell, ~60 damage,
-  single-use, loud (event + ping).
+- **AT satchel (LANDED, 16f)**: one per bail-out (hashed), adjacent,
+  60 damage, single-use, loud (event + auto team ping), kill credit to
+  the operator; click an adjacent enemy while downed to plant.
 - Forced respawn at base after a 10 s countdown (playtest 7 item 15);
   the abandoned hull stays in place and SELF-RECALLS — 60 s uncrewed in
   the field auto-wrecks it (towable/rebuildable). Carrier field-respawn
