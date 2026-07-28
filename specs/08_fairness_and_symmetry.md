@@ -50,6 +50,20 @@ a player-facing win-rate skew.
 4. Anything failing its gate ships DORMANT behind a flag with the
    evidence chain (the 16B pattern), never half-tuned.
 
+## 3.5 Asymmetric-faction era: which world is the fairness verdict?
+
+Since uniques crew by default (prompt-54), TEAM = FACTION. The mirror
+world now conflates side and faction effects — it can show large
+"team bias" that no player ever experiences (players are side-bound to
+the NORMAL world). Verdict rules of thumb:
+- PLAYER-FACING fairness: the normal world's decided split + the
+  faction-swap gate (the 12D authority).
+- ENGINE equivariance: the mirror world and the divergence probes —
+  unchanged.
+- A mirror-only side×faction interaction exists (normal ~48% A vs
+  mirrored ~66% A on frontier, 2026-07-29) — filed as methodology
+  curiosity; investigate only if it ever leaks into the normal world.
+
 ## 4. Known accepted residues
 
 - Mid-cell terrain sampling is not exactly mirror-equivariant under the

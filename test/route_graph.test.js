@@ -78,3 +78,21 @@ test("nextWaypoint: stateless progression skips reached waypoints", () => {
   assert.deepEqual(nextWaypoint(wps, 95, 63), [95, 63], "final waypoint sticks");
   assert.equal(nextWaypoint([], 5, 5), null);
 });
+
+test("13D: a marked minefield on the road pushes the route onto the trails", () => {
+  const clean = routeWaypoints("frontier_corridor", 10, 60, 95, 63, TANK);
+  assert.ok(clean.some(([x, y]) => y === 63 && x >= 32 && x <= 69), "clean run rides the road");
+  // Mines marked across the road at the west relay's doorstep.
+  const hazards = [[40, 63], [41, 63], [40, 62]];
+  const wary = routeWaypoints("frontier_corridor", 10, 60, 95, 63, TANK, hazards);
+  const roadHop = wary.some(([x, y]) => y === 63 && x >= 33 && x <= 45);
+  assert.ok(!roadHop, `detours the mined stretch: ${JSON.stringify(wary)}`);
+});
+
+test("13D: far mines change nothing; hazard overlay is query-local", () => {
+  const clean = routeWaypoints("frontier_corridor", 10, 60, 95, 63, TANK);
+  const far = routeWaypoints("frontier_corridor", 10, 60, 95, 63, TANK, [[5, 5]]);
+  assert.deepEqual(far, clean, "irrelevant hazards leave the route alone");
+  const cleanAgain = routeWaypoints("frontier_corridor", 10, 60, 95, 63, TANK);
+  assert.deepEqual(cleanAgain, clean, "no overlay leakage into the cached graph");
+});

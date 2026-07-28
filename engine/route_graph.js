@@ -28,6 +28,11 @@ const BARRIERS = Object.freeze({
 });
 const DIRECT_SKIP_CELLS = 14; // short hops don't bother with the graph
 const WAYPOINT_DONE_CELLS = 2; // a waypoint this close counts as reached
+// 13D dynamic edges: a KNOWN hazard (marked enemy mine) near an edge
+// makes it DANGEROUS — cost x4. Mine play becomes area denial: the AI
+// routes around what its scouts have marked instead of driving into it.
+const HAZARD_CELLS = 2;
+const HAZARD_COST_MULT = 4;
 
 // n: [x, y] cells. e: [a, b, tag]. Tables are mirror-closed.
 const GRAPHS = Object.freeze({
@@ -159,15 +164,47 @@ function nearestNode(g, x, y, originSide = 0) {
   return { id: best, d: bestD };
 }
 
+function nearHazard(hazards, x, y) {
+  for (const [hx, hy] of hazards) {
+    if (Math.max(absI32(hx - x), absI32(hy - y)) <= HAZARD_CELLS) return true;
+  }
+  return false;
+}
+
+function hazardOverlay(g, hazards) {
+  const adj = g.adj.map((edges, a) => edges.map(([b, cost]) => {
+    const [ax, ay] = g.nodes[a];
+    const [bx, by] = g.nodes[b];
+    // Midpoints sample BOTH floor and ceil: a single >>1 midpoint is
+    // off-by-one under the mirror (the homeCellFor lesson) and skewed
+    // rerouting ~9 pts side-ward in the first 13D battery. The
+    // floor/ceil PAIR mirrors onto itself.
+    const mx1 = (ax + bx) >> 1;
+    const mx2 = (ax + bx + 1) >> 1;
+    const my1 = (ay + by) >> 1;
+    const my2 = (ay + by + 1) >> 1;
+    const dangerous = nearHazard(hazards, ax, ay) ||
+      nearHazard(hazards, bx, by) ||
+      nearHazard(hazards, mx1, my1) || nearHazard(hazards, mx2, my2);
+    return [b, dangerous ? cost * HAZARD_COST_MULT : cost];
+  }));
+  return { nodes: g.nodes, adj };
+}
+
 // The public API: waypoint cells from (fromX,fromY) to (toX,toY) for a
 // chassis, or [] when driving straight is the right call (short hop,
 // amphibious hull, unknown profile, or the graph doesn't actually help).
-export function routeWaypoints(profile, fromX, fromY, toX, toY, stats) {
+export function routeWaypoints(profile, fromX, fromY, toX, toY, stats, hazards = []) {
   if (stats?.amphibious) return []; // the river IS the Skimmer's road
   const direct = cheb(fromX, fromY, toX, toY);
   if (direct < DIRECT_SKIP_CELLS) return [];
-  const g = graphFor(profile, classOf(stats));
-  if (!g) return [];
+  const g0 = graphFor(profile, classOf(stats));
+  if (!g0) return [];
+  // 13D: overlay hazard penalties per query (the graphs are tiny). An
+  // edge is dangerous when a known hazard sits within HAZARD_CELLS of
+  // either endpoint or the midpoint — symmetric sampling, so mirrored
+  // hazards produce mirrored penalties.
+  const g = hazards.length ? hazardOverlay(g0, hazards) : g0;
   const originSide = Math.sign(2 * fromX - 127) || 1;
   const nf = nearestNode(g, fromX, fromY, originSide);
   const nt = nearestNode(g, toX, toY, originSide);

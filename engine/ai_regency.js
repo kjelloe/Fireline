@@ -869,8 +869,14 @@ export class AIRegency {
         // the route is recomputed from the CURRENT cell each cycle and
         // nextWaypoint picks the leg; arriving idle triggers the next.
         let step = target;
+        // 13D: route around what the team KNOWS — marked enemy mines
+        // re-cost the graph (area denial becomes real).
+        const hazards = [];
+        for (const m of state.mines) {
+          if (m.team !== asset.team && m.marked === 1) hazards.push([m.cellX, m.cellY]);
+        }
         const route = routeWaypoints(
-          state.mapProfile, currentCellX, currentCellY, target[0], target[1], stats);
+          state.mapProfile, currentCellX, currentCellY, target[0], target[1], stats, hazards);
         if (route.length) {
           const wp = nextWaypoint(route, currentCellX, currentCellY);
           if (wp && (wp[0] !== currentCellX || wp[1] !== currentCellY)) step = wp;

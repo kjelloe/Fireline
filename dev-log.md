@@ -2262,3 +2262,24 @@ four rejection texts + the feed line en/no. Sim-neutral (AI regents
 don't use it — v1); the 8H rejection net fired and was fed.
 
 Suite 524/524. Smoke OK.
+
+## slice-13d — dynamic edges (2026-07-29, mine-aware routing)
+
+Marked enemy mines re-cost the route graph (hazard within 2 cells of an
+edge's endpoints or floor+ceil midpoints -> cost x4): the AI routes
+AROUND what its scouts have marked — mine play is area denial for real.
+Query-local overlay (no cache pollution, tested); midpoint sampling
+uses the floor/ceil PAIR (a single >>1 midpoint is off-by-one under the
+mirror — the homeCellFor lesson, caught in battery one).
+
+METHODOLOGY FINDING (specs/08 updated): with asymmetric factions live,
+the mirror-world aggregate CONFLATES side and faction — the synthetic
+mirrored world shows A ~66% while the REAL world (the only one players
+play; teams are side-bound) sits at A 47.8% — nearly even. Player-facing
+fairness verdicts now read the NORMAL world + the swap gate; the mirror
+world remains the engine-equivariance instrument, not the fairness one.
+The side×faction interaction (mirror-only, predates 13D) is filed as a
+methodology curiosity, not a gate-blocker.
+
+Suite 526/526. Tempo held (tickets-led, median ~16k with denser mines).
+Tagged slice-13d.
