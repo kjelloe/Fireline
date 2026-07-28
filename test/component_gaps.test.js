@@ -9,14 +9,20 @@ import { AIRegency } from "../engine/ai_regency.js";
 import { createInitialState, ASSET_DISABLED } from "../engine/state.js";
 import { sandbox, joinAndSelect } from "./helpers.js";
 
-test("component: call_medic and respawn are validated inert no-ops for now", () => {
+test("component: call_medic stays a validated inert no-op; respawn is LIVE (15)", () => {
   let s = sandbox([{ team: 0, cellX: 0 }]);
   s = joinAndSelect(s, 0, 0, 0);
   const before = hashState(s);
-  for (const type of ["call_medic", "respawn"]) {
-    const next = apply(s, { type, operatorId: 0 });
-    assert.deepEqual(next.events, [], `${type} emits nothing yet`);
-    assert.equal(hashState(next), before, `${type} changes nothing yet`);
+  {
+    const next = apply(s, { type: "call_medic", operatorId: 0 });
+    assert.deepEqual(next.events, [], "call_medic emits nothing yet");
+    assert.equal(hashState(next), before, "call_medic changes nothing yet");
+  }
+  {
+    const next = apply(s, { type: "respawn", operatorId: 0 });
+    assert.ok(next.events.some((e) => e.type === "respawn_called"),
+      "respawn went live with the prompt-53 ruling");
+    assert.notEqual(hashState(next), before, "respawn abandons the hull");
   }
   const invalid = apply(s, { type: "call_medic", operatorId: 99 });
   assert.equal(invalid.events[0].type, "rejected", "still validated");

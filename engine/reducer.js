@@ -88,6 +88,14 @@ export const MPG_TICKS = 900;
 // sanctioned x2 pace pass; reload times unchanged so combat pace in seconds holds.
 export const BASE_SPEED = 32;
 
+// 15/15F respawn law (prompt-53 rulings): forced respawn frees the seat
+// after a countdown; the abandoned hull SELF-RECALLS (auto-wrecks after
+// 60 s uncrewed in the field — towable, no permanent litter); carrier
+// field-respawn is gated by a per-operator cooldown.
+export const RESPAWN_TICKS = 100;                 // 10 s countdown
+export const ABANDON_RECALL_TICKS = 600;          // 60 s to self-recall
+export const CARRIER_SPAWN_COOLDOWN_TICKS = 300;  // 30 s per operator
+
 function copyState(state) {
   return {
     ...state,
@@ -123,6 +131,7 @@ function applyJoinOperator(next, command) {
 function applySelectAsset(next, command) {
   const operator = next.operators[command.operatorId];
   if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if ((operator.respawnTicks ?? 0) > 0) return reject(next, command, "respawning");
   const asset = next.assets[command.assetId];
   if (!asset) return reject(next, command, "no such asset");
   if (asset.team !== operator.team) return reject(next, command, "asset belongs to other team");
@@ -145,6 +154,7 @@ function applySelectAsset(next, command) {
   }
   operator.assetId = asset.id;
   asset.operatorId = operator.id;
+  asset.abandonTimer = 0; // re-crewed in time — the recall clock stops (15)
   next.events.push({ type: "asset_selected", operatorId: operator.id, assetId: asset.id });
   return next;
 }
@@ -575,7 +585,60 @@ function applyRedeploy(next, command) {
   const downed = downedFor(next, command.operatorId);
   if (!downed) return reject(next, command, "not downed");
   if (downed.downTicks < REDEPLOY_TICKS) return reject(next, command, "still recovering nerve");
+  // 15F carrier field-respawn (ruled: crewed carriers only, 30 s/operator):
+  // the seat spawns ABOARD like a rescue passenger and rides until
+  // delivered or unboarded — the existing passenger machinery, verbatim.
+  if (command.carrierAssetId !== undefined) {
+    const operator = next.operators[command.operatorId];
+    if (next.tick < (operator.carrierSpawnAt ?? 0)) {
+      return reject(next, command, "carrier spawn cooling down");
+    }
+    const carrier = next.assets[command.carrierAssetId];
+    if (!carrier || getUnitStats(carrier.type).capacity <= 0) {
+      return reject(next, command, "not a carrier");
+    }
+    if (carrier.team !== operator.team) return reject(next, command, "asset belongs to other team");
+    if (carrier.state === ASSET_DISABLED || carrier.state === ASSET_SALVAGED) {
+      return reject(next, command, "asset not operable");
+    }
+    if (carrier.operatorId === -1) return reject(next, command, "carrier has no crew");
+    if (carrier.aboard1 !== -1 && carrier.aboard2 !== -1) {
+      return reject(next, command, "no bunk free");
+    }
+    if (carrier.aboard1 === -1) carrier.aboard1 = operator.id;
+    else carrier.aboard2 = operator.id;
+    next.downed = next.downed.filter((d) => d.operatorId !== operator.id);
+    operator.carrierSpawnAt = next.tick + CARRIER_SPAWN_COOLDOWN_TICKS;
+    next.events.push({
+      type: "operator_carrier_spawned", operatorId: operator.id, carrierAssetId: carrier.id,
+    });
+    return next;
+  }
   freeSeat(next, command.operatorId, "operator_redeployed");
+  return next;
+}
+
+// 15: forced respawn — for the tactically stuck. Abandons the hull IN
+// PLACE (it self-recalls in 60 s unless re-crewed or home) and frees the
+// seat after a 10 s countdown; selection is gated until it elapses.
+function applyRespawn(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if ((operator.respawnTicks ?? 0) > 0) return reject(next, command, "already respawning");
+  if (operator.assetId === -1) return reject(next, command, "no asset to abandon");
+  const asset = next.assets[operator.assetId];
+  if (asset && asset.operatorId === operator.id) {
+    asset.operatorId = -1;
+    asset.abandonTimer = 1; // the self-recall clock starts
+    asset.driveThrottle = 0;
+    asset.driveTurn = 0;
+    if (asset.state === ASSET_MOVING) asset.state = ASSET_IDLE;
+    asset.targetX = asset.x;
+    asset.targetY = asset.y;
+  }
+  operator.assetId = -1;
+  operator.respawnTicks = RESPAWN_TICKS;
+  next.events.push({ type: "respawn_called", operatorId: operator.id });
   return next;
 }
 
@@ -1169,6 +1232,34 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "resupplied", assetId: asset.id });
     }
   }
+  // 15: respawn countdowns tick down; at zero the seat is free to select.
+  for (const op of next.operators) {
+    if ((op.respawnTicks ?? 0) > 0) {
+      op.respawnTicks -= 1;
+      if (op.respawnTicks === 0) {
+        next.events.push({ type: "operator_respawned", operatorId: op.id });
+      }
+    }
+  }
+  // 15: abandoned hulls self-recall — 60 s uncrewed in the FIELD wrecks
+  // them (towable, rebuildable); making it home (or being re-crewed,
+  // which clears the timer at selection) spares them.
+  for (const asset of next.assets) {
+    if ((asset.abandonTimer ?? 0) <= 0) continue;
+    if (asset.operatorId !== -1 ||
+        asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+      asset.abandonTimer = 0;
+      continue;
+    }
+    asset.abandonTimer += 1;
+    if (asset.abandonTimer >= ABANDON_RECALL_TICKS) {
+      asset.abandonTimer = 0;
+      if (inOwnBase(next, asset)) continue; // safe at home
+      asset.state = ASSET_DISABLED;
+      asset.hp = 0;
+      next.events.push({ type: "asset_recalled", assetId: asset.id });
+    }
+  }
   // 13H ticket bleed (hybrid, prompt-51): a relay MAJORITY drains the
   // enemy pool one ticket per cadence. Silent (no per-tick events — the
   // repin discipline); the pools are hashed and ride the view for UI.
@@ -1236,8 +1327,8 @@ export function apply(state, command) {
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
+    case CMD_RESPAWN: return applyRespawn(next, command); // 15: live since prompt-53
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
-    case CMD_RESPAWN:
       return next;
     default:
       return reject(next, command, `unknown command type: ${command.type}`);

@@ -106,7 +106,7 @@ export function buildView(state, team) {
   // 11K: the public scoreboard — recognition is meant to be SEEN.
   const operators = state.operators
     .filter((o) => o.state !== 0)
-    .map((o) => ({ id: o.id, team: o.team, score: o.score }));
+    .map((o) => ({ id: o.id, team: o.team, score: o.score, respawnTicks: o.respawnTicks ?? 0 })); // 15
 
   return {
     tick: state.tick,

@@ -66,7 +66,7 @@ const TEAM_B_RESERVE_COLS = [119, 118]; // mirror of A's [8, 9]
 function createOperators() {
   const operators = [];
   for (let id = 0; id < OPERATOR_COUNT; id++) {
-    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1 });
+    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1, respawnTicks: 0, carrierSpawnAt: 0 });
   }
   return operators;
 }
@@ -89,6 +89,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     cargoFuel: 0, cargoAmmo: 0, // 13A: field-resupply hold (trucks)
     driveThrottle: 0, driveTurn: 0, // 11L: direct-control intent
     deployed: 0, deployTimer: 0, // 12B: Deploy Hardpoint
+    abandonTimer: 0, // 15: forced-respawn self-recall clock
   };
 }
 

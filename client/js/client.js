@@ -1515,8 +1515,19 @@ function updateActionBanner(view) {
     if (wait > 0) {
       text = t("banner.down_wait", { s: wait });
     } else {
-      text = t("banner.down_ready");
-      bannerAction = () => send({ type: "redeploy" });
+      // 15F: a crewed friendly carrier with a free bunk beats the walk
+      // home — clicking spawns you ABOARD (30 s cooldown server-side).
+      const spawnable = (view?.friendlyAssets ?? []).find((a) =>
+        a.type === 4 && a.operatorId !== -1 && a.operatorId !== joined.operatorId &&
+        a.state !== STATE_DISABLED && a.state !== 3 &&
+        (a.aboard1 === -1 || a.aboard2 === -1));
+      if (spawnable) {
+        text = t("banner.spawn_carrier", { id: spawnable.id });
+        bannerAction = () => send({ type: "redeploy", carrierAssetId: spawnable.id });
+      } else {
+        text = t("banner.down_ready");
+        bannerAction = () => send({ type: "redeploy" });
+      }
     }
   } else {
     const wreck = adjacentTowableWreck(view);
@@ -1531,6 +1542,12 @@ function updateActionBanner(view) {
     } else if (me?.type === 7 && me.deployTimer === 0) { // 12B
       text = me.deployed === 1 ? t("banner.undeploy") : t("banner.deploy");
       bannerAction = () => send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
+    }
+    // 15: tactically stuck? The status panel's force-respawn button calls
+    // CMD_RESPAWN; while the 10 s countdown runs the banner narrates it.
+    const myOp = view?.operators?.find((o) => o.id === joined.operatorId);
+    if (!text && (myOp?.respawnTicks ?? 0) > 0) {
+      text = t("banner.respawning", { s: Math.ceil(myOp.respawnTicks / 10) });
     }
   }
   if (text) {
@@ -1710,11 +1727,16 @@ function updateStatusPanel(view) {
     html += `<button id="btn-request-supplies" class="btn" style="margin-top:4px; font-size:12px; padding:2px 10px;">${t("status.request")}</button>`;
   }
   html += ` <button id="btn-center-me" class="btn" style="margin-top:4px; font-size:12px; padding:2px 10px;">${t("ui.center_me")}</button>`;
+  // 15: the escape hatch for the tactically stuck — abandon in place,
+  // 10 s countdown, hull self-recalls in 60 s (double-click to confirm).
+  html += ` <button id="btn-force-respawn" class="btn" style="margin-top:4px; font-size:12px; padding:2px 10px; border-color:#a55;">${t("status.force_respawn")}</button>`;
   el.innerHTML = html;
   const btn = document.getElementById("btn-request-supplies");
   if (btn) btn.onclick = () => send({ type: "ping", kind: "need_supplies" });
   const center = document.getElementById("btn-center-me");
   if (center) center.onclick = () => freeCam.followMode(true); // 14J item 8
+  const fr = document.getElementById("btn-force-respawn");
+  if (fr) fr.ondblclick = () => send({ type: "respawn" });
 }
 
 // Supply truth the client can know: within 20 cells of an own base rect

@@ -24,6 +24,7 @@ function stateHash(s) {
     w.writeI32LE(o.assetId); w.writeI32LE(o.score); w.writeI32LE(o.downTimer);
     w.writeI32LE(o.lastPingTick); // added 10C
     w.writeU8(o.autoRescue ?? 1); // added 11G
+    w.writeI32LE(o.respawnTicks ?? 0); w.writeI32LE(o.carrierSpawnAt ?? 0); // added 15/15F
   }
   for (const a of s.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);
@@ -42,6 +43,7 @@ function stateHash(s) {
     w.writeU8(a.materiel ?? 0); // added 11F
     w.writeI32LE(a.driveThrottle ?? 0); w.writeI32LE(a.driveTurn ?? 0); // added 11L
     w.writeU8(a.deployed ?? 0); w.writeU8(a.deployTimer ?? 0); // added 12B
+    w.writeI32LE(a.abandonTimer ?? 0); // added 15
     w.writeI32LE(a.cargoFuel ?? 0); w.writeI32LE(a.cargoAmmo ?? 0); // added 13A
   }
   for (const site of s.sites) { // added 1I

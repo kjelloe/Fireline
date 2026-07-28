@@ -74,7 +74,10 @@ local-only file by choice; this register records the *decisions*.
   loops — (44,40)/(83,40) and (44,86)/(83,86) — an 8-relay conquest web.
 - **AT satchel**: one per downed operator, adjacent-cell, ~60 damage,
   single-use, loud (event + ping).
-- Forced respawn at base after a 10 s countdown (playtest 7 item 15).
+- Forced respawn at base after a 10 s countdown (playtest 7 item 15);
+  the abandoned hull stays in place and SELF-RECALLS — 60 s uncrewed in
+  the field auto-wrecks it (towable/rebuildable). Carrier field-respawn
+  cooldown: 30 s per operator.
 
 ## AI doctrine rulings
 
@@ -96,7 +99,8 @@ local-only file by choice; this register records the *decisions*.
 - Mobile touch = skin over drive intents; i18n total (en/no).
 - Global discovery: adopt the sibling master-server pattern
   (specs/game-discovery.md) — announce/probe/list, probe-before-list,
-  checksums in the announce; reconnect banner precedes it.
+  checksums in the announce; reconnect banner precedes it (landed).
+  Master index COLOCATES on the game VM; its own server is listing #1.
 
 ## Session & infrastructure
 

@@ -2160,3 +2160,23 @@ Suite 506/506. Smoke OK.
   so the item-18 golden dropoff ring lands on its doorstep.
 
 Suite 506/506. Smoke OK. Tagged slice-15f2.
+
+## slice-15g — the respawn law (2026-07-28, items 15 + 15F, prompt-53)
+
+Forced respawn (CMD_RESPAWN goes live): abandon the hull IN PLACE, seat
+gated by a 10 s countdown (selection rejects "respawning"), and the
+abandoned hull SELF-RECALLS — 60 s uncrewed in the field auto-wrecks it
+(towable/rebuildable, no permanent litter; spared at home or when
+re-crewed). Carrier field-respawn (ruled: crewed carriers only): a
+downed seat past the redeploy gate spawns ABOARD a crewed friendly
+carrier with a free bunk — the rescue-passenger machinery verbatim —
+on a 30 s per-operator cooldown. Three new HASHED fields
+(operator.respawnTicks/carrierSpawnAt, asset.abandonTimer) → fixture
+v38. Client: down-banner offers "deploy aboard carrier N" when one
+qualifies; status panel gains the double-click force-respawn button;
+banner narrates the countdown; five new rejection texts en/no (the 8H
+sweep and the inert-command net both fired and were updated —
+call_medic stays the only inert command). Sim-neutral: AI never calls
+either path; gate byte-identical.
+
+Suite 511/511. Smoke OK. UI acceptance OK. Tagged slice-15g.
