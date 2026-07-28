@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { apply } from "../engine/reducer.js";
-import { speedMultiplier, PATH_SPEED_HEAVY, TERRAIN_SPEED } from "../engine/terrain.js";
+import { speedMultiplier, PATH_SPEED_HEAVY, PATH_SPEED_AMPHIBIOUS, TERRAIN_SPEED } from "../engine/terrain.js";
 import { T_PATH } from "../engine/mapgen.js";
 import { getUnitStats, UNIT_STATS } from "../engine/units.js";
 import { generateFrontierCorridor } from "../engine/frontier_corridor.js";
@@ -18,7 +18,7 @@ test("11N only the tank is heavy; paths pay out per chassis", () => {
     assert.equal(stats.heavy, type === 0 || type === 7,
       `chassis ${type} heavy flag (tank + sentinel)`);
     // Prompt-54: amphibious hulls RACE trails (Riverline Drive affinity).
-    const expected = stats.amphibious ? 384
+    const expected = stats.amphibious ? PATH_SPEED_AMPHIBIOUS
       : stats.heavy ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH];
     assert.equal(
       speedMultiplier(T_PATH, stats),

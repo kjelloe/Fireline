@@ -84,7 +84,7 @@ export const UNIT_STATS = Object.freeze({
   // artillery-class DIRECT reach. fortify · contain · stabilize.
   [UNIT_SENTINEL]: Object.freeze({
     id: UNIT_SENTINEL, name: "sentinel",
-    speed: 12, range: 1024, minRange: 0, hp: 150, damage: 8, indirect: false, reloadTicks: 20,
+    speed: 12, range: 1024, minRange: 0, hp: 120, damage: 8, indirect: false, reloadTicks: 20, // prompt-56 band: 150 at first landing, 135 tried
     canTow: false, canCarryStandard: false, capacity: 0, turnRate: 4,
     canMine: false, canClearMines: false,
     heavy: true,

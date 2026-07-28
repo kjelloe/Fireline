@@ -1,5 +1,5 @@
 {
-  "note": "Generated mirror of engine/units.js UNIT_STATS — modding-facing; engine never reads files. Pinned equal by milestone3a.",
+  "note": "Generated mirror of engine/units.js UNIT_STATS \u2014 modding-facing; engine never reads files. Pinned equal by milestone3a.",
   "units": {
     "0": {
       "id": 0,
@@ -161,7 +161,7 @@
       "speed": 12,
       "range": 1024,
       "minRange": 0,
-      "hp": 150,
+      "hp": 120,
       "damage": 8,
       "indirect": false,
       "reloadTicks": 20,

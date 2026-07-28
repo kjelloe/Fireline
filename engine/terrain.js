@@ -18,7 +18,7 @@ export const WATER_SPEED_AMPHIBIOUS = 307;
 // ROUTES — trails are the Skimmer's highway at road-grade speed. This is
 // the Outlier unique's job on every map (the lateral-relay racer), and
 // the stat-side answer to the Sentinel-side 60% swap-gate verdict.
-export const PATH_SPEED_AMPHIBIOUS = 384;
+export const PATH_SPEED_AMPHIBIOUS = 416; // prompt-56 band tightening (384 at first landing)
 // 11N (Q22): a HEAVY chassis gains nothing from narrow trails — it crosses
 // them at rough speed. First per-chassis terrain rule; keep it explicit.
 export const PATH_SPEED_HEAVY = 128;

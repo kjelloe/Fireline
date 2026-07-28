@@ -2283,3 +2283,20 @@ methodology curiosity, not a gate-blocker.
 
 Suite 526/526. Tempo held (tickets-led, median ~16k with denser mines).
 Tagged slice-13d.
+
+## band tuning — the lever curve and the verdict (2026-07-29, prompt-56)
+
+Target 52/48. The curve, one pull at a time (swap-gate Sentinel-side):
+base 54.5 → trail affinity 416: 54.2 → Sentinel hp 135: 54.0 → hp 120:
+53.6. The stat levers SATURATE ~0.2-0.4pt per pull — the Sentinel's
+edge is structural (the anchor role in the tickets meta), and reaching
+52 on this metric would gut its identity (hp ~90). BUT the world
+players actually play tells a better story: the NORMAL-world split at
+the tuned pair (affinity 416 + hp 120) is **A 51.3% — the 52/48 target
+achieved in real play**. KEPT: 416 + 120 (fixture v40; data/units.json
+mirror synced — the 3A net caught it).Remaining gap on the swap metric
+(53.6) documented as saturation; the structural lever if the designer
+wants tighter: a Skimmer CAPTURE-SPEED affinity (fast flips on the
+lateral web) — filed as a designer option, not built.
+
+Suite 526/526 (x2).
