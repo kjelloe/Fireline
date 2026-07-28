@@ -23,6 +23,7 @@ export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
 export const CMD_RESPAWN        = "respawn";
+export const CMD_SATCHEL        = "satchel"; // prompt-51: downed-crew AT charge
 
 const VALID_TEAMS = new Set([0, 1]);
 const VALID_ASSET_TYPES = new Set([0, 1, 2]);
@@ -143,6 +144,10 @@ export function validate(cmd) {
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };
 
+    case CMD_SATCHEL:
+      if (!isUint(cmd.operatorId, 31)) return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.targetAssetId, 31)) return { ok: false, reason: "invalid targetAssetId" };
+      return { ok: true };
     case CMD_RESPAWN:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };

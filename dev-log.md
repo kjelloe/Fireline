@@ -2236,3 +2236,29 @@ live end-to-end announce-probe-list loop; the TTL test caught a real
 first-announce rate-floor bug before it ever shipped.
 
 Suite 519/519 (x2). Smoke OK. UI acceptance OK. Tagged slice-15h.
+
+## slice-16e — trail affinity + 16B DEFAULT ON (2026-07-29, prompt-54)
+
+Designer stat ruling: Riverline Drive extends to NEGLECTED ROUTES —
+T_PATH at road-grade 384 for amphibious hulls only (bikes stay 307,
+heavies 128; pinned in 11N/12C tests). First verdict sweep came back
+IDENTICAL to pre-buff — unmasking that the 16B water-only crewing gate
+locked the Skimmer out of frontier entirely; the gate is now WATER OR
+TRAILS (mapHasRunway). True verdict: Sentinel-side 60.2% -> 54.5%,
+IN BAND -> unique crewing DEFAULT ON per the standing ruling
+(UNIQUES=0 disables for A/B sweeps). Acceptance: default wars carry a
+~55/45 Directorate lean — the SANCTIONED faction asymmetry itself (the
+swap gate is the fairness authority for asymmetric factions); flagged
+for the designer if the band should tighten (levers: affinity 384->400
+or Sentinel mobile-hp). Suite 520/520 at flip.
+
+## slice-16f — the AT satchel (2026-07-29, prompt-51 ruling)
+
+One demolition charge per bail-out (hashed on the downed entry —
+fixture v39): adjacent-cell, 60 damage, single-use, LOUD (event + an
+automatic team ping at the blast), kill credit to the operator. Downed
+players plant it by clicking an adjacent enemy hull (crawl otherwise);
+four rejection texts + the feed line en/no. Sim-neutral (AI regents
+don't use it — v1); the 8H rejection net fired and was fed.
+
+Suite 524/524. Smoke OK.

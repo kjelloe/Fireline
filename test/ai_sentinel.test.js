@@ -77,17 +77,20 @@ test("16B crewing: a free seat prefers the faction unique over the default pick"
   assert.equal(sel?.assetId, 1, "the garage Sentinel outranks the lowest-id default");
 });
 
-test("16B DORMANT by default: without the flag, the unique stays garaged", () => {
+test("16B DEFAULT ON since prompt-54; uniqueCrewing:false still disables for sweeps", () => {
   let s = sandbox([
     { team: 0, cellX: 10, cellY: 10 },                          // tank, id 0, free
     { team: 0, cellX: 12, cellY: 10, type: UNIT_SENTINEL },     // unique, id 1, free
   ]);
   s = apply(s, { type: "join_operator", operatorId: 16, team: 0 });
-  const ai = new AIRegency({ fixedAgents: false });
-  ai.assume(16);
-  const sel = ai.plan(s).find((c) => c.type === "select_asset" && c.operatorId === 16);
-  assert.equal(sel?.assetId, 0,
-    "flag off -> lowest-id default pick, byte-identical wars (the 59.7% lesson)");
+  const on = new AIRegency({ fixedAgents: false });
+  on.assume(16);
+  assert.equal(on.plan(s).find((c) => c.type === "select_asset")?.assetId, 1,
+    "default: the unique crews (the trail-affinity gate PASSED)");
+  const off = new AIRegency({ fixedAgents: false, uniqueCrewing: false });
+  off.assume(16);
+  assert.equal(off.plan(s).find((c) => c.type === "select_asset")?.assetId, 0,
+    "explicit off remains available for A/B sweeps");
 });
 
 test("16B crewing: unique already crewed — default pick resumes", () => {

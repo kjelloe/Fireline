@@ -14,7 +14,7 @@ import {
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
-  CMD_CALL_MEDIC, CMD_RESPAWN, validate,
+  CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL, validate,
 } from "./commands.js";
 import {
   MINE_ARM_TICKS, MINE_DAMAGE, MINE_DETECT_RADIUS_CELLS,
@@ -615,6 +615,40 @@ function applyRedeploy(next, command) {
     return next;
   }
   freeSeat(next, command.operatorId, "operator_redeployed");
+  return next;
+}
+
+// Prompt-51 AT satchel: the downed crew's one heroic answer to armor —
+// a single adjacent-cell demolition charge. LOUD by design: the event
+// and an automatic team ping mark the blast for everyone.
+export const SATCHEL_DAMAGE = 60;
+function applySatchel(next, command) {
+  const operator = next.operators[command.operatorId];
+  const down = downedFor(next, command.operatorId);
+  if (!operator || operator.state !== OP_DOWN || !down) {
+    return reject(next, command, "not downed");
+  }
+  if ((down.satchel ?? 0) <= 0) return reject(next, command, "satchel spent");
+  const target = next.assets[command.targetAssetId];
+  if (!target || target.team === operator.team) return reject(next, command, "no enemy there");
+  if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
+    return reject(next, command, "already a wreck");
+  }
+  if (chebyshevCells(target, down) > 1) return reject(next, command, "out of arm's reach");
+  down.satchel = 0;
+  target.hp -= SATCHEL_DAMAGE;
+  next.events.push({
+    type: "satchel_detonated", operatorId: operator.id, assetId: target.id,
+  });
+  next.events.push({
+    type: "ping", kind: "satchel_blast", team: operator.team, toTeam: operator.team,
+    cellX: worldToCellFloor(target.x), cellY: worldToCellFloor(target.y),
+  });
+  if (target.hp <= 0) {
+    target.hp = 0;
+    disableAsset(next, target, operator.team);
+    awardOperator(next, operator.id, RECOG_KILL);
+  }
   return next;
 }
 
@@ -1332,6 +1366,7 @@ export function apply(state, command) {
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
     case CMD_RESPAWN: return applyRespawn(next, command); // 15: live since prompt-53
+    case CMD_SATCHEL: return applySatchel(next, command); // prompt-51 AT charge
     case CMD_CALL_MEDIC: // recognized but inert until the medic milestone
       return next;
     default:

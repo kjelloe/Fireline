@@ -21,6 +21,7 @@ export function createDowned(operator, asset) {
     targetX: asset.x,
     targetY: asset.y,
     downTicks: 0,
+    satchel: 1, // prompt-51 AT satchel: one charge per bail-out
   };
 }
 

@@ -17,9 +17,12 @@ test("11N only the tank is heavy; paths pay out per chassis", () => {
     const stats = getUnitStats(type);
     assert.equal(stats.heavy, type === 0 || type === 7,
       `chassis ${type} heavy flag (tank + sentinel)`);
+    // Prompt-54: amphibious hulls RACE trails (Riverline Drive affinity).
+    const expected = stats.amphibious ? 384
+      : stats.heavy ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH];
     assert.equal(
       speedMultiplier(T_PATH, stats),
-      stats.heavy ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH],
+      expected,
       `chassis ${type} path multiplier`
     );
   }

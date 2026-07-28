@@ -74,3 +74,14 @@ test("12C riverline AI wars still run and stay deterministic with water", () => 
   assert.ok(captures >= 1, `the war is fought (${captures} captures)`);
   assert.equal(hashState(server.state), hashState(run().server.state));
 });
+
+test("prompt-54: Riverline Drive races TRAILS at road grade — amphibious only", async () => {
+  const { speedMultiplier, PATH_SPEED_AMPHIBIOUS, TERRAIN_SPEED } = await import("../engine/terrain.js");
+  const { getUnitStats, UNIT_SKIMMER, UNIT_BIKE, UNIT_TANK } = await import("../engine/units.js");
+  const T_PATH = 5;
+  assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_SKIMMER)), PATH_SPEED_AMPHIBIOUS);
+  assert.equal(PATH_SPEED_AMPHIBIOUS, 384, "road-grade — the designer's number");
+  assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_BIKE)), TERRAIN_SPEED[T_PATH],
+    "bikes keep ordinary trail speed — the affinity is the Skimmer's alone");
+  assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_TANK)), 128, "heavies unchanged");
+});

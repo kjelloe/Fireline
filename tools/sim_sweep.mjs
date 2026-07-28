@@ -20,7 +20,7 @@ const MAP = process.env.MAP || "frontier_corridor"; // 11M profiles
 const DIFFICULTY = Number(process.env.DIFFICULTY ?? 1);
 const MIRROR = process.env.MIRROR === "1";
 const FACTIONSWAP = process.env.FACTIONSWAP === "1"; // 12D: uniques trade sides
-const UNIQUES = process.env.UNIQUES === "1"; // 16B: unique crewing (dormant by default)
+const UNIQUES = process.env.UNIQUES !== "0"; // 16B: unique crewing (DEFAULT ON since prompt-54; 0 disables)
 const SHARDS = Number(process.env.SHARDS ?? 1);
 const SHARD = Number(process.env.SHARD ?? 0);
 const HORIZON = Number(process.env.TICKS ?? 18000);

@@ -62,6 +62,7 @@ export function hashState(state) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetX); w.writeI32LE(d.targetY);
     w.writeI32LE(d.downTicks);
+    w.writeI32LE(d.satchel ?? 0); // added prompt-51
   }
   w.writeI32LE(state.rules?.mpgMinOperable ?? 6); w.writeI32LE(state.rules?.mpgTicks ?? 900); // added 13F
   w.writeI32LE(state.nextMineId ?? 0); // added 9E

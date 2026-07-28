@@ -52,7 +52,7 @@ export function codexFor(type) {
   if (stats.canClearMines) traits.push("clears mines");
   if (stats.canCapture === false) traits.push("cannot capture relays");
   if (stats.heavy) traits.push("no trail bonus (heavy)");
-  if (stats.amphibious) traits.push("crosses water (Riverline Drive)");
+  if (stats.amphibious) traits.push("crosses water + races trails (Riverline Drive)");
   if (stats.deployable) traits.push("Deploy Hardpoint");
   return { type, name, role: ROLES[name] ?? "", lines, traits };
 }

@@ -14,11 +14,17 @@ export const TERRAIN_SPEED = Object.freeze({
 });
 // 12C (Riverline Drive): the amphibious chassis treats water as a trail.
 export const WATER_SPEED_AMPHIBIOUS = 307;
+// Prompt-54 (designer stat ruling): Riverline Drive extends to NEGLECTED
+// ROUTES — trails are the Skimmer's highway at road-grade speed. This is
+// the Outlier unique's job on every map (the lateral-relay racer), and
+// the stat-side answer to the Sentinel-side 60% swap-gate verdict.
+export const PATH_SPEED_AMPHIBIOUS = 384;
 // 11N (Q22): a HEAVY chassis gains nothing from narrow trails — it crosses
 // them at rough speed. First per-chassis terrain rule; keep it explicit.
 export const PATH_SPEED_HEAVY = 128;
 
 export function speedMultiplier(terrainId, stats = null) {
+  if (terrainId === T_PATH && stats?.amphibious) return PATH_SPEED_AMPHIBIOUS; // prompt-54
   if (terrainId === T_PATH && stats?.heavy) return PATH_SPEED_HEAVY;
   if (terrainId === T_WATER && stats?.amphibious) return WATER_SPEED_AMPHIBIOUS; // 12C
   return TERRAIN_SPEED[terrainId] ?? 256;

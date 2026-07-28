@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 38,
+  "fixtureVersion": 39,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 38 (2026-07-28): 15/15F respawn law — hashed respawnTicks/carrierSpawnAt/abandonTimer (prompt-53); hashes re-pinned, command script and events still verbatim from v1.",
+  "note": "fixtureVersion 39 (2026-07-28): AT satchel — hashed charge on downed entries (prompt-51); hashes re-pinned, command script and events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "48ba2718eacc7181",

@@ -766,6 +766,14 @@ function onPointerDown(event) {
   const { cellX, cellY } = scenePointToCell(target.x, target.z);
   // 9B: while your seat is down, clicks crawl instead of commanding vehicles.
   if (view?.downedOperators?.some((d) => d.operatorId === joined.operatorId)) {
+    // Prompt-51 AT satchel: clicking an ADJACENT enemy hull plants the
+    // charge instead of crawling (the reducer enforces range and count).
+    const foe = (view?.visibleEnemies ?? []).find((e) =>
+      Math.floor(e.x / CELL) === cellX && Math.floor(e.y / CELL) === cellY);
+    if (foe) {
+      send({ type: "satchel", targetAssetId: foe.id });
+      return;
+    }
     send({ type: "crawl_order", targetCellX: cellX, targetCellY: cellY });
     return;
   }

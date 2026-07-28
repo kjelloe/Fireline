@@ -102,20 +102,20 @@ function isWreck(asset) {
   return asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED;
 }
 
-// 16B: does this map have water at all? (The Skimmer only crews where it
-// can skim.) Cached per mapSeed — terrain is static within a war.
-const waterCache = new Map();
-function mapHasWater(state) {
+// 16B/prompt-54: does this map give Riverline Drive a surface — water
+// OR trails? Cached per profile+seed; terrain is static within a war.
+const runwayCache = new Map();
+function mapHasRunway(state) {
   const key = `${state.mapProfile}:${state.mapSeed}`;
-  if (waterCache.has(key)) return waterCache.get(key);
+  if (runwayCache.has(key)) return runwayCache.get(key);
   let has = false;
   const cells = state.map?.cells;
   if (cells) {
     for (let i = 0; i < cells.length; i++) {
-      if (cells[i] === 6 /* T_WATER */) { has = true; break; }
+      if (cells[i] === 6 /* T_WATER */ || cells[i] === 5 /* T_PATH */) { has = true; break; }
     }
   }
-  waterCache.set(key, has);
+  runwayCache.set(key, has);
   return has;
 }
 
@@ -249,14 +249,13 @@ export class AIRegency {
     this.regented = new Set(); // human operator slots under takeover (3C)
     // 6D: easy fires every other tick; hard swaps patrols for relay pushes.
     this.difficulty = options.difficulty ?? AI_NORMAL;
-    // 16B: unique-chassis crewing, DORMANT by default. The rung passes the
-    // 12D chassis gate (Sentinel-side 53.1% after the threat-reactive tune)
-    // but introduces a ~12pt TEAM-linked edge (A 59.7% aggregate across
-    // mirror worlds on seeds whose baseline is 47.5%) whose mechanism is
-    // not yet isolated — suspicion: fastest-seat recoverer distortion by
-    // the Skimmer plus an unexplained A-keyed component. Enable in sweeps
-    // (UNIQUES=1) to chase it at batch scale before it defaults on.
-    this.uniqueCrewing = options.uniqueCrewing === true;
+    // 16B: unique-chassis crewing — DEFAULT ON since prompt-54: the
+    // Riverline-Drive trail affinity closed the swap gate (Sentinel-side
+    // 60.2% -> 54.5%, in band). The full evidence chain lives in dev-log
+    // (standing fortress 78/19 -> reactive tune -> water/trail crewing
+    // gate -> no-squat Sentinel -> trail affinity). UNIQUES=0 disables
+    // for A/B sweeps.
+    this.uniqueCrewing = options.uniqueCrewing !== false;
   }
 
   assume(operatorId) {
@@ -471,11 +470,12 @@ export class AIRegency {
         // Carrier/courier/tube roles stay senior — those win wars.
         let roleUnique = null;
         if (this.uniqueCrewing && !roleCarrier && !roleBike && !roleTube) {
-          // 16B residue fix (probe-led): crewing the Skimmer on a
-          // WATERLESS map trades a would-be tank seat for a 45hp hull
-          // with nothing to skim — B paid ~11pts for it on frontier.
-          // The airboat crews only where there is water to run.
-          const hasWater = mapHasWater(state);
+          // 16B residue fix (probe-led), amended by prompt-54: the
+          // airboat crews only where Riverline Drive has a surface to
+          // run — WATER or TRAILS. (The first cut gated on water alone,
+          // which locked the Skimmer out of frontier and made the swap
+          // gate structurally unpassable.)
+          const hasWater = mapHasRunway(state);
           const isUnique = (a) => {
             const st = getUnitStats(a.type);
             if (st.amphibious === true) return hasWater;
