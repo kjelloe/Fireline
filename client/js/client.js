@@ -16,6 +16,7 @@ import {
 } from "./motion_cues.js";
 import { createSpriteRenderer } from "./sprite_renderer.js";
 import { rowsFor } from "./server_list.js";
+import { weatherWindow } from "../../engine/los.js";
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
@@ -448,7 +449,11 @@ function connect() {
         width: msg.width, height: msg.height,
         cells: Uint8Array.from(msg.mapCells),
         profile: msg.mapProfile ?? "frontier_corridor",
+        seed: 0, // filled async below — weather visuals need the seed (16G)
       };
+      fetch("/version").then((r) => r.json())
+        .then((v) => { if (cachedMap) cachedMap.seed = v.mapSeed >>> 0; })
+        .catch(() => { /* cosmetic only — storm tint just stays off */ });
       if (terrainMesh) { scene.remove(terrainMesh); terrainMesh = null; } // new war terrain
     } else if (msg.type === "s_war_reset") {
       hideEndScreen();
@@ -1234,6 +1239,24 @@ function updateMotion(nowMs) {
       mesh.scale.set(grow, grow, grow);
       mesh.material.opacity = 0.5 * (1 - age);
     }
+  }
+}
+
+// 16G: the storm reads as distance fog + a dimmed sky. The schedule is
+// the same pure function the engine uses (mapSeed from the cached map).
+let stormOn = false;
+function updateWeatherVisual(view) {
+  if (!view || !cachedMap) return;
+  const w = weatherWindow(cachedMap.seed >>> 0);
+  const active = view.tick >= w.start && view.tick < w.end;
+  if (active === stormOn) return;
+  stormOn = active;
+  if (active) {
+    scene.fog = new THREE.Fog(0x8a8676, 18, 60);
+    scene.background = new THREE.Color(0x6e6a5c);
+  } else {
+    scene.fog = null;
+    scene.background = new THREE.Color(0x101018);
   }
 }
 
@@ -2190,6 +2213,7 @@ function renderBattlefield() {
   updateVfx(performance.now());
   updateMotion(performance.now());
   updateSpawnRing(performance.now(), interpolator.latest());
+  updateWeatherVisual(interpolator.latest());
   renderMinimap(interpolator.latest());
 
   // 8G: follow tracks your asset; manual pan/zoom takes over seamlessly.

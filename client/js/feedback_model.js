@@ -59,6 +59,8 @@ export function describeEvent(e, myTeam) {
     case "mine_marked": return t("ev.mine_marked");
     case "mine_detonated": return t("ev.mine_detonated", { id: e.assetId });
     case "satchel_detonated": return t("ev.satchel", { op: e.operatorId, id: e.assetId });
+    case "weather_front":
+      return t(e.phase === "in" ? "ev.weather_in" : "ev.weather_out");
     case "mine_cleared": return t("ev.mine_cleared", { id: e.assetId });
     case "ping": {
       const label = (e.kind ?? "").replace(/_/g, " ").toUpperCase();

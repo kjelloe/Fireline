@@ -14,6 +14,27 @@ export function sensorRadius(asset) {
   return isSuppressed(asset) ? SUPPRESSED_RADIUS_CELLS : FOG_RADIUS_CELLS;
 }
 
+// 16G weather events (gameplay-evolved #4b, ruled): once per war a
+// deterministic FRONT rolls in — sensors halve for its duration. The
+// schedule is a PURE function of the map seed (no new hashed state, no
+// repin, replays honest by construction): start in the mid-war band
+// [6000, 12000), duration 900 ticks (90 s). Both teams equally blinded —
+// scouts, pings, and standard runs own the storm.
+export const WEATHER_DURATION_TICKS = 900;
+export function weatherWindow(mapSeed) {
+  // mix32-style scramble inline (shared/prng mix32 is engine-importable
+  // but keep los.js dependency-light): deterministic, integer.
+  let h = (mapSeed >>> 0) ^ 0x9e3779b9;
+  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
+  const start = 6000 + (h % 6000);
+  return { start, end: start + WEATHER_DURATION_TICKS };
+}
+export function weatherActive(state) {
+  const w = weatherWindow(state.mapSeed);
+  return state.tick >= w.start && state.tick < w.end;
+}
+
 export function chebyshevCells(a, b) {
   const dx = absI32(worldToCellFloor(a.x) - worldToCellFloor(b.x));
   const dy = absI32(worldToCellFloor(a.y) - worldToCellFloor(b.y));
@@ -38,12 +59,13 @@ export function computeVisible(state, team) {
     }
     const assetCellX = worldToCellFloor(asset.x);
     const assetCellY = worldToCellFloor(asset.y);
+    const storm = weatherActive(state); // 16G: the front halves every sensor
     const seen =
-      sensors.some((s) => chebyshevCells(s, asset) <= sensorRadius(s)) ||
+      sensors.some((s) => chebyshevCells(s, asset) <= (storm ? sensorRadius(s) >> 1 : sensorRadius(s))) ||
       siteSensors.some((s) => {
         const dx = absI32(s.cellX - assetCellX);
         const dy = absI32(s.cellY - assetCellY);
-        return (dx > dy ? dx : dy) <= RELAY_FOG_CELLS;
+        return (dx > dy ? dx : dy) <= (storm ? RELAY_FOG_CELLS >> 1 : RELAY_FOG_CELLS);
       });
     if (seen) visible.add(asset.id);
   }

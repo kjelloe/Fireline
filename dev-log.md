@@ -2300,3 +2300,18 @@ wants tighter: a Skimmer CAPTURE-SPEED affinity (fast flips on the
 lateral web) — filed as a designer option, not built.
 
 Suite 526/526 (x2).
+
+## slice-16g — weather fronts (2026-07-29, gameplay-evolved #4b)
+
+Once per war a deterministic WEATHER FRONT rolls in: schedule is a PURE
+function of the map seed (mid-war band 6000-12000, 90 s) — no new
+hashed state, no repin, replays honest by construction. Inside it every
+sensor HALVES (assets and relay webs, both teams equally): scouts,
+pings, and standard runs own the storm; snipe-lines and drone spotting
+break. Edges announce themselves (weather_front in/out events + feed
+lines en/no); the client reads the same pure schedule (seed via
+/version on map load) and renders distance fog + a dimmed sky. The
+sim gate holds (the front shuffles mid-war fights without breaking
+tempo — the meta-flip is the point).
+
+Suite 529/529. Smoke OK. Tagged slice-16g.

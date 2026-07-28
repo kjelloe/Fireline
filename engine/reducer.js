@@ -48,7 +48,7 @@ import {
   CARGO_FUEL_MAX, CARGO_AMMO_MAX, resupplyAt, inSupply,
 } from "./supply.js";
 import { getUnitStats } from "./units.js";
-import { computeVisible, sensorRadius, chebyshevCells } from "./los.js";
+import { computeVisible, sensorRadius, chebyshevCells, weatherWindow } from "./los.js";
 import {
   checkVictory, dominatingTeam, PHASE_RUNNING, PHASE_OVER,
 } from "./victory.js";
@@ -1265,6 +1265,13 @@ function applyAdvanceTick(next) {
       asset.fuel = restored.fuel;
       next.events.push({ type: "resupplied", assetId: asset.id });
     }
+  }
+  // 16G: the weather front announces itself at its edges (schedule is a
+  // pure function of the seed; start >= 6000, far outside fixture ticks).
+  {
+    const w = weatherWindow(next.mapSeed);
+    if (next.tick === w.start) next.events.push({ type: "weather_front", phase: "in" });
+    if (next.tick === w.end) next.events.push({ type: "weather_front", phase: "out" });
   }
   // 15: respawn countdowns tick down; at zero the seat is free to select.
   for (const op of next.operators) {
