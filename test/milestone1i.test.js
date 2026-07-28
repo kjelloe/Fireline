@@ -15,7 +15,7 @@ import { sandbox, joinSelectMove } from "./helpers.js";
 
 test("1I neutral relay has no owner in initial state", () => {
   const s = createInitialState(42, "frontier_corridor");
-  assert.equal(s.sites.length, 4); // 11C: mirrored pairs 32<->95, 58<->69
+  assert.equal(s.sites.length, 8); // 11C road pairs 32<->95, 58<->69 + prompt-51 lateral pairs 44<->83 N+S
   for (const site of s.sites) {
     assert.equal(site.type, SITE_RELAY);
     assert.equal(site.owner, SITE_NEUTRAL);

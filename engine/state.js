@@ -154,6 +154,14 @@ const RELAY_CELLS = [
   { cellX: 58, cellY: 63 },
   { cellX: 69, cellY: 63 },
   { cellX: 95, cellY: 63 },
+  // Prompt-51 ruling (BF2 study): LATERAL pairs on the trail loops — the
+  // corridor gains flanking objectives so a losing team can back-cap and
+  // the front thins enough for standard runs to find their windows.
+  // Appended so road-relay site ids 0-3 stay pinned.
+  { cellX: 44, cellY: 40 },
+  { cellX: 83, cellY: 40 },
+  { cellX: 44, cellY: 86 },
+  { cellX: 83, cellY: 86 },
 ];
 
 // 11M: per-profile layout — what differs between maps. Spawns and bases
@@ -204,6 +212,11 @@ function createBases() {
 export const DEFAULT_RULES = Object.freeze({
   mpgMinOperable: 6, // Slow Manufacture triggers below this many operable
   mpgTicks: 900,     // ...and rebuilds on this cadence
+  // 13H hybrid ticket bleed (prompt-51): relay majority drains the enemy
+  // pool 1 ticket per bleed cadence; empty pool = loss; horn backstop.
+  ticketPool: 300,
+  ticketBleedTicks: 20,  // 2 s per ticket at 10 Hz
+  ticketMajority: 5,     // of the 8 frontier relays; >= half+1 either map
 });
 
 // 13G (playtest 6.7 ruling): named difficulty presets over the session
@@ -211,9 +224,9 @@ export const DEFAULT_RULES = Object.freeze({
 // default session can never drift. Easier = rebuild sooner and while
 // stronger; harder = only a gutted team rebuilds, and slowly.
 export const RULE_PRESETS = Object.freeze({
-  easy: Object.freeze({ mpgMinOperable: 8, mpgTicks: 600 }),
+  easy: Object.freeze({ mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5 }),
   normal: DEFAULT_RULES,
-  hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500 }),
+  hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5 }),
 });
 
 export function rulesForPreset(name) {
@@ -262,6 +275,10 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     standards, // 8A: physical Command Standards
     mapProfile: typeof mapArg === "string" ? mapArg : "frontier_corridor", // 11M
     rules: { ...DEFAULT_RULES, ...(rules ?? {}) }, // 13F: hashed session rules
+    tickets: [
+      (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
+      (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
+    ], // 13H: per-team pools, hashed
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     mines: [], // 9E: deployed mines

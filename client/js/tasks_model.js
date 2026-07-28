@@ -77,11 +77,16 @@ export function tasksFor(view, myOperatorId = null) {
     if (a.state !== 2 && a.state !== 3) continue;
     if (a.recoverTimer > 0) continue;
     if (myAsset && a.towedBy === myAsset.id) {
-      // 11U: you're on it — the card flips to in-progress.
+      // 11U: you're on it — the card flips to in-progress. Playtest-7
+      // item 18: the card TARGETS THE DROPOFF (your base repair bay),
+      // so the golden ring marks where the haul must land.
+      const home = (view?.bases ?? []).find((b) => b.team === myAsset.team);
       tasks.push({
-        kind: "towing_now", priority: 2, mine: true,
+        kind: "towing_now", priority: 2, mine: true, dropoff: true,
         label: t("task.towing_now", { id: a.id }),
-        cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "recovery_in_progress",
+        cellX: home ? home.x + ((home.width / 2) | 0) : cellOf(a.x),
+        cellY: home ? home.y + ((home.height / 2) | 0) : cellOf(a.y),
+        ping: "recovery_in_progress",
       });
     } else if (a.towedBy === -1) {
       tasks.push({

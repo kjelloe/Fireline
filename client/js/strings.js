@@ -132,7 +132,7 @@ export const CATALOGS = {
     "win.elimination": "enemy force eliminated",
     "win.domination": "all relays dominated",
     "win.points": "time limit — points decide",
-    "win.standard": "Command Standard captured",
+    "win.tickets": "Ticket pool depleted — the front collapsed", "win.standard": "Command Standard captured",
     "win.unknown": "unknown",
     // ── briefing ──
     "brief.fight_for": "You fight for {name}.",
@@ -351,7 +351,7 @@ export const CATALOGS = {
     "win.elimination": "fiendens styrke utslettet",
     "win.domination": "alle reléer dominert",
     "win.points": "tidsfrist — poengene avgjør",
-    "win.standard": "kommandostandarten erobret",
+    "win.tickets": "Billettreserven tom — fronten kollapset", "win.standard": "kommandostandarten erobret",
     "win.unknown": "ukjent",
     "brief.fight_for": "Du kjemper for {name}.",
     "brief.win": "SEIER: en KOMMANDOVOGN må ta fiendens standart (høy fane) hjem mens din egen standart er trygg. Lastebiler tauer vrak; alle eskorterer.",

@@ -112,7 +112,11 @@ test("13F session rules: defaults change nothing; custom rules change the law", 
   const { MPG_MIN_OPERABLE, MPG_TICKS } = await import("../engine/reducer.js");
 
   // The exported constants and the default rules must never drift apart.
-  assert.deepEqual(DEFAULT_RULES, { mpgMinOperable: MPG_MIN_OPERABLE, mpgTicks: MPG_TICKS });
+  // (13H added the ticket law to the session rules.)
+  assert.deepEqual(DEFAULT_RULES, {
+    mpgMinOperable: MPG_MIN_OPERABLE, mpgTicks: MPG_TICKS,
+    ticketPool: 300, ticketBleedTicks: 20, ticketMajority: 5,
+  });
   const plain = createInitialState(42, "frontier_corridor");
   const explicit = createInitialState(42, "frontier_corridor", { ...DEFAULT_RULES });
   assert.equal(hashState(plain), hashState(explicit), "defaults are byte-identical");

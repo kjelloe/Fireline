@@ -82,6 +82,8 @@ const eventFeed = [];
 let liveVfx = [];
 // 14C motion pass: cues (recoil/tracer/dust) + per-hull dust bookkeeping.
 let liveMotion = [];
+let spawnRingUntil = 0; // playtest-7 item 20: green locator ring after respawn
+let spawnRingMesh = null;
 const motionMeshes = new Map(); // tracer/dust cue -> Mesh
 const dustTrack = new Map(); // assetId -> { x, z, lastEmitMs }
 const vfxMeshes = new Map(); // effect object -> Mesh
@@ -710,6 +712,7 @@ function handleEvents(events) {
       autoSelectSent = false; // pick a fresh garage asset automatically
       mySelectedAssetId = null;
       freeCam.followMode(true);
+      spawnRingUntil = performance.now() + 3000; // item 20: "you are HERE"
     }
     // 10B: arm the Enter-confirm retry for a consequential takeover.
     if (e.type === "rejected" && e.reason === "takeover needs confirmation") {
@@ -720,6 +723,7 @@ function handleEvents(events) {
   }
 }
 
+let endCountdown = null; // playtest-7 item 16: live countdown + fadeout
 function showEndScreen() {
   const view = interpolator.latest();
   const summary = summarizeGameOver(view, joined?.team);
@@ -731,12 +735,35 @@ function showEndScreen() {
     (honors.length ? "\n\nHONORS\n" + honors.join("\n") : "");
   document.getElementById("end-scores").innerText =
     `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
-  document.getElementById("end-next").innerText = summary.nextWarText;
+  el.style.opacity = "1";
+  el.style.transition = "";
   el.style.display = "flex";
+  // Item 16: a REAL countdown (postgame is 30 s of server ticks), then a
+  // gentle fade so the next war's opening isn't a hard cut.
+  if (endCountdown) clearInterval(endCountdown);
+  let secs = 30;
+  const nextEl = document.getElementById("end-next");
+  nextEl.innerText = t("end.next_war", { s: secs });
+  endCountdown = setInterval(() => {
+    secs -= 1;
+    if (secs > 0) {
+      nextEl.innerText = t("end.next_war", { s: secs });
+    } else {
+      nextEl.innerText = t("end.next_war", { s: 0 });
+      el.style.transition = "opacity 1.2s";
+      el.style.opacity = "0";
+      clearInterval(endCountdown);
+      endCountdown = null;
+    }
+  }, 1000);
 }
 
 function hideEndScreen() {
-  document.getElementById("end-overlay").style.display = "none";
+  const el = document.getElementById("end-overlay");
+  if (endCountdown) { clearInterval(endCountdown); endCountdown = null; }
+  el.style.transition = "";
+  el.style.opacity = "1";
+  el.style.display = "none";
 }
 
 function pushEvent(text) {
@@ -1045,6 +1072,29 @@ function updateVfx(nowMs) {
 }
 
 // 14C: tracers + dust. Recoil rides the asset upsert; this owns the rest.
+// Item 20: a pulsing green ring rides YOUR hull for 3 s after respawn.
+function updateSpawnRing(nowMs, view) {
+  const active = nowMs < spawnRingUntil && joined;
+  const me = active
+    ? view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId) : null;
+  if (!me) {
+    if (spawnRingMesh) { scene.remove(spawnRingMesh); spawnRingMesh = null; }
+    return;
+  }
+  if (!spawnRingMesh) {
+    spawnRingMesh = new THREE.Mesh(
+      new THREE.RingGeometry(0.7, 0.92, 28),
+      new THREE.MeshBasicMaterial({ color: 0x59e07a, transparent: true, side: THREE.DoubleSide }));
+    spawnRingMesh.rotation.x = -Math.PI / 2;
+    scene.add(spawnRingMesh);
+  }
+  const remain = (spawnRingUntil - nowMs) / 3000;
+  const pulse = 1 + 0.18 * Math.sin(nowMs / 120);
+  spawnRingMesh.scale.set(pulse, pulse, pulse);
+  spawnRingMesh.material.opacity = Math.max(0.15, remain);
+  spawnRingMesh.position.set(me.x / CELL + 0.5, 0.06, me.y / CELL + 0.5);
+}
+
 function updateMotion(nowMs) {
   // Dust: a puff behind any hull that is actually rolling.
   for (const [id, mesh] of assetMeshes) {
@@ -1146,7 +1196,15 @@ function updateObjectiveStrip(view) {
 // (playtest: "did not understand what was relay").
 function makeTextSprite(text, colorHex) {
   // 11U: up to two lines ("\n"-separated) — details and countdowns fit.
-  const lines = String(text).split("\n").slice(0, 2);
+  let lines = String(text).split("\n").slice(0, 2);
+  // Playtest-7 item 19: a long single-liner wraps at the nearest space
+  // around char 18 so unit labels stay readable over the battlefield.
+  if (lines.length === 1 && lines[0].length > 18) {
+    const s = lines[0];
+    let cut = s.lastIndexOf(" ", 18);
+    if (cut < 8) cut = s.indexOf(" ", 18);
+    if (cut > 0) lines = [s.slice(0, cut), s.slice(cut + 1)];
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 512; canvas.height = lines.length > 1 ? 160 : 96;
   const ctx = canvas.getContext("2d");
@@ -1543,7 +1601,9 @@ function updateTargetRings(view) {
   if (joined && !joined.spectator) {
     const tasks = tasksFor(view, joined.operatorId).slice(0, 5);
     for (const task of tasks) {
-      if (task.distance > 15 || task.mine) continue; // close in first
+      // Dropoff cards (item 18) ring their DESTINATION at any distance;
+      // other cards ring only when you close within 15 cells.
+      if (!task.dropoff && (task.distance > 15 || task.mine)) continue;
       live.add(task.id);
       let ring = targetRings.get(task.id);
       if (!ring) {
@@ -2012,6 +2072,7 @@ function renderBattlefield() {
   updateHealthBars(view);
   updateVfx(performance.now());
   updateMotion(performance.now());
+  updateSpawnRing(performance.now(), interpolator.latest());
   renderMinimap(interpolator.latest());
 
   // 8G: follow tracks your asset; manual pan/zoom takes over seamlessly.

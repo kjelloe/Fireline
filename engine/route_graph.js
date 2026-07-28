@@ -37,11 +37,12 @@ const GRAPHS = Object.freeze({
       [32, 63], [58, 63], [69, 63], [95, 63],    // 2-5 road relays
       [24, 40], [58, 40], [69, 40], [103, 40],   // 6-9 north trail
       [24, 86], [58, 86], [69, 86], [103, 86],   // 10-13 south trail
+      [44, 40], [83, 40], [44, 86], [83, 86],    // 14-17 lateral relays (prompt 51)
     ],
     e: [
       [0, 2, "road"], [2, 3, "road"], [3, 4, "road"], [4, 5, "road"], [5, 1, "road"],
-      [6, 7, "trail"], [7, 8, "trail"], [8, 9, "trail"],
-      [10, 11, "trail"], [11, 12, "trail"], [12, 13, "trail"],
+      [6, 14, "trail"], [14, 7, "trail"], [7, 8, "trail"], [8, 15, "trail"], [15, 9, "trail"],
+      [10, 16, "trail"], [16, 11, "trail"], [11, 12, "trail"], [12, 17, "trail"], [17, 13, "trail"],
       [0, 6, "open"], [0, 10, "open"], [1, 9, "open"], [1, 13, "open"],
       [6, 2, "open"], [9, 5, "open"], [10, 2, "open"], [13, 5, "open"],
       [7, 3, "open"], [8, 4, "open"], [11, 3, "open"], [12, 4, "open"],

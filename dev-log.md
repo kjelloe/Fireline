@@ -2103,3 +2103,46 @@ as coup de grâce), then the tempo re-measure.
 
 Suite 501/501. Gate: competitive, dominations appearing (waves feed
 decisive pushes). Tagged slice-11x.
+
+## slice-11y2 — frontier lateral relay pairs (2026-07-28, prompt-51)
+
+Two mirrored pairs on the trail loops — (44,40)/(83,40) and
+(44,86)/(83,86); 8 relays total, appended so road-relay site ids 0-3
+stay pinned. Route graph gains the four nodes (trail spans split);
+mirror-closure test covers them automatically. 1A repinned v36 (sites
+are hashed). The corridor becomes a conquest WEB: laterals-only sweep
+restored standard endings to 25% (from collision's 5%) — the front
+thins exactly as the BF2 study predicted, and escorted raids find
+their windows.
+
+## slice-13h — hybrid ticket bleed (2026-07-28, prompt-51 ruling)
+
+Relay MAJORITY (rules.ticketMajority, default 5 of 8) drains the enemy
+pool (rules.ticketPool, default 300) one ticket per cadence
+(rules.ticketBleedTicks, default 20 = 2 s); empty pool = WIN_TICKETS
+(reason 5); every earlier condition untouched — hybrid, not
+replacement. Pools are HASHED state, ride the session rules (presets:
+easy 400 / hard 250), silent per-tick (repin discipline), and travel
+in the view for UI. 1A repinned v37. describeWinReason + en/no strings
++ analyzer reason table updated.
+
+CLEAN ACCEPTANCE (300+300, laterals+tickets+collision+escorts):
+aggregate 48.8% A (fair), worlds structurally match, undecided 2%/0.7%
+(from 8%), median war ~14.5k ticks (from pinned 18k), endings split
+tickets ~54% / standard ~24% / horn ~22% — three live victory paths,
+tows 20/war. The pacing revolution the BF2 study promised.
+
+## slice-15e — playtest-7 client batch (2026-07-28)
+
+- item 16: victory screen runs a REAL 30 s countdown then fades out
+  (reveals the postgame world; s_war_reset clears cleanly).
+- item 18: hauling mission cards target the DROPOFF — towing_now aims
+  at your base repair bay and the golden ring marks it at any range.
+- item 19: long unit labels wrap at the nearest space around char 18.
+- item 20: respawn already recentered (11U); adds the 3 s pulsing green
+  locator ring on your hull.
+- item 12 (move-marker direction): the travel-oriented rotation shipped
+  in 14j' and reads correct — flagged for VISUAL verdict next playtest
+  before touching working code.
+
+Suite 506/506. Smoke OK.

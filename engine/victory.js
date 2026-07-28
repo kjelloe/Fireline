@@ -7,6 +7,7 @@ export const WIN_ELIMINATION = 1;
 export const WIN_DOMINATION = 2;
 export const WIN_TIME_LIMIT = 3;
 export const WIN_STANDARD = 4; // 8C: the primary victory — flag captured
+export const WIN_TICKETS = 5;  // 13H: the enemy pool bled dry (prompt-51 hybrid)
 
 export const PHASE_RUNNING = 0;
 export const PHASE_OVER = 1;
@@ -41,6 +42,15 @@ export function checkVictory(state) {
 
   if (state.dominationTeam !== -1 && state.dominationTicks >= DOMINATION_HOLD_TICKS) {
     return { winner: state.dominationTeam, reason: WIN_DOMINATION };
+  }
+
+  // 13H hybrid ticket bleed (prompt-51 ruling): relay MAJORITY drains the
+  // enemy pool; an empty pool loses the war. The horn stays as backstop.
+  if (state.tickets) {
+    const [ta, tb] = state.tickets;
+    if (ta <= 0 && tb <= 0) return { winner: -1, reason: WIN_TICKETS };
+    if (ta <= 0) return { winner: 1, reason: WIN_TICKETS };
+    if (tb <= 0) return { winner: 0, reason: WIN_TICKETS };
   }
 
   if (state.tick >= TIME_LIMIT_TICKS) {

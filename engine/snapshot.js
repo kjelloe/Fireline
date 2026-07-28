@@ -54,6 +54,7 @@ export function hashState(state) {
     w.writeI32LE(st.droppedTimer); // added 9A
   }
   for (const m of (state.manufacture ?? [0, 0])) w.writeI32LE(m); // added 9D
+  for (const t of (state.tickets ?? [0, 0])) w.writeI32LE(t); // added 13H
   for (const d of (state.downed ?? [])) { // added 9B
     w.writeI32LE(d.operatorId); w.writeI32LE(d.team);
     w.writeI32LE(d.x); w.writeI32LE(d.y);

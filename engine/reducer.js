@@ -97,6 +97,7 @@ function copyState(state) {
     sites: state.sites.map((s) => ({ ...s })),
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
+    tickets: state.tickets ? [...state.tickets] : state.tickets, // 13H
     rules: { ...state.rules }, // 13F
     manufacture: [...state.manufacture],
     mines: state.mines.map((m) => ({ ...m })),
@@ -1166,6 +1167,21 @@ function applyAdvanceTick(next) {
       asset.ammo = restored.ammo;
       asset.fuel = restored.fuel;
       next.events.push({ type: "resupplied", assetId: asset.id });
+    }
+  }
+  // 13H ticket bleed (hybrid, prompt-51): a relay MAJORITY drains the
+  // enemy pool one ticket per cadence. Silent (no per-tick events — the
+  // repin discipline); the pools are hashed and ride the view for UI.
+  if (next.tickets) {
+    const bleedTicks = next.rules?.ticketBleedTicks ?? 20;
+    const majority = next.rules?.ticketMajority ?? 5;
+    if (bleedTicks > 0 && next.tick % bleedTicks === 0) {
+      const owned = [0, 0];
+      for (const site of next.sites) {
+        if (site.owner === 0 || site.owner === 1) owned[site.owner] += 1;
+      }
+      if (owned[0] >= majority && next.tickets[1] > 0) next.tickets[1] -= 1;
+      if (owned[1] >= majority && next.tickets[0] > 0) next.tickets[0] -= 1;
     }
   }
   // Victory pass (3E): track domination hold, then check every condition.

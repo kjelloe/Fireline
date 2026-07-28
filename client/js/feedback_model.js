@@ -29,7 +29,7 @@ const WIN_REASON_TEXT = Object.freeze({
 export function describeWinReason(reason) {
   const keys = {
     0: "win.interrupted", 1: "win.elimination", 2: "win.domination",
-    3: "win.points", 4: "win.standard",
+    3: "win.points", 4: "win.standard", 5: "win.tickets",
   };
   return t(keys[reason] ?? "win.unknown");
 }

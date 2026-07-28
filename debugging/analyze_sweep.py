@@ -11,7 +11,7 @@ import csv
 import statistics
 import sys
 
-REASONS = {"1": "elimination", "2": "domination", "3": "points-horn", "4": "standard", "0": "undecided"}
+REASONS = {"1": "elimination", "2": "domination", "3": "points-horn", "4": "standard", "5": "tickets", "0": "undecided"}
 
 
 def load(path):

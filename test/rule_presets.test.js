@@ -16,9 +16,11 @@ test("normal preset IS the default law — byte-identical, forever", () => {
   assert.equal(RULE_PRESETS.normal, DEFAULT_RULES, "same frozen object, not a copy");
 });
 
-test("preset numbers as ratified: easy 8/600, hard 4/1500", () => {
-  assert.deepEqual(RULE_PRESETS.easy, { mpgMinOperable: 8, mpgTicks: 600 });
-  assert.deepEqual(RULE_PRESETS.hard, { mpgMinOperable: 4, mpgTicks: 1500 });
+test("preset numbers as ratified: easy 8/600, hard 4/1500 (+13H ticket law)", () => {
+  assert.deepEqual(RULE_PRESETS.easy,
+    { mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5 });
+  assert.deepEqual(RULE_PRESETS.hard,
+    { mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5 });
 });
 
 test("rulesForPreset resolves names and refuses garbage", () => {
