@@ -39,8 +39,8 @@ for (let seed = 1; seed <= COUNT; seed++) {
     // the AI patrols swap sides (aiMirrored). In a bias-free engine the
     // outcome distribution must be the exact flip of the normal run;
     // any residue that survives reflection is directional arithmetic.
-    // Known caveat: MPG rebuilds use the unmirrored spawn table (rare;
-    // only fires below 6 operable) — treat MPG-heavy wars as noise.
+    // MPG rebuilds are base-derived since the collision battery exposed
+    // the old constant-table caveat — mirrored worlds rebuild honestly.
     const s = server.state;
     const W = s.map.width;
     const cells = s.map.cells;

@@ -603,6 +603,31 @@ function applyTowOrder(next, command) {
 const DIR_COS = [256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98, 0, 98, 181, 237];
 const DIR_SIN = [0, 98, 181, 237, 256, 237, 181, 98, 0, -98, -181, -237, -256, -237, -181, -98];
 
+// 17 (playtest 7 ruling): body collision — HARD blocking against enemies,
+// SOFT compression through friends. Only CLOSING moves are constrained
+// (moving apart is always legal — the bridge-deadlock escape); wrecks and
+// downed crews don't collide in v1 (tow trucks must reach wrecks).
+export const ENEMY_BLOCK_RADIUS = 192; // world units (0.75 cell)
+export const FRIEND_SOFT_RADIUS = 128; // closing inside this = half speed
+
+// 0 = blocked, 1 = full step, 2 = half step (friendly compression).
+function collisionVerdict(assets, self, nx, ny) {
+  let half = false;
+  for (const o of assets) {
+    if (o.id === self.id) continue;
+    if (o.state === ASSET_DISABLED || o.state === ASSET_SALVAGED) continue;
+    const dOld = Math.max(absI32(o.x - self.x), absI32(o.y - self.y));
+    const dNew = Math.max(absI32(o.x - nx), absI32(o.y - ny));
+    if (dNew >= dOld) continue; // separating — never constrained
+    if (o.team !== self.team) {
+      if (dNew < ENEMY_BLOCK_RADIUS) return 0;
+    } else if (dNew < FRIEND_SOFT_RADIUS) {
+      half = true;
+    }
+  }
+  return half ? 2 : 1;
+}
+
 // Heading -> 16-direction snap. A heading EXACTLY between two sectors
 // (h ≡ 8 mod 16) used to round clockwise, which is not mirror-safe: 248
 // snapped to pure east (cos 256) while its mirror 136 snapped to a
@@ -648,7 +673,7 @@ function turnToward(heading, desiredBrads, turnRate) {
 // 11L: tank-style direct drive. A/D pivot at the chassis turnRate; W
 // drives along the heading at chassis speed, S reverses at half; every
 // speed multiplier stepAsset honors applies here too. Map edges clamp.
-function driveStep(asset, map, supplied, carrying, towing) {
+function driveStep(asset, map, supplied, carrying, towing, others) {
   const stats = getUnitStats(asset.type);
   if (asset.driveTurn !== 0) {
     asset.heading = (asset.heading + asset.driveTurn * stats.turnRate) & 255;
@@ -672,13 +697,19 @@ function driveStep(asset, map, supplied, carrying, towing) {
   const maxY = (map.height - 1) * 256 + 255;
   // truncDiv: mirror-symmetric stepping (floor rounded -inf-ward and gave
   // west/north movers a free unit on diagonals — the riverline east edge).
-  asset.x = Math.min(maxX, Math.max(0, asset.x + sign * truncDivI32(step * DIR_COS[dir], 256)));
-  asset.y = Math.min(maxY, Math.max(0, asset.y + sign * truncDivI32(step * DIR_SIN[dir], 256)));
+  let sdx = sign * truncDivI32(step * DIR_COS[dir], 256);
+  let sdy = sign * truncDivI32(step * DIR_SIN[dir], 256);
+  const v = collisionVerdict(others, asset,
+    Math.min(maxX, Math.max(0, asset.x + sdx)), Math.min(maxY, Math.max(0, asset.y + sdy)));
+  if (v === 0) return; // 17: hard-blocked by an enemy hull
+  if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
+  asset.x = Math.min(maxX, Math.max(0, asset.x + sdx));
+  asset.y = Math.min(maxY, Math.max(0, asset.y + sdy));
   asset.targetX = asset.x;
   asset.targetY = asset.y;
 }
 
-function stepAsset(asset, map, supplied, carrying, towing) {
+function stepAsset(asset, map, supplied, carrying, towing, others) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
@@ -696,6 +727,7 @@ function stepAsset(asset, map, supplied, carrying, towing) {
 
   // Close enough: snap and stop (prevents orbiting a near target).
   if (absI32(dx) + absI32(dy) <= step) {
+    if (collisionVerdict(others, asset, asset.targetX, asset.targetY) === 0) return; // 17
     asset.x = asset.targetX;
     asset.y = asset.targetY;
     asset.state = ASSET_IDLE;
@@ -711,8 +743,13 @@ function stepAsset(asset, map, supplied, carrying, towing) {
   if (off > 32) return;
 
   const dir = dirForHeading(asset.heading);
-  asset.x += truncDivI32(step * DIR_COS[dir], 256);
-  asset.y += truncDivI32(step * DIR_SIN[dir], 256);
+  let sdx = truncDivI32(step * DIR_COS[dir], 256);
+  let sdy = truncDivI32(step * DIR_SIN[dir], 256);
+  const v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
+  if (v === 0) return; // 17: hard-blocked by an enemy hull; keep trying
+  if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
+  asset.x += sdx;
+  asset.y += sdy;
 
   if (asset.x === asset.targetX && asset.y === asset.targetY) {
     asset.state = ASSET_IDLE;
@@ -723,7 +760,14 @@ function applyAdvanceTick(next) {
   next.tick += 1;
   // A finished war only counts time; nothing moves, fights, or captures.
   if (next.phase === PHASE_OVER) return next;
-  for (const asset of next.assets) {
+  // 17: with body collision, whoever steps first claims contact-line
+  // ground — alternate iteration direction by tick parity so neither
+  // team owns the first move (the Q18 lesson, physics edition). Timer
+  // decrements in this loop are per-asset and order-independent.
+  const marchOrder = (next.tick & 1) === 0
+    ? next.assets
+    : [...next.assets].reverse();
+  for (const asset of marchOrder) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
     // 12B: hardpoint legs working — immobile; announce completion.
@@ -747,7 +791,8 @@ function applyAdvanceTick(next) {
       driveStep(
         asset, next.map, inSupply(next, asset),
         assetCarries(next, asset.id) !== null,
-        towedWreck(next, asset.id) !== null
+        towedWreck(next, asset.id) !== null,
+        next.assets
       );
       if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
       continue;
@@ -759,7 +804,8 @@ function applyAdvanceTick(next) {
     stepAsset(
       asset, next.map, inSupply(next, asset),
       assetCarries(next, asset.id) !== null,
-      towedWreck(next, asset.id) !== null
+      towedWreck(next, asset.id) !== null,
+      next.assets
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
@@ -1063,7 +1109,7 @@ function applyAdvanceTick(next) {
         a.towedBy === -1 && a.recoverTimer === 0
     );
     if (!wreck) continue; // hold at threshold until a hull is available
-    const spawn = fieldSpawnFor(wreck.id);
+    const spawn = fieldSpawnFor(wreck.id, next.bases); // base-derived: mirror-honest
     wreck.state = ASSET_IDLE;
     wreck.hp = floorDivI32(getUnitStats(wreck.type).hp, 2);
     wreck.x = cellToWorld(spawn.cellX);

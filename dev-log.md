@@ -2047,3 +2047,31 @@ ACCEPTANCE (all local, 300-war scale):
   route-aware exact expectations (test/helpers.js expectedStep).
 
 Suite 490/490 (x2). Tagged slice-13c.
+
+## slice-17 — body collision (2026-07-28, playtest 7 ruling)
+
+HARD blocking vs enemies (192 units), SOFT half-speed compression
+through friends (128), CLOSING moves only — separating is always legal
+(the bridge-deadlock escape); wrecks/downed don't collide (v1). March
+order alternates by tick parity (no first-mover team — the Q18 lesson,
+physics edition). No 1A repin (the fixture's hulls never close).
+
+The battery exposed and killed a long-documented harness caveat: MPG
+rebuilds used the unmirrored constant spawn table, so mirrored-world
+rebuilds spawned behind enemy lines — collision's longer wars made it
+load-bearing (47 phantom dominations in one battery). Rebuild position
+is now BASE-DERIVED from state (mirror-honest by construction);
+type/row stay table-pinned.
+
+Acceptance (300+300 frontier, honest mirror): aggregate 51.4% (fair),
+outcome mixes match across worlds (1 vs 1 domination), tows ~10/war.
+HONEST REGRESSIONS, fixes already ruled and next in queue: standard
+endings collapsed to ~5% (solo raids die to body-blocks — exactly the
+playtest-11 diagnosis; escort doctrine is the fix) and grind wars lean
+west ~60/40 (re-measure after escorts + lateral relays + ticket bleed;
+collision goes dormant behind a flag if the sequence doesn't recover).
+
+ALSO: specs 07 (rulings register), 08 (fairness & symmetry doctrine),
+09 (AI regency compendium) — the undocumented-design gap closed.
+
+Suite 495/495 (x2). Tagged slice-17.

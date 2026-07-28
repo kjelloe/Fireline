@@ -93,20 +93,28 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
 }
 
 // Deterministic original spawn (cell + type) for any field asset id — used
-// by the Slow Manufacture rebuild (9D).
-export function fieldSpawnFor(id) {
+// by the Slow Manufacture rebuild (9D). When `bases` (from live state) is
+// given, the rebuild column derives from the team's ACTUAL base — so a
+// world-reflected war rebuilds inside its (mirrored) base instead of at
+// the unmirrored constant columns. That constant-table shortcut was the
+// documented MIRROR-sweep caveat; collision's longer wars made it
+// load-bearing (rebuilds spawning behind enemy lines → 47 phantom
+// dominations in one 300-war mirrored battery). Type/row still come from
+// the pinned tables — roster identity never moves.
+export function fieldSpawnFor(id, bases = null) {
   // Layout: 0-3 team A originals, 4-7 team B originals, 8-19 team A
   // reserves, 20-31 team B reserves (see createFieldAssets).
+  const team = id < 8 ? (id < 4 ? 0 : 1) : (id < 20 ? 0 : 1);
+  const base = bases?.find?.((b) => b.team === team);
+  const centerCol = base ? base.x + ((base.width / 2) | 0) : null;
   if (id < 8) {
-    const team = id < 4 ? 0 : 1;
     const slot = id % 4;
-    const spawnX = team === 0 ? TEAM_A_SPAWN_X : TEAM_B_SPAWN_X;
+    const spawnX = centerCol ?? (team === 0 ? TEAM_A_SPAWN_X : TEAM_B_SPAWN_X);
     return { team, type: SPAWN_TYPES[slot], cellX: spawnX, cellY: SPAWN_ROWS[slot] };
   }
-  const team = id < 20 ? 0 : 1;
   const slot = team === 0 ? id - 8 : id - 20;
   const cols = team === 0 ? TEAM_A_RESERVE_COLS : TEAM_B_RESERVE_COLS;
-  const col = cols[(slot / RESERVE_ROWS.length) | 0];
+  const col = centerCol ?? cols[(slot / RESERVE_ROWS.length) | 0];
   const row = RESERVE_ROWS[slot % RESERVE_ROWS.length];
   return { team, type: RESERVE_TYPES_BY_TEAM[team][slot % 12], cellX: col, cellY: row };
 }

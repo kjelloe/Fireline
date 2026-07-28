@@ -74,8 +74,11 @@ test("1I enemy recapture changes owner back", () => {
   }
   // Both assets share the cell; asset order decides, and asset 0 (team 0)
   // comes first, so ownership flips to team 1 only after asset 0 leaves —
-  // move asset 0 away to let the recapture land.
-  s = joinSelectMove(s, 0, 0, 0, 20, 20);
+  // move asset 0 away to let the recapture land. Route it PERPENDICULAR
+  // to the attacker (17: driving straight through an enemy hull is now
+  // body-blocked; in live wars guns resolve that standoff, but this
+  // reducer-only test has no shooters).
+  s = joinSelectMove(s, 0, 0, 0, 3, 20);
   let flipped = false;
   for (let i = 0; i < 200 && !flipped; i++) {
     s = apply(s, { type: "advance_tick" });

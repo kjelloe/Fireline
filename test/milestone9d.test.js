@@ -38,9 +38,11 @@ test("9D a depleted team rebuilds its oldest wreck at the original spawn", () =>
   const rebuilt = s.events.find((e) => e.type === "asset_manufactured");
   assert.deepEqual(rebuilt, { type: "asset_manufactured", assetId: 8, team: 0 },
     "lowest wrecked id rebuilds first");
-  const spawn = fieldSpawnFor(8);
+  // Rebuilds spawn base-derived now (mirror-honest — the MIRROR-sweep
+  // caveat fix): position comes from the team's ACTUAL base in state.
+  const spawn = fieldSpawnFor(8, s.bases);
   assert.equal(s.assets[8].state, ASSET_IDLE);
-  assert.equal(s.assets[8].x, cellToWorld(spawn.cellX), "back at original spawn");
+  assert.equal(s.assets[8].x, cellToWorld(spawn.cellX), "back at the team's base");
   assert.equal(s.assets[8].hp, 60, "half of the carrier's 120 hull");
   assert.equal(s.manufacture[0], 0, "timer reset");
 });
