@@ -232,6 +232,37 @@ candidate to ship EXPERIMENTAL-WITH-PREMIUM: a measured lean no longer
 disqualifies a map outright if it is disclosed and the disadvantaged
 side still plays well.
 
+## 4b. Blackwood — the 600-war battery verdict (2026-07-29)
+
+The first promotion battery to actually run. 300 normal + 300 mirrored,
+on the PC, at the pre-18E commit (valid: blackwood has no blocking
+terrain, so wall sliding is inert there).
+
+| run | A | B | undecided | A-rate of decided |
+|---|---|---|---|---|
+| normal | 171 | 117 | 12 | **59.4%** |
+| mirrored | 125 | 162 | 13 | 43.6% |
+
+The edge FLIPS with the mirror, so by specs/08 this is the
+GEOMETRY/side class, not team or faction: whoever holds the WEST wins
+~59/41. Aggregate across both worlds is 51.5% — i.e. the engine is
+equivariant (the mirror maps the outcome onto its reflection almost
+exactly), but the MAP hands the west side a real advantage that a
+player, who is side-bound in the normal world, will feel every war.
+Undecided 4% is inside the bar; pacing is fine.
+
+This is the same category as riverline's documented lean —
+engine-fair, map-unfair — and it cannot come from terrain, which is
+mirror-symmetric by construction and asserted cell-by-cell. The
+suspects are the non-terrain asymmetries: relay id order in tie-breaks,
+patrol phase offsets keyed to assetId, and spawn-row chassis order.
+
+DECISION: blackwood does NOT pass the 45-55 band, so it stays
+EXPERIMENTAL. Per the prompt-68 ruling it is now a candidate to ship
+experimental-WITH-PREMIUM (the east side earns the underdog bonus)
+while the west-lean cause is chased — the lean is disclosed, the map is
+otherwise healthy, and the disadvantaged side is far from hopeless.
+
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
 1. **archipelago** — island chain, causeways + water highways; the
