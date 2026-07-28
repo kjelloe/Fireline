@@ -9,7 +9,8 @@ import { AIRegency } from "../engine/ai_regency.js";
 import { GameServer } from "../engine/server.js";
 import { STD_DROPPED } from "../engine/standards.js";
 import { UNIT_BIKE, UNIT_MORTAR } from "../engine/units.js";
-import { sandbox, joinAndSelect } from "./helpers.js";
+import { sandbox, joinAndSelect, expectedStep } from "./helpers.js";
+import { getUnitStats } from "../engine/units.js";
 
 function regencyFor(...operatorIds) {
   const ai = new AIRegency({ fixedAgents: false });
@@ -88,8 +89,14 @@ test("11V light chassis patrol the trails; heavy chassis keep the road", () => {
   const HEAVY_A = [[48, 56], [60, 56], [58, 63], [56, 70]];
   const scoutTarget = targetFor(18); // op 18 drives asset 2 (scout)
   const tankTarget = targetFor(16);  // op 16 drives asset 0 (tank)
-  assert.ok(scoutTarget && LIGHT_A.some(([x, y]) => x === scoutTarget[0] && y === scoutTarget[1]),
+  // 13C: patrol legs route — accept a patrol point OR its routed first
+  // step from the spawn cell.
+  const acceptable = (finals, spawn, stats) => finals.flatMap((f) =>
+    [f, expectedStep("frontier_corridor", spawn, f, stats)]);
+  const scoutOk = acceptable(LIGHT_A, [7, 60], getUnitStats(1));
+  assert.ok(scoutTarget && scoutOk.some(([x, y]) => x === scoutTarget[0] && y === scoutTarget[1]),
     `scout rides the trails (${scoutTarget})`);
-  assert.ok(tankTarget && HEAVY_A.some(([x, y]) => x === tankTarget[0] && y === tankTarget[1]),
+  const tankOk = acceptable(HEAVY_A, [7, 56], getUnitStats(0));
+  assert.ok(tankTarget && tankOk.some(([x, y]) => x === tankTarget[0] && y === tankTarget[1]),
     `tank keeps the road (${tankTarget})`);
 });

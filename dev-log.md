@@ -1994,7 +1994,7 @@ Suite 492/492. Tagged branding-fireline.
 
 The playtest-7 directive ("UI buttons need acceptance tests that prove
 they trigger the right functions") built `tools/ui_acceptance.mjs`
-(Playwright: join, pan, click, assert через window.__mfDebug), and its
+(Playwright: join, pan, click, assert via window.__mfDebug), and its
 FIRST run caught item 14's root cause: #canvas-container sits at the END
 of body, so the three.js canvas painted OVER every absolute HUD element
 without an explicit z-index — center-on-me (and next-asset, settings,
@@ -2006,3 +2006,44 @@ Harness caveat documented in-file: headless SwiftShader renders
 unthrottled rAF, so the test viewport stays small to keep frames cheap.
 
 Suite 490/490. Smoke OK. UI acceptance OK. Tagged slice-15d.
+
+## slice-13c — THE ROUTE GRAPH (2026-07-28, wave-3 Track G centerpiece)
+
+AI movement rides a per-profile node/edge graph: hand tables from layout
+constants (mirror-closed, tested), deterministic O(n^2) Dijkstra with
+per-chassis edge costs (road 7 / trail 8 light · 20 heavy / open 10),
+water-barrier pricing so bridges beat fords, direct-skip under 14 cells,
+amphibious skips entirely (the river IS the Skimmer's road). Stateless
+consumption: routes recompute from the current cell each plan cycle;
+nextWaypoint scans from the end (never backtracks a mid-chain asset).
+
+EQUIVARIANCE, proven not hoped: dbg_route_equivariance enumerates 4800
+mirrored trips — 0 violations after two real chirality fixes: (1)
+nearest-node ties broke on lowest id, attaching west units to OUTER
+trail ends and east units to INNER ones; fixed with the off-axis rank
+(|2x-127| is mirror-invariant); (2) exact-rank ties are mirror-partner
+nodes where only a TRIP-keyed rule commutes — prefer the candidate on
+the trip origin's side. Same rank ladder applied to relay-seek ties.
+
+THE TOW-ECONOMY SAGA (how a movement slice became a doctrine lesson):
+routed roads marched trucks into the centre fight; team tow counts went
+85 -> 0 across 300 wars. Fix attempt #1 (rearguard stationing + roleTruck
+crewing) restored tows but the A/B bisection convicted rearguard of a
+~25pt WEST chirality (with-it 72/28, without-it 51/49 while tows BOOM at
+11.5/war) — truck SURVIVAL (the roleTruck rung) was the whole fix;
+rearguard is REMOVED, the bisection recorded here in its place.
+
+ACCEPTANCE (all local, 300-war scale):
+- frontier: 51.2% aggregate, no side lean, tows 11.5/war, 0% undecided,
+  standard endings ~50%, decisive-war p10 ~3000 ticks. The war finally
+  plays its own fantasy: roads carry assaults, trails carry scouts,
+  trucks live behind the line and haul wrecks home.
+- riverline: PERFECT mirror stats (flip 100.0%, aggregate exactly 50.0)
+  — but a west 73/27 side lean replaces the old east 58/42. Teams are
+  side-bound, so riverline stays an EXPERIMENTAL profile pending its
+  own graph-tuning campaign (ablation + equivariance harnesses ready).
+- 5-seed gate: mixed winners, tow/rescue/delivery all firing, fleet
+  advantage swings by seed. Four straight-line AI tests updated to
+  route-aware exact expectations (test/helpers.js expectedStep).
+
+Suite 490/490 (x2). Tagged slice-13c.

@@ -9,9 +9,15 @@ import { GameServer } from "../engine/server.js";
 import { STD_CARRIED, STD_AT_BASE } from "../engine/standards.js";
 import { angleDelta, smoothHeading } from "../client/js/heading.js";
 import { cellToWorld, worldToCellFloor } from "../shared/fixedmath.js";
+import { getUnitStats } from "../engine/units.js";
+import { expectedStep } from "./helpers.js";
 
 test("ai objective: the CARRIER raider is ordered onto the enemy standard (9A)", () => {
   const server = new GameServer({ mapSeed: 42, enableAi: true });
+  const carrierSpawn = [
+    worldToCellFloor(server.state.assets[8].x),
+    worldToCellFloor(server.state.assets[8].y),
+  ];
   server.step(); // joins
   server.step(); // first orders
   const enemyHome = server.state.standards[1];
@@ -19,10 +25,14 @@ test("ai objective: the CARRIER raider is ordered onto the enemy standard (9A)",
     (e) => e.cmd.type === "move_order" && e.cmd.operatorId === 24 // op 24 drives carrier 8
   );
   assert.ok(raiderMove, "carrier raider got a move order");
+  // 13C: the raid is a cross-map haul — the first order is the routed
+  // step toward the enemy home, computed the same way the AI does.
+  const step = expectedStep("frontier_corridor", carrierSpawn,
+    [enemyHome.homeCellX, enemyHome.homeCellY], getUnitStats(4));
   assert.deepEqual(
     { x: raiderMove.cmd.targetCellX, y: raiderMove.cmd.targetCellY },
-    { x: enemyHome.homeCellX, y: enemyHome.homeCellY },
-    "target is the enemy standard's home"
+    { x: step[0], y: step[1] },
+    "target is the routed step toward the enemy standard's home"
   );
   const scoutRaid = server.commandLog.find(
     (e) => e.cmd.type === "move_order" && e.cmd.operatorId === 18 &&

@@ -106,9 +106,11 @@ test("6D easy AI fires roughly half as often; hard AI pushes relays", () => {
   const hard = new GameServer({ mapSeed: 42, enableAi: true, aiDifficulty: AI_HARD });
   hard.step(); hard.step();
   const moves = hard.commandLog.filter((e) => e.cmd.type === "move_order");
+  // 13C: relay pushes route via the base-exit nodes (24/103 on the road)
+  // before the relay cells themselves — accept either form of the push.
   assert.ok(
-    moves.some((m) => [32, 63, 95].includes(m.cmd.targetCellX) && m.cmd.targetCellY === 63),
-    "hard difficulty targets relay cells"
+    moves.some((m) => [24, 32, 63, 95, 103].includes(m.cmd.targetCellX) && m.cmd.targetCellY === 63),
+    "hard difficulty pushes the relay line (directly or via the routed exit)"
   );
 });
 

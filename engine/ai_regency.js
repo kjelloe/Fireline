@@ -17,6 +17,7 @@ import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
 import { CMD_TRANSFER_CARGO } from "./commands.js"; // 13B
 import { computeVisible } from "./los.js";
+import { routeWaypoints, nextWaypoint } from "./route_graph.js";
 import { inFireRange } from "./combat.js";
 import { inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
@@ -106,12 +107,31 @@ function nearestUnownedRelay(state, asset) {
   const cellY = worldToCellFloor(asset.y);
   let best = null;
   let bestDist = Infinity;
+  // Tie-break MUST commute with the mirror (the 13C 72/28 lesson: lowest
+  // site id ties drifted BOTH teams' capture-seek toward the west relays
+  // — ids follow layout order — and the tow economy compounded the side
+  // that fought beside its own base). Ladder: same side of the axis as
+  // the asset, then farther off-axis, then id (only same-rank leftovers).
+  const mySide = Math.sign(2 * cellX - 127) || 1;
+  const beats = (site, cur) => {
+    if (cur === null) return true;
+    const sSide = Math.sign(2 * site.cellX - 127) === mySide;
+    const cSide = Math.sign(2 * cur.cellX - 127) === mySide;
+    if (sSide !== cSide) return sSide;
+    const sxr = Math.abs(2 * site.cellX - 127);
+    const cxr = Math.abs(2 * cur.cellX - 127);
+    if (sxr !== cxr) return sxr > cxr;
+    const syr = Math.abs(2 * site.cellY - 127);
+    const cyr = Math.abs(2 * cur.cellY - 127);
+    if (syr !== cyr) return syr > cyr;
+    return site.id < cur.id;
+  };
   for (const site of state.sites) {
     if (site.owner === asset.team) continue;
     const dx = Math.abs(site.cellX - cellX);
     const dy = Math.abs(site.cellY - cellY);
     const dist = dx + dy;
-    if (dist < bestDist || (dist === bestDist && site.id < best?.id)) {
+    if (dist < bestDist || (dist === bestDist && beats(site, best))) {
       best = site;
       bestDist = dist;
     }
@@ -329,6 +349,22 @@ export class AIRegency {
               getUnitStats(a.type).indirect);
           }
         }
+        // 13C tow lifeline: routed roads deliver the whole team — truck
+        // included — into the centre fight, and a dead truck used to end
+        // the team's tow economy for the war (300-sweep: tows 85 -> 0).
+        // Same shape as the tube rule: no crewed tower anywhere on the
+        // team + a free truck in the garage -> crew it.
+        let roleTruck = null;
+        if (!roleCarrier && !roleBike && !roleTube) {
+          const towCrewed = state.assets.some((a) =>
+            a.team === team && a.operatorId !== -1 && !isWreck(a) &&
+            getUnitStats(a.type).canTow);
+          if (!towCrewed) {
+            roleTruck = state.assets.find((a) =>
+              a.team === team && a.operatorId === -1 && !isWreck(a) &&
+              getUnitStats(a.type).canTow);
+          }
+        }
         // 16B faction identity: the unique chassis must not rot in the
         // garage (sim probe: the Sentinel sat uncrewed for entire wars,
         // so its anchor doctrine never fired). No crewed unique on the
@@ -353,6 +389,8 @@ export class AIRegency {
           pick = roleBike.id;
         } else if (roleTube) {
           pick = roleTube.id;
+        } else if (roleTruck) {
+          pick = roleTruck.id;
         } else if (agent && state.assets[agent.assetId] &&
                    state.assets[agent.assetId].operatorId === -1 &&
                    !isWreck(state.assets[agent.assetId])) {
@@ -644,9 +682,21 @@ export class AIRegency {
       const currentCellX = worldToCellFloor(asset.x);
       const currentCellY = worldToCellFloor(asset.y);
       if (currentCellX !== target[0] || currentCellY !== target[1]) {
+        // 13C: long hauls ride the route graph — waypoint chains along
+        // roads, trails (light hulls), and bridges replace the straight
+        // line that forded rivers and crawled cross-country. Stateless:
+        // the route is recomputed from the CURRENT cell each cycle and
+        // nextWaypoint picks the leg; arriving idle triggers the next.
+        let step = target;
+        const route = routeWaypoints(
+          state.mapProfile, currentCellX, currentCellY, target[0], target[1], stats);
+        if (route.length) {
+          const wp = nextWaypoint(route, currentCellX, currentCellY);
+          if (wp && (wp[0] !== currentCellX || wp[1] !== currentCellY)) step = wp;
+        }
         commands.push({
           type: CMD_MOVE_ORDER, operatorId,
-          targetCellX: target[0], targetCellY: target[1],
+          targetCellX: step[0], targetCellY: step[1],
         });
       }
     }

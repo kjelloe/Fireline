@@ -80,3 +80,13 @@ export function joinSelectMove(state, operatorId, team, assetId, cellX, cellY) {
   s = apply(s, { type: "move_order", operatorId, targetCellX: cellX, targetCellY: cellY });
   return s;
 }
+
+// 13C: what the AI actually emits for a long-haul objective — the routed
+// first leg, or the objective itself when the graph sits it out.
+import { routeWaypoints, nextWaypoint } from "../engine/route_graph.js";
+export function expectedStep(profile, fromCell, toCell, stats) {
+  const route = routeWaypoints(profile, fromCell[0], fromCell[1], toCell[0], toCell[1], stats);
+  if (!route.length) return toCell;
+  const wp = nextWaypoint(route, fromCell[0], fromCell[1]);
+  return wp ?? toCell;
+}

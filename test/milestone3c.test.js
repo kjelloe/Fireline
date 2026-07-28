@@ -9,6 +9,8 @@ import { GameServer } from "../engine/server.js";
 import { AIRegency } from "../engine/ai_regency.js";
 import { createAppServer } from "../server/index.js";
 import { cellToWorld } from "../shared/fixedmath.js";
+import { getUnitStats } from "../engine/units.js";
+import { expectedStep } from "./helpers.js";
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
@@ -25,10 +27,13 @@ test("3C regency takes over a dropped operator and pushes for a relay", () => {
     (e) => e.cmd.type === "move_order" && e.cmd.operatorId === 0
   );
   assert.equal(moves.length, 1, "regency issues a move for the dropped slot");
+  // 13C: the push toward relay (32,63) now rides the route graph — the
+  // first leg is the routed step from the tank's spawn, not the beeline.
+  const step = expectedStep("frontier_corridor", [7, 56], [32, 63], getUnitStats(0));
   assert.deepEqual(
     { x: moves[0].cmd.targetCellX, y: moves[0].cmd.targetCellY },
-    { x: 32, y: 63 },
-    "pushes for the nearest unowned relay"
+    { x: step[0], y: step[1] },
+    "pushes for the nearest unowned relay (routed)"
   );
   assert.equal(server.state.assets[0].state, 1, "asset is moving under regency");
 });
