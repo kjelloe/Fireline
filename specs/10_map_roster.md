@@ -125,6 +125,21 @@ stage. First map to use T_BLOCKING at scale.
 - **Watch item**: BLOCKING at scale meets body-collision (17) and
   direct-drive for the first time — the slice must add a "no unit ever
   occupies/paths through T_BLOCKING" invariant probe to the battery.
+- **MEASURED at landing (18B, 30+30+30+30 local)**: wall rule holds
+  (probe clean), wars active and deterministic — but TWO gate failures,
+  both real map findings:
+  1. **Sentinel-anchor lean**: Sentinel-side wins 62-67% and the edge
+     SURVIVES mirroring but FOLLOWS a faction swap; with UNIQUES=0 the
+     map is dead even (14/16). The mesa gaps are ideal hardpoint
+     anchors, and the Skimmer's water surface doesn't exist here — the
+     map is structurally Directorate-leaning as drawn.
+  2. **Horn-bound pacing**: ~87% of wars reach the 18000-tick horn;
+     tickets NEVER end a war (each side holds its lane pair, contests
+     the heart, 3-3 splits below the majority of 4) — riverline's
+     first-landing pattern.
+  **18C tuning pass planned**: wider or doubled gaps per band (less
+  anchorable, more flanks), cross-lane capture pressure in doctrine,
+  re-measure; promotion gate stays closed until both findings clear.
 
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
@@ -146,7 +161,9 @@ stage. First map to use T_BLOCKING at scale.
 
 1. **18A blackwood** — now (no new engine tech; pure profile slice).
 2. **18B sawtooth** — next (adds the blocking-invariant probe).
-3. **13E bridges** — riverline's signature, unchanged in the queue;
+3. **18C sawtooth tuning** — the two landing findings (Sentinel-anchor
+   lean, horn-bound pacing); before or alongside 13E.
+4. **13E bridges** — riverline's signature, unchanged in the queue;
    after it, riverline gets its tuning pass.
 4. B-list interleaves as before (B1 → B3 → B2 typing, which then
    retro-types relays on ALL FOUR maps).

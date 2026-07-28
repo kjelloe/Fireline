@@ -89,6 +89,14 @@ const PATROLS = Object.freeze({
     light0: [[36, 28], [58, 28], [58, 99], [36, 99]],
     light1: [[91, 28], [69, 28], [69, 99], [91, 99]],
   }),
+  sawtooth: Object.freeze({
+    // 18B: heavies duel in the canyon between the gap mouths; lights
+    // cycle their side's outer relays through the gaps. Exact mirrors.
+    0: [[40, 63], [58, 56], [58, 70], [48, 63]],
+    1: [[87, 63], [69, 56], [69, 70], [79, 63]],
+    light0: [[44, 20], [42, 46], [44, 107], [42, 82]],
+    light1: [[83, 20], [85, 46], [83, 107], [85, 82]],
+  }),
 });
 
 function patrolTarget(agent, tick, profileName = "frontier_corridor", mirrored = false, light = false) {

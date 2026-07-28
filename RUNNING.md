@@ -117,6 +117,12 @@ npm start                              # host machine
   relays sit in clearings OFF the road. Mines, scouts, satchels, and the
   Sentinel shine here; a mid-war weather front is genuinely scary.
   Design of record: specs/10_map_roster.md.
+- Fourth map (18B): `MAP=sawtooth npm start` — the ARMOR map. Two
+  impassable mesa bands split the field into three open lanes, pierced
+  by narrow trail gaps (the saw teeth). Tank duels in the lanes; mines,
+  Sentinels, and mortars own the gaps; long exposed edge corridors go
+  around. Impassable terrain is a WALL — units stall at the face, never
+  enter. Design of record: specs/10_map_roster.md.
 - Direct drive (11L+11O, the Firepower homage): press G — WASD becomes
   tank controls (W/S throttle with half-speed reverse, A/D steer at your
   chassis' turn rate; all chassis supported). A red targeting circle
@@ -169,6 +175,7 @@ docker run -p 8080:8080 -e MAP_SEED=2026 more-firepower
 PORT=8080 MAP_SEED=2026 AI_DIFFICULTY=1 npm start   # defaults shown
 MAP=riverline npm start                              # second profile (experimental)
 MAP=blackwood npm start                              # third profile (18A, experimental)
+MAP=sawtooth npm start                               # fourth profile (18B, experimental)
 RULES=easy|normal|hard npm start                     # 13G difficulty presets
 # Global discovery (colocation: run tools/master.js on the same VM):
 node tools/master.js --port 8972 &

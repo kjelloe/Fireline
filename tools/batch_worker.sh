@@ -90,6 +90,16 @@ handle_job() { # $1 = JSON body
       FACTIONSWAP=1 run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 factionswap ;;
     riverline)
       MAP=riverline run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 riverline ;;
+    map)
+      # 18B: generic per-profile battery — {"kind":"map","map":"blackwood",
+      # "count":300,"mirror":0}. Covers every registered profile without a
+      # new job kind per map.
+      local mp mp_mirror
+      mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
+      mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      MAP=$mp run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror
@@ -132,7 +142,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/uniques/matrix/perf/sendresults/update." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/matrix/perf/sendresults/update." ;;
   esac
   $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
 }

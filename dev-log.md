@@ -2345,3 +2345,39 @@ different: quiet positional wars — downs 12/war vs frontier's 70, tows
 map's watch item alongside the 300-war battery.
 
 Suite 535/535 (x2). Tagged slice-18a. EXPERIMENTAL (MAP=blackwood).
+
+## slice-18b — sawtooth, map 4 + the wall rule (2026-07-29, prompt 60)
+
+Map 4: SAWTOOTH, the armor map and the first to use T_BLOCKING at
+scale. Two impassable mesa bands (rows 40-52 / 76-88, x 20-107) split
+the field into three open lanes, each pierced by two narrow T_PATH gaps
+(the saw teeth, mirror pair 40-44/83-87); long exposed edge corridors
+go around the mesa ends. 6 relays: canyon heart pair + a pair per outer
+lane; gaps stay relay-free — pure chokes. Graph tags the gaps trail and
+prices the corridors honestly, so 13D hazard-marking a gap is exactly
+what unlocks the flank.
+
+Engine rule the map forced — IMPASSABLE TERRAIN IS A WALL (18B): speed
+samples the CURRENT cell, so a fast chassis could leap into a 0-speed
+cell and be trapped forever. stepAsset/driveStep now refuse any move
+whose destination cell is 0-speed — units stall at the mesa face.
+Inert on every existing map (no blocking cells anywhere), so no repin;
+drones fly over, downed crews walk terrain-free. Probe test: 4000-tick
+AI war asserts NOBODY ever occupies a blocking cell.
+
+Local gate (30 normal + 30 mirror + 30 UNIQUES=0 + 30 FACTIONSWAP):
+wars active, deterministic, replay-honest, wall probe clean — and two
+REAL findings, both recorded in specs/10 §4 for the 18C tuning pass:
+(1) SENTINEL-ANCHOR LEAN — Sentinel-side wins 62-67%; survives the
+mirror, follows the faction swap, vanishes with UNIQUES=0 (14/16).
+Mesa gaps are ideal hardpoint anchors and the Skimmer has no water
+here: structurally Directorate-leaning as drawn. (2) HORN-BOUND
+PACING — 87% of wars reach the horn; 3-3 relay splits never reach the
+ticket majority (riverline's first-landing pattern). EXPERIMENTAL
+(MAP=sawtooth); promotion gate closed until 18C clears both.
+
+Also: generic `map` job kind for the batch worker
+({"kind":"map","map":"blackwood","count":300,"mirror":0}) — per-map PC
+batteries without a new kind per map.
+
+Suite 542/542 (x2). Tagged slice-18b.

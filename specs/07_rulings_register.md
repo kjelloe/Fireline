@@ -68,6 +68,15 @@ local-only file by choice; this register records the *decisions*.
 - **Route graph (13C)**: AI drives waypoint chains on per-profile
   road/trail/bridge graphs; equivariant tie-breaks proven by
   enumeration; amphibious hulls skip the graph.
+- **Impassable terrain is a WALL (18B)**: units refuse to enter a
+  0-speed cell and stall at its face (speed samples the current cell,
+  so entering would trap them forever). Drones fly over; downed crews
+  walk terrain-free. Engine-wide, inert on maps without T_BLOCKING.
+- **Map roster (prompt 60)**: specs/10_map_roster.md is the map design
+  of record — checklist audit, hard profile constraints (mirror,
+  shared bases/road, west-gen, runway), maps 3 `blackwood` + 4
+  `sawtooth`, a 6-map bank, and the per-map promotion gate
+  (experimental MAP= opt-in until a 300-war PC battery passes).
 
 ## Pacing & victory (BF2-study rulings, 2026-07-28)
 

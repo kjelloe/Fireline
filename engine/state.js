@@ -7,6 +7,7 @@
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { generateRiverline } from "./riverline.js";
 import { generateBlackwood } from "./blackwood.js";
+import { generateSawtooth } from "./sawtooth.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -34,6 +35,7 @@ const MAP_PROFILES = {
   frontier_corridor: generateFrontierCorridor,
   riverline: generateRiverline, // 11M
   blackwood: generateBlackwood, // 18A
+  sawtooth: generateSawtooth,   // 18B
 };
 
 // Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
@@ -194,6 +196,17 @@ export const MAP_LAYOUTS = Object.freeze({
       { cellX: 36, cellY: 99 }, { cellX: 91, cellY: 99 },
       { cellX: 58, cellY: 45 }, { cellX: 69, cellY: 45 },
       { cellX: 58, cellY: 82 }, { cellX: 69, cellY: 82 },
+    ],
+    standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
+  }),
+  sawtooth: Object.freeze({
+    // 18B (specs/10 §4): canyon heart + a pair per outer lane. The mesa
+    // gaps stay relay-free — pure chokes, held by presence not capture.
+    // 6 relays, ticket majority 4.
+    relayCells: [
+      { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
+      { cellX: 44, cellY: 20 }, { cellX: 83, cellY: 20 },
+      { cellX: 44, cellY: 107 }, { cellX: 83, cellY: 107 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),

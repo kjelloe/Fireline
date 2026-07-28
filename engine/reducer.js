@@ -768,6 +768,18 @@ function turnToward(heading, desiredBrads, turnRate) {
   return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
 }
 
+// 18B: impassable terrain is a WALL, not a speed. Speed is sampled at
+// the CURRENT cell, so a fast chassis could leap into a 0-speed cell
+// and be trapped there forever (speed 0 = no step out). Refuse the
+// move instead — units stall at the mesa face. Pure position check:
+// commutes with the mirror because the terrain does.
+function terrainWalled(map, worldX, worldY, stats) {
+  const cx = worldToCellFloor(worldX);
+  const cy = worldToCellFloor(worldY);
+  if (cx < 0 || cx >= map.width || cy < 0 || cy >= map.height) return true;
+  return speedMultiplier(map.cells[cy * map.width + cx], stats) === 0;
+}
+
 // 11L: tank-style direct drive. A/D pivot at the chassis turnRate; W
 // drives along the heading at chassis speed, S reverses at half; every
 // speed multiplier stepAsset honors applies here too. Map edges clamp.
@@ -801,8 +813,11 @@ function driveStep(asset, map, supplied, carrying, towing, others) {
     Math.min(maxX, Math.max(0, asset.x + sdx)), Math.min(maxY, Math.max(0, asset.y + sdy)));
   if (v === 0) return; // 17: hard-blocked by an enemy hull
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
-  asset.x = Math.min(maxX, Math.max(0, asset.x + sdx));
-  asset.y = Math.min(maxY, Math.max(0, asset.y + sdy));
+  const dnx = Math.min(maxX, Math.max(0, asset.x + sdx));
+  const dny = Math.min(maxY, Math.max(0, asset.y + sdy));
+  if (terrainWalled(map, dnx, dny, stats)) return; // 18B
+  asset.x = dnx;
+  asset.y = dny;
   asset.targetX = asset.x;
   asset.targetY = asset.y;
 }
@@ -826,6 +841,7 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
   // Close enough: snap and stop (prevents orbiting a near target).
   if (absI32(dx) + absI32(dy) <= step) {
     if (collisionVerdict(others, asset, asset.targetX, asset.targetY) === 0) return; // 17
+    if (terrainWalled(map, asset.targetX, asset.targetY, stats)) return; // 18B
     asset.x = asset.targetX;
     asset.y = asset.targetY;
     asset.state = ASSET_IDLE;
@@ -846,6 +862,7 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
   const v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
   if (v === 0) return; // 17: hard-blocked by an enemy hull; keep trying
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
+  if (terrainWalled(map, asset.x + sdx, asset.y + sdy, stats)) return; // 18B
   asset.x += sdx;
   asset.y += sdy;
 
