@@ -59,6 +59,7 @@ export function createAppServer(options = {}) {
       version: pkgVersion,
       fixtureVersion,
       rules: gameServer.state.rules, // 13G: which law this war runs under
+      masterUrl: options.masterUrl ?? null, // discovery: where the index lives
       mapProfile: gameServer.state.mapProfile,
       mapSeed: gameServer.state.mapSeed,
       aiDifficulty: options.aiDifficulty ?? 1,
@@ -135,10 +136,48 @@ export function createAppServer(options = {}) {
     res.json(record);
   });
 
+  // Discovery announce (specs/game-discovery.md): heartbeat the master
+  // every ~60 s; ECHO its verdict on our console — every "why am I not
+  // listed" support question answers itself.
+  let announceTimer = null;
+  async function announceOnce() {
+    if (!options.masterUrl || !options.publicAddr) return;
+    const openSeats = gameServer.state.operators
+      .filter((o) => o.id < 16 && o.state === 0).length;
+    let pkgVersion = "dev";
+    try {
+      pkgVersion = JSON.parse(readFileSync(path.join(ROOT_DIR, "package.json"))).version;
+    } catch { /* stripped deploy */ }
+    let fixtureVersion = 0;
+    try {
+      fixtureVersion = JSON.parse(readFileSync(
+        path.join(ROOT_DIR, "test", "fixtures", "1A_reducer.json"))).fixtureVersion;
+    } catch { /* fine */ }
+    try {
+      const res = await fetch(`${options.masterUrl}/announce`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: options.publicName ?? `Fireline Command @ ${options.publicAddr}`,
+          addr: options.publicAddr,
+          version: pkgVersion,
+          fixtureVersion,
+          openSeats,
+        }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (out.listed) console.log(`master says: listed (${options.publicAddr})`);
+      else console.log(`master says: ${out.reason ?? out.error ?? `HTTP ${res.status}`}`);
+    } catch (e) {
+      console.log(`master unreachable at ${options.masterUrl}: ${e.message}`);
+    }
+  }
+
   return {
     app,
     httpServer,
     gameServer,
+    announceOnce,
     transport,
     replayStore,
     archiveIfOver,
@@ -158,11 +197,16 @@ export function createAppServer(options = {}) {
         () => transport.checkHeartbeats(Date.now(), hb.timeoutMs ?? 5000),
         hb.intervalMs ?? 2000
       );
+      if (options.masterUrl && options.publicAddr) {
+        announceOnce();
+        announceTimer = setIntervalFn(announceOnce, options.announceIntervalMs ?? 60000);
+      }
       return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));
     },
     async stop() {
       gameServer.stop();
       this.clearHeartbeat?.();
+      if (announceTimer) clearInterval(announceTimer);
       for (const client of wss.clients) client.terminate();
       wss.close();
       // Keep-alive sockets (e.g. fetch connection pools) would otherwise hold
@@ -199,7 +243,15 @@ if (isMain) {
   const aiDifficulty = Number(process.env.AI_DIFFICULTY ?? 1);
   const mapProfile = process.env.MAP ?? "frontier_corridor"; // 11M
   const rules = rulesForPreset(process.env.RULES ?? "normal"); // 13G presets
-  const appServer = createAppServer({ mapSeed, aiDifficulty, mapProfile, rules });
+  const appServer = createAppServer({
+    mapSeed, aiDifficulty, mapProfile, rules,
+    // Discovery (colocation ruling): MASTER_URL points at the index,
+    // PUBLIC_ADDR is host:port as the INTERNET reaches us (behind TLS:
+    // the public port, not the process port), PUBLIC_NAME optional.
+    masterUrl: process.env.MASTER_URL || null,
+    publicAddr: process.env.PUBLIC_ADDR || null,
+    publicName: process.env.PUBLIC_NAME || null,
+  });
   appServer.start(port).then((addr) => {
     console.log(`Fireline Command server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty}, rules ${process.env.RULES ?? "normal"})`);
   });

@@ -15,6 +15,7 @@ import {
   MOTION_TTL_MS,
 } from "./motion_cues.js";
 import { createSpriteRenderer } from "./sprite_renderer.js";
+import { rowsFor } from "./server_list.js";
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
@@ -375,7 +376,41 @@ function init() {
   loadAssetMetadata().then(() => {
     connect();
     animate();
+    loadGlobalServers(); // discovery: the join screen's global list
   });
+}
+
+// Discovery: the join screen's GLOBAL SERVERS list. Honesty over
+// curation (specs/game-discovery.md): mismatches greyed, never hidden;
+// no master configured = an actionable line, not a dead end.
+async function loadGlobalServers() {
+  const el = document.getElementById("global-servers");
+  if (!el) return;
+  try {
+    const version = await (await fetch("/version")).json();
+    if (!version.masterUrl) {
+      el.textContent = t("disc.no_master");
+      return;
+    }
+    const { servers } = await (await fetch(`${version.masterUrl}/servers`)).json();
+    const rows = rowsFor(servers, version);
+    if (!rows.length) {
+      el.textContent = t("disc.empty");
+      return;
+    }
+    el.innerHTML = `<div style="color:#ccc; letter-spacing:1px; margin-bottom:4px;">${t("disc.title")}</div>` +
+      rows.map((r) => {
+        const grey = r.versionMatch ? "" : "opacity:0.45;";
+        const hint = r.versionMatch ? "" : ` <span style="color:#c96;">${r.versionHint}</span>`;
+        return `<div style="${grey}"><a href="${r.url}" style="color:#8fd48f;">${r.name}</a>` +
+          ` — ${t("disc.seats", { n: r.openSeats })}${hint}` +
+          ` <span style="color:#667;">(${r.freshSeconds}s)</span></div>`;
+      }).join("");
+    el.insertAdjacentHTML("beforeend",
+      `<div style="color:#667; margin-top:4px;">${t("disc.trust")}</div>`);
+  } catch {
+    el.textContent = t("disc.unreachable");
+  }
 }
 
 // 5B: stable per-browser identity so a refresh reattaches to your operator.

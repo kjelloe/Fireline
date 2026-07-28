@@ -2217,3 +2217,22 @@ further graph tuning filed as campaign backlog (diminishing returns vs
 the discovery slice next in the ruled order).
 
 Suite 512/512.
+
+## slice-15h — game discovery (2026-07-28, item 21b, adopted sibling spec)
+
+The master index (`tools/master.js`, colocation ruling: runs on the game
+VM): announce/probe/list, PROBE-BEFORE-LIST with the reason echoed to
+the announcer ("check port forwarding for host:port" — the self-service
+debugger), in-memory + 3 min TTL, per-IP announce floor, 4 KB body cap
+with 16x hard abort, host:port-only addresses (schemes rejected at the
+door), anti-relay internal-address guard (--allow-local for tests).
+Server side: MASTER_URL/PUBLIC_ADDR/PUBLIC_NAME env → 60 s heartbeat
+carrying version + fixtureVersion (our ruleset checksum) + open seats;
+the master's verdict echoes on OUR console. Client: the join screen's
+GLOBAL SERVERS list — mismatches GREYED never hidden (checksum hint
+visible), trust model stated in the UI, actionable line when no master
+is configured. Pure row model (`server_list.js`) + 7 tests including a
+live end-to-end announce-probe-list loop; the TTL test caught a real
+first-announce rate-floor bug before it ever shipped.
+
+Suite 518/518 (x2). Smoke OK. UI acceptance OK. Tagged slice-15h.
