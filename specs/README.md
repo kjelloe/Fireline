@@ -20,6 +20,23 @@ port — with every variant provably running the same rules.
 
 `00_document_index_update.md` gives a one-page map of all documents and how they relate.
 
+### Living documents (updated as the build rules)
+
+Documents 01–06 are the ORIGINAL design record. Documents 07+ are
+maintained against the shipped implementation — when the two disagree,
+07+ wins.
+
+| File | Purpose |
+|---|---|
+| `07_rulings_register.md` | Every product ruling in force, by area — the first place to look before designing anything |
+| `08_fairness_and_symmetry.md` | The mirror doctrine: invariants, instruments, campaign pattern, which world decides a verdict, accepted residues |
+| `09_ai_regency_doctrine.md` | AI regent behaviour: crewing ladder, errand priority, movement, and the post-mortems behind each rule |
+| `10_map_roster.md` | Map design of record: checklist audit, hard profile constraints, the shipped profiles, the future-map bank, promotion gate |
+
+Reference material handed in by the designer (`gameplay-*.md`,
+`faction-name-and-units.md`, `title-and-naming.md`, `game-discovery.md`)
+is input, not record — its verdicts live in 07 and in `reports/`.
+
 ---
 
 ## What this game is

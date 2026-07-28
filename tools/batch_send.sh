@@ -5,6 +5,7 @@
 #   bash tools/batch_send.sh sweep 600         # balance census
 #   bash tools/batch_send.sh mirror 600        # sides swapped (question 18)
 #   bash tools/batch_send.sh matrix 2 100      # hard-AI run
+#   bash tools/batch_send.sh map blackwood 300 # per-profile promotion battery
 #   bash tools/batch_send.sh perf              # GPU render harness
 #   bash tools/batch_send.sh collect           # deliver + settle results
 #   bash tools/batch_send.sh board             # who is doing what
@@ -17,6 +18,7 @@ case "${1:-}" in
   mirror) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"mirror\",\"count\":${2:-100}}" ;;
   factionswap) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"factionswap\",\"count\":${2:-100}}" ;;
   riverline) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"riverline\",\"count\":${2:-100}}" ;;
+  map)    $AM queue add --for batch-pc --as dev --body "{\"kind\":\"map\",\"map\":\"${2:?usage: batch_send.sh map <profile> [count] [mirror]}\",\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
@@ -24,5 +26,5 @@ case "${1:-}" in
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|perf|update|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|perf|update|sendresults|collect|board [args]"; exit 1 ;;
 esac

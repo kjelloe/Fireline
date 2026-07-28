@@ -19,8 +19,8 @@ the world stays alive with one human or sixteen — and every war replays
 
 ![Current procedural roster](client/assets/preview/asset_strip.png)
 
-> **Status:** playable and actively playtested · 422 automated tests ·
-> 30+ tagged gameplay slices · two mirror-fair maps · English + Norsk.
+> **Status:** playable and actively playtested · 542 automated tests ·
+> 60+ tagged gameplay slices · four mirror-fair maps · English + Norsk.
 > The defining experience — *recovery* — is in: downed operators, carrier
 > rescue, tow-back repair, mines and mine-clearing, an anti-camping drone,
 > direct tank control (the *Firepower* homage), fog ghosts, mission cards,
@@ -31,11 +31,13 @@ the world stays alive with one human or sixteen — and every war replays
 
 ```bash
 npm install
-npm test          # the full contract — 422 tests, byte-exact fixtures
+npm test          # the full contract — 542 tests, byte-exact fixtures
 npm start         # http://localhost:8080 — pick a side, you're in the war
 ```
 
-- `MAP=riverline npm start` — the second map: a river, three bridges.
+- `MAP=riverline|blackwood|sawtooth npm start` — the other three maps:
+  a river with three bridges, a dense wood where the fight leaves the
+  road, and a canyon of impassable mesas pierced by narrow gaps.
 - Press **G** in game for direct tank control (WASD), **⚙** for options
   (rescue autopilot, language), and see [`RUNNING.md`](RUNNING.md) for
   every key, LAN play, Docker, sims, and ops endpoints.
@@ -50,7 +52,7 @@ home under fire, carrying a downed teammate off the field, rebuilding a
 shelled relay with a truckload of materiel — those verbs score higher
 than kills and drive the whole design. The engine exists to make that
 world *trustworthy*: one pure reducer owns every outcome, all state is
-integer math, every war is a replayable artifact, and both maps are
+integer math, every war is a replayable artifact, and every map is
 mirror-symmetric **by tested invariant** so neither side ever wins on
 geometry.
 
@@ -67,7 +69,7 @@ engine — each lane below is genuinely independent:
 | Lane | What it looks like | Start here |
 |---|---|---|
 | **🎨 Art — painted models** | Every unit resolves through a manifest: drop a GLB next to its entry and it replaces the procedural stand-in with **zero code changes**. The strip above shows the current stand-ins begging for paint. | `assets/PIPELINE.md`, `client/assets/metadata/asset_manifest.json` |
-| **🗺 Maps** | A map is a deterministic generator + a layout entry (relays, standard homes, patrols). The mirror-fairness test will fail you honestly if your map favors a side. | `engine/riverline.js` as the worked example, `MAP_LAYOUTS` in `engine/state.js`, `test/milestone11m.test.js` |
+| **🗺 Maps** | A map is a deterministic generator plus three mirror-closed tables (layout, route graph, patrols). The mirror-fairness test will fail you honestly if your map favors a side, and `specs/10_map_roster.md` holds the design rules, the constraints every profile must meet, and a bank of maps waiting to be built. | `engine/blackwood.js` as the worked example, `MAP_LAYOUTS` in `engine/state.js`, `test/map_blackwood.test.js` |
 | **🌍 Translations** | Key-identical string catalogs; a parity test refuses half-translated UIs. English and Norsk ship today — a new language is one catalog. | `client/js/strings.js` |
 | **⚖️ Playtesting & balance** | Run LAN wars, watch AI-vs-AI wars as a spectator, run seed sweeps (`node tools/sim_sweep.mjs 100`) and argue with the numbers. Open balance questions live in `reports/`. | `RUNNING.md`, `BATCH_PC.md`, `debugging/analyze_sweep.py` |
 | **🔧 Engine & AI** | Pure-function slices with milestone tests; the AI regency is ordinary commands through the same reducer as humans. Open design questions are tracked with numbers. | `CLAUDE.md` (the working rules), `plan-wave3.md`, `reports/` |

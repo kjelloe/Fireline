@@ -30,11 +30,25 @@ never panic on 5 seeds; confirm tempo shifts with a 300-seed sweep
 before tuning anything.)
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
-`FACTIONSWAP=1` uniques trade sides, `MAP=riverline`, `UNIQUES=0`
-disables the (default-ON) 16B unique-crewing for A/B runs. Analyzer semantics
+`FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
+/ riverline / blackwood / sawtooth), `UNIQUES=0` disables the
+(default-ON) 16B unique-crewing for A/B runs. Analyzer semantics
 (`debugging/analyze_sweep.py`): TEAM bias = the same team keeps its edge
 in BOTH mirror worlds; a ~50% per-seed flip rate with balanced
 aggregates is fair chaos, NOT residue.
+
+NEW-MAP GATE (specs/10 promotion gate): a fresh profile runs 30 normal
++ 30 MIRROR locally at landing, then a 300-war PC battery
+(`{"kind":"map","map":"<name>","count":300}` via batch mail) before it
+leaves EXPERIMENTAL. Expect per-map baselines to DIFFER from frontier's
+(blackwood: quiet positional wars, downs ~12/war, tickets ~87% of
+endings) — judge tempo against the map's own identity, fairness against
+the universal bars (A-rate 45-55, undecided <5%, mirror flips the
+edge). ALWAYS add a `UNIQUES=0` + `FACTIONSWAP=1` probe pair on a new
+map: unique strength is TERRAIN-DEPENDENT (sawtooth lesson — mesa-gap
+hardpoints made the Sentinel-side worth 62-67% while frontier sits
+51/49; the lean survives mirroring but follows the swap and vanishes
+with uniques off).
 
 ## Red flags and what they meant before
 

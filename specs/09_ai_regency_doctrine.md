@@ -68,7 +68,16 @@ back on return. Emission order alternates lead team by tick parity
 All long hauls route via the 13C graph (roads/trails/bridges,
 per-chassis costs, equivariant tie-breaks); short hops (<14 cells) and
 amphibious hulls go direct. Waypoints recompute statelessly from the
-current cell each plan cycle.
+current cell each plan cycle. Impassable cells are walls, not slow
+ground (18B) — doctrine never needs to steer around them explicitly,
+but a patrol table that points THROUGH one would stall units at its
+face, so per-map tables are drawn on the map's real lanes.
+
+Every profile owns three mirror-closed tables, added together or not at
+all: `MAP_LAYOUTS` (relays, standard homes), `route_graph.js` GRAPHS
+(nodes/edges), and PATROLS here (heavy + light variants). Light patrols
+ride the flanking surfaces (trails, ring, gaps); heavy patrols work the
+road and the objective mouths.
 
 ## Post-mortems worth remembering
 
@@ -80,4 +89,9 @@ current cell each plan cycle.
   survival (roleTruck) alone restored the tow economy. Doctrine that
   parks units at asymmetrically-derived anchors is a chirality risk.
 - **Standing-fortress Sentinel** swept 78/19 → deploy is threat-
-  reactive only (and still dormant pending 16B's residue).
+  reactive only. (Uniques crew by default since prompt-54; the residue
+  was decomposed and band-tuned rather than switched off.)
+- **Threat-reactive is still terrain-sensitive** (18B): the same
+  reactive Sentinel is worth ~51/49 on frontier and 62-67% on sawtooth,
+  because mesa gaps are perfect anchors. Doctrine tuned on one map is
+  not validated for the next — see specs/08 §3.7.

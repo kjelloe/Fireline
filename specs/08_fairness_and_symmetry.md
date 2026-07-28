@@ -73,6 +73,26 @@ target on the swap metric can cost the identity. Judge against the
 NORMAL world first (players live there), and prefer structural levers
 (new jobs, role exclusions) over stat grinding past saturation.
 
+## 3.7 Faction balance is PER-MAP: terrain decides unique strength
+
+Sawtooth lesson (18B, 2026-07-29): the same tuned unique pair that sits
+at 51/49 on frontier measured **62-67% Sentinel-side on sawtooth**. The
+signature: the lean SURVIVES mirroring (so it is not directional
+arithmetic), FOLLOWS a faction swap (so it is not a side effect), and
+VANISHES with `UNIQUES=0` (14/16 — so the map itself is fair). Cause is
+purely terrain: mesa gaps are ideal Deploy-Hardpoint anchors, and a map
+with no water strips the Skimmer of its half of the pair.
+
+Consequences, now doctrine:
+- A globally band-tuned pair does NOT imply per-map fairness. Every new
+  profile carries its own `UNIQUES=0` + `FACTIONSWAP=1` probe pair at
+  landing (added to the sim-campaign skill's new-map gate).
+- The fix belongs to the MAP, not the stat sheet — retuning the pair to
+  suit one profile would unbalance the others. Sawtooth's answer is
+  geometry (wider/doubled gaps → less anchorable), tracked as 18C.
+- Corollary for the roster: designing a map that denies one faction its
+  surface (no water, no trails) is a balance decision, not set dressing.
+
 ## 4. Known accepted residues
 
 - Mid-cell terrain sampling is not exactly mirror-equivariant under the
@@ -80,9 +100,14 @@ NORMAL world first (players live there), and prefer structural levers
   direction-symmetric in-world; treat probe divergences at that scale
   as artifact.
 - `homeCellFor` centers floor east by half a cell for both teams.
-- Riverline carries a side lean (west ~73/27 post-13C, was east 58/42
-  pre-13C) with PERFECT mirror statistics — an engine-fair, map-unfair
-  profile. Open tuning campaign; riverline is flagged experimental.
+- Riverline carries a side lean (west 73/27 post-13C; the map-aware
+  ticket majority collapsed it to ~58/42) with PERFECT mirror
+  statistics — an engine-fair, map-unfair profile. Open tuning
+  campaign; riverline stays experimental, re-measured after 13E.
+- Sawtooth carries a FACTION lean (Sentinel-side 62-67%, §3.7) and
+  horn-bound pacing (87% of wars reach the horn — 3-3 relay splits
+  never reach the ticket majority, riverline's first-landing pattern).
+  Experimental; 18C owes both.
 
 ## 5. The one-line law
 

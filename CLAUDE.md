@@ -46,9 +46,15 @@ outcome. Renderer presents fog-filtered views only.
   relays — road 32/58/69/95 + lateral 44/83 at rows 40/86 — mirrored
   spawns (A x=7, B x=120). Mirror symmetry is a TESTED balance invariant
   (specs/08): never move one side without its mirror, and tie-breaks
-  must commute with the mirror. Second profile `riverline` (MAP= env,
-  EXPERIMENTAL — west side lean pending graph tuning); per-profile
-  layout in `MAP_LAYOUTS`.
+  must commute with the mirror. FOUR profiles (MAP= env; per-profile
+  layout in `MAP_LAYOUTS`, graphs in `route_graph.js` GRAPHS, patrols
+  in `ai_regency.js` PATROLS — all three mirror-closed, enumeration-
+  tested): `frontier_corridor` (default), `riverline` + `blackwood` +
+  `sawtooth` (EXPERIMENTAL until their 300-war PC battery passes).
+  Design of record + hard profile constraints + 6-map bank:
+  specs/10_map_roster.md. Wall rule (18B): impassable (0-speed) cells
+  REFUSE entry — units stall at the face (speed samples the current
+  cell; entering would trap them).
 - Roster (9 chassis, ids 0-8): tank/scout/artillery/logistics/carrier/
   bike/mortar/sentinel/skimmer. Per team: 4/3/2/3/2/1/1 + the faction
   unique in garage slot idx 10. Contract flags are EXPLICIT on every

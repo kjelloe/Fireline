@@ -85,7 +85,8 @@ PROMPT-53 ORDER DONE:     15G respawn law ✅ · 16B chase ✅ (mechanism = chas
 2026-07-29:               16E trail affinity ✅ (Riverline Drive races trails 384) → 16B DEFAULT ON ✅ (swap gate 54.5 in band; sanctioned ~55/45 lean) · 16F AT satchel ✅ (fixture v39)
 13D ✅ dynamic edges (mine-aware routing; faction-era fairness methodology in specs/08)
 2026-07-29 cont:          BAND TUNED ✅ (416+hp120, fixture v40, normal-world 51.3) · 16G weather fronts ✅ · designer evals ✅ (7 build candidates + idea bank) · prompt-56/58 rulings (POW raidable site, synth audio, underdog premium)
-NEXT:                     bridges (riverline signature) · B1 meaningful deaths · B3 mercy/overtime · B2 node classes · salvage · Last Convoy · 12E NPCs · fillers B4/B7
+MAP ROUND (prompt 60):    specs/10_map_roster.md ✅ = design of record (audit: NO geometry change to frontier/riverline; hard profile constraints; 6-map bank) · 18A blackwood ✅ (dense woodland; gate PASS, quiet positional identity) · 18B sawtooth ✅ (canyon lanes + T_BLOCKING; WALL RULE engine-wide) — sawtooth gate found Sentinel-anchor lean (62-67, follows factionswap, vanishes UNIQUES=0) + horn-bound pacing → 18C tuning owes both
+NEXT:                     18C sawtooth tuning · bridges (riverline signature) · B1 meaningful deaths · B3 mercy/overtime · B2 node classes · salvage · Last Convoy · 12E NPCs · fillers B4/B7
 AFTER DESIGNER TALK:      12A factions → 12B Sentinel → 12C Infiltrator → 12D balance campaign
                           └→ 14B faction palette r2
 INDEPENDENT ENGINE LANE:  13A cargo → 13B resupply AI

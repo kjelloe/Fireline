@@ -178,13 +178,16 @@ on the PC is `git pull && bash tools/batch_worker.sh` (Ctrl-C the old
 one first). A stale worker politely refuses unknown jobs by mail — that
 refusal names its commit, which is your version check.
 
-**Job kinds as of slice-16b:** `sweep`, `mirror`, `factionswap`,
-`riverline` (MAP=riverline census), `uniques` (EXPLICIT unique-crewing —
-since prompt-54 the default already has uniques ON, so plain sweeps
-include them; this kind remains for swap/mirror diagnosis runs;
-body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0` queues
-the swapped variant), `matrix`, `perf`, `sendresults`. The refusal
-message lists the kinds a running worker actually has.
+**Job kinds as of slice-18b:** `sweep`, `mirror`, `factionswap`,
+`map` (ANY profile — body takes `map` and optional `mirror` 0|1, e.g.
+`{"kind":"map","map":"blackwood","count":300}`; this is how a new
+profile earns promotion out of experimental), `riverline` (the older
+single-map kind, kept for continuity), `uniques` (EXPLICIT
+unique-crewing — since prompt-54 the default already has uniques ON, so
+plain sweeps include them; this kind remains for swap/mirror diagnosis
+runs; body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0`
+queues the swapped variant), `matrix`, `perf`, `sendresults`. The
+refusal message lists the kinds a running worker actually has.
 
 **Perf prerequisite (learned 2026-07-27):** the perf job needs Playwright
 ON THE WORKER MACHINE — first run failed with "is playwright installed?".
