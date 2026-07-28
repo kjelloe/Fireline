@@ -84,6 +84,9 @@ function stateHash(s) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetAssetId); w.writeI32LE(d.ageTicks); w.writeI32LE(d.hitTimer);
   }
+  for (const b of (s.bridges ?? [])) { // added 13E — empty on frontier, so no repin
+    w.writeI32LE(b.id); w.writeI32LE(b.hp);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

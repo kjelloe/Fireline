@@ -8,6 +8,7 @@ import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor
 import { generateRiverline } from "./riverline.js";
 import { generateBlackwood } from "./blackwood.js";
 import { generateSawtooth } from "./sawtooth.js";
+import { createBridges } from "./bridges.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -318,6 +319,10 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     nextMineId: 0,
     drones: [], // 9G: anti-camping drones aloft
     nextDroneId: 0,
+    // 13E: droppable crossings. EMPTY on every profile without them, so
+    // the hash (and the 1A fixture) is untouched wherever bridges do not
+    // exist — the same inertness the wall rule has.
+    bridges: createBridges(typeof mapArg === "string" ? mapArg : "frontier_corridor"),
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

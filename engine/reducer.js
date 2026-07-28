@@ -26,6 +26,9 @@ import {
 } from "./drone.js";
 import { PING_KINDS, PING_COOLDOWN_TICKS, pingRejection } from "./pings.js";
 import {
+  BRIDGE_HP_MAX, bridgeSpans, bridgeIntact, adjacentToBridge, applyBridgeTerrain,
+} from "./bridges.js";
+import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
 } from "./downed.js";
@@ -216,6 +219,39 @@ function applyFireOrder(next, command) {
       site.captureProgress = 0;
       site.capturingTeam = -1;
       next.events.push({ type: "site_damaged", siteId: site.id });
+    }
+    return next;
+  }
+  // 13E: dropping a bridge. Same discipline as shelling a relay — only
+  // the siege tube can do it, and ammo/reload/supply/range all apply.
+  // Bridges are public: no spotting gate, they do not move.
+  if (command.targetBridgeId !== undefined) {
+    const bridge = (next.bridges ?? []).find((b) => b.id === command.targetBridgeId);
+    if (!bridge) return reject(next, command, "no such bridge");
+    if (!getUnitStats(attacker.type).siege) {
+      return reject(next, command, "cannot breach bridges");
+    }
+    if (!bridgeIntact(bridge)) return reject(next, command, "bridge already down");
+    if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
+    if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+    if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
+    const span = bridgeSpans(next.mapProfile)[bridge.id];
+    const spanPos = {
+      x: cellToWorld((span.cols[0] + span.cols[1]) >> 1),
+      y: cellToWorld((span.rows[0] + span.rows[1]) >> 1),
+    };
+    if (!inFireRange(attacker, spanPos)) return reject(next, command, "target out of range");
+    attacker.ammo -= SUPPLY_FIRE_COST;
+    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    bridge.hp = Math.max(0, bridge.hp - getUnitStats(attacker.type).damage);
+    next.events.push({
+      type: "bridge_shelled", bridgeId: bridge.id, byAssetId: attacker.id, bridgeHp: bridge.hp,
+    });
+    if (bridge.hp === 0) {
+      // The span becomes WATER: heavy hulls ford it in misery, the
+      // amphibious Skimmer crosses at speed (specs/11).
+      applyBridgeTerrain(next.map, next.mapProfile, bridge.id, false);
+      next.events.push({ type: "bridge_breached", bridgeId: bridge.id, byAssetId: attacker.id });
     }
     return next;
   }
@@ -1300,6 +1336,20 @@ function applyAdvanceTick(next) {
       site.hp = SITE_HP_MAX;
       asset.materiel = 0;
       next.events.push({ type: "site_repaired", siteId: site.id, byAssetId: asset.id });
+      continue;
+    }
+    // 13E: rebuilding a dropped crossing. EITHER TEAM may rebuild ANY
+    // bridge (prompt-70 ruling) — no ownership concept, and the
+    // tug-of-war over a contested span is the point.
+    const cellX = cx;
+    const cellY = cy;
+    const bridge = (next.bridges ?? []).find((b) =>
+      !bridgeIntact(b) && adjacentToBridge(next.mapProfile, b.id, cellX, cellY));
+    if (bridge) {
+      bridge.hp = BRIDGE_HP_MAX;
+      asset.materiel = 0;
+      applyBridgeTerrain(next.map, next.mapProfile, bridge.id, true);
+      next.events.push({ type: "bridge_repaired", bridgeId: bridge.id, byAssetId: asset.id });
     }
   }
 

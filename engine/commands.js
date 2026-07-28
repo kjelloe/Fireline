@@ -67,6 +67,10 @@ export function validate(cmd) {
         if (!isUint(cmd.targetDroneId, 0xffff)) return { ok: false, reason: "invalid targetDroneId" };
         return { ok: true };
       }
+      if (cmd.targetBridgeId !== undefined) { // 13E: droppable crossing
+        if (!isUint(cmd.targetBridgeId, 0xffff)) return { ok: false, reason: "invalid targetBridgeId" };
+        return { ok: true };
+      }
       if (!isUint(cmd.targetAssetId, 63))  return { ok: false, reason: "invalid targetAssetId" };
       return { ok: true };
 

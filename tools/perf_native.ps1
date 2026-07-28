@@ -74,8 +74,23 @@ if ($InstallDeps) {
   if ($LASTEXITCODE -ne 0) { throw "playwright install failed ($LASTEXITCODE)" }
 }
 
-if (-not (Test-Path 'node_modules\playwright')) {
-  throw "playwright is not installed in this checkout. Re-run with -InstallDeps."
+# The first real run tripped here: dependencies were missing and the
+# message did not spell out the fix. Say it in a copy-pasteable form,
+# for both entry points, and name what is actually missing.
+$missing = @()
+if (-not (Test-Path 'node_modules')) { $missing += 'node_modules (npm ci)' }
+if (-not (Test-Path 'node_modules\playwright')) { $missing += 'playwright' }
+if ($missing.Count -gt 0) {
+  Write-Host ''
+  Write-Host ('MISSING: ' + ($missing -join ', ')) -ForegroundColor Red
+  Write-Host 'Fix it by re-running with -InstallDeps:' -ForegroundColor Yellow
+  Write-Host '' 
+  Write-Host '  # on the PC (PowerShell, repo root):' -ForegroundColor DarkGray
+  Write-Host '  powershell -ExecutionPolicy Bypass -File tools\perf_native.ps1 -InstallDeps' -ForegroundColor Cyan
+  Write-Host '  # or from WSL:' -ForegroundColor DarkGray
+  Write-Host '  bash tools/perf_native.sh -InstallDeps' -ForegroundColor Cyan
+  Write-Host ''
+  throw "dependencies missing - re-run with -InstallDeps (see above)."
 }
 
 New-Item -ItemType Directory -Force -Path 'reports\sweeps' | Out-Null
@@ -94,6 +109,16 @@ $log = 'reports\sweeps\perf_native_run.log'
 & node.exe tools\perf_harness.mjs 2>&1 | Tee-Object -FilePath $log
 $exit = $LASTEXITCODE
 if ($exit -ne 0) {
+  # A harness that dies mid-run is usually still a dependency problem
+  # (a browser that was never downloaded), so repeat the remedy here
+  # rather than making someone scroll the log to work it out.
+  if (Select-String -Path $log -Pattern 'playwright|Executable doesn.t exist|browserType.launch' -Quiet) {
+    Write-Host ''
+    Write-Host 'That looks like a Playwright/browser problem. Try:' -ForegroundColor Yellow
+    Write-Host '  bash tools/perf_native.sh -InstallDeps' -ForegroundColor Cyan
+    Write-Host '  (or: powershell -ExecutionPolicy Bypass -File tools\perf_native.ps1 -InstallDeps)' -ForegroundColor DarkGray
+    Write-Host ''
+  }
   throw "perf harness failed ($exit) - see $log"
 }
 

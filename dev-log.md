@@ -2537,3 +2537,47 @@ and prompt-68's underdog premium is now an alternative to blocking it.
 Suite 547/547 (two new tests: diagonal slide, head-on stop, plus a
 mirror-equivariance check whose first version was wrong because it
 mirrored positions but not HEADINGS).
+
+## slice-13e-bridges — bridge demolition (2026-07-29, prompt 70 ruling)
+
+*(Tag name note: `slice-13e` was already taken by the fog-ghosts slice —
+the wave-3 plan listed 13E as fog ghosts, while the designer eval called
+this one "13E-bridges". This is the bridges one; the tag matches.)*
+
+Riverline's three crossings are now droppable and rebuildable. Design of
+record: specs/11_bridge_demolition.md.
+
+The load-bearing decision was NOT reusing `state.sites`. Sites already
+carry hp, the artillery siege flag and the truck repair loop, so reuse
+looked free — but 24 call sites across 21 files iterate `.sites`,
+including supply projection and relay sensor fog. A bridge would have
+silently projected supply, given fog, and counted toward the ticket
+majority denominator unless every one of those was excluded. Bridges got
+their own array instead: `state.bridges = [{id, hp}]`, hashed.
+
+**No fixture repin.** The hash writes nothing for an empty array, and
+every profile except riverline has no bridges — so frontier's 1A hashes
+are byte-identical and v40 still stands. (Both hash functions updated
+together, per the CLAUDE.md rule.)
+
+Breaching turns the span to WATER rather than inventing a "broken
+bridge" cell. Heavy hulls ford it in misery; the amphibious Skimmer
+crosses at speed — so a Directorate demolition has an Outlier answer, on
+the map built for it, with no new movement concepts. Repair is EITHER
+TEAM (prompt-70): any truck with materiel beside a dropped span rebuilds
+it, and the tug-of-war is the point.
+
+Tests: geometry pinned against what the generator actually emits (so the
+hand-derived spans cannot drift), breach+repair proven a byte-exact
+terrain round trip, siege gated to artillery, the Skimmer completing a
+crossing the tank cannot, both teams repairing, and hash/determinism
+including the terrain mutation. One test I had to correct: comparing raw
+distance understated the Skimmer, because it ARRIVES and stops — the
+real claim is "gets across while the tank is still wallowing".
+
+Riverline sim gate: A 6 / B 6, 0 undecided, tickets 8/12, avg 14080
+ticks — healthy, and the map's lean is no longer the story it was.
+
+Suite 560/560 (x2). AI siege/repair doctrine is NOT in this slice: the
+bridges exist and humans can use them, but regents do not yet choose to
+drop or rebuild one. That is 13E-2, and it carries its own sweep.

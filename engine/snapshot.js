@@ -77,6 +77,9 @@ export function hashState(state) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetAssetId); w.writeI32LE(d.ageTicks); w.writeI32LE(d.hitTimer);
   }
+  for (const b of (state.bridges ?? [])) { // added 13E — empty = no bytes
+    w.writeI32LE(b.id); w.writeI32LE(b.hp);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }
