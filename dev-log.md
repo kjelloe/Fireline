@@ -2503,3 +2503,37 @@ the click separately, instead of relying on Playwright's actionability
 wait, which headless SwiftShader starves. Three consecutive clean runs.
 
 Suite 544/544. Smoke OK. UI acceptance 12/12.
+
+## slice-18e — wall sliding (2026-07-29, review-round gap analysis)
+
+The review-round skill asks "what does this system touch?". Asking it of
+the 18B wall rule found a bug no test could see: refusing entry keeps
+units out of rock, but a unit whose target lay across a mesa pressed its
+face against the same cell for up to 4681 ticks (~8 minutes) while still
+reporting MOVING — an asset silently out of the war
+(`debugging/dbg_wall_stall.mjs`; frontier shows no such stalls).
+
+Fix, in two honest halves:
+- A GLANCING step slides along the face. Fallbacks are ordered by AXIS
+  (x-only, then y-only), never by sign — the x-mirror maps an x-only
+  slide onto an x-only slide, so slides commute with the mirror.
+- A HEAD-ON step (no lateral component, nothing to slide along) sets
+  ASSET_IDLE so the planner re-engages and the route graph routes around
+  the mesa. Picking a deflection side would be a coin-flip, and a
+  coin-flip keyed to sign is exactly the chirality specs/08 forbids.
+
+Wall stalls 4/9/6 assets per war -> 0/0/0.
+
+THEN THE SWEEP CHANGED THE MAP'S STORY. With units actually reaching
+things, sawtooth went horn 60% -> 13% and tickets 36% -> 83% (better
+pacing than frontier's 22% horn) — and the faction lean came back with
+it, unambiguously this time: A wins 22/30 normal AND 24/30 mirrored, so
+TEAM-linked, and A is the Directorate. The mechanism is 16B's: the
+Sentinel is a super-anchor in the TICKETS meta, and this map just became
+ticket-decided. 18C's "the lean is gone" was true of the map as it then
+played; it did not survive making the map play properly. 18F is owed —
+and prompt-68's underdog premium is now an alternative to blocking it.
+
+Suite 547/547 (two new tests: diagonal slide, head-on stop, plus a
+mirror-equivariance check whose first version was wrong because it
+mirrored positions but not HEADINGS).

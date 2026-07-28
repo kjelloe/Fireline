@@ -173,10 +173,26 @@ store. `bash tools/batch_send.sh sendresults` queues a retroactive
 "mail me everything on your disk" job. Perf JSON still copies by hand.
 
 **Keep the worker current:** the PC worker only knows the job kinds its
-CHECKOUT shipped with — after new worker features land here, the ritual
-on the PC is `git pull && bash tools/batch_worker.sh` (Ctrl-C the old
-one first). A stale worker politely refuses unknown jobs by mail — that
-refusal names its commit, which is your version check.
+CHECKOUT shipped with — after new worker features land here, queue
+`batch_send.sh update` and it pulls and re-execs itself. A stale worker
+politely refuses unknown jobs by mail — that refusal names its commit,
+which is your version check.
+
+**The `update` job handles a dirty worker (prompt 66).** Local edits on
+the PC used to block every update until someone walked to the machine.
+Now `update` stashes them, pulls, and restores them. Three cases, all
+reported by mail:
+
+| On the PC | What happens |
+|---|---|
+| Clean tree | Straight `git pull --ff-only`, re-exec. |
+| Local EDITS | Autostashed, pulled, popped back. If the pop conflicts (your edit touched a file the pull moved) the worktree is HARD RESET to the clean pulled tree and your work is kept in the stash — because re-exec'ing into a tree full of conflict markers would break every later job. The mail names the stash ref. |
+| Local COMMITS (diverged) | No stash can fix this; `--ff-only` refuses and the mail NAMES the local commits (`git log @{u}..HEAD`). Fix by hand: keep them (rebase/push) or `git reset --hard origin/dev_night`. |
+
+Results are never at risk — `reports/sweeps/` is gitignored, so the
+autostash (plain `git stash`, never `-u`) cannot touch a CSV. All three
+paths are covered by `debugging/test_worker_autostash.sh` against real
+git, because this code only ever runs on the PC and has blocked it twice.
 
 **Job kinds as of slice-18b:** `sweep`, `mirror`, `factionswap`,
 `map` (ANY profile — body takes `map` and optional `mirror` 0|1, e.g.

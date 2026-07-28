@@ -1,14 +1,15 @@
-# More Firepower — Version 2 Plan (status after the Rescue Update)
+# Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-07-26 (suite 416/416, fixture v30). HTML twin:
-`plan-version2.html`. Companion to `plan-version1.md` (v1: SHIPPED).
-Sources: `specs/01–06`, `assets/asset-spec.md`, `phases/phase5–7`,
-`specs/future/FUTURE_ROADMAP.md`, rulings in `dev-prompts.md` (prompts
-12–25). Slice-by-slice detail: `plan-implementation-order.md` + reports.*
+*Updated 2026-07-29 (suite 547/547, fixture v40). HTML twin:
+`plan-version2.html` — keep both in step. Companion to
+`plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
+ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
+`specs/10_map_roster.md`. Slice detail: `dev-log.md` + `reports/`.*
 
-The V2.0 cut this file proposed — **"The Rescue Update"** — is
-**essentially shipped**. This revision marks what landed, what changed
-shape, and what genuinely remains.
+**V2.0 "The Rescue Update" shipped long ago.** So did the faction era,
+the pacing era, and the map roster. This board now tracks what is
+genuinely left, and it is mostly ECONOMY, NPCs, and presentation —
+plus three experimental maps that have not earned promotion.
 
 ---
 
@@ -17,79 +18,101 @@ shape, and what genuinely remains.
 | Feature | Status |
 |---|---|
 | Command Carrier | ✅ `slice-9a` — carrier-exclusive standard carrying, capacity-2 rescue bunks |
-| Downed operators (full `operator_foot`) | ✅ `slice-9b` — crawl / redeploy / carrier rescue / delivery / auto-return; AI down-management |
-| Scout Bike (courier) | ✅ `slice-11r` — cannot capture or contest; fastest standard recovery; AI courier doctrine `slice-11v` |
-| Mortar Carrier (mobile indirect) | ✅ `slice-11s` — junior to artillery by pinned relative contract; AI replacement-fire-support doctrine |
-| **Sentinel** (Warden unique) | ⬜ NEXT CAMPAIGN — deployable area denial; breaks mirror symmetry BY DESIGN, gated by the mirror sweep |
-| **Infiltrator** (Freehold unique) | ⬜ NEXT CAMPAIGN — amphibious raider; the riverline river becomes its highway; likely the real fix for riverline standard runs |
-| Factions (Warden/Freehold identity) | ⬜ arrives WITH the unique pair |
-| NPC infantry layer + POWs (Q4) | ⬜ V2.x |
+| Downed operators | ✅ `slice-9b` — crawl / redeploy / carrier rescue / delivery / auto-return |
+| Scout Bike (courier) | ✅ `slice-11r` — cannot capture or contest |
+| Mortar Carrier (mobile indirect) | ✅ `slice-11s` — junior to artillery by pinned contract |
+| **Factions: Directorate vs Outliers** | ✅ `slice-12a` — identity, palettes, insignia (NOT the Warden/Freehold working names this file used to carry) |
+| **Sentinel** (Directorate unique) | ✅ `slice-12b` — deployable hardpoint, threat-reactive doctrine |
+| **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
+| Unique crewing + band tuning | ✅ 16B/16E/prompt-56 — uniques crew BY DEFAULT; normal-world split 51.3% |
+| AT satchel (downed crew) | ✅ `slice-16f` |
+| NPC infantry layer + POWs | ⬜ **12E/12F — the biggest unbuilt gameplay item.** POW mechanic RULED (raidable holding site); needs the NPC layer first |
+| Multi-crew "Landship" | ⏸ POST-V1 FLAGSHIP (designer eval #5) — needs a seat-model rework |
 
 ## Track B — Battlefield systems
 
 | Feature | Status |
 |---|---|
-| Mines | ✅ `slice-9e` + AI mining/clearing doctrine `slice-11d` |
-| Anti-camping drone | ✅ `slice-9g` (ruling Q7) — first flying entity |
-| Minimum Playability Guarantee | ✅ `slice-9d` — Slow Manufacture wreck-rebuild |
-| Damaged sites + materiel | ✅ `slice-11f` — artillery-only siege (explicit flag), truck repair loop; **depots/garages as distinct site types still open** |
-| Path terrain (dirt roads/trails) | ✅ `slice-11n` — per-chassis (heavy tanks excluded); light-chassis trail patrols `slice-11v` |
-| Second map: riverline | ✅ `slice-11m` + bridge relay pair `slice-11w`. **OPEN: standard-run viability** — wars there stay horn-bound; candidates: standard homes nearer the road, raider route bias, or accept as the points-war map until the Infiltrator opens the river |
-| Fuel/munitions transfer (full cargo) | ⬜ V2.x — materiel shipped; the rest of the truck's cargo manifest remains |
-| Route graph & congestion | ⬜ V2.x |
-| Fog ghosts (last-known contacts) | ⬜ V2.x |
-| Convoy events | ⬜ V2.x |
-| Q2b held-standard point bleed | ⏸ armed, deferred until HUMAN standoffs appear |
+| Mines / anti-camping drone / MPG | ✅ `9e` / `9g` / `9d` (+ MPG full waves, base-derived spawns) |
+| Damaged sites + materiel repair | ✅ `slice-11f` — artillery-only siege |
+| Path terrain + per-chassis speeds | ✅ `slice-11n` |
+| **Ticket bleed (hybrid)** | ✅ `slice-13h` — relay majority drains the enemy pool; three live victory paths |
+| **Respawn law** | ✅ `slice-15/15g` — forced respawn, self-recalling hulls, carrier field respawn |
+| **Route graph + dynamic edges** | ✅ `13c`/`13d` — equivariant Dijkstra, mine-aware re-costing |
+| **Body collision** | ✅ `17` — enemy hard block, friendly soft compression |
+| **Weather fronts** | ✅ `slice-16g` — seed-scheduled, sensors halve, pure function |
+| **Wall rule + sliding** | ✅ `18b`/`18e` — impassable terrain refuses entry; glancing steps slide, head-on stops so the planner re-engages |
+| Full cargo manifest | ✅ `slice-13a` + AI resupply runner `13b` |
+| **Bridge demolition (riverline)** | ⬜ **13E — next queued slice.** Everything it needs exists (site hp, siege flag, materiel repair, blocked edges) |
+| Meaningful deaths (B1) | ⬜ ruled — a disable costs a ticket unless the wreck is recovered |
+| Mercy + overtime (B3) | ⬜ ruled — small victory-logic slice |
+| Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |
+| Salvage economy | ⬜ ruled (designer eval #1); may be reshaped by B1 first |
+| Last Convoy finale | ⬜ ruled (designer eval #7) |
+| Fog ghosts / convoys | ⬜ V2.x |
 
-## Track C — Coordination & social
+## Track C — Maps
+
+| Profile | Status |
+|---|---|
+| `frontier_corridor` | ✅ DEFAULT — 8-relay lane+lateral web, band-tuned baseline (51.3% A) |
+| `riverline` | ⚠️ EXPERIMENTAL — west lean collapsed to ~58/42 by the map-aware majority; re-measure after 13E bridges |
+| `blackwood` | ⚠️ EXPERIMENTAL — `slice-18a`; local gate passed, quiet positional identity; **never playtested by a human** |
+| `sawtooth` | ⚠️ EXPERIMENTAL — `slice-18b/c/e`; pacing now excellent (horn 60%→13%) but a **team-linked faction lean re-opened with it**; see specs/10 §4 |
+| The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
+| Map rotation / voting | ⬜ FILED (prompt 64) — server option, minimap thumbnails per candidate, or "next map" on the end screen |
+
+## Track D — Coordination & social
 
 | Feature | Status |
 |---|---|
-| Context pings | ✅ `slice-10c` + vocabulary growth + AI pings `slice-11d` |
-| Public tasks | ✅ `slice-11t` — fog-safe view-model cards; "responding" rides the ping channel; explicit responder counts remain V2.x |
-| Takeover confirmations | ✅ `slice-10b` |
-| Rescue autopilot option (Q8) | ✅ `slice-11g` — ⚙ toggle, B board / U unboard |
-| Recognition scoring | ✅ `slice-11k` — ruled table, rescue > kill, end-screen honors; persistent per-PLAYER profiles/leaderboard remain V2.x |
-| Join flow / lobbies | ⛔ VERSION 3 by ruling (no-lobby stays the entry point) |
+| Context pings / public tasks / takeover confirms | ✅ `10c` / `11t` / `10b` |
+| Recognition scoring + honors | ✅ `slice-11k` — rescue outranks kills |
+| Category awards + death recap (B4/B7) | ⬜ ruled, filler-sized |
+| Quick-command wheel + auto-callouts (B5) | ⬜ ruled — client-side atop pings |
+| Persistent profiles / leaderboard | ⬜ V2.x — includes the underdog-faction ranking premium (prompt 58) |
+| Join flow / lobbies | ⛔ VERSION 3 by ruling |
 
-## Track D — Presentation & platforms
-
-| Feature | Status |
-|---|---|
-| Direct control (Firepower homage, Q10) | ✅ `slice-11l` + targeting circle & aim-assisted clicks `slice-11o` — all chassis |
-| Chase cam | ⏸ ruled (a) fixed tactical cam now, (b) rotating chase cam WITH the perspective pass later |
-| Art round 1 (upgraded procedural) | ✅ `slice-11q` — APPROVED; mine/drone in the factory; 22-tile strip |
-| **Art round 2c: battlefield props** | 🔜 IN QUEUE (ruled first) — trees/rocks/dressing for terrain readability |
-| **Art round 2a: faction palette pass** | 🔜 IN QUEUE (ruled second) |
-| Art round 2b: motion (tracks, recoil, tracers, rotor blur) | 📝 NOTED for later (prompt 25) |
-| Art round 2d: baked sprite fallbacks | 📝 NOTED for later (prompt 25) |
-| Camera/diorama pass (35–55°) | ⬜ V2.x — pairs with chase cam |
-| Spectator | ✅ `slice-10a` |
-| Replay viewer | ✅ `slice-11h` — local re-simulation, byte-exact scrubbing |
-| Audio identity system | ⬜ V2.x (synth cues remain) |
-| Mobile & touch (arrow steering per Q10) | ⬜ V2.x |
-| Localization & accessibility | ⬜ V2.x |
-| Roblox/Luau twin, native port | Horizon |
-
-## Track E — Meta & live ops
+## Track E — Presentation & platforms
 
 | Feature | Status |
 |---|---|
-| Ops hardening | ✅ `slice-11j` — rate limits, /version; ws-upgrade limits & feature flags remain V2.x |
-| Batch-PC lane + sim harnesses | ✅ `slice-11p` — agent-mail jobs, true mirror mode, sweep analyzer |
+| Direct control + targeting | ✅ `11l`/`11o` |
+| Art rounds 1, 2c props, 2a faction palette, 2b motion, 2d baked sprites | ✅ `11q`, `14a`, `14b`, `14c`, `14d` |
+| Base compounds / map detailing | ✅ `14g` |
+| Field Encyclopedia | ✅ `14k` |
+| Replay viewer / spectator | ✅ `11h` / `10a` |
+| i18n (en + no) + a11y | ✅ `15b` / `15c` — key-identical catalogs enforced by test |
+| Mobile touch | ✅ `slice-15a` |
+| Discovery (master server + global list) | ✅ `slice-15h` |
+| **Client feel batch (playtest 8)** | ✅ `slice-18d` — honest centre-on-me, war clock, fog notice, right-drag pan, stats key |
+| Audio identity | ⬜ V2.x — RULED synth-first (WebAudio patch manifest) |
+| Camera/diorama + chase cam | ⬜ V2.x |
+| Native perf numbers | ⬜ BLOCKED on a native-Windows run (the WSL harness only reaches SwiftShader) |
+| Roblox/Luau twin | Horizon |
+
+## Track F — Meta & live ops
+
+| Feature | Status |
+|---|---|
+| Ops hardening, /version, rate limits | ✅ `slice-11j` |
+| Batch-PC lane (agent-mail jobs, CSV mail home) | ✅ `11p` + per-map `map` job + self-update with autostash |
 | Telemetry & heatmaps | ⬜ V2.x (`/metrics` is the seed) |
-| Profiles/leaderboard (persistent) | ⬜ V2.x |
-| Achievements, modding, custom modes, campaign, tournaments | ⬜ V2.x / Horizon (unchanged) |
+| Achievements, modding, custom modes, campaign | ⬜ Horizon |
 
-## The open balance/design questions
+## What is actually blocking progress
 
-Live list: `reports/2026-07-26_rulings_round2.md` (Q17+). Highest value:
-**question 18** (directional arithmetic residue — the batch-PC mirror
-census will give the verdict), riverline standard-run viability (above),
-AI artillery siege doctrine (nobody shells relays yet), and depots as a
-distinct damaged-site class.
+1. **PC worker** — idle on an old commit with a diverged checkout, so no
+   300-war battery has run and no experimental map can be promoted. One
+   manual fix on the PC, then it self-heals (autostash).
+2. **Sawtooth fairness** — pacing is now excellent, but the faction lean
+   returned with it. Needs 18F.
+3. **Blackwood has never been played by a human** — its identity measured
+   well; whether "quiet" reads as tense or dull is a play question.
+4. **Designer calls** — the numbered questions in
+   `reports/2026-07-29_maps_and_playtest8.md`.
 
-## Version 3 (parking lot — needs play experience first)
+## Version 3 (parking lot)
 
 Lobbies/matchmaking as an OPTIONAL entry beside the no-lobby flow;
 whatever sustained multi-human sessions prove the game still needs.

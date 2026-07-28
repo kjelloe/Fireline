@@ -780,6 +780,24 @@ function terrainWalled(map, worldX, worldY, stats) {
   return speedMultiplier(map.cells[cy * map.width + cx], stats) === 0;
 }
 
+// 18E: SLIDE along a wall instead of pressing into it. Refusing the step
+// (18B) keeps units out of the rock, but a unit whose target lies across
+// a mesa would grind its face against the same cell forever — measured
+// at up to 4681 ticks (~8 minutes) on sawtooth, an asset silently
+// removed from the war. The blocking-cell invariant test cannot see
+// that, because the unit never enters the wall; dbg_wall_stall.mjs can.
+//
+// Returns the movement actually allowed, [dx, dy], possibly zeroed.
+// MIRROR SAFETY: the fallbacks are ordered by AXIS (x-only, then
+// y-only), never by sign or direction — the x-mirror maps an x-only
+// slide onto an x-only slide, so mirrored worlds slide identically.
+function slideAlongWall(map, asset, sdx, sdy, stats) {
+  if (!terrainWalled(map, asset.x + sdx, asset.y + sdy, stats)) return [sdx, sdy];
+  if (sdx !== 0 && !terrainWalled(map, asset.x + sdx, asset.y, stats)) return [sdx, 0];
+  if (sdy !== 0 && !terrainWalled(map, asset.x, asset.y + sdy, stats)) return [0, sdy];
+  return [0, 0];
+}
+
 // 11L: tank-style direct drive. A/D pivot at the chassis turnRate; W
 // drives along the heading at chassis speed, S reverses at half; every
 // speed multiplier stepAsset honors applies here too. Map edges clamp.
@@ -813,11 +831,12 @@ function driveStep(asset, map, supplied, carrying, towing, others) {
     Math.min(maxX, Math.max(0, asset.x + sdx)), Math.min(maxY, Math.max(0, asset.y + sdy)));
   if (v === 0) return; // 17: hard-blocked by an enemy hull
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
-  const dnx = Math.min(maxX, Math.max(0, asset.x + sdx));
-  const dny = Math.min(maxY, Math.max(0, asset.y + sdy));
-  if (terrainWalled(map, dnx, dny, stats)) return; // 18B
-  asset.x = dnx;
-  asset.y = dny;
+  // 18B/18E: refuse the rock, but slide along it — a driver holding W
+  // into a mesa face should scrape past it, not weld to it.
+  [sdx, sdy] = slideAlongWall(map, asset, sdx, sdy, stats);
+  if (sdx === 0 && sdy === 0) return;
+  asset.x = Math.min(maxX, Math.max(0, asset.x + sdx));
+  asset.y = Math.min(maxY, Math.max(0, asset.y + sdy));
   asset.targetX = asset.x;
   asset.targetY = asset.y;
 }
@@ -862,7 +881,17 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
   const v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
   if (v === 0) return; // 17: hard-blocked by an enemy hull; keep trying
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
-  if (terrainWalled(map, asset.x + sdx, asset.y + sdy, stats)) return; // 18B
+  [sdx, sdy] = slideAlongWall(map, asset, sdx, sdy, stats); // 18B/18E
+  if (sdx === 0 && sdy === 0) {
+    // Head-on into rock with nothing to slide along: the order is
+    // unreachable this way. Go IDLE so the planner re-engages (the AI
+    // re-plans idle assets, and the route graph routes around mesas)
+    // instead of "moving" against the same cell for minutes. Choosing a
+    // deflection direction here would be a coin-flip, and a coin-flip
+    // keyed to sign is exactly the chirality specs/08 forbids.
+    asset.state = ASSET_IDLE;
+    return;
+  }
   asset.x += sdx;
   asset.y += sdy;
 

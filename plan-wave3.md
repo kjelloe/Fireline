@@ -100,3 +100,4 @@ Rule of thumb held throughout: engine slices carry the sim gate; AI
 behavior changes carry the 5-seed campaign AND a batch-PC sweep; faction
 work carries the faction-swap sweep. Everything lands one tagged slice at
 a time with the 1A fixture guard deciding what is a schema change.
+18C/18D/18E (2026-07-29):     sawtooth tuned ✅ (CAPTURE FAMINE found by probe — relays outside CAPTURE_SEEK_CELLS are never captured at all; tickets 0→36% of endings, horn 87→60%; Sentinel lean DISSOLVED so gap-doubling cancelled) · playtest 8 ✅ (10 items; whereAmI resolver killed the friendlyAssets[0] fallback behind items 25/29/30; move marker 180° was REAL geometry not math) · wall sliding ✅ (mesa face stalls 4/9/6 assets/war → 0/0/0) · worker autostash ✅

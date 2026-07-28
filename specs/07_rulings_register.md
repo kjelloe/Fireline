@@ -144,10 +144,23 @@ at all (18C, below).
 - AI pings sparingly (one per seat per 30 s); regents mine near owned
   relays, clear marked mines, shoot pestering drones.
 
-- **Underdog faction premium (prompt-58, FUTURE profiles/ranking)**:
-  global ranking points scale slightly UP for the faction with the
-  lower measured win rate (currently the Outliers) — derived from live
-  sweep data, not hardcoded, so it self-corrects as balance shifts.
+- **Underdog premium — faction AND map (prompts 58 + 68, FUTURE
+  profiles/ranking)**: global ranking points and honors scale UP for
+  whichever side carries the measured disadvantage — harder challenge,
+  more reward. Two axes, same mechanism:
+  - FACTION: the faction with the lower measured win rate (currently
+    the Outliers).
+  - MAP/SIDE (prompt 68): on a profile that measures a persistent lean,
+    the disadvantaged team earns the premium ON THAT MAP.
+  Both derived from live sweep data, never hardcoded, so they
+  self-correct as balance shifts — and so a premium can never be farmed
+  by picking the "weak" side once it stops being weak.
+  CONSEQUENCE FOR THE MAP GATE: a measured lean no longer automatically
+  disqualifies a profile. A map may ship EXPERIMENTAL-with-premium while
+  tuning continues, provided the lean is (a) measured at sweep scale,
+  (b) disclosed in specs/10, and (c) not so large that the disadvantaged
+  side stops being fun to play — the premium pays for a hard fight, not
+  for a hopeless one.
 
 ## Presentation & platforms
 

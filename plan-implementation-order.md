@@ -211,3 +211,20 @@ designer-conversation questions live there.
 - Direct-control scope (which chassis first?) unlocks the Wave-3 opener.
 - Second-map commissioning + theme; art-pass timing (Q9b procedural
   upgrade now vs after more playtests).
+
+---
+
+## WHERE THIS DOCUMENT STANDS (2026-07-29)
+
+Everything above is the phase 11/12 planning record and is now HISTORY —
+waves 1-3 all landed. The live ledger is **`plan-wave3.md`** (what
+shipped, in order, with outcomes); design rulings live in
+**`specs/07_rulings_register.md`**; map design in
+**`specs/10_map_roster.md`**. The "awaiting rulings" list below is
+resolved except where the register says otherwise.
+
+Current state: suite 547, fixture v40, four map profiles
+(frontier_corridor default; riverline/blackwood/sawtooth EXPERIMENTAL
+pending their 300-war batteries). Next queued: 13E bridges → B1
+meaningful deaths → B3 mercy/overtime → B2 node classes → salvage →
+Last Convoy → 12E NPCs.

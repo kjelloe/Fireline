@@ -52,9 +52,13 @@ outcome. Renderer presents fog-filtered views only.
   tested): `frontier_corridor` (default), `riverline` + `blackwood` +
   `sawtooth` (EXPERIMENTAL until their 300-war PC battery passes).
   Design of record + hard profile constraints + 6-map bank:
-  specs/10_map_roster.md. Wall rule (18B): impassable (0-speed) cells
-  REFUSE entry — units stall at the face (speed samples the current
-  cell; entering would trap them).
+  specs/10_map_roster.md. Wall rule (18B/18E): impassable (0-speed)
+  cells REFUSE entry (speed samples the CURRENT cell, so entering would
+  trap a unit forever). A glancing step SLIDES — fallbacks ordered by
+  AXIS (x-only, then y-only), never by sign, so slides commute with the
+  mirror; a head-on step sets ASSET_IDLE so the planner re-engages.
+  Objectives must sit within `CAPTURE_SEEK_CELLS` (16) of real traffic
+  or they are never captured at all (18C).
 - Roster (9 chassis, ids 0-8): tank/scout/artillery/logistics/carrier/
   bike/mortar/sentinel/skimmer. Per team: 4/3/2/3/2/1/1 + the faction
   unique in garage slot idx 10. Contract flags are EXPLICIT on every
@@ -81,7 +85,20 @@ outcome. Renderer presents fog-filtered views only.
 2. Write or port tests first; use `test/helpers.js` builders (sandbox states
    default to whole-map bases so supply rules stay neutral).
 3. `npm test` must be fully green before commit.
-4. Commit locally with `marker-NNNN:` prefix (next number after the last in
+4. GATE BY LAYER — the suite alone has never been enough:
+   - gameplay/engine → the backend sim gate (`sim-campaign` skill); a new
+     MAP profile also needs 30+30 mirrored locally and a 300-war PC
+     battery (`batch_send.sh map <profile> 300`) before it leaves
+     EXPERIMENTAL.
+   - client → `node tools/client_smoke.mjs` (page errors, join, ticks)
+     AND `node tools/ui_acceptance.mjs` (buttons actually DO their
+     thing). Between them these caught the keydown TDZ that killed every
+     keybind and the z-index that buried the whole HUD — neither of
+     which any unit test could see. Acceptance hit-tests with
+     `elementFromPoint` and dispatches separately, because headless
+     SwiftShader starves Playwright's actionability wait.
+   - a measured claim about tempo/balance → sweep data, never 5 seeds.
+5. Commit locally with `marker-NNNN:` prefix (next number after the last in
    `git log`), update `dev-log.md`. NEVER push — the user handles remotes.
 
 ## Commands

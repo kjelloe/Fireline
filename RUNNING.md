@@ -121,8 +121,29 @@ npm start                              # host machine
   impassable mesa bands split the field into three open lanes, pierced
   by narrow trail gaps (the saw teeth). Tank duels in the lanes; mines,
   Sentinels, and mortars own the gaps; long exposed edge corridors go
-  around. Impassable terrain is a WALL — units stall at the face, never
-  enter. Design of record: specs/10_map_roster.md.
+  around. Impassable terrain is a WALL — you never drive into rock. A
+  glancing approach SLIDES along the face; a dead-on approach stops the
+  unit (so you, or the AI planner, can pick a way around) rather than
+  grinding in place. Design of record: specs/10_map_roster.md.
+- Camera (playtest 8): hold the RIGHT mouse button and drag to pan, the
+  same as the arrow keys but continuous. **Center** and **center on me**
+  both find YOU — including while you are on foot or riding someone
+  else's carrier, which previously centred on a random teammate.
+- Unit stats (playtest 8): press **I** for the stats panel of whatever
+  you are hovering, or of your own hull if you are not hovering
+  anything. (The hover tip's ⓘ link still works, but reaching for it
+  moves the pointer off the unit — hence the key. Not S: that is a WASD
+  pan key. Remappable in ⚙ like every other action.)
+- Announcements (playtest 8): the war clock calls half time, quarter
+  time, the final push and the last thirty seconds; a weather front
+  announces itself ("SUDDEN ONSET OF FOG — sensors halved") when it
+  rolls in and again when it lifts. Refused orders now say why, in your
+  language, in the middle of the screen instead of scrolling past in the
+  corner feed.
+- When you are DOWN: the banner names both options — REDEPLOY NOW (R),
+  or CLICK THE GROUND to crawl toward a carrier. "Next asset" greys out
+  whenever it cannot do anything (on foot, respawning, riding, or
+  nothing free) and its tooltip says which.
 - Direct drive (11L+11O, the Firepower homage): press G — WASD becomes
   tank controls (W/S throttle with half-speed reverse, A/D steer at your
   chassis' turn rate; all chassis supported). A red targeting circle

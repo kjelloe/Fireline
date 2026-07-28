@@ -34,10 +34,34 @@ for 29 worked examples). Follow this shape:
 - New events → map them in `feedback_model.js`, `audio_cues.js`,
   `vfx_cues.js`, and `server/metrics.js` if balance-relevant.
 
+## 3b. Layer-specific contracts (learned the hard way)
+- **Player-facing text** → BOTH catalogs in `client/js/strings.js` (en +
+  no). A parity test refuses a half-translated UI.
+- **A new MAP profile** → three mirror-closed tables added together or
+  not at all: `MAP_LAYOUTS` (state.js), `GRAPHS` (route_graph.js),
+  `PATROLS` (ai_regency.js). And every objective must sit within
+  `CAPTURE_SEEK_CELLS` (16, Manhattan) of somewhere units actually go,
+  or it is never captured by anyone (18C).
+- **New terrain behaviour** → ask what it does to towing, carrying,
+  boarding, MPG rebuild spawns, and the route graph before trusting a
+  sweep.
+
 ## 4. Verify and land
-- `npm test` fully green (247+ tests); flaky ws tests get poll-waits, not
-  longer sleeps. Run `npm run sim2a` / `npm run simv1` if the slice touches
-  combat, movement, supply, or standards.
+- `npm test` fully green (547+ tests, double-run); flaky ws tests get
+  poll-waits, not longer sleeps.
+- **Gate by layer** — the suite alone has never been enough:
+  - gameplay/engine → the `sim-campaign` skill's 5-seed gate; balance
+    claims need sweep scale (300+), never 5 seeds.
+  - client → `node tools/client_smoke.mjs` AND
+    `node tools/ui_acceptance.mjs`. These found the keydown TDZ that
+    killed every keybind and the z-index that buried the whole HUD.
+    Add an acceptance check for any new button or key.
+  - Run `npm run sim2a` / `npm run simv1` if the slice touches combat,
+    movement, supply, or standards.
+- **When a playtest reports a VISUAL bug, reason about the rendered
+  shape, not just the transform.** The move-marker "180° out" was
+  cleared once by reading the rotation math (correct) while the geometry
+  built an arrow whose dominant blades pointed backwards (18D).
 - Commit locally: `marker-NNNN: <slice> (<pass-count>/<pass-count>)` (next
   NNNN from `git log`), add the `dev-log.md` entry, append any new product
   decision to `dev-prompts.md`. Never push.

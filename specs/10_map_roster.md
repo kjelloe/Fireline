@@ -205,6 +205,33 @@ whether 60% horn is acceptable identity for a grinding armor map or
 wants a second pacing pull (candidate: cross-lane light patrols so
 enemy lane relays get raided and possession swings more).
 
+**18E — wall sliding changed this map's character completely, and the
+verdict above with it.** Units were pressing their faces against mesas
+for up to 4681 ticks (dbg_wall_stall.mjs); once they could slide along
+the rock and stop when truly blocked, they started REACHING things:
+
+| | horn | tickets | avg ticks | A / B |
+|---|---|---|---|---|
+| 18C (stalling) | 60% | 36% | 15876 | 11 / 18 |
+| 18E normal | 13% | 83% | 12627 | 22 / 8 |
+| 18E mirrored | 7% | 93% | 13104 | 24 / 6 |
+
+Pacing is now BETTER than frontier (13% horn vs 22%). But the same
+change re-opened the faction lean, and this time it is unambiguous: A
+wins in BOTH worlds (73% normal, 80% mirrored), i.e. TEAM-linked, and
+team A is the Directorate. The mechanism is the one 16B documented — the
+Sentinel is a super-anchor in the TICKETS meta — and sawtooth just moved
+from being points-decided to being ticket-decided. My 18C conclusion
+("the lean is gone") was true of the map as it then played; it did not
+survive making the map play properly.
+
+**18F, therefore, is owed.** The gap-doubling cancelled in 18C is back on
+the table on its merits (more crossings = less anchorable), as is a
+cross-lane pull. And per the prompt-68 ruling, sawtooth is now a
+candidate to ship EXPERIMENTAL-WITH-PREMIUM: a measured lean no longer
+disqualifies a map outright if it is disclosed and the disadvantaged
+side still plays well.
+
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
 1. **archipelago** — island chain, causeways + water highways; the

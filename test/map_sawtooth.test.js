@@ -112,6 +112,64 @@ test("18B the wall rule: a unit ordered into a mesa stalls at its face", () => {
   assert.ok(((d.assets[0].x / 256) | 0) < 10, "drive stalls at the face");
 });
 
+test("18E a DIAGONAL approach slides along the wall instead of welding to it", () => {
+  // The wall rule alone let a unit grind its face against rock forever
+  // (measured at 4681 ticks on sawtooth — an asset silently out of the
+  // war). With any lateral component, it must keep making that progress.
+  const size = 24;
+  const cells = new Uint8Array(size * size);
+  for (let y = 0; y < size; y++) cells[y * size + 12] = T_BLOCKING;
+  let s = sandbox([{ team: 0, type: 0, cellX: 8, cellY: 8 }],
+    [], { map: { width: size, height: size, cells, seed: 1 } });
+  s = joinSelectMove(s, 0, 0, 0, 20, 18); // across the wall AND down
+  const startY = s.assets[0].y;
+  for (let i = 0; i < 400; i++) s = apply(s, { type: "advance_tick" });
+  const a = s.assets[0];
+  assert.ok(((a.x / 256) | 0) < 12, "still on this side of the wall");
+  assert.ok(a.y > startY, `slid ALONG the wall (y ${startY} -> ${a.y})`);
+});
+
+test("18E a HEAD-ON wall stops the unit so the planner re-engages", () => {
+  // No lateral component means nothing to slide along; the honest answer
+  // is to stop. Picking a deflection side would be a coin-flip, and a
+  // coin-flip keyed to sign is the chirality specs/08 forbids.
+  const size = 24;
+  const cells = new Uint8Array(size * size);
+  for (let y = 0; y < size; y++) cells[y * size + 12] = T_BLOCKING;
+  let s = sandbox([{ team: 0, type: 0, cellX: 8, cellY: 8 }],
+    [], { map: { width: size, height: size, cells, seed: 1 } });
+  s = joinSelectMove(s, 0, 0, 0, 20, 8); // dead ahead through the wall
+  for (let i = 0; i < 200; i++) s = apply(s, { type: "advance_tick" });
+  const a = s.assets[0];
+  assert.ok(((a.x / 256) | 0) < 12, "never enters the wall");
+  assert.equal(a.state, 0 /* ASSET_IDLE */, "stopped, not pretending to move");
+});
+
+test("18E sliding is mirror-equivariant (axis-ordered fallbacks)", () => {
+  // Slides must commute with the mirror, or the map gains a chirality.
+  // Ordering the fallbacks by AXIS (x, then y) is safe; ordering by sign
+  // would not be. Same wall, mirrored world, mirrored outcome.
+  const size = 24;
+  // The heading must be mirrored too (h' = 128 - h). Mirroring only the
+  // POSITIONS made the reflected unit turn 180° on the spot, and it slid
+  // while pivoting — the test's bug, not the engine's, but exactly the
+  // kind of thing that gets miscalled as a chirality.
+  const build = (wallX, fromX, toX, heading) => {
+    const cells = new Uint8Array(size * size);
+    for (let y = 0; y < 16; y++) cells[y * size + wallX] = T_BLOCKING;
+    let st = sandbox([{ team: 0, type: 0, cellX: fromX, cellY: 8, heading }],
+      [], { map: { width: size, height: size, cells, seed: 1 } });
+    st = joinSelectMove(st, 0, 0, 0, toX, 8);
+    for (let i = 0; i < 400; i++) st = apply(st, { type: "advance_tick" });
+    return st.assets[0];
+  };
+  const normal = build(12, 8, 20, 0);                                  // facing east
+  const mirror = build(size - 1 - 12, size - 1 - 8, size - 1 - 20, 128); // facing west
+  assert.equal(normal.y, mirror.y, "mirrored slide travels the same way along the wall");
+  assert.equal((normal.x / 256) | 0, size - 1 - ((mirror.x / 256) | 0),
+    "mirrored slide stops at the mirrored cell");
+});
+
 test("18B an AI war on sawtooth is fought, deterministic, and NOBODY enters a mesa", () => {
   const run = () => {
     const server = new GameServer({ mapSeed: 777, mapProfile: "sawtooth", enableAi: true });
