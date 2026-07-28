@@ -113,11 +113,13 @@ handle_job() { # $1 = JSON body
       # Self-update (prompt 47): pull and RE-EXEC — the fresh process
       # re-validates the suite and mails "worker online on <new commit>".
       # ff-only so a diverged PC checkout fails loudly instead of merging.
-      if git pull --ff-only >/dev/null 2>&1; then
+      local pullmsg
+      if pullmsg=$(git pull --ff-only 2>&1); then
         $AM send --from $ME --to dev --tag done "updating: $TAG -> $(git describe --tags --always); re-exec" >/dev/null
         exec bash "$0"
       else
-        $AM send --from $ME --to dev --tag done "update FAILED on $TAG: git pull --ff-only refused (diverged checkout?) — manual fix needed on the PC"
+        # Mail the ACTUAL git error — "diverged?" guesses helped nobody.
+        $AM send --from $ME --to dev --tag done "update FAILED on $TAG: ${pullmsg:0:220}"
       fi ;;
     perf)
       $AM status --as $ME "running perf harness on $TAG" >/dev/null
