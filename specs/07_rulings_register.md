@@ -177,3 +177,16 @@ at all (18C, below).
   need sweep-scale data (local 300+, PC 600+).
 - Batch PC runs sweeps via agent-mail; results return as CSV mail;
   worker self-updates via the `update` job.
+
+## Open design questions from playtest 8
+
+- **Should seat swapping require a base/site? (item 22, UNRULED)** The
+  player expected "Next asset" to work only inside a base area. The
+  ENGINE has no such restriction today — `select_asset` is legal
+  anywhere, and the AI crewing ladder (a freed seat picks the best
+  available hull, wherever it stands) depends on that. Adding the
+  restriction is a gameplay change with sim consequences, not a UI
+  tweak, so the client currently greys the button only for conditions
+  that genuinely block a selection (downed, respawning, aboard, nothing
+  free). If the rule IS wanted: it needs a reducer gate, an AI doctrine
+  answer for field re-crewing, and a sweep to confirm tempo survives.

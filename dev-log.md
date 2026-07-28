@@ -2461,3 +2461,45 @@ than reasoning (`debugging/test_worker_autostash.sh`, real git, 11/11):
 
 Results are never at risk: OUT=reports/sweeps is gitignored, so a plain
 `git stash` (never -u) cannot touch a CSV — asserted by the test.
+
+## slice-18d — playtest 8 (2026-07-29, prompt 65)
+
+Ten items. Three were the same bug wearing different clothes.
+
+**Items 25/29/30 — "centre on me" and "clicking did nothing".** The
+follow camera resolved the player as
+`friendlyAssets.find(mine) ?? friendlyAssets[0]`. That fallback is a
+lie: whenever you have no asset — DOWNED, respawning, or riding a
+carrier — it confidently centred on a random teammate ("centred on the
+last wreck mission", "could not see myself on any carrier"). Replaced
+with `whereAmI()`, which resolves asset → downed operator → the carrier
+you are aboard, and returns NULL rather than pointing somewhere wrong;
+both centre buttons and F now use it. And selection while downed was
+rejected by the engine ("operator not active") with the refusal landing
+as raw English in a six-line corner feed — that is what "did nothing"
+was. Refusals are now translated and flashed centre-screen, and the
+client no longer sends selections it knows will be refused.
+
+**Item 23 — the move marker really was 180° out.** Reported twice; my
+earlier code-read cleared it because the ROTATION MATH was right. The
+geometry was not: the two blades splayed to meet at -z while the tip
+cone pointed +z, and the blades are far larger than the cone, so the
+marker read as pointing backwards. One sign flip. The aim also refreshes
+every frame now ("at all time"), and works while crawling.
+
+Also: item 22 Next-asset greys out with a reason on hover (the base-area
+RULE the user asked for is a gameplay change — the engine has no such
+restriction and the AI crewing ladder depends on field swaps — so it is
+filed as a design question, not smuggled in); 24 the down banner names
+the crawl affordance ("CLICK THE GROUND"); 26 a fog notice on the
+weather front; 27 a war clock announcing half/quarter/final and the last
+30 seconds; 28 right-button drag panning; 31 stats on a key (I, not S —
+s is a WASD pan key, and holding it would drag the camera while reading).
+
+UI acceptance grew six checks and, more importantly, stopped being
+flaky: it now hit-tests each button with elementFromPoint (the real
+buried-HUD guard, a layout query that cannot time out) and dispatches
+the click separately, instead of relying on Playwright's actionability
+wait, which headless SwiftShader starves. Three consecutive clean runs.
+
+Suite 544/544. Smoke OK. UI acceptance 12/12.

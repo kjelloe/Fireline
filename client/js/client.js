@@ -17,6 +17,7 @@ import {
 import { createSpriteRenderer } from "./sprite_renderer.js";
 import { rowsFor } from "./server_list.js";
 import { weatherWindow } from "../../engine/los.js";
+import { TIME_LIMIT_TICKS } from "../../engine/victory.js"; // item 27: the war clock
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
@@ -79,6 +80,7 @@ let directRing = null; // 11O: the tracking targeting circle
 const orderMarkers = []; // 14I: click-order feedback {sprite, bornMs}
 let lastMyScore = null; // 14J: mission-complete toast trigger
 let toastUntil = 0;
+let dragPan = null; // item 28: right-button drag-pan anchor, or null
 let boardCollapsed = localStorage.getItem("mf_board_collapsed") === "1";
 const eventFeed = [];
 let liveVfx = [];
@@ -158,7 +160,34 @@ function init() {
   renderer.domElement.addEventListener("pointerdown", onPointerDown);
   if (isTouchDevice()) setupTouch(); // 15A
 
+  // Item 28: hold the RIGHT button and drag to pan, like the arrow keys
+  // but continuous. The context menu is suppressed on the canvas only,
+  // and the drag is converted from pixels to CELLS using the current
+  // zoom so it tracks the ground under the cursor at any scale.
+  renderer.domElement.addEventListener("contextmenu", (e) => e.preventDefault());
+  renderer.domElement.addEventListener("pointerdown", (event) => {
+    if (event.button !== 2) return;
+    dragPan = { x: event.clientX, y: event.clientY };
+    renderer.domElement.setPointerCapture?.(event.pointerId);
+  });
+  const endDragPan = (event) => {
+    if (dragPan) renderer.domElement.releasePointerCapture?.(event.pointerId);
+    dragPan = null;
+  };
+  renderer.domElement.addEventListener("pointerup", endDragPan);
+  renderer.domElement.addEventListener("pointercancel", endDragPan);
+
   renderer.domElement.addEventListener("pointermove", (event) => { // 14I
+    if (dragPan) {
+      // Screen->world: the camera looks down the (+x,+z) diagonal, so a
+      // pixel of screen x maps to world (x - z) and screen y to (x + z).
+      const cellsPerPixel = (freeCam.state.zoom * 2) / window.innerHeight;
+      const dx = (event.clientX - dragPan.x) * cellsPerPixel;
+      const dy = (event.clientY - dragPan.y) * cellsPerPixel;
+      freeCam.pan(-(dx + dy) * 0.7071, (dx - dy) * 0.7071);
+      dragPan = { x: event.clientX, y: event.clientY };
+      return;
+    }
     const now = performance.now();
     if (now - lastHoverMs < 90) return;
     lastHoverMs = now;
@@ -176,7 +205,8 @@ function init() {
     }
     hoverAssetId = found;
   });
-  document.getElementById("btn-recenter").onclick = () => freeCam.followMode(true);
+  // Both centre buttons resolve position the same honest way (items 25/29).
+  document.getElementById("btn-recenter").onclick = centreOnMe;
   document.getElementById("btn-next-asset").onclick = selectNextAsset;
 
   // 8G: free camera controls (11L: direct mode claims WASD first).
@@ -200,7 +230,16 @@ function init() {
     }
     const pan = panForKey(e.key);
     if (pan) { freeCam.pan(pan.dx, pan.dy); return; }
-    if (e.key === "f" || e.key === "F") freeCam.followMode(true);
+    if (e.key === "f" || e.key === "F") centreOnMe(); // item 29
+    // Item 31: stats for whatever you are pointing at, or your own hull.
+    if (k === BINDS.stats) {
+      const view = interpolator.latest();
+      const target = hoverAssetId !== null
+        ? view?.friendlyAssets?.find((a) => a.id === hoverAssetId)
+        : view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+      if (target) showCodex(target.type);
+      return;
+    }
     if (e.key === "Home") {
       const zone = interpolator.latest()?.bases?.find((b) => b.team === joined?.team);
       if (zone) freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
@@ -372,6 +411,12 @@ function init() {
     cam: () => ({ ...freeCam.state }), // UI acceptance: camera assertions
     joined: () => joined,
     selectedAsset: () => mySelectedAssetId,
+    // playtest-8 acceptance surface
+    whereAmI: () => whereAmI(interpolator.latest()),
+    notice: () => {
+      const el = document.getElementById("centre-notice");
+      return el && el.style.display === "block" ? el.textContent : null;
+    },
   };
 
   loadAssetMetadata().then(() => {
@@ -486,13 +531,22 @@ function connect() {
         }
       }
       updateObjectiveStrip(msg.view);
+      updateNextAssetButton(msg.view); // item 22
+      updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
       for (const cue of mapEventsToCues(msg.view.events, msg.view)) playCue(cue.cue);
       liveVfx.push(...mapEventsToVfx(msg.view.events, msg.view, performance.now()));
       liveMotion.push(...mapEventsToMotion(msg.view.events, msg.view, performance.now()));
       updateOpInfo(msg);
     } else if (msg.type === "s_rejected") {
-      pushEvent(`rejected: ${msg.reason}`);
+      // Item 30: a refusal is a direct answer to something the player
+      // just did — it belongs in front of them, in their language, not
+      // as raw English in a corner feed. ("Clicking did nothing" was
+      // this.) The takeover-confirm case has its own Enter-retry flow,
+      // so it stays quiet here.
+      const line = t(`rej.${msg.reason}`);
+      pushEvent(line);
+      if (msg.reason !== "takeover needs confirmation") flashNotice(line, 2200, "#ff6b52");
     }
   };
   socket.onclose = () => {
@@ -743,9 +797,73 @@ function send(cmd) {
   socket.send(JSON.stringify(cmd));
 }
 
+// Playtest-8 items 25/29: WHERE AM I, honestly. "Centre on me" used to
+// fall back to friendlyAssets[0] whenever you had no asset of your own —
+// so while downed, respawning, or riding a carrier it silently centred on
+// a random teammate ("centred on the last wreck mission", "could not see
+// myself on any carrier"). There is no fallback now: if we cannot find
+// you, we say so rather than point somewhere confident and wrong.
+function whereAmI(view) {
+  if (!view || !joined) return null;
+  const mine = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
+  if (mine) return { kind: "asset", x: mine.x, y: mine.y, assetId: mine.id };
+  const down = view.downedOperators?.find((d) => d.operatorId === joined.operatorId);
+  if (down) return { kind: "downed", x: down.x, y: down.y };
+  const carrier = view.friendlyAssets?.find(
+    (a) => a.aboard1 === joined.operatorId || a.aboard2 === joined.operatorId);
+  if (carrier) return { kind: "aboard", x: carrier.x, y: carrier.y, assetId: carrier.id };
+  return null;
+}
+
+// Item 29: the button now reports failure instead of quietly following
+// someone else. Item 25: riding a carrier counts as "me".
+function centreOnMe() {
+  const me = whereAmI(interpolator.latest());
+  if (!me) { flashNotice(t("notice.no_position")); return; }
+  freeCam.jumpTo(me.x / CELL, me.y / CELL);
+  freeCam.followMode(true);
+  spawnRingUntil = performance.now() + 2000; // "you are HERE"
+}
+
+// Item 22/30: can a Next-asset press possibly succeed? The engine
+// rejects selection while your seat is DOWN or respawning, and the
+// rejection only ever reached a small corner feed in raw English —
+// which is what "clicking did nothing" actually was.
+function selectBlockedReason(view) {
+  if (!view || !joined || joined.spectator) return "notice.spectating";
+  if (view.downedOperators?.some((d) => d.operatorId === joined.operatorId)) {
+    return "notice.on_foot";
+  }
+  const me = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
+  if (!me && whereAmI(view)?.kind === "aboard") return "notice.aboard";
+  const free = (view.friendlyAssets ?? []).filter(
+    (a) => a.state !== STATE_DISABLED &&
+      (a.operatorId === -1 || a.operatorId === joined.operatorId));
+  if (free.length <= 1) return "notice.no_free_asset";
+  return null;
+}
+
+// Item 22: the button tells the truth about whether it can do anything,
+// and hovering says why not. (The user asked for base-area gating; the
+// ENGINE has no such rule today — swapping seats in the field is legal
+// and the AI crewing ladder depends on it — so this greys out for the
+// conditions that actually block a selection. The base-area rule itself
+// is filed as a design question in specs/07.)
+function updateNextAssetButton(view) {
+  const btn = document.getElementById("btn-next-asset");
+  if (!btn) return;
+  const blocked = selectBlockedReason(view);
+  btn.disabled = blocked !== null;
+  btn.style.opacity = blocked ? "0.45" : "1";
+  btn.style.cursor = blocked ? "not-allowed" : "pointer";
+  btn.title = blocked ? t(blocked) : "";
+}
+
 function selectNextAsset() {
   const view = interpolator.latest();
   if (!view) return;
+  const blocked = selectBlockedReason(view);
+  if (blocked) { flashNotice(t(blocked)); return; }
   const own = view.friendlyAssets.filter((a) => a.state !== STATE_DISABLED);
   if (own.length === 0) return;
   const free = own.filter((a) => a.operatorId === -1 || a.operatorId === joined.operatorId);
@@ -758,6 +876,7 @@ function selectNextAsset() {
 
 function onPointerDown(event) {
   if (!joined) return;
+  if (event.button === 2) return; // item 28: right button pans, never orders
   const mouse = new THREE.Vector2(
     (event.clientX / window.innerWidth) * 2 - 1,
     -(event.clientY / window.innerHeight) * 2 + 1
@@ -816,6 +935,12 @@ function handleEvents(events) {
       pendingTakeover = lastSelectAttempt;
     }
     if (e.type === "ping") teamPings.push(e); // 10C (view is already team-scoped)
+    // Item 26: the front rolling in halves every sensor on the map —
+    // players must be TOLD, not left to notice their scouts going blind.
+    if (e.type === "weather_front") {
+      flashNotice(t(e.phase === "in" ? "notice.fog_in" : "notice.fog_out"), 3400,
+        e.phase === "in" ? "#9ab" : "#ffd75e");
+    }
     if (e.type === "game_over") showEndScreen();
   }
 }
@@ -1680,6 +1805,50 @@ function updateTaskStrip(view) {
   }
 }
 
+// Playtest-8: the NOTICE line — one prominent, short-lived message for
+// things the player must actually notice: why an action was refused
+// (item 30), the weather turning (26), and the war clock (27). Distinct
+// from the mission toast (reward) and the action banner (a thing to do).
+let noticeUntil = 0;
+function flashNotice(text, ms = 2600, color = "#ffd75e") {
+  const el = document.getElementById("centre-notice");
+  if (!el) return;
+  el.textContent = text;
+  el.style.color = color;
+  el.style.display = "block";
+  el.style.opacity = "1";
+  noticeUntil = performance.now() + ms;
+}
+function updateCentreNotice() {
+  if (noticeUntil === 0) return; // idle: no DOM work at all, every frame
+  const el = document.getElementById("centre-notice");
+  if (!el) return;
+  const left = noticeUntil - performance.now();
+  if (left <= 0) { el.style.display = "none"; noticeUntil = 0; }
+  else el.style.opacity = String(Math.min(1, left / 700));
+}
+
+// Item 27: the war clock, announced. Fires once per threshold per war —
+// half time, 25% left, 10% left, then a countdown over the last 30 s.
+let clockMarks = new Set();
+let lastCountdownSecond = -1;
+function updateWarClock(view) {
+  if (!view || view.phase !== 0) return;
+  const left = TIME_LIMIT_TICKS - view.tick;
+  if (left <= 0) return;
+  const secs = Math.ceil(left / 10); // 10 Hz
+  for (const [frac, key] of [[0.5, "clock.half"], [0.25, "clock.quarter"], [0.1, "clock.tenth"]]) {
+    if (!clockMarks.has(key) && left <= TIME_LIMIT_TICKS * frac) {
+      clockMarks.add(key);
+      flashNotice(t(key, { m: Math.round(left / 600) }), 3000);
+    }
+  }
+  if (secs <= 30 && secs !== lastCountdownSecond) {
+    lastCountdownSecond = secs;
+    flashNotice(t("clock.countdown", { s: secs }), 1100, secs <= 10 ? "#ff6b52" : "#ffd75e");
+  }
+}
+
 // 14J (playtest 6.5): Recognition made LOUD — your score rising IS a
 // mission completing; toast it center screen with the points.
 function updateMissionToast(view) {
@@ -1800,7 +1969,7 @@ function updateStatusPanel(view) {
   const btn = document.getElementById("btn-request-supplies");
   if (btn) btn.onclick = () => send({ type: "ping", kind: "need_supplies" });
   const center = document.getElementById("btn-center-me");
-  if (center) center.onclick = () => freeCam.followMode(true); // 14J item 8
+  if (center) center.onclick = centreOnMe; // 14J item 8; playtest-8 item 29
   const fr = document.getElementById("btn-force-respawn");
   if (fr) fr.ondblclick = () => send({ type: "respawn" });
 }
@@ -1841,8 +2010,11 @@ function updateHoverTip(view) {
   el.style.top = `${Math.round(sy - 46)}px`;
   el.style.display = "block";
   const name = codexFor(a.type)?.name?.toUpperCase() ?? "UNIT";
+  // Item 31: the key is the reliable route — the link stays for mouse
+  // users who manage to reach it, but the tip now names the shortcut.
   el.innerHTML = `${t("hover.vacant", { name })} ` +
-    `<span id="hover-stats" style="color:#7fd4ff; cursor:pointer;">${t("hover.stats")}</span>`;
+    `<span id="hover-stats" style="color:#7fd4ff; cursor:pointer;">${t("hover.stats")}</span>` +
+    ` <span style="color:#9ab;">(${BINDS.stats.toUpperCase()})</span>`;
   const link = document.getElementById("hover-stats");
   if (link) link.onclick = (ev) => { ev.stopPropagation(); showCodex(a.type); };
 }
@@ -1876,10 +2048,16 @@ function makeOrderMarker(kind) {
   if (kind === "move" || kind === "crawl") {
     // A gold road chevron: two blades meeting at the tip, pointing +z.
     const color = kind === "move" ? 0xf5c84a : 0xffd75e;
+    // Playtest-8 item 23: the blades used to splay the WRONG way — they
+    // met at -z while the tip cone pointed +z, and since the blades are
+    // much larger than the cone the whole marker read as pointing
+    // backwards. (Reported twice; a code-read cleared it wrongly the
+    // first time because the rotation MATH was right — the geometry was
+    // not.) Apex now agrees with the tip.
     for (const side of [-1, 1]) {
       const blade = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, 0.12), flatMat(color));
       blade.position.set(side * 0.16, 0.05, -0.1);
-      blade.rotation.y = side * -Math.PI / 4;
+      blade.rotation.y = side * Math.PI / 4;
       g.add(blade);
     }
     const tip = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.3, 3), flatMat(color));
@@ -1928,18 +2106,26 @@ function spawnOrderMarker(cmd, cellX, cellY) {
   if (!kind) return;
   const marker = makeOrderMarker(kind);
   marker.position.set(cellX + 0.5, 0, cellY + 0.5);
-  // Movement chevrons point along the travel direction from your asset.
-  if (kind === "move" || kind === "crawl") {
-    const me = interpolator.latest()?.friendlyAssets?.find(
-      (a) => a.operatorId === joined?.operatorId);
-    if (me) {
-      const dx = cellX + 0.5 - me.x / CELL;
-      const dz = cellY + 0.5 - me.y / CELL;
-      marker.rotation.y = Math.atan2(dx, dz);
-    }
-  }
+  // Movement chevrons point along the travel direction. Item 23 asks for
+  // "at all time", so the aim is refreshed every frame while the marker
+  // lives (you turn, the chevron keeps pointing the way you travel) —
+  // and it works while DOWNED too, where the mover is a crawling
+  // operator rather than an asset.
+  const aimed = kind === "move" || kind === "crawl";
+  if (aimed) aimOrderMarker(marker, cellX, cellY);
   scene.add(marker);
-  orderMarkers.push({ marker, bornMs: performance.now() });
+  orderMarkers.push({ marker, bornMs: performance.now(), aimed, cellX, cellY });
+}
+
+function aimOrderMarker(marker, cellX, cellY) {
+  const me = whereAmI(interpolator.latest());
+  if (!me) return;
+  const dx = cellX + 0.5 - me.x / CELL;
+  const dz = cellY + 0.5 - me.y / CELL;
+  if (dx === 0 && dz === 0) return;
+  // The marker's nose is +z; rotation.y = atan2(dx, dz) turns +z onto
+  // the travel vector.
+  marker.rotation.y = Math.atan2(dx, dz);
 }
 function updateOrderMarkers(nowMs) {
   for (let i = orderMarkers.length - 1; i >= 0; i--) {
@@ -1950,6 +2136,7 @@ function updateOrderMarkers(nowMs) {
       orderMarkers.splice(i, 1);
       continue;
     }
+    if (m.aimed) aimOrderMarker(m.marker, m.cellX, m.cellY); // item 23
     // RTS confirm: shrink into place fast, then fade out flat.
     const settle = Math.min(1, age / 180);
     const size = 1.6 - 0.6 * settle;
@@ -2204,6 +2391,7 @@ function renderBattlefield() {
   updateStatusPanel(view);
   updateHoverTip(view);
   updateMissionToast(view);
+  updateCentreNotice(); // playtest-8: refusals, weather, war clock
   updateTeamBoard(view);
   updateTargetRings(view);
   updateTouchDrive(view);
@@ -2218,8 +2406,9 @@ function renderBattlefield() {
 
   // 8G: follow tracks your asset; manual pan/zoom takes over seamlessly.
   if (joined) {
-    const own = view.friendlyAssets.find((a) => a.operatorId === joined.operatorId)
-      ?? view.friendlyAssets[0];
+    // Items 25/29: NO fallback to friendlyAssets[0] — following a random
+    // teammate is worse than not following at all.
+    const own = whereAmI(view);
     if (own) freeCam.trackIfFollowing(own.x / CELL, own.y / CELL);
   }
   const cam = freeCam.state;

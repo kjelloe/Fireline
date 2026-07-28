@@ -13,6 +13,12 @@ export const DEFAULT_BINDS = Object.freeze({
   transfer: "v",
   hardpoint: "h",
   directDrive: "g",
+  // Playtest-8 item 31: the hover tip's "stats" link is unclickable in
+  // practice — reaching for it moves the pointer off the unit and the
+  // tip vanishes. So: a key. NOT "s" as suggested, because s is a WASD
+  // pan key (holding s while reading stats would drag the camera); "i"
+  // for info is free, and this is remappable like every other bind.
+  stats: "i",
 });
 
 export function loadBinds(storage = globalThis.localStorage) {
