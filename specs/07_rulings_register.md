@@ -100,6 +100,11 @@ local-only file by choice; this register records the *decisions*.
 - AI pings sparingly (one per seat per 30 s); regents mine near owned
   relays, clear marked mines, shoot pestering drones.
 
+- **Underdog faction premium (prompt-58, FUTURE profiles/ranking)**:
+  global ranking points scale slightly UP for the faction with the
+  lower measured win rate (currently the Outliers) — derived from live
+  sweep data, not hardcoded, so it self-corrects as balance shifts.
+
 ## Presentation & platforms
 
 - Painted low-poly hybrid; diorama read. Title/copy rules in
