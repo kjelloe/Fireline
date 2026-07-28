@@ -2180,3 +2180,25 @@ call_medic stays the only inert command). Sim-neutral: AI never calls
 either path; gate byte-identical.
 
 Suite 511/511. Smoke OK. UI acceptance OK. Tagged slice-15g.
+
+## 16B residue — mechanism found, verdict honest, ball to the designer (2026-07-28)
+
+Telemetry v2 (dbg_16b_uptime) decomposed the ~11pt unique imbalance:
+the Skimmer became B's designated fastest-seat recoverer in 7/12 seeds
+(a 45hp airboat on standard-fetch duty) and wasted a would-be tank seat
+on waterless maps; the Sentinel out-anchored it 2-4x at relays, which
+the ticket era converts straight into wins. TWO DOCTRINE FIXES LANDED
+(right regardless of verdict): the airboat only crews where the map has
+water (mapHasWater, cached per seed), and the Sentinel is excluded from
+capturer designation — it defends via reactive deploys, never squats.
+VERDICT SWEEP (300+300 swap): Sentinel-side 60.2% (from 60.75) — the
+doctrine levers shaved ~2pts; the rest is the HULL (150hp reactive
+fortress ≈ super-tank in the routed-tickets meta). Chassis stats are
+designer-pinned (12B), so 16B STAYS DORMANT per the ruling's own
+condition, and the tuning question goes to the designer with options:
+mobile-mode hp down (150→~100), Skimmer hp/damage up, or Riverline
+Drive gaining TRAIL affinity (path-speed parity with bikes) so the
+Outlier unique has a job on every map. Default wars untouched (flag
+off; exclusions moot without crewing) — gate unchanged.
+
+Suite 512/512.

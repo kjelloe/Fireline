@@ -102,6 +102,23 @@ function isWreck(asset) {
   return asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED;
 }
 
+// 16B: does this map have water at all? (The Skimmer only crews where it
+// can skim.) Cached per mapSeed — terrain is static within a war.
+const waterCache = new Map();
+function mapHasWater(state) {
+  const key = `${state.mapProfile}:${state.mapSeed}`;
+  if (waterCache.has(key)) return waterCache.get(key);
+  let has = false;
+  const cells = state.map?.cells;
+  if (cells) {
+    for (let i = 0; i < cells.length; i++) {
+      if (cells[i] === 6 /* T_WATER */) { has = true; break; }
+    }
+  }
+  waterCache.set(key, has);
+  return has;
+}
+
 // Item 11 (playtest 7, ruled BOTH triggers): may the carrier raid NOW?
 // Group attack: >=2 crewed COMBAT hulls (not the logistics train) within
 // ESCORT_CELLS of the carrier. Sneak window: fewer than 2 enemy operable
@@ -306,12 +323,18 @@ export class AIRegency {
         if (site.owner === team) continue;
         let bestOp = -1;
         let bestDist = Infinity;
+        // 16B residue fix: the Sentinel is no CAPTURER — a 150hp hull
+        // parked on flags dominated the ticket era (anchor time 2-4x the
+        // Skimmer's). It defends relays via the reactive hardpoint
+        // doctrine instead; capture errands go to hulls that can leave.
         for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
           const op = state.operators[operatorId];
           if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
           const a = state.assets[op.assetId];
           if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
-          if (!getUnitStats(a.type).canCapture) continue; // 11R: bikes can't be capturers
+          const st16 = getUnitStats(a.type);
+          if (!st16.canCapture) continue; // 11R: bikes can't be capturers
+          if (st16.deployable) continue;  // 16B: the Sentinel defends, never squats
           const dist = Math.abs(site.cellX - worldToCellFloor(a.x)) +
                        Math.abs(site.cellY - worldToCellFloor(a.y));
           if (dist < bestDist) {
@@ -448,9 +471,15 @@ export class AIRegency {
         // Carrier/courier/tube roles stay senior — those win wars.
         let roleUnique = null;
         if (this.uniqueCrewing && !roleCarrier && !roleBike && !roleTube) {
+          // 16B residue fix (probe-led): crewing the Skimmer on a
+          // WATERLESS map trades a would-be tank seat for a 45hp hull
+          // with nothing to skim — B paid ~11pts for it on frontier.
+          // The airboat crews only where there is water to run.
+          const hasWater = mapHasWater(state);
           const isUnique = (a) => {
             const st = getUnitStats(a.type);
-            return st.deployable === true || st.amphibious === true;
+            if (st.amphibious === true) return hasWater;
+            return st.deployable === true;
           };
           const uniqueCrewed = state.assets.some((a) =>
             a.team === team && a.operatorId !== -1 && !isWreck(a) && isUnique(a));
