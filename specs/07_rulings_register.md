@@ -39,9 +39,9 @@ local-only file by choice; this register records the *decisions*.
   slot; never a 17th asset. Asymmetry gated by the faction-swap sweep.
 - **Unique AI crewing (16B): LIVE, default ON** (prompt-54): Riverline
   Drive gained TRAIL AFFINITY (T_PATH 384, amphibious only) and the
-  swap gate closed at 54.5% Sentinel-side. Default wars carry the
-  sanctioned ~55/45 Directorate lean; designer may tighten the band
-  (levers: affinity value, Sentinel mobile-hp).
+  swap gate closed at 54.5% Sentinel-side. RULED (prompt-56): TIGHTEN
+  the band toward 52/48 — sweep-tune trail-affinity value up and/or
+  Sentinel mobile-hp down.
 
 ## Fairness (the non-negotiables)
 
@@ -82,6 +82,12 @@ local-only file by choice; this register records the *decisions*.
   the abandoned hull stays in place and SELF-RECALLS — 60 s uncrewed in
   the field auto-wrecks it (towable/rebuildable). Carrier field-respawn
   cooldown: 30 s per operator.
+
+- **12F POW release (prompt-56): RAIDABLE HOLDING SITE** — POWs held at
+  the captor's base depot; a friendly hull reaching it frees them
+  instantly; rescue raids become a mission card.
+- **14F audio (prompt-56): SYNTH FIRST** — WebAudio patch manifest per
+  chassis×event; samples may drop into the same manifest later.
 
 ## AI doctrine rulings
 
