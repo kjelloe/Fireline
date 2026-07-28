@@ -2439,3 +2439,25 @@ tile read as a bug.
 
 Suite 544/544 (x2). Frontier sanity sweep unchanged (tickets-era mix,
 avg 13.2k ticks). Tagged slice-18c.
+
+## worker autostash (2026-07-29, prompt 66)
+
+The `update` job now stashes local worker edits before `git pull
+--ff-only` and restores them after — the PC has been blocked twice by a
+stray local edit, each time needing a walk to the machine.
+
+Two things the obvious version gets wrong, both found by testing rather
+than reasoning (`debugging/test_worker_autostash.sh`, real git, 11/11):
+
+1. **A conflicting pop is not harmless.** If the stashed edit touches a
+   file the pull also moved, `git stash pop` leaves CONFLICT MARKERS in
+   the worktree and returns non-zero. Re-exec'ing there would run every
+   later job against source full of `<<<<<<<`. On conflict we now hard-
+   reset to the clean pulled tree; the work stays in the stash (a
+   conflicting pop keeps its entry) and the mail says so by stash ref.
+2. **Divergence is a different failure and no stash fixes it.** A clean
+   tree that still refuses `--ff-only` means local COMMITS; the mail now
+   names them (`git log @{u}..HEAD`) instead of guessing.
+
+Results are never at risk: OUT=reports/sweeps is gitignored, so a plain
+`git stash` (never -u) cannot touch a CSV — asserted by the test.

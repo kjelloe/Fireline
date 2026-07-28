@@ -123,13 +123,51 @@ handle_job() { # $1 = JSON body
       # Self-update (prompt 47): pull and RE-EXEC — the fresh process
       # re-validates the suite and mails "worker online on <new commit>".
       # ff-only so a diverged PC checkout fails loudly instead of merging.
-      local pullmsg
+      #
+      # prompt-66: AUTOSTASH. Local edits on the worker (a debug print, a
+      # stray whitespace fix) used to block every update until someone
+      # walked to the PC. Now they are stashed, the pull runs, and the
+      # stash is restored. Results are safe either way: OUT=reports/sweeps
+      # is gitignored, so a plain `git stash` (never -u) cannot touch a CSV.
+      local pullmsg stashed=0 dirty
+      dirty=$(git status --porcelain --untracked-files=no 2>/dev/null)
+      if [ -n "$dirty" ]; then
+        if git stash push -m "batch_worker autostash" >/dev/null 2>&1; then
+          stashed=1
+        else
+          $AM send --from $ME --to dev --tag done \
+            "update FAILED on $TAG: worktree dirty and 'git stash' refused it — needs a human on the PC."
+          $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
+          return
+        fi
+      fi
       if pullmsg=$(git pull --ff-only 2>&1); then
-        $AM send --from $ME --to dev --tag done "updating: $TAG -> $(git describe --tags --always); re-exec" >/dev/null
+        # Restore local work BEFORE re-exec. If the stashed edit touches a
+        # file the pull also moved, `git stash pop` CONFLICTS: it leaves
+        # conflict markers in the worktree and keeps the stash entry.
+        # Re-exec'ing into a tree full of <<<<<<< would break every job,
+        # so on conflict we hard-reset back to the clean pulled tree —
+        # nothing is lost, the work is still in the stash for a human.
+        local popnote=""
+        if [ "$stashed" = 1 ]; then
+          if git stash pop >/dev/null 2>&1; then
+            popnote=" (autostash restored)"
+          else
+            git reset --hard HEAD >/dev/null 2>&1
+            popnote=" (autostash CONFLICTED with upstream — worktree reset clean; your edits are safe in $(git stash list | head -1 | cut -d: -f1), apply them by hand)"
+          fi
+        fi
+        $AM send --from $ME --to dev --tag done \
+          "updating: $TAG -> $(git describe --tags --always)$popnote; re-exec" >/dev/null
         exec bash "$0"
       else
-        # Mail the ACTUAL git error — "diverged?" guesses helped nobody.
-        $AM send --from $ME --to dev --tag done "update FAILED on $TAG: ${pullmsg:0:220}"
+        # Pull refused with a CLEAN tree = real divergence (local commits),
+        # which no stash can fix. Name the commits so the fix is obvious.
+        [ "$stashed" = 1 ] && git stash pop >/dev/null 2>&1
+        local ahead=""
+        ahead=$(git log --oneline @{u}..HEAD 2>/dev/null | head -3 | tr '\n' ' ')
+        $AM send --from $ME --to dev --tag done \
+          "update FAILED on $TAG: ${pullmsg:0:180}${ahead:+ | local commits ahead: $ahead}"
       fi ;;
     perf)
       $AM status --as $ME "running perf harness on $TAG" >/dev/null
