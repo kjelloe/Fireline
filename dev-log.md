@@ -2381,3 +2381,61 @@ Also: generic `map` job kind for the batch worker
 batteries without a new kind per map.
 
 Suite 542/542 (x2). Tagged slice-18b.
+
+## slice-18c — sawtooth tuning: the capture famine (2026-07-29, prompt 62)
+
+18B left sawtooth with two findings. The pacing one turned out to be
+something better than a stalemate — a CAPTURE FAMINE, found by
+measurement rather than intuition (`debugging/dbg_18c_probe.mjs`):
+
+  per-site: (58,63)=0/49x (69,63)=0/53x (44,20)=-1 (83,20)=-1
+            (44,107)=-1 (83,107)=-1        [seed 3, 18000 ticks]
+
+The four lane relays were NEVER captured — not once, in any seed. Owner
+stayed neutral all war; every capture in the census was the two heart
+relays trading. Max holding was 2 of 6, so the majority of 4 was
+mathematically unreachable and the pools never lost a single ticket
+(300,300 at the horn, in every seed).
+
+Root cause is a general law, now in the rulings register and the map
+constraints: an objective further than CAPTURE_SEEK_CELLS (16,
+Manhattan) from anywhere units actually go is a DEAD objective — the AI
+designates capturers only from assets already inside that radius, and
+nothing pulls a unit toward a relay from further out. The lane-end
+relays sat ~39 cells from the nearest patrol waypoint; the heavy
+patrols stood off the enemy HEART relay at 18 cells, two past the
+radius, so even the center pair was never deliberately contested.
+
+Fix, map-side only (the radius is global — tuning it would reopen every
+map's balance): lane relays moved to the GAP EXITS (y 34/93, within 14
+of the gap centers all crossing traffic uses), graph nodes and light
+patrols moved with them, heavy patrols pulled in to reach the enemy
+heart. Two new tests assert both reach conditions so this class of bug
+cannot come back silently.
+
+Measured (30 wars each): ticket endings 0% → 36%, horn 87% → 60%, wars
+18000 (uniformly) → ~15.9k, every relay changes hands, majority now
+held 31-45% of a war in long runs. UNIQUES=0 confirms the map itself is
+fair (A 13 / B 16 / 1 undecided).
+
+THE FACTION VERDICT (4 x 30 wars: normal / mirror / UNIQUES=0 /
+FACTIONSWAP): the 18B Sentinel-anchor lean is GONE. That conviction
+rested on the edge FOLLOWING the faction swap; it no longer does (swap
+12/18, normal 11/18 — the same side stays ahead). Moving the objectives
+away from the lane ends dissolved the anchor advantage without touching
+a single stat — exactly the structural fix specs/08 §3.7 prescribes —
+so the planned GAP DOUBLING was NOT built and the narrow chokes stay.
+
+What remains, honestly stated: a mild ~55-60% lean to whoever holds the
+EAST, consistent in direction across all three uniques configurations
+but individually insignificant at n=30, and reversing under the mirror
+(so: the geometry/arithmetic class, not doctrine). That is a 300-war PC
+battery question, not another local sweep. Sawtooth stays EXPERIMENTAL
+with the gate closed.
+
+Also 18C: impassable cells now carry rock mass in `props_model.js` —
+units stall silently at a mesa face (the wall rule), so a flat dark
+tile read as a bug.
+
+Suite 544/544 (x2). Frontier sanity sweep unchanged (tickets-era mix,
+avg 13.2k ticks). Tagged slice-18c.

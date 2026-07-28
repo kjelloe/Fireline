@@ -91,6 +91,13 @@ road and the objective mouths.
 - **Standing-fortress Sentinel** swept 78/19 → deploy is threat-
   reactive only. (Uniques crew by default since prompt-54; the residue
   was decomposed and band-tuned rather than switched off.)
+- **Patrol tables are objective plumbing, not scenery** (18C): capture
+  pressure exists only where a patrol brings a unit within
+  `CAPTURE_SEEK_CELLS` of a contested relay. Sawtooth's first tables
+  stood off the enemy heart at 18 cells and never visited the lane
+  relays at all — so those relays were NEVER captured in any seed and
+  the map could not bleed a single ticket. When adding a map, check
+  every relay against every patrol waypoint before trusting a sweep.
 - **Threat-reactive is still terrain-sensitive** (18B): the same
   reactive Sentinel is worth ~51/49 on frontier and 62-67% on sawtooth,
   because mesa gaps are perfect anchors. Doctrine tuned on one map is

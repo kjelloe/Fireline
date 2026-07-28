@@ -203,10 +203,16 @@ export const MAP_LAYOUTS = Object.freeze({
     // 18B (specs/10 §4): canyon heart + a pair per outer lane. The mesa
     // gaps stay relay-free — pure chokes, held by presence not capture.
     // 6 relays, ticket majority 4.
+    // 18C: the lane relays MOVED from the lane ends (y 20/107) to the
+    // GAP EXITS (y 34/93). Measured cause of the horn-bound pacing: at
+    // the lane ends they were never captured ONCE in any seed — no unit
+    // ever came within CAPTURE_SEEK_CELLS (16), so no capturer was ever
+    // designated, so max holding was 2 of 6 and the majority of 4 was
+    // unreachable. At the gap exits every crossing unit designates one.
     relayCells: [
       { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
-      { cellX: 44, cellY: 20 }, { cellX: 83, cellY: 20 },
-      { cellX: 44, cellY: 107 }, { cellX: 83, cellY: 107 },
+      { cellX: 44, cellY: 34 }, { cellX: 83, cellY: 34 },
+      { cellX: 44, cellY: 93 }, { cellX: 83, cellY: 93 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),

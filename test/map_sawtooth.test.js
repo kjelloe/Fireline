@@ -14,6 +14,7 @@ import { GameServer } from "../engine/server.js";
 import { hashState } from "../engine/snapshot.js";
 import { createReplayPlayer } from "../client/js/replay_engine.js";
 import { sandbox, joinSelectMove, joinAndSelect } from "./helpers.js";
+import { CAPTURE_SEEK_CELLS, PATROLS } from "../engine/ai_regency.js";
 
 const T_ROAD = 1, T_BLOCKING = 4, T_PATH = 5;
 
@@ -45,8 +46,36 @@ test("18B mesas wall the lanes, gaps pierce them, corridors go around", () => {
     }
   }
   // Lanes are open ground (never walled), relays reachable.
-  for (const [x, y] of [[44, 20], [83, 20], [44, 107], [83, 107]]) {
+  for (const [x, y] of [[44, 34], [83, 34], [44, 93], [83, 93]]) {
     assert.notEqual(at(x, y), T_BLOCKING, `relay walled at ${x},${y}`);
+  }
+});
+
+test("18C every relay sits within capture-seek reach of a gap a patrol uses", () => {
+  // The 18B pacing bug in one assertion: a relay no unit ever comes
+  // within CAPTURE_SEEK_CELLS of is never captured by anyone, so the
+  // ticket majority is unreachable and the war runs to the horn. Each
+  // lane relay must be reachable from the gap its side's patrol rides.
+  const s = createInitialState(42, "sawtooth");
+  const GAPS = [[42, 46], [85, 46], [42, 82], [85, 82]];
+  for (const site of s.sites) {
+    if (site.cellY === 63) continue; // heart relays sit on the road itself
+    const reach = GAPS.some(([gx, gy]) =>
+      Math.abs(site.cellX - gx) + Math.abs(site.cellY - gy) <= CAPTURE_SEEK_CELLS);
+    assert.ok(reach, `relay (${site.cellX},${site.cellY}) is out of capture-seek reach of every gap`);
+  }
+});
+
+test("18C heavy patrols reach the enemy heart relay", () => {
+  // The other half of the 18B bug: the patrol tables stood off at 18
+  // cells Manhattan — two past the seek radius — so neither side ever
+  // designated a capturer for the enemy's heart relay.
+  const enemyHeart = { 0: [69, 63], 1: [58, 63] };
+  for (const team of [0, 1]) {
+    const [ex, ey] = enemyHeart[team];
+    const reach = PATROLS.sawtooth[team].some(([px, py]) =>
+      Math.abs(px - ex) + Math.abs(py - ey) <= CAPTURE_SEEK_CELLS);
+    assert.ok(reach, `team ${team}'s patrol never reaches the enemy heart relay`);
   }
 });
 
@@ -55,8 +84,8 @@ test("18B sawtooth states build with their own relays and remember the profile",
   assert.equal(s.mapProfile, "sawtooth");
   assert.deepEqual(
     s.sites.map((x) => [x.cellX, x.cellY]),
-    [[58, 63], [69, 63], [44, 20], [83, 20], [44, 107], [83, 107]],
-    "canyon heart + one pair per outer lane (specs/10 §4)"
+    [[58, 63], [69, 63], [44, 34], [83, 34], [44, 93], [83, 93]],
+    "canyon heart + one pair per outer lane, at the gap exits (18C)"
   );
   assert.equal(s.assets.length, 32, "same roster on every map");
 });

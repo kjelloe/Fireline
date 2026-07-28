@@ -5,6 +5,24 @@ during development, in one durable place. (The verbatim prompt log is a
 local-only file by choice; this register records the *decisions*.
 `dev-log.md` records how each landed.)
 
+## The tenet every ruling is tested against (prompt 62)
+
+> **"Can every type of player find something useful and fun to do
+> within 60 seconds of spawning?"**
+
+Elevated from the map-design checklist to the general law for ALL
+design decisions — maps, chassis, missions, pacing rules. It catches
+this game's characteristic failure modes earlier than any sweep does:
+running-simulator travel, objectives nobody visits, support roles with
+nothing to do, and mid-war slumps. To apply it, walk the roster (tank,
+scout, truck, carrier, bike, mortar, artillery, faction unique, downed
+operator on foot) and name each one's useful first-minute action; if an
+answer is "travel toward the fight" or "wait", the design is not done.
+
+The engine has a hard-edged version of the same law: an objective
+outside `CAPTURE_SEEK_CELLS` of where units actually go is never used
+at all (18C, below).
+
 ## Core fantasy & objective (prompts 16–19 era)
 
 - **Rescue outranks kills** — Recognition scoring: tow 8, rescue 10,
@@ -72,6 +90,12 @@ local-only file by choice; this register records the *decisions*.
   0-speed cell and stall at its face (speed samples the current cell,
   so entering would trap them forever). Drones fly over; downed crews
   walk terrain-free. Engine-wide, inert on maps without T_BLOCKING.
+- **Objectives must sit in reach (18C)**: a relay further than
+  `CAPTURE_SEEK_CELLS` (16, Manhattan) from anywhere units actually go
+  is never captured by anyone — the AI designates capturers only from
+  assets already inside that radius. Such a relay silently leaves the
+  ticket math and can make the majority unreachable. Map-side rule (the
+  radius is NOT tuned per map — that would reopen every map's balance).
 - **Map roster (prompt 60)**: specs/10_map_roster.md is the map design
   of record — checklist audit, hard profile constraints (mirror,
   shared bases/road, west-gen, runway), maps 3 `blackwood` + 4
@@ -139,6 +163,15 @@ local-only file by choice; this register records the *decisions*.
 
 ## Session & infrastructure
 
+- **Map rotation & voting (prompt 63, FUTURE — with the map roster and
+  the server-community wave)**: a server option chooses between RANDOM
+  rotation and END-OF-ROUND MAP VOTE. Voting shows each candidate as a
+  MINIMAP THUMBNAIL (the profile generator is pure, so a thumbnail is
+  cheap and honest — same cells the war will use); random rotation
+  shows the NEXT MAP on the end screen instead of a vote. Server-only
+  authority as with every session rule, so replays stay honest. Depends
+  on: the roster having enough promoted profiles to be worth choosing
+  between (specs/10), plus a thumbnail renderer.
 - Session rules hashed in state (13F); replays re-simulate the same law.
 - Every gameplay slice ends with the backend sim gate; balance claims
   need sweep-scale data (local 300+, PC 600+).

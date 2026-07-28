@@ -63,7 +63,7 @@ const AGENTS = Object.freeze([
 // 11C: exact mirrors (x' = 127-x), each crossing its team's mid relay.
 // 11M: patrols are per-map — riverline routes swing north and south
 // through the bridge lines and past both relay pairs.
-const PATROLS = Object.freeze({
+export const PATROLS = Object.freeze({
   frontier_corridor: Object.freeze({
     0: [[48, 56], [60, 56], [58, 63], [56, 70]],
     1: [[79, 56], [67, 56], [69, 63], [71, 70]],
@@ -92,10 +92,14 @@ const PATROLS = Object.freeze({
   sawtooth: Object.freeze({
     // 18B: heavies duel in the canyon between the gap mouths; lights
     // cycle their side's outer relays through the gaps. Exact mirrors.
-    0: [[40, 63], [58, 56], [58, 70], [48, 63]],
-    1: [[87, 63], [69, 56], [69, 70], [79, 63]],
-    light0: [[44, 20], [42, 46], [44, 107], [42, 82]],
-    light1: [[83, 20], [85, 46], [83, 107], [85, 82]],
+    // 18C: heavy patrols now REACH the enemy heart relay — the old table
+    // stood off at 18 cells Manhattan, just past CAPTURE_SEEK_CELLS (16),
+    // so no capturer was ever designated for it. Light patrols ride their
+    // side's gaps between the two relocated lane relays.
+    0: [[42, 63], [58, 56], [62, 63], [58, 70]],
+    1: [[85, 63], [69, 56], [65, 63], [69, 70]],
+    light0: [[44, 34], [42, 46], [44, 93], [42, 82]],
+    light1: [[83, 34], [85, 46], [83, 93], [85, 82]],
   }),
 });
 

@@ -7,6 +7,7 @@
 
 const T_FOREST = 2;
 const T_ROUGH = 3;
+const T_BLOCKING = 4; // 18C
 const T_PATH = 5;
 
 // 14G: the base compound — buildings laid out relative to the base rect,
@@ -86,6 +87,14 @@ export function propsFor(cells, width, height, profile = "frontier_corridor") {
         props.push({
           kind: "bush", x: cx + 0.5 + jx, y: cy + 0.5 + jy,
           scale: 0.4 + ((h >>> 24) & 0xff) / 255 * 0.3, rotation: rot,
+        });
+      } else if (terrain === T_BLOCKING) {
+        // 18C: impassable ground must LOOK impassable. Units stall
+        // silently at a mesa face (the wall rule), so a flat dark tile
+        // reads as a bug — every blocking cell carries rock mass.
+        props.push({
+          kind: "rock", x: cx + 0.5 + jx, y: cy + 0.5 + jy,
+          scale: 1.6 + ((h >>> 24) & 0xff) / 255 * 0.8, rotation: rot,
         });
       } else if (terrain === T_PATH && h % 7 === 0) {
         props.push({

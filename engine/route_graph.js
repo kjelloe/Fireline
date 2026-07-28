@@ -99,21 +99,18 @@ const GRAPHS = Object.freeze({
       [42, 63], [85, 63],                        // 4-5 gap-road junctions
       [42, 46], [85, 46],                        // 6-7 north gap centers
       [42, 82], [85, 82],                        // 8-9 south gap centers
-      [42, 30], [85, 30],                        // 10-11 north lane mouths
-      [42, 97], [85, 97],                        // 12-13 south lane mouths
-      [44, 20], [83, 20],                        // 14-15 north lane relays
-      [44, 107], [83, 107],                      // 16-17 south lane relays
-      [12, 34], [115, 34],                       // 18-19 edge corridor north
-      [12, 94], [115, 94],                       // 20-21 edge corridor south
+      [44, 34], [83, 34],                        // 10-11 north lane relays (18C)
+      [44, 93], [83, 93],                        // 12-13 south lane relays (18C)
+      [12, 34], [115, 34],                       // 14-15 edge corridor north
+      [12, 93], [115, 93],                       // 16-17 edge corridor south
     ],
     e: [
       [0, 4, "road"], [4, 2, "road"], [2, 3, "road"], [3, 5, "road"], [5, 1, "road"],
       [4, 6, "trail"], [6, 10, "trail"], [5, 7, "trail"], [7, 11, "trail"],
       [4, 8, "trail"], [8, 12, "trail"], [5, 9, "trail"], [9, 13, "trail"],
-      [10, 14, "open"], [11, 15, "open"], [12, 16, "open"], [13, 17, "open"],
-      [14, 15, "open"], [16, 17, "open"],
-      [0, 18, "open"], [18, 14, "open"], [1, 19, "open"], [19, 15, "open"],
-      [0, 20, "open"], [20, 16, "open"], [1, 21, "open"], [21, 17, "open"],
+      [10, 11, "open"], [12, 13, "open"],
+      [0, 14, "open"], [14, 10, "open"], [1, 15, "open"], [15, 11, "open"],
+      [0, 16, "open"], [16, 12, "open"], [1, 17, "open"], [17, 13, "open"],
     ],
   }),
 });

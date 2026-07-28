@@ -28,7 +28,13 @@ aiming layer):
      construction — riverline's lesson).
   5. `mapHasRunway` (water OR trails) must hold or faction uniques stop
      crewing (16B gate) — every map needs trails or water somewhere.
-  6. Integration cost per map (all six or the map doesn't exist):
+  6. EVERY objective must sit within `CAPTURE_SEEK_CELLS` (16,
+     Manhattan) of a place units actually go — a patrol waypoint, a
+     road, a gap. The AI only designates a capturer from assets already
+     inside that radius, so a relay outside it is never captured by
+     anyone and silently removes itself from the ticket math (the 18C
+     lesson; asserted by test for sawtooth).
+  7. Integration cost per map (all six or the map doesn't exist):
      mapgen module, MAP_PROFILES + MAP_LAYOUTS, route-graph table
      (+BARRIERS if water), PATROLS (heavy+light, exact mirrors),
      profile test file, sim battery before promotion.
@@ -140,6 +146,64 @@ stage. First map to use T_BLOCKING at scale.
   **18C tuning pass planned**: wider or doubled gaps per band (less
   anchorable, more flanks), cross-lane capture pressure in doctrine,
   re-measure; promotion gate stays closed until both findings clear.
+
+**18C, what the measurement actually found.** The horn-bound pacing was
+NOT a stalemate — it was a CAPTURE FAMINE. `dbg_18c_probe.mjs` showed
+the four lane relays at the lane ends (y 20/107) were never captured
+once in any seed: owner stayed neutral for the whole war, every one of
+the ~23 captures/war was the two heart relays trading. Max holding was
+therefore 2 of 6 and the majority of 4 was mathematically unreachable,
+so the pools never bled a single ticket (300,300 at the horn).
+
+Root cause is a general map-design law, now recorded: **an objective
+nothing passes within `CAPTURE_SEEK_CELLS` (16, Manhattan) of is a dead
+objective.** The AI designates one capturer per (team, relay) from
+assets already within that radius; nothing pulls a unit toward a relay
+from further away. The lane-end relays sat ~39 cells from any patrol
+waypoint, and the heavy patrols stood off the ENEMY heart relay at 18
+cells — two past the radius — so neither side ever contested it either.
+
+Fix (measured, not guessed): lane relays moved to the GAP EXITS
+(y 34/93, within 14 of the gap centers every crossing unit uses) and
+heavy patrols pulled in to reach the enemy heart. Result: tickets went
+from ending 0% of wars to 36%, the horn from 87% to 60%, wars from
+uniformly 18000 ticks to ~15.9k, and every relay now changes hands.
+The gap-doubling idea was NOT needed for pacing and is held pending the
+faction verdict — narrow chokes are the map's identity and should only
+be widened if the anchor lean survives.
+
+**18C battery verdict (4 × 30 wars).**
+
+| run | A | B | und | tickets | horn |
+|---|---|---|---|---|---|
+| normal | 11 | 18 | 1 | 11 | 18 |
+| mirror | 19 | 11 | 0 | 8 | 21 |
+| UNIQUES=0 | 13 | 16 | 1 | 6 | 20 |
+| FACTIONSWAP | 12 | 18 | 0 | 6 | 23 |
+
+1. **The Sentinel-anchor lean is GONE.** The 18B conviction rested on
+   the edge FOLLOWING the faction swap; it no longer does (swap leaves
+   B ahead, exactly as the normal run). Relocating the objectives away
+   from the lane ends dissolved the anchor advantage without touching a
+   single stat — the structural fix specs/08 §3.7 asks for. **Gap
+   doubling is therefore NOT built**; the narrow chokes stay.
+2. **Pacing is much better but not finished**: tickets 0% → 36% of
+   endings, horn 87% → 60% (frontier sits at 22%). A 6-relay map makes
+   the majority harder to sustain than frontier's 8-relay web, since
+   only the two heart relays swing freely.
+3. **A mild side lean remains** (~55-60% to whoever holds the EAST) —
+   it reverses under the mirror, so by specs/08 it is the
+   geometry/arithmetic class, not doctrine. At n=30 none of these
+   splits is individually significant; the direction is consistent
+   across all three uniques configurations, which is what makes it
+   worth chasing. **This is a job for the 300-war PC battery, not more
+   local sweeps.**
+
+Promotion gate stays CLOSED. Remaining before sawtooth leaves
+experimental: the east-lean question at scale, and a decision on
+whether 60% horn is acceptable identity for a grinding armor map or
+wants a second pacing pull (candidate: cross-lane light patrols so
+enemy lane relays get raided and possession swings more).
 
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
