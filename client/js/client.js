@@ -36,7 +36,7 @@ import {
 } from "./touch_model.js";
 import { factionFor } from "../../shared/factions.js";
 import { activePings } from "../../engine/pings.js";
-import { smoothHeading, TURN_RATE_RAD_PER_SEC } from "./heading.js";
+import { smoothHeading, angleDelta, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
 import {
@@ -1296,7 +1296,16 @@ function upsertAssetMesh(a, friendly) {
   {
     // 11U: models are authored facing +z; engine theta runs from +x (east)
     // toward +y (south). rotation.y = pi/2 - theta makes barrel follow travel.
-    const target = brads !== null ? Math.PI / 2 - (brads * Math.PI * 2) / 256 : null;
+    // Item 36: while WALL-SLIDING the engine keeps the ordered bearing but
+    // the hull moves sideways — when actual motion disagrees with the
+    // reported heading by more than ~45°, face the motion (the wheels go
+    // where the hull goes); the smoother hides the handover.
+    let target = brads !== null ? Math.PI / 2 - (brads * Math.PI * 2) / 256 : null;
+    const motion = typeof a.motionHeading === "number"
+      ? Math.PI / 2 - a.motionHeading : null;
+    if (motion !== null && (target === null || Math.abs(angleDelta(target, motion)) > Math.PI / 4)) {
+      target = motion;
+    }
     if (target !== null) {
       const prev = mesh.userData.smoothedHeading ?? target;
       const maxStep = TURN_RATE_RAD_PER_SEC / 60;
@@ -2145,6 +2154,12 @@ function updateHoverTip(view) {
   // targeting ring draws, so the tip and the ring can never disagree —
   // including the DEAD ZONE that indirect tubes have.
   const foe = (view?.visibleEnemies ?? []).find((x) => x.id === hoverAssetId);
+  // Playtest-10 item 37: a WRECK is not a target — fire_order refuses
+  // them — so "out of range" over one is noise. No tip at all.
+  if (foe && (foe.state === STATE_DISABLED || foe.state === 3)) {
+    el.style.display = "none";
+    return;
+  }
   if (foe) {
     const ring = weaponRangeOverlay(view, joined?.operatorId);
     if (!ring) { el.style.display = "none"; return; }

@@ -17,21 +17,25 @@ export function createInterpolator({ delayMs = 100, capacity = 30 } = {}) {
     return { older, newer };
   }
 
-  // 4D: besides position, expose a heading (radians, screen convention:
-  // 0 = +x, y grows south) so the renderer can face units along their motion.
-  // Stationary entities keep heading null; renderers retain the last one.
+  // 4D/playtest-10 item 36: motion direction rides in its OWN field.
+  // This function used to OVERWRITE e.heading (the engine's brads,
+  // 0-255) with atan2 radians — radians 0..pi then PASSED the client's
+  // "is it brads" range check and read as brads 0..3, so every moving
+  // unit rendered facing ~east and the engine's 16-way heading never
+  // reached a renderer. heading stays brads, untouched; motionHeading
+  // (radians, screen convention, null when still) is the derived one.
   function lerpEntities(oldList, newList, t) {
     const oldById = new Map((oldList ?? []).map((e) => [e.id, e]));
     return (newList ?? []).map((e) => {
       const prev = oldById.get(e.id);
-      if (!prev) return { ...e, heading: null };
+      if (!prev) return { ...e, motionHeading: null };
       const dx = e.x - prev.x;
       const dy = e.y - prev.y;
       return {
         ...e,
         x: prev.x + dx * t,
         y: prev.y + dy * t,
-        heading: dx !== 0 || dy !== 0 ? Math.atan2(dy, dx) : null,
+        motionHeading: dx !== 0 || dy !== 0 ? Math.atan2(dy, dx) : null,
       };
     });
   }

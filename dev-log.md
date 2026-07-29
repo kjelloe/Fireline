@@ -3476,3 +3476,20 @@ That dormancy is the honest state AND the no-repin proof: behavior is
 bit-identical (647/647 double-run, every pinned RECOG value standing).
 Sawtooth needs a fresh current-era battery before its verdict; client
 disclosure line (briefing) lands with the first real conviction.
+
+## slice-18H (playtest-10 items 36/37): the heading that never arrived
+
+Item 36 was not a granularity problem — it was a UNITS bug. The
+interpolator OVERWROTE e.heading (engine brads 0-255) with
+Math.atan2 radians for every moving unit; radians 0..pi then passed
+the renderer's "is it brads" range check and read as brads 0..3, so
+every moving unit faced ~east (negative radians froze the mesh
+instead). The engine's 16-way heading NEVER reached a renderer — the
+9F wiring was dead on arrival, and the sprite fallback, minimap
+chevron and ghosts were corrupted the same way. Fix: heading stays
+brads through the interpolator; motion direction rides its own
+motionHeading field; the mesh prefers actual motion when it disagrees
+with the ordered bearing by >45° (wall slides — the wheels go where
+the hull goes). Item 37: no range tip over a wreck (fire_order refuses
+them; "out of range" was noise). Suite 647/647, smoke + acceptance
+green. The REAL cure for slides is item 39 (pathfinding), next.
