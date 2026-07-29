@@ -19,15 +19,22 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, current baseline (TICKETS ERA, post-13H clean census):
-endings split **tickets ~54% / Command Standard ~24% / points-horn
-~22%**, undecided ~1-2%, median decided war ~14,500 ticks, decided
-A-rate 47–53%, tows ~20/war on the 8-relay frontier web. Gate seeds:
-expect reason-5 (tickets) and reason-4 (standard) endings mixed with a
-couple of long wars; *mixed* winners; downs cycling with redeploys;
-replay OK. (History: the pre-13H wording here misread a 16B gate once —
-never panic on 5 seeds; confirm tempo shifts with a 300-seed sweep
-before tuning anything.)
+Healthy war, current baseline (**B1 ERA** — a wreck costs its owner a
+ticket, refunded on recovery; measured 600 wars on frontier, 2026-07-29):
+endings **tickets ~79% / points-horn ~13% / Command Standard ~8%**,
+undecided <2%, median decided war ~13,300 ticks, decided A-rate 51–53%
+across mirror worlds, tows ~20/war with ~16 restored.
+
+What CHANGED when B1 landed (the pre-B1 numbers were tickets 63 / horn
+27 / standard 10, avg 14,500): the anticlimactic horn HALVED, wars got
+~8% shorter, and the Command Standard slipped 10% -> 8% — small, and
+worth watching rather than acting on. If you see horn back above ~20%,
+suspect `ticketPerDisable` has been zeroed or the recovery loop has
+broken. Gate seeds: expect reason-5 (tickets) to dominate, with
+reason-3/4 as the minority; *mixed* winners; downs cycling with
+redeploys; replay OK. (History: the pre-13H wording here misread a 16B
+gate once — never panic on 5 seeds; confirm tempo shifts with a 300-seed
+sweep before tuning anything.)
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
@@ -41,14 +48,20 @@ NEW-MAP GATE (specs/10 promotion gate): a fresh profile runs 30 normal
 + 30 MIRROR locally at landing, then a 300-war PC battery
 (`{"kind":"map","map":"<name>","count":300}` via batch mail) before it
 leaves EXPERIMENTAL. Expect per-map baselines to DIFFER from frontier's
-(blackwood: quiet positional wars, downs ~12/war, tickets ~87% of
-endings) — judge tempo against the map's own identity, fairness against
-the universal bars (A-rate 45-55, undecided <5%, mirror flips the
-edge). ALWAYS add a `UNIQUES=0` + `FACTIONSWAP=1` probe pair on a new
-map: unique strength is TERRAIN-DEPENDENT (sawtooth lesson — mesa-gap
-hardpoints made the Sentinel-side worth 62-67% while frontier sits
-51/49; the lean survives mirroring but follows the swap and vanishes
-with uniques off).
+(blackwood: quiet positional wars, downs ~12/war) — judge tempo against
+the map's own identity, fairness against the universal bars (A-rate
+45-55, undecided <5%). ALWAYS add a `UNIQUES=0` + `FACTIONSWAP=1` probe
+pair on a new map, because unique strength IS terrain-dependent.
+
+**But do not convict on 30 wars.** Sawtooth is the cautionary tale: at
+n=30 the lean looked TEAM-linked and was written up as a Sentinel
+anchor advantage; the 600-war battery overturned it completely — the
+EAST side wins in both mirror worlds (A 45.6% normal, 63.0% mirrored),
+which is the geometry class, not faction. Both new maps carry side
+leans, in OPPOSITE directions (blackwood favours west ~59/41, sawtooth
+east), which argues against one global engine chirality and for
+per-map table geometry. A 30-war sample can tell you a map is worth
+investigating; only a battery can tell you WHAT is wrong.
 
 ## Red flags and what they meant before
 

@@ -2774,3 +2774,25 @@ against the recovery economy B1 has just made central — and a
 recommendation (cap it at ~50% hull so a mauled hull still wants the bay).
 
 Suite 579/579 + 2 new ranking tests.
+
+## B1 battery verdict (2026-07-29, 600 wars)
+
+The 16-war read was directionally right and quantitatively wrong, which
+is exactly why the battery exists. At scale, on frontier:
+
+| | tickets | horn | standard | avg ticks | A-rate |
+|---|---|---|---|---|---|
+| pre-B1 (300) | 63% | 27% | 10% | 14507 | 54.1% |
+| B1 normal (300) | 79% | 13% | 8% | 13319 | 53.2% |
+| B1 mirrored (300) | 81% | 11% | 8% | 13484 | 51.7% |
+
+- The **horn HALVED** (27% -> 13%) rather than vanishing as n=16 implied.
+- **The Command Standard is NOT being crowded out**: 10% -> 8%, about six
+  wars in three hundred. That was the open question B1 shipped with, and
+  the answer is "no action needed" — the primary objective survives.
+- Wars ~8% shorter; the recovery loop is undisturbed (tows 20.4/war,
+  15.5 restored, i.e. three quarters of wrecks get their ticket back).
+- Fairness untouched: 53.2% / 51.7% across mirror worlds.
+
+**B1 PASSES.** The sim-campaign skill's baseline has been moved to the B1
+era — a stale baseline would make every future gate misread.

@@ -44,7 +44,7 @@ plus three experimental maps that have not earned promotion.
 | **Wall rule + sliding** | ✅ `18b`/`18e` — impassable terrain refuses entry; glancing steps slide, head-on stops so the planner re-engages |
 | Full cargo manifest | ✅ `slice-13a` + AI resupply runner `13b` |
 | **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; AI doctrine landed (`slice-13e2`) |
-| Meaningful deaths (B1) | ⬜ ruled — a disable costs a ticket unless the wreck is recovered |
+| Meaningful deaths (B1) | ✅ `slice-b1` — a wreck costs a ticket, refunded on recovery; 600-war verdict: horn 27%->13%, standard held at 8%, fairness untouched |
 | Mercy + overtime (B3) | ⬜ ruled — small victory-logic slice |
 | Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |
 | Salvage economy | ⬜ ruled (designer eval #1); may be reshaped by B1 first |
@@ -58,7 +58,7 @@ plus three experimental maps that have not earned promotion.
 | `frontier_corridor` | ✅ DEFAULT — 8-relay lane+lateral web, band-tuned baseline (51.3% A) |
 | `riverline` | ⚠️ EXPERIMENTAL — west lean collapsed to ~58/42 by the map-aware majority; re-measure after 13E bridges |
 | `blackwood` | ⚠️ EXPERIMENTAL — `slice-18a`; local gate passed, quiet positional identity; **never playtested by a human** |
-| `sawtooth` | ⚠️ EXPERIMENTAL — `slice-18b/c/e`; pacing now excellent (horn 60%→13%) but a **team-linked faction lean re-opened with it**; see specs/10 §4 |
+| `sawtooth` | ⚠️ EXPERIMENTAL — pacing excellent (90% tickets, 2 undecided in 600) but a ~54-63% **EAST side lean** (geometry, not faction — the 30-war faction verdict was overturned at scale); see specs/10 §4c |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ⬜ FILED (prompt 64) — server option, minimap thumbnails per candidate, or "next map" on the end screen |
 

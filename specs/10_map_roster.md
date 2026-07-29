@@ -263,6 +263,32 @@ experimental-WITH-PREMIUM (the east side earns the underdog bonus)
 while the west-lean cause is chased — the lean is disclosed, the map is
 otherwise healthy, and the disadvantaged side is far from hopeless.
 
+## 4c. Sawtooth — the 600-war battery OVERTURNS the 18E verdict
+
+| run | A | B | undecided | A-rate | tickets | horn |
+|---|---|---|---|---|---|---|
+| normal | 136 | 162 | 2 | 45.6% | 90% | 9% |
+| mirrored | 189 | 111 | 0 | 63.0% | 90% | 8% |
+
+**The lean is GEOMETRY, not faction.** The east side wins in BOTH mirror
+worlds (team B when normal, team A once reflected). The 18E write-up,
+based on 30 wars, called it team-linked and blamed the Sentinel anchor;
+that does not survive scale. The faction conviction is withdrawn.
+
+Pacing, by contrast, is now excellent and confirmed: 90% ticket endings,
+~8-9% horn, **2 undecided in 600 wars**. 18C's relay relocation and 18E's
+wall sliding did their job completely.
+
+Note both new maps now carry side leans in OPPOSITE directions —
+blackwood favours west (~59/41), sawtooth east. That argues against a
+single global engine chirality and for per-map table geometry: relay id
+order in tie-breaks, patrol phase offsets keyed to assetId, and
+spawn-row chassis order are the suspects for both.
+
+**18F is therefore a SIDE-lean hunt, not a faction retune** — and per
+prompt-68 both maps are candidates to ship experimental-with-premium
+while that hunt runs.
+
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
 1. **archipelago** — island chain, causeways + water highways; the

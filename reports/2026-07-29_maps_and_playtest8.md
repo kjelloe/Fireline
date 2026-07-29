@@ -126,6 +126,35 @@ Probed rather than assumed: 3/3 wars saw a bridge dropped, 29 shells / 6
 breaches / 5 rebuilds, spans down 2-49% of a war. Gate unchanged (16
 wars, 0 undecided, tickets 12/16).
 
+## Overnight results (the batteries that were pending)
+
+**B1 PASSED at 600 wars** — the question it shipped with is answered:
+
+| | tickets | horn | standard | avg | A-rate |
+|---|---|---|---|---|---|
+| pre-B1 | 63% | 27% | 10% | 14507 | 54.1% |
+| B1 normal | 79% | 13% | 8% | 13319 | 53.2% |
+| B1 mirrored | 81% | 11% | 8% | 13484 | 51.7% |
+
+The Command Standard is NOT crowded out (10% -> 8%, ~6 wars in 300). The
+horn HALVED rather than vanishing as the 16-war read implied. Recovery
+loop undisturbed: 20.4 tows/war, 15.5 restored — three quarters of
+wrecks get their ticket back.
+
+**Sawtooth's 600-war battery OVERTURNED my 30-war verdict.** I had
+convicted the Sentinel of a team-linked lean; at scale the EAST side
+wins in both mirror worlds (A 45.6% normal, 63.0% mirrored), which is
+the geometry class. The faction conviction is withdrawn. Pacing is
+excellent and confirmed: 90% ticket endings, 2 undecided in 600 wars.
+Both new maps now carry side leans in OPPOSITE directions (blackwood
+west, sawtooth east), which argues for per-map table geometry rather
+than one global engine chirality.
+
+**Native perf, first real numbers**: RTX 4070 via ANGLE/D3D11, median 61
+fps, p5 60, 265 draw calls, 223k triangles in the worst-case theatre —
+but VSYNC-CAPPED, so it proves the GPU is never troubled and says
+nothing about headroom. `-Uncapped` added for the re-run.
+
 ## Still blocked on you
 
 The PC worker is idle on an old commit with a diverged checkout, so no

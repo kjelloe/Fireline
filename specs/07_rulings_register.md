@@ -113,6 +113,13 @@ at all (18C, below).
   toward the ticket majority. AI doctrine LANDED (13E-2): tubes drop a
   span only when LOSING that crossing, one besieger per span; trucks
   rebuild it as a materiel errand.
+- **Meaningful deaths (B1, LANDED + VERIFIED)**: a wreck costs its owner
+  ONE ticket, refunded when the wreck is recovered; `ticketPerDisable`
+  tunes it and 0 restores the old world. Both wreck paths charge so the
+  ledger balances without per-asset bookkeeping. 600-war verdict: the
+  anticlimactic horn HALVED (27% -> 13%), wars ~8% shorter, the Command
+  Standard held at 8% (it is NOT crowded out — the question B1 shipped
+  with), fairness untouched at 51-53% across mirror worlds.
 - **Map roster (prompt 60)**: specs/10_map_roster.md is the map design
   of record — checklist audit, hard profile constraints (mirror,
   shared bases/road, west-gen, runway), maps 3 `blackwood` + 4
