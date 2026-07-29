@@ -65,6 +65,24 @@ export function tasksFor(view, myOperatorId = null) {
       });
     }
   }
+  // Item 32: a teammate running dry is a JOB, not just their problem.
+  // Derived from state (no ping needed), and actionable by the mechanic
+  // that already exists — a truck with cargo pulling alongside (13A
+  // transfer_cargo). Deliberately NOT a hull-repair card: nothing in the
+  // game repairs a damaged living hull, so such a card would be an
+  // instruction with no possible action (see specs/07 open questions).
+  for (const a of (view?.friendlyAssets ?? [])) {
+    if (a.operatorId === myOperatorId) continue; // your own dry tank is your problem
+    if (a.state === 2 || a.state === 3) continue; // wrecks are a tow, not a top-up
+    const dry = (a.ammo !== undefined && a.ammo <= 3) ||
+                (a.fuel !== undefined && a.fuel <= 800);
+    if (!dry) continue;
+    tasks.push({
+      kind: "resupply", priority: 7,
+      label: t("task.resupply", { id: a.id }),
+      cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "need_supplies",
+    });
+  }
   for (const d of (view?.downedOperators ?? [])) {
     if (d.operatorId === myOperatorId) continue; // your card is the R prompt
     tasks.push({
@@ -130,6 +148,7 @@ export function tasksFor(view, myOperatorId = null) {
     fitted = tasks.filter((task) => {
       if (task.kind === "recover" || task.kind === "repair_site") return !!stats.canTow;
       if (task.kind === "rescue") return (stats.capacity ?? 0) > 0;
+      if (task.kind === "resupply") return !!stats.canTow; // the cargo chassis
       return true; // stop_thief/secure/escort/defend/towing_now: everyone
     });
   }

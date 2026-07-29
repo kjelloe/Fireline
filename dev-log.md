@@ -2756,3 +2756,21 @@ constants directly, so retuning Recognition FAILS the suite and forces
 the card values to be retuned with it.
 
 Suite 579/579.
+
+## resupply mission cards (2026-07-29, playtest-9 item 32)
+
+A teammate running dry now raises a public RESUPPLY card (value 4 — below
+every rescue and tow, per the prompt-79 ranking), derived from state
+rather than requiring anyone to press the request button, and offered
+only to a cargo chassis that can actually answer it.
+
+The REPAIR half is deliberately not built, and the reason is worth
+recording: nothing in this game repairs a damaged living hull. Base
+resupply restores ammo and fuel only, trucks repair sites, and a wreck is
+only fixed after a tow to the bay. A "needs repair" card would therefore
+be an instruction with no possible action. Filed as an open ruling in
+specs/07 with the balance risk spelled out — field repair would cut
+against the recovery economy B1 has just made central — and a
+recommendation (cap it at ~50% hull so a mauled hull still wants the bay).
+
+Suite 579/579 + 2 new ranking tests.

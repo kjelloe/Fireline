@@ -208,6 +208,35 @@ at all (18C, below).
 - Batch PC runs sweeps via agent-mail; results return as CSV mail;
   worker self-updates via the `update` job.
 
+## Open design questions from playtest 9
+
+- **FIELD HULL REPAIR — does it exist? (item 32, UNRULED, blocking half
+  the request.)** The ask was "request repairs when HP is under a certain
+  level". Investigating it turned up something we had never noticed:
+  **nothing in this game repairs a damaged LIVING hull.** Base resupply
+  restores ammo and fuel only; trucks repair SITES; a wreck is only fixed
+  after being towed to the bay. So a "needs repair" mission card would be
+  an instruction with no possible action — a direct violation of the
+  60-second tenet — and I did not build it.
+
+  The natural implementation is a truck with materiel restoring hp to an
+  adjacent damaged friendly, mirroring the site-repair loop exactly. It
+  is small. What makes it a RULING and not a chore is the balance risk:
+  hulls become materially more durable, which cuts against the recovery
+  economy B1 has just made central (fewer wrecks = fewer tows = fewer
+  tickets saved). It could also make the front sticky, since a damaged
+  push no longer has to withdraw.
+
+  Options: (a) build it and sweep it, accepting that B1's numbers will
+  need re-measuring; (b) build it capped (repair only up to ~50% hull, so
+  a mauled hull still wants the bay); (c) leave hulls unrepairable and
+  keep "withdraw or die" as the identity. My lean is (b) — it answers the
+  player's request without deleting the tow economy.
+
+  The fuel/ammo half of item 32 IS built (a `resupply` card, value 4,
+  below every rescue and tow) because `transfer_cargo` already makes it
+  actionable.
+
 ## Open design questions from playtest 8
 
 - **Should seat swapping require a base/site? (item 22, UNRULED)** The

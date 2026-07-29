@@ -85,3 +85,38 @@ test("79: ordering is deterministic — two clients cannot disagree", () => {
   const b = tasksFor(view, 7).map((c) => c.id);
   assert.deepEqual(a, b, "same view, same order, every time");
 });
+
+test("32: a dry teammate raises a RESUPPLY card, ranked below every rescue", () => {
+  const view = {
+    friendlyAssets: [
+      { id: 0, type: 3 /* truck */, operatorId: 7, x: 20 * 256, y: 20 * 256, state: 0, hp: 100 },
+      { id: 1, type: 0, operatorId: 8, x: 21 * 256, y: 20 * 256, state: 0, hp: 100,
+        ammo: 0, fuel: 100 }, // right next door and bone dry
+    ],
+    visibleEnemies: [],
+    downedOperators: [{ operatorId: 9, team: 0, x: 90 * 256, y: 90 * 256 }], // far away
+    sites: [], standards: [],
+    bases: [{ team: 0, x: 0, y: 0, width: 128, height: 128 }],
+  };
+  const kinds = tasksFor(view, 7).map((c) => c.kind);
+  assert.ok(kinds.includes("resupply"), `expected a resupply card: ${kinds.join(",")}`);
+  if (kinds.includes("rescue")) {
+    assert.ok(kinds.indexOf("rescue") < kinds.indexOf("resupply"),
+      "a distant rescue (10) still outranks a resupply (4) next door");
+  }
+});
+
+test("32: only a cargo chassis is offered the resupply card", () => {
+  const base = {
+    friendlyAssets: [
+      { id: 0, type: 0 /* tank: cannot carry cargo */, operatorId: 7,
+        x: 20 * 256, y: 20 * 256, state: 0, hp: 100 },
+      { id: 1, type: 0, operatorId: 8, x: 21 * 256, y: 20 * 256, state: 0, hp: 100,
+        ammo: 0, fuel: 100 },
+    ],
+    visibleEnemies: [], downedOperators: [], sites: [], standards: [],
+    bases: [{ team: 0, x: 0, y: 0, width: 128, height: 128 }],
+  };
+  assert.ok(!tasksFor(base, 7).some((c) => c.kind === "resupply"),
+    "a tank is never told to go and resupply someone");
+});
