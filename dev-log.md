@@ -3019,3 +3019,35 @@ Tows held at 18.1, the horn fell, and Command Standard endings ROSE —
 plausibly because a patched hull survives long enough to finish a run.
 Small samples both sides; flagged for battery confirmation rather than
 claimed.
+
+## slice-b3 — mercy + overtime (2026-07-30)
+
+**Mercy had to be redesigned, because the ruled version was unreachable.**
+The eval said "full cap held 3 min accelerates the enemy's bleed". In
+this engine holding every site already wins outright after 300 ticks
+(DOMINATION_HOLD_TICKS), so a three-minute full cap ends the war six
+times over first — the rule could never have fired. The drag it was
+aimed at is real, so the trigger became a reachable version of the same
+situation: the leader holds the majority AND the loser's pool is at or
+below a quarter. It relents the instant the losing side starts a
+capture, so a team fighting its way out is never punished. Pure function
+of existing state — no new hashed field, no repin.
+
+**Overtime**: an empty pool no longer ends the war while the losing side
+has a play LIVE — a capture in progress, or hands on a standard. A war
+decided mid-capture is a photo finish stolen by a clock.
+`overtime: false` restores the hard cutoff.
+
+Two test lessons worth keeping: a two-site sandbox cannot express
+"majority without domination" (the only majority is both sites, which
+trips the domination win), and setting `capturingTeam` by hand is fiction
+— the capture pass recomputes it from presence every tick, so the test
+has to put a real unit on the flag.
+
+Gate (n=20): A 10 / B 10, 0 undecided, tickets 75%, **horn down to 5%**,
+avg 10571 ticks. Suite 610/610.
+
+**Flagged for the designer**: wars keep getting shorter with each pacing
+addition — ~14.5k ticks before B1, 12.8k with AI field repair, now 10.6k.
+That is ~17.5 minutes against a 20-30 minute design target. The lever is
+the ticket pool, not any one rule.

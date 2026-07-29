@@ -48,9 +48,25 @@ export function checkVictory(state) {
   // enemy pool; an empty pool loses the war. The horn stays as backstop.
   if (state.tickets) {
     const [ta, tb] = state.tickets;
-    if (ta <= 0 && tb <= 0) return { winner: -1, reason: WIN_TICKETS };
-    if (ta <= 0) return { winner: 1, reason: WIN_TICKETS };
-    if (tb <= 0) return { winner: 0, reason: WIN_TICKETS };
+    // B3 OVERTIME: an empty pool does not end the war while the losing
+    // side still has a play LIVE — a capture in progress, or their hands
+    // on a standard. A war decided mid-capture is a photo finish stolen
+    // by a clock; this lets it resolve first. Pure function of state, so
+    // it needs no new hashed field.
+    const overtime = (team) => {
+      if (state.rules?.overtime === false) return false;
+      const capturing = (state.sites ?? []).some((s) => s.capturingTeam === team);
+      const runLive = (state.standards ?? []).some((st) =>
+        st.status === 1 /* CARRIED */ && st.team !== team) ||
+        (state.standards ?? []).some((st) =>
+          st.status === 2 /* DROPPED */ && st.team === team);
+      return capturing || runLive;
+    };
+    const aOut = ta <= 0 && !overtime(0);
+    const bOut = tb <= 0 && !overtime(1);
+    if (aOut && bOut) return { winner: -1, reason: WIN_TICKETS };
+    if (aOut) return { winner: 1, reason: WIN_TICKETS };
+    if (bOut) return { winner: 0, reason: WIN_TICKETS };
   }
 
   if (state.tick >= TIME_LIMIT_TICKS) {

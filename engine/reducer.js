@@ -1544,8 +1544,34 @@ function applyAdvanceTick(next) {
       for (const site of next.sites) {
         if (site.owner === 0 || site.owner === 1) owned[site.owner] += 1;
       }
-      if (owned[0] >= majority && next.tickets[1] > 0) next.tickets[1] -= 1;
-      if (owned[1] >= majority && next.tickets[0] > 0) next.tickets[0] -= 1;
+      // B3 MERCY BLEED. The designer's wording was "full cap held 3
+      // minutes", which turns out to be UNREACHABLE in this engine:
+      // holding every site already wins outright after 300 ticks
+      // (DOMINATION_HOLD_TICKS), so a 3-minute full cap ends the war six
+      // times over first. The drag it was aimed at is real, though — it
+      // is the tail where the result is already decided and the clock
+      // just grinds. So the trigger is that instead: the leader holds the
+      // majority AND the loser's pool is nearly gone.
+      //
+      // It relents the moment the losing side starts a capture, so a team
+      // fighting its way out is never punished for it. Pure function of
+      // existing state — no new hashed field, no repin.
+      const mercyRate = next.rules?.mercyMultiplier ?? 3;
+      const mercyFloor = next.rules?.mercyPoolFraction ?? 4; // pool/4 = 25%
+      const pool = next.rules?.ticketPool ?? 300;
+      const nearlyOut = (team) => next.tickets[team] > 0 &&
+        next.tickets[team] * mercyFloor <= pool;
+      const fightingBack = (team) => next.sites.some((site) => site.capturingTeam === team);
+      const rate = (team) => {
+        const foe = team === 0 ? 1 : 0;
+        return (nearlyOut(foe) && !fightingBack(foe)) ? mercyRate : 1;
+      };
+      if (owned[0] >= majority && next.tickets[1] > 0) {
+        next.tickets[1] = Math.max(0, next.tickets[1] - rate(0));
+      }
+      if (owned[1] >= majority && next.tickets[0] > 0) {
+        next.tickets[0] = Math.max(0, next.tickets[0] - rate(1));
+      }
     }
   }
   // Victory pass (3E): track domination hold, then check every condition.
