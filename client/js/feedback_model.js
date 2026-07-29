@@ -17,6 +17,24 @@ export function describeRejection(reason) {
   return t("rej.fallback", { reason });
 }
 
+// B7 death recap: one line naming what killed you and from where —
+// "DISABLED — artillery from the north-west". Self-contained from the
+// event payload (the killer may be in fog; the reducer tells anyway,
+// deliberately — new-player mercy is the point of the recap).
+export function deathRecapLine(e) {
+  const dir = e.dir >= 0 ? t(`dir.${e.dir}`) : null;
+  switch (e.by) {
+    case "asset": {
+      const chassis = t(`chassis.${e.byType}`);
+      return dir ? t("recap.asset", { chassis, dir }) : t("recap.asset_nodir", { chassis });
+    }
+    case "mine": return t("recap.mine");
+    case "drone": return t("recap.drone");
+    case "satchel": return dir ? t("recap.satchel", { dir }) : t("recap.satchel_nodir");
+    default: return t("recap.unknown");
+  }
+}
+
 
 const WIN_REASON_TEXT = Object.freeze({
   0: "war interrupted",

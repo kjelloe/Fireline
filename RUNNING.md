@@ -153,6 +153,10 @@ npm start                              # host machine
 - Waypoints (item 34): SHIFT-click queues up to 8 legs; a plain click
   replaces the whole route. On touch, long-press queues. The unit walks
   the route unattended.
+- Death recap (B7): when your vehicle is destroyed, the down banner
+  names the killer — "DISABLED — artillery from the north-west", a mine
+  under your tracks, the drone, or a satchel charge — so a new player
+  learns WHAT to avoid, not just that they died.
 - Field repair (item 32, ruled): a logistics truck carrying materiel
   patches an adjacent damaged friendly UP TO HALF hull — a wreck still
   needs the tow home. Dry or badly damaged teammates raise RESUPPLY /

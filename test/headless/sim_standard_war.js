@@ -12,8 +12,13 @@ import { hashState } from "../../engine/snapshot.js";
 const SEED = Number(process.env.SEED ?? 2026);
 const TICKS = Number(process.env.TICKS ?? 12000);
 const DIFFICULTY = Number(process.env.DIFFICULTY ?? 1);
+// MAP= was silently IGNORED here until 2026-07-31 — every "per-profile
+// 5-seed gate" run through sim_campaign_wave1.sh actually gated frontier.
+// The 30+30 sim_sweep runs always honoured MAP, so sweep-based verdicts
+// stand; gate-based per-map claims from before this line do not.
+const MAP = process.env.MAP || "frontier_corridor";
 
-const server = new GameServer({ mapSeed: SEED, enableAi: true, aiDifficulty: DIFFICULTY });
+const server = new GameServer({ mapSeed: SEED, enableAi: true, aiDifficulty: DIFFICULTY, mapProfile: MAP });
 const timeline = [];
 const WATCHED = new Set([
   "standard_taken", "standard_dropped", "standard_returned", "standard_scored",

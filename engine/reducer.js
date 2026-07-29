@@ -337,7 +337,10 @@ function applyFireOrder(next, command) {
     targetHp: target.hp,
   });
   if (target.hp === 0) {
-    disableAsset(next, target, attacker.team);
+    disableAsset(next, target, attacker.team, {
+      kind: "asset", byType: attacker.type,
+      dir: compassOctant(attacker.x - target.x, attacker.y - target.y),
+    });
     awardOperator(next, attacker.operatorId, RECOG_KILL); // 11K
   }
   return next;
@@ -368,9 +371,26 @@ function refundWreckTicket(next, team) {
   next.tickets[team] = Math.min(ceiling, next.tickets[team] + cost);
 }
 
+// B7 death recap: coarse 8-way bearing from the victim to its killer.
+// 0=N 1=NE 2=E 3=SE 4=S 5=SW 6=W 7=NW; -1 = no bearing (a mine is under
+// your own tracks). +y is SOUTH (screen convention). Integer-only.
+export function compassOctant(dx, dy) {
+  if (dx === 0 && dy === 0) return -1;
+  const ax = absI32(dx);
+  const ay = absI32(dy);
+  if (ax >= 2 * ay) return dx > 0 ? 2 : 6;
+  if (ay >= 2 * ax) return dy > 0 ? 4 : 0;
+  if (dx > 0) return dy > 0 ? 3 : 1;
+  return dy > 0 ? 5 : 7;
+}
+
 // The one true disablement path — fire (1E) and mine detonations (9E) share
 // it so bail-out, tow release, and standard drops can never diverge.
-function disableAsset(next, target, scoringTeam) {
+// B7: `by` names the killer for the death recap — {kind, byType?, dir?}.
+// The event always carries the same shape (by/byType/dir) so consumers
+// never branch on payload presence; events are not hashed and the 1A
+// script contains no disables, so this enrichment needs no repin.
+function disableAsset(next, target, scoringTeam, by = null) {
   target.state = ASSET_DISABLED;
   target.driveThrottle = 0;
   target.driveTurn = 0; // 11L: a wreck holds no wheel
@@ -378,7 +398,10 @@ function disableAsset(next, target, scoringTeam) {
   target.deployTimer = 0; // 12B: wrecked legs fold
   next.teamScores[scoringTeam] += SCORE_DISABLE;
   chargeWreckTicket(next, target.team); // B1
-  next.events.push({ type: "asset_disabled", assetId: target.id });
+  next.events.push({
+    type: "asset_disabled", assetId: target.id,
+    by: by?.kind ?? "unknown", byType: by?.byType ?? -1, dir: by?.dir ?? -1,
+  });
   // 9B: the crew bails out as a downed operator (the wreck repairs to
   // uncrewed — the human/AI seat carries on on foot).
   if (target.operatorId !== -1) {
@@ -754,7 +777,10 @@ function applySatchel(next, command) {
   });
   if (target.hp <= 0) {
     target.hp = 0;
-    disableAsset(next, target, operator.team);
+    disableAsset(next, target, operator.team, {
+      kind: "satchel",
+      dir: compassOctant(down.x - target.x, down.y - target.y),
+    });
     awardOperator(next, operator.id, RECOG_KILL);
   }
   return next;
@@ -1117,7 +1143,7 @@ function applyAdvanceTick(next) {
         cellX: mine.cellX, cellY: mine.cellY, targetHp: victim.hp,
       });
       if (victim.hp === 0) {
-        disableAsset(next, victim, mine.team);
+        disableAsset(next, victim, mine.team, { kind: "mine" });
       } else {
         victim.suppressedTimer = SUPPRESSION_TICKS;
       }
@@ -1155,7 +1181,12 @@ function applyAdvanceTick(next) {
       next.events.push({
         type: "drone_hit", droneId: drone.id, assetId: target.id, targetHp: target.hp,
       });
-      if (target.hp === 0) disableAsset(next, target, drone.team);
+      if (target.hp === 0) {
+        disableAsset(next, target, drone.team, {
+          kind: "drone",
+          dir: compassOctant(drone.x - target.x, drone.y - target.y),
+        });
+      }
     }
     if (gone.size > 0) next.drones = next.drones.filter((d) => !gone.has(d.id));
   }  // 9G anti-camping: idling outside your own supply umbrella draws a drone

@@ -21,7 +21,7 @@ import { TIME_LIMIT_TICKS } from "../../engine/victory.js"; // item 27: the war 
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
-import { describeEvent, summarizeGameOver, topOperators } from "./feedback_model.js";
+import { describeEvent, summarizeGameOver, topOperators, deathRecapLine } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
@@ -56,6 +56,8 @@ let renderedEnemyIds = new Set();
 const interpolator = createInterpolator({ delayMs: 150 });
 let mySelectedAssetId = null;
 let autoSelectSent = false; // post-playtest: crew a unit automatically on join
+let lastDrivenAssetId = -1; // B7: which hull was mine, one view ago
+let deathRecap = null;      // B7: the asset_disabled event that unseated me
 const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
@@ -534,6 +536,14 @@ function connect() {
       updateNextAssetButton(msg.view); // item 22
       updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
+      // B7: track the asset I drive AFTER the event pass — on the death
+      // tick the view already shows me unseated, so the recap match
+      // needs the PREVIOUS view's answer to "which hull is mine".
+      {
+        const driving = (msg.view.friendlyAssets ?? []).find(
+          (a) => a.operatorId === joined?.operatorId);
+        if (driving) lastDrivenAssetId = driving.id;
+      }
       for (const cue of mapEventsToCues(msg.view.events, msg.view)) playCue(cue.cue);
       liveVfx.push(...mapEventsToVfx(msg.view.events, msg.view, performance.now()));
       liveMotion.push(...mapEventsToMotion(msg.view.events, msg.view, performance.now()));
@@ -927,6 +937,13 @@ function handleEvents(events) {
   for (const e of events) {
     const line = describeEvent(e, joined?.team);
     if (line) pushEvent(line);
+    // B7: MY asset going down gets the recap — what killed me, from
+    // where — held for the down banner and pushed to the feed once.
+    if (e.type === "asset_disabled" && lastDrivenAssetId !== -1 &&
+        e.assetId === lastDrivenAssetId) {
+      deathRecap = e;
+      pushEvent(deathRecapLine(e));
+    }
     // 11U: your redeploy brings the view HOME and re-arms auto-select —
     // the answer to "my camera stayed on my corpse".
     if (e.type === "operator_redeployed" && e.operatorId === joined?.operatorId) {
@@ -1709,9 +1726,12 @@ function updateActionBanner(view) {
   bannerAction = null;
   const myDown = view?.downedOperators?.find((d) => d.operatorId === joined.operatorId);
   if (myDown) {
+    // B7: the death recap rides the down banner — what got you, and
+    // from where, while you decide what to do about it.
+    const recap = deathRecap ? `${deathRecapLine(deathRecap)} · ` : "";
     const wait = Math.ceil((100 - (myDown.downTicks ?? 0)) / 10);
     if (wait > 0) {
-      text = t("banner.down_wait", { s: wait });
+      text = recap + t("banner.down_wait", { s: wait });
     } else {
       // 15F: a crewed friendly carrier with a free bunk beats the walk
       // home — clicking spawns you ABOARD (30 s cooldown server-side).
@@ -1720,14 +1740,15 @@ function updateActionBanner(view) {
         a.state !== STATE_DISABLED && a.state !== 3 &&
         (a.aboard1 === -1 || a.aboard2 === -1));
       if (spawnable) {
-        text = t("banner.spawn_carrier", { id: spawnable.id });
+        text = recap + t("banner.spawn_carrier", { id: spawnable.id });
         bannerAction = () => send({ type: "redeploy", carrierAssetId: spawnable.id });
       } else {
-        text = t("banner.down_ready");
+        text = recap + t("banner.down_ready");
         bannerAction = () => send({ type: "redeploy" });
       }
     }
   } else {
+    deathRecap = null; // B7: back on my feet (or in a hull) — recap done
     const wreck = adjacentTowableWreck(view);
     const me = view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
     if (wreck) {

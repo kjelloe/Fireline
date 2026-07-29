@@ -3229,3 +3229,36 @@ proven) — a bigger pool stretches wars, it does not flip winners.
 Lead changes flat at 2.7 across the whole ladder: length is not where
 swings come from. pool_330 + pool_300 (same commit, uniques ON) queued
 to find the value that actually lands inside 20-22.
+
+## slice-B7: death recap ("DISABLED — artillery from the north-west")
+
+The disable event now names its killer: `by` (asset/mine/drone/satchel),
+`byType` (chassis, guns only), `dir` (8-way octant from victim to
+killer, integer math, -1 for a mine — it was under your own tracks).
+All four disable paths feed it; the shape is constant so consumers
+never branch on presence. Events are not hashed and the 1A script has
+NO disables, so B7 needed no repin — the 1G event pin and the new
+test/death_recap.test.js are the contract instead. compassOctant
+exported for the octant tests; 2:1 shoulders resolve to cardinals.
+
+Client: the recap rides the 11U down banner (prefix, held while down,
+cleared on recovery) and lands once in the feed. lastDrivenAssetId is
+tracked from the PREVIOUS view because the death tick already shows
+you unseated. Declarations live with the other session state at the
+top — the keydown TDZ scar says never trust "it only runs later".
+Strings in both locales (recap.*, dir.0-7, chassis.0-8). Suite
+622/622 double-run, client smoke + ui_acceptance green.
+
+## instrument correction: the per-map 5-seed gate never was one
+
+Running the B7 gate produced outcomes IDENTICAL to the morning's
+"blackwood gate" — on the default map. Not coincidence, not luck:
+`test/headless/sim_standard_war.js` ignored MAP entirely, so every
+per-profile gate ever run through sim_campaign_wave1.sh gated
+FRONTIER. Fixed (mapProfile now honoured, provenance comment in the
+file, skill updated). Sweep-based per-map verdicts always honoured MAP
+and stand — including 18G's 30+30. The TRUE blackwood gate (18000
+ticks): mixed winners, tickets x2 / horn x2 (one 55-55 draw) /
+standard x1 — consistent with the sweep's 27% horn. Same casebook
+lesson, third instance: when two runs agree suspiciously, suspect the
+instrument before celebrating the consistency.

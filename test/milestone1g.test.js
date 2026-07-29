@@ -40,7 +40,8 @@ test("1G repeated fire disables asset at HP=0", () => {
   assert.equal(s.assets[1].state, ASSET_DISABLED);
   assert.deepEqual(s.events, [
     { type: "fire_resolved", attackerId: 0, targetId: 1, hpDelta: 20, targetHp: 0 },
-    { type: "asset_disabled", assetId: 1 },
+    // B7: the disable event names its killer (kind/chassis/bearing).
+    { type: "asset_disabled", assetId: 1, by: "asset", byType: 0, dir: 6 },
   ]);
 });
 

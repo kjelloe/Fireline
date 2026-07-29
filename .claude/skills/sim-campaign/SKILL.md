@@ -15,6 +15,10 @@ mirror asymmetry, and the carrier fuel strand (11C).
 
 ```bash
 bash debugging/sim_campaign_wave1.sh          # 5 seeds x 12000 ticks, outcomes
+# MAP=<profile> works for the gate SINCE 2026-07-31 — before that,
+# sim_standard_war.js silently ignored it and every "per-map gate"
+# actually gated frontier. Sweep (sim_sweep.mjs) verdicts always
+# honoured MAP and stand. Blackwood needs TICKS=18000 (long wars).
 SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
