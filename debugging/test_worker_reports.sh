@@ -89,6 +89,37 @@ echo "case 5: a missing file is not an error"
 mail_file "$OUT/nope.json" report && rc=0 || rc=1
 check "missing file returns non-zero, does not send" "1" "$rc"
 
+echo "case 6: a FAILED send is not recorded as sent (it must retry)"
+cat > "$TMP/bin/failing-am" <<'STUB'
+#!/bin/bash
+exit 1
+STUB
+chmod +x "$TMP/bin/failing-am"
+printf 'x\n' > "$OUT/retry_me.json"
+AM_GOOD="$AM"
+AM="$TMP/bin/failing-am"
+TAG=test
+fail_loud() { :; }   # the real one mails; here we only care about the manifest
+log() { :; }
+mail_file "$OUT/retry_me.json" report && rc=0 || rc=1
+check "a failed send reports failure" "1" "$rc"
+check "a failed send is NOT in the manifest" "0" \
+  "$(grep -c '^retry_me.json|' "$OUT/.mailed" 2>/dev/null | head -1)"
+AM="$AM_GOOD"
+mail_file "$OUT/retry_me.json" report && rc=0 || rc=1
+check "the retry succeeds once the hub is back" "0" "$rc"
+check "and NOW it is recorded" "1" "$(grep -c '^retry_me.json|' "$OUT/.mailed")"
+
+echo "case 7: the silent job-drop path is gone (worker parses or complains)"
+# The main loop discards a job whose body has no JSON object. Prove the
+# guard exists in the source rather than re-running the whole loop.
+check "unparsed bodies are reported, not binned" "1" \
+  "$(grep -c 'body did not parse, so it was DISCARDED' tools/batch_worker.sh)"
+check "shard failures are reported" "1" \
+  "$(grep -c 'shard(s) exited non-zero' tools/batch_worker.sh)"
+check "queue-take errors are reported" "1" \
+  "$(grep -c 'queue take failed' tools/batch_worker.sh)"
+
 echo
 echo "passed $pass, failed $fail"
 [ "$fail" -eq 0 ]

@@ -58,7 +58,11 @@ outcome. Renderer presents fog-filtered views only.
   AXIS (x-only, then y-only), never by sign, so slides commute with the
   mirror; a head-on step sets ASSET_IDLE so the planner re-engages.
   Objectives must sit within `CAPTURE_SEEK_CELLS` (16) of real traffic
-  or they are never captured at all (18C).
+  or they are never captured at all (18C). `engine/bridges.js` (13E):
+  riverline's spans are hashed {id,hp}; artillery breaches, ANY team's
+  truck rebuilds, and a breached span becomes T_WATER — so the Skimmer
+  crosses what a tank must ford. Empty on every other profile, which is
+  why it needed no fixture repin.
 - Roster (9 chassis, ids 0-8): tank/scout/artillery/logistics/carrier/
   bike/mortar/sentinel/skimmer. Per team: 4/3/2/3/2/1/1 + the faction
   unique in garage slot idx 10. Contract flags are EXPLICIT on every
@@ -70,6 +74,7 @@ outcome. Renderer presents fog-filtered views only.
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
   charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
+  fire(...) also takes `targetBridgeId` (13E, siege chassis only).
   Faction uniques crew BY DEFAULT (16B live; UNIQUES=0 in sweeps
   disables); band-tuned to normal-world ~51/49 (trail affinity 416,
   Sentinel hp 120). Weather fronts (16G): seed-scheduled sensor-halving

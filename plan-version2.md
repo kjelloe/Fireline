@@ -43,7 +43,7 @@ plus three experimental maps that have not earned promotion.
 | **Weather fronts** | ✅ `slice-16g` — seed-scheduled, sensors halve, pure function |
 | **Wall rule + sliding** | ✅ `18b`/`18e` — impassable terrain refuses entry; glancing steps slide, head-on stops so the planner re-engages |
 | Full cargo manifest | ✅ `slice-13a` + AI resupply runner `13b` |
-| **Bridge demolition (riverline)** | ⬜ **13E — next queued slice.** Everything it needs exists (site hp, siege flag, materiel repair, blocked edges) |
+| **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; **AI doctrine deferred to 13E-2** |
 | Meaningful deaths (B1) | ⬜ ruled — a disable costs a ticket unless the wreck is recovered |
 | Mercy + overtime (B3) | ⬜ ruled — small victory-logic slice |
 | Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |
@@ -88,7 +88,7 @@ plus three experimental maps that have not earned promotion.
 | **Client feel batch (playtest 8)** | ✅ `slice-18d` — honest centre-on-me, war clock, fog notice, right-drag pan, stats key |
 | Audio identity | ⬜ V2.x — RULED synth-first (WebAudio patch manifest) |
 | Camera/diorama + chase cam | ⬜ V2.x |
-| Native perf numbers | 🔜 UNBLOCKED — `tools/perf_native.ps1` runs the harness headed on Windows (invokable from WSL); awaits one run on the PC |
+| Native perf numbers | 🔜 RUNNER WORKS — `tools/perf_native.ps1` (+ `perf_native.sh` from WSL, docs in `tools/perf_native.md`); a run succeeded on the PC, **numbers not yet collected** |
 | Roblox/Luau twin | Horizon |
 
 ## Track F — Meta & live ops

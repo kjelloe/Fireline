@@ -23,14 +23,57 @@ ME=batch-pc
 OUT=reports/sweeps
 mkdir -p "$OUT"
 
+# prompt-74: this thing runs unattended on another machine, so "it was
+# running and there were no errors in the log" has to mean something.
+#   --verbose / -v   narrate every decision to stdout + reports/sweeps/worker.log
+#   --debug          --verbose plus a full shell trace (set -x)
+# VERBOSE=1 / DEBUG=1 in the environment work too, for the systemd case.
+VERBOSE=${VERBOSE:-0}
+DEBUG=${DEBUG:-0}
+for arg in "$@"; do
+  case "$arg" in
+    --verbose|-v) VERBOSE=1 ;;
+    --debug|-d)   VERBOSE=1; DEBUG=1 ;;
+    --help|-h)
+      echo "usage: batch_worker.sh [--verbose|-v] [--debug|-d]"
+      echo "  env: ONCE=1 drain the queue once; VERBOSE=1; DEBUG=1"
+      exit 0 ;;
+    *) echo "unknown argument: $arg (try --help)" >&2; exit 2 ;;
+  esac
+done
+WORKER_LOG="$OUT/worker.log"
+
+log() { # always to the log file; to stdout only when verbose
+  local line
+  line="$(date '+%Y-%m-%d %H:%M:%S') $*"
+  printf '%s\n' "$line" >> "$WORKER_LOG" 2>/dev/null || true
+  [ "$VERBOSE" = "1" ] && printf '%s\n' "$line"
+  return 0
+}
+# A failure that reaches nobody is the thing we are fixing: say it on
+# stderr, put it in the log, AND mail it home.
+fail_loud() {
+  local msg="$*"
+  printf 'ERROR: %s\n' "$msg" >&2
+  log "ERROR: $msg"
+  $AM send --from $ME --to dev --tag done "worker ERROR on ${TAG:-?}: $msg" >/dev/null 2>&1 || true
+}
+[ "$DEBUG" = "1" ] && set -x
+log "worker starting (verbose=$VERBOSE debug=$DEBUG pid=$$)"
+
 TAG=$(git describe --tags --always)
 $AM status --as $ME "worker up on $TAG; validating suite" >/dev/null
 
 # A red suite invalidates every result — refuse to serve until green.
-if ! npm test >/dev/null 2>&1; then
-  $AM send --from $ME --to dev --tag done "WORKER REFUSED: npm test is RED on $TAG — fix the tree before batching."
+log "validating suite on $TAG"
+if ! npm test > "$OUT/worker_suite.log" 2>&1; then
+  # The failing lines, not just the verdict - otherwise diagnosing a red
+  # PC means asking a human to go and look.
+  suite_tail=$(grep -E "^not ok|^# (fail|tests|pass)" "$OUT/worker_suite.log" | head -12 | tr '\n' ' ')
+  fail_loud "npm test is RED on $TAG - refusing to serve. ${suite_tail:0:400}"
   exit 1
 fi
+log "suite green"
 # Online notice as MAIL (prompt 47): the dev side watches the store, so
 # "worker online on <commit>" is the signal to queue the next slate —
 # no human relay needed. Status alone is a board, not a notification.
@@ -50,7 +93,15 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
-  wait "${pids[@]}"
+  local rc=0 bad=0
+  for pid in "${pids[@]}"; do
+    wait "$pid" || { rc=$?; bad=$((bad + 1)); }
+  done
+  if [ "$bad" -gt 0 ]; then
+    # Shards that die produce empty CSVs and a cheerful "0 wars" mail.
+    fail_loud "$label: $bad/$shards shard(s) exited non-zero (last rc=$rc) - results are INCOMPLETE"
+  fi
+  log "$label: shards finished ($((shards - bad))/$shards ok)"
   # Merge shards: one header, all rows.
   head -1 "$OUT/${label}_0.csv" > "$OUT/${label}.csv"
   for i in $(seq 0 $((shards - 1))); do
@@ -92,8 +143,15 @@ mail_file() { # $1 = path, $2 = tag (csv|report)
   # Logs can be enormous; results never are. Cap the body so one runaway
   # file cannot wedge the mail store.
   { echo "#file:$base"; head -c 200000 "$file"; } > "$tmp"
-  $AM send --from $ME --to dev --tag "$tag" --body-file "$tmp" >/dev/null
+  if ! $AM send --from $ME --to dev --tag "$tag" --body-file "$tmp" >/dev/null 2>&1; then
+    rm -f "$tmp"
+    # NOT recorded in the manifest, so the next pass retries instead of
+    # believing a failed send succeeded.
+    fail_loud "failed to mail $base - will retry on the next job"
+    return 1
+  fi
   rm -f "$tmp"
+  log "mailed $base (tag=$tag)"
   # Record only AFTER a successful send, and drop any older line for the
   # same file so the manifest cannot grow without bound.
   if [ -f "$MANIFEST" ]; then
@@ -127,6 +185,7 @@ handle_job() { # $1 = JSON body
   local body=$1
   local kind
   kind=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('kind',''))" "$body" 2>/dev/null)
+  log "handling job kind='${kind:-<unparsed>}'"
   case "$kind" in
     sweep)
       run_sweep "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" 0 1 sweep ;;
@@ -241,18 +300,29 @@ handle_job() { # $1 = JSON body
 }
 
 while true; do
-  job=$($AM queue take --as $ME 2>/dev/null)
+  job=$($AM queue take --as $ME 2>"$OUT/.take_err") || true
+  take_err=$(cat "$OUT/.take_err" 2>/dev/null); rm -f "$OUT/.take_err"
+  [ -n "$take_err" ] && fail_loud "queue take failed: ${take_err:0:200}"
   if [ -n "$job" ] && ! printf '%s' "$job" | grep -q "queue empty"; then
+    log "took a job: $(printf '%s' "$job" | tr '\n' ' ' | cut -c1-160)"
     body=$(printf '%s' "$job" | python3 -c "
 import sys, re
 text = sys.stdin.read()
 m = re.search(r'\{.*\}', text, re.S)
 print(m.group(0) if m else '')")
-    [ -n "$body" ] && handle_job "$body"
+    if [ -n "$body" ]; then
+      handle_job "$body"
+    else
+      # This USED TO BE SILENT: the job was taken off the queue and
+      # dropped on the floor with no mail, no log and no error - the
+      # queue simply emptied and nothing ever came back.
+      fail_loud "job taken but its body did not parse, so it was DISCARDED: $(printf '%s' "$job" | tr '\n' ' ' | cut -c1-200)"
+    fi
     continue # drain the queue before waiting
   fi
   [ "${ONCE:-0}" = "1" ] && break
   # Blocking idle loop: returns the moment mail/queue arrives (or timeout).
+  log "idle; waiting for work"
   $AM flag wait --as $ME --timeout 3300 >/dev/null 2>&1 || true
 done
 $AM status --as $ME "worker stopped ($TAG)" >/dev/null

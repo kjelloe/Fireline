@@ -131,3 +131,48 @@ test("integration: 4000-tick AI war upholds state invariants", () => {
   const rebuilt = replayLog(createInitialState(1234, "frontier_corridor"), server.commandLog);
   assert.equal(hashState(rebuilt), server.getLatestSnapshot().stateHash);
 });
+
+// 13E: the ONE over-the-wire test the new command shape owes. The
+// transport spreads operatorId onto the command, and a validate() shape
+// bug hides exactly there - a bridge target that works in-process can
+// still be refused (or worse, silently accepted for the wrong operator)
+// once it crosses the socket.
+test("integration: fire_order at a bridge crosses the wire and is enforced", async () => {
+  await withServer({ mapSeed: 2026, mapProfile: "riverline" }, async (appServer, port) => {
+    const a = await connect(port);
+    a.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
+    await settle(80);
+    // Crew asset 0 and make it an artillery piece parked by the middle
+    // span, supplied, so only the RULES can refuse the shot.
+    const st = appServer.gameServer.state;
+    const gun = st.assets[0];
+    gun.type = 2; // artillery: the only siege chassis
+    gun.x = 58 * 256; gun.y = 63 * 256;
+    gun.ammo = 20; gun.fuel = 4000; gun.reloadTimer = 0;
+    st.bases = [
+      { team: 0, x: 0, y: 0, width: st.map.width, height: st.map.height },
+      { team: 1, x: 0, y: 0, width: st.map.width, height: st.map.height },
+    ];
+    a.ws.send(JSON.stringify({ type: "select_asset", assetId: 0, confirm: true }));
+    await settle(80);
+
+    const before = appServer.gameServer.state.bridges[1].hp;
+    a.ws.send(JSON.stringify({ type: "fire_order", targetBridgeId: 1 }));
+    await settle(120);
+    // withServer runs the clock stubbed out, so queued commands only
+    // reach the reducer when we step it by hand.
+    appServer.gameServer.step();
+    const after = appServer.gameServer.state.bridges[1].hp;
+    const refusals = a.messages.filter((m) => m.type === "s_rejected").map((m) => m.reason);
+    assert.ok(after < before,
+      `the shell landed over the wire (${before} -> ${after}); refusals: ${JSON.stringify(refusals)}`);
+
+    // And the siege rule survives the transport: a bridge id no map has
+    // is refused rather than crashing or silently doing nothing odd.
+    a.ws.send(JSON.stringify({ type: "fire_order", targetBridgeId: 99 }));
+    await settle(120);
+    appServer.gameServer.step();
+    assert.equal(appServer.gameServer.state.bridges.length, 3, "no phantom bridge appeared");
+    a.ws.close();
+  });
+});

@@ -40,6 +40,7 @@ function fuzzRun(seed, steps) {
       mineId: roll(6),
       targetDroneId: roll(6),
       targetSiteId: roll(8),
+      targetBridgeId: roll(5),          // 13E: includes ids no map has
       kind: PING_KINDS[roll(PING_KINDS.length)],
       option: roll(2) ? "auto_rescue" : "wallhack",
       value: roll(3) - 1,

@@ -2604,3 +2604,26 @@ now speak both tags, verified by a synthetic round trip.
 stubs the mail CLI, because this code runs unattended on another machine
 where a dedup bug either spams the store every job or silently ships
 nothing.
+
+## worker observability (2026-07-29, prompt 74)
+
+"It was running, no errors in the log" after three jobs vanished. An
+audit of batch_worker.sh found five ways to fail without a word:
+
+1. **A job whose body did not parse was DISCARDED silently** — taken off
+   the queue, `[ -n "$body" ] && handle_job` skipped it, and nothing was
+   logged or mailed. This matches the symptom exactly.
+2. `queue take` errors went to /dev/null, so a broken hub looked idle.
+3. Sweep shard exit codes were discarded by a bare `wait "${pids[@]}"`;
+   a dead shard produced an empty CSV and a cheerful "0 wars" mail.
+4. The red-suite refusal threw away the test output, so diagnosing a red
+   PC meant asking a human to go and look.
+5. My own prompt-73 bug: a FAILED result mail was still recorded in the
+   `.mailed` manifest, so it would never be retried.
+
+All five now log AND mail. Added `--verbose`/`--debug` (plus VERBOSE/
+DEBUG env and `--help`) and an unconditional `reports/sweeps/worker.log`,
+so even a run started without flags leaves a record.
+
+`debugging/test_worker_reports.sh` grew to 19 checks, including that a
+failed send is NOT recorded (and succeeds on retry once the hub is back).

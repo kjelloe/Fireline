@@ -16,6 +16,9 @@ items, and the batch worker taught to unblock itself.
 | — | Batch worker autostash (prompt 66) |
 | 18D | Playtest 8, ten items |
 | 18E | Wall sliding (found by this round's own gap analysis) |
+| 13E | Bridge demolition — riverline spans droppable/rebuildable |
+| — | `perf_native.ps1` + wrapper + docs: native GPU perf, finally |
+| — | Batch lane: auto-mail reports, and five silent failures made loud |
 
 ## Three findings worth your attention
 
@@ -92,6 +95,29 @@ right-drag panning (28), stats on a key (31), Next-asset greying (22).
    different identity (quiet, positional: 12 downs/war vs frontier's 70).
    Worth knowing whether that reads as tense or as dull before it earns
    promotion.
+
+## Late additions (same day)
+
+**13E bridges landed.** Artillery drops a span, it becomes WATER (so the
+Skimmer is the standing answer to a demolition), and EITHER team's truck
+rebuilds it. No fixture repin was needed: the hash writes nothing for an
+empty array and only riverline has bridges. AI siege/repair doctrine is
+deferred to 13E-2. Riverline gate: 6/6 winners, 0 undecided.
+
+**Blackwood's 600-war battery came back and it does NOT pass**: 59.4% to
+the west in the normal world, 43.6% mirrored — the edge FLIPS, so it is
+geometry/side, not faction. Aggregate 51.5% means the engine is
+equivariant; the map still hands the west a real advantage a player feels
+every war. It cannot be terrain (mirror-symmetric by construction), so
+the suspects are relay id order in tie-breaks, patrol phase offsets keyed
+to assetId, and spawn-row chassis order. Under the prompt-68 ruling it is
+a candidate to ship experimental-with-premium.
+
+**The batch lane got its observability.** A worker consumed three jobs
+and went silent; an audit found five paths that could fail with nothing
+on stdout, stderr or mail — worst, a job whose body did not parse was
+taken off the queue and discarded without a word. All loud now, plus
+`--verbose`/`--debug` and an always-on worker.log.
 
 ## Still blocked on you
 

@@ -111,6 +111,13 @@ npm start                              # host machine
   north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half
   generated, east half mirrored). Wars there run slower — tuning follows
   your first playtest.
+- Bridges (13E, riverline): the three crossings can be DROPPED. Artillery
+  (only artillery) shells a span until it collapses; the cells become open
+  water, so heavy hulls must ford in misery or go the long way round —
+  while a Skimmer crosses it at speed. Any team's logistics truck carrying
+  materiel can rebuild a dropped span by parking beside it, so a contested
+  crossing can change hands repeatedly. AI regents do not yet drop or
+  rebuild bridges on their own; that is the next slice.
 - Third map (18A): `MAP=blackwood npm start` — the DENSE woodland map.
   Forest dominates; the central corridor is the only road, a trail ring
   plus twin center alleys carry the light chassis, and the contested

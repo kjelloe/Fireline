@@ -1,6 +1,6 @@
 # 13E — Bridge demolition (riverline's signature slice)
 
-*Design of record, written 2026-07-29 before implementation. Ruled in
+*Design of record. **LANDED 2026-07-29 as `slice-13e-bridges`** — everything below is built EXCEPT the AI doctrine section, which is deferred to 13E-2 (regents do not yet choose to drop or rebuild a span). Written before implementation. Ruled in
 the gameplay-evolved eval (#6, FIT: EXCELLENT) and queued ever since.
 Read with specs/10 (map roster) and specs/07 (rulings).*
 

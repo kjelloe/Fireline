@@ -96,6 +96,15 @@ at all (18C, below).
   assets already inside that radius. Such a relay silently leaves the
   ticket math and can make the majority unreachable. Map-side rule (the
   radius is NOT tuned per map — that would reopen every map's balance).
+- **Bridge demolition (13E, LANDED)**: riverline spans are damageable
+  ({id,hp}, hashed). ONLY artillery breaches them; a breached span turns
+  to WATER (so the amphibious Skimmer is the standing answer to a
+  demolition); EITHER TEAM's truck rebuilds it (prompt 70 — no ownership
+  concept, and the tug-of-war is the point; if instant rebuilds prove
+  too cheap the lever is repair TIME, not rights). Bridges are NOT
+  sites: they own nothing, project no supply or sensors, and never count
+  toward the ticket majority. AI siege/repair doctrine is deferred to
+  13E-2 and carries its own sweep.
 - **Map roster (prompt 60)**: specs/10_map_roster.md is the map design
   of record — checklist audit, hard profile constraints (mirror,
   shared bases/road, west-gen, runway), maps 3 `blackwood` + 4

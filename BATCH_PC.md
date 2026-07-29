@@ -205,6 +205,25 @@ runs; body takes `swap`/`mirror` 0|1 — `batch_send.sh uniques 300 1 0`
 queues the swapped variant), `matrix`, `perf`, `sendresults`. The
 refusal message lists the kinds a running worker actually has.
 
+**Run it verbose when something looks stuck (prompt 74).**
+
+```bash
+bash tools/batch_worker.sh --verbose     # narrate every decision
+bash tools/batch_worker.sh --debug       # + full shell trace
+```
+
+Both also write `reports/sweeps/worker.log` unconditionally, so there is
+a record even for a run started without flags. This exists because a
+worker once consumed three queued jobs and went silent with "no errors
+in the log" - an audit found several paths that could fail with nothing
+on stdout, stderr or mail, the worst being a job whose body did not
+parse: it was taken off the queue and DISCARDED without a word. Now
+every one of those mails home and logs: unparsed job bodies, `queue
+take` errors, sweep shards that exit non-zero (which otherwise produced
+a cheerful "0 wars" result), a red suite (with the failing lines, not
+just the verdict), and a failed result mail - which is no longer
+recorded as sent, so it retries instead of vanishing.
+
 **Results come home automatically (prompt 73).** After EVERY job the
 worker mails any new or changed file in `reports/sweeps/` — CSVs under
 tag `csv`, JSON summaries under tag `report`. A manifest (`.mailed`)
