@@ -3493,3 +3493,11 @@ with the ordered bearing by >45° (wall slides — the wheels go where
 the hull goes). Item 37: no range tip over a wreck (fire_order refuses
 them; "out of range" was noise). Suite 647/647, smoke + acceptance
 green. The REAL cure for slides is item 39 (pathfinding), next.
+
+CORRECTION: the 18H commit message claimed 647/647 but the suite was
+645/647 at commit time — my gate command chained through grep and I
+read the count wrong. The two failures were the 4D interpolator tests
+pinning the OLD (broken) heading contract; updated to the new
+motionHeading field with an explicit "brads pass through untouched"
+pin. Actually 647/647 as of THIS commit. Lesson: read the fail count,
+not the exit code.

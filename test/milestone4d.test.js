@@ -8,13 +8,18 @@ function view(tick, friendly) {
   return { tick, team: 0, friendlyAssets: friendly, visibleEnemies: [], events: [] };
 }
 
-test("4D moving entities expose their heading, stationary ones do not", () => {
+test("4D moving entities expose their MOTION heading, stationary ones do not", () => {
+  // Playtest-10 item 36: motion direction moved to its OWN field. The
+  // interpolator used to OVERWRITE e.heading (engine brads) with these
+  // radians, which is how every moving unit rendered facing ~east.
   const interp = createInterpolator({ delayMs: 100 });
-  interp.push(view(1, [{ id: 0, x: 0, y: 0 }, { id: 1, x: 500, y: 500 }]), 1000);
-  interp.push(view(2, [{ id: 0, x: 160, y: 0 }, { id: 1, x: 500, y: 500 }]), 1100);
+  interp.push(view(1, [{ id: 0, x: 0, y: 0, heading: 64 }, { id: 1, x: 500, y: 500, heading: 32 }]), 1000);
+  interp.push(view(2, [{ id: 0, x: 160, y: 0, heading: 64 }, { id: 1, x: 500, y: 500, heading: 32 }]), 1100);
   const sampled = interp.sample(1150);
-  assert.equal(sampled.friendlyAssets[0].heading, 0, "eastbound = 0 rad");
-  assert.equal(sampled.friendlyAssets[1].heading, null, "no motion, renderer keeps last");
+  assert.equal(sampled.friendlyAssets[0].motionHeading, 0, "eastbound = 0 rad");
+  assert.equal(sampled.friendlyAssets[1].motionHeading, null, "no motion, renderer keeps last");
+  assert.equal(sampled.friendlyAssets[0].heading, 64, "engine brads pass through UNTOUCHED");
+  assert.equal(sampled.friendlyAssets[1].heading, 32, "stationary too");
 });
 
 test("4D heading tracks all four cardinal directions", () => {
@@ -28,6 +33,6 @@ test("4D heading tracks all four cardinal directions", () => {
     const interp = createInterpolator({ delayMs: 100 });
     interp.push(view(1, [{ id: 0, x: 1000, y: 1000 }]), 1000);
     interp.push(view(2, [{ id: 0, x: 1000 + d.dx, y: 1000 + d.dy }]), 1100);
-    assert.equal(interp.sample(1150).friendlyAssets[0].heading, d.want);
+    assert.equal(interp.sample(1150).friendlyAssets[0].motionHeading, d.want);
   }
 });
