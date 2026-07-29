@@ -19,6 +19,10 @@ export const DEFAULT_BINDS = Object.freeze({
   // pan key (holding s while reading stats would drag the camera); "i"
   // for info is free, and this is remappable like every other bind.
   stats: "i",
+  // B5: hold to open the comm wheel, release to send the highlighted
+  // ping at the cursor. "q" for quick-comm — the genre convention — and
+  // free of the WASD pan cluster.
+  comm: "q",
 });
 
 export function loadBinds(storage = globalThis.localStorage) {

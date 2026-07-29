@@ -3375,3 +3375,21 @@ actor — never the actor itself — earns it. Payoff-driven and rare
 ESCORT joins the end-screen honors, both locales. Suite 630/630
 double-run, gate green (5 decided, rescues firing). The B4 "Best
 Escort has no counter" note is now history — removed.
+
+## slice-B5: comm wheel + auto-callouts
+
+Hold Q (new remappable bind — v was taken by transfer) opens a radial
+of the seat's FULL ping vocabulary; the 1/2/3 keys keep their top
+three. ping_model refactored: contextOptionsFor (unsliced) feeds both.
+Release over a sector sends the ping AT the cursor's ground cell
+(reuses the move-order raycast); a 30 px centre dead zone means
+open-and-abandon says nothing. New engine kind "thanks" (social glue —
+a rescued crew can acknowledge; blocked while down, rescue-only rule
+untouched). AUTO-CALLOUTS: a hull emerging from fog posts "CONTACT —
+{chassis} to the {dir}" to the feed, bearing computed with the same
+compassOctant the death recap uses; 60 s per-hull memory beats fog
+flicker, 8 s global cooldown keeps the feed from becoming a spotter's
+monologue. Client-only atop the ping system — no new commands, no
+hashed state, no repin. Suite 633/633 double-run, smoke + acceptance
+green. Touch keeps its current ping path (wheel is pointer-first;
+mobile long-press wheel noted for the touch backlog).

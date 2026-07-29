@@ -21,6 +21,7 @@ export const PING_KINDS = Object.freeze([
   "safe_route",           // scout-marked clean path (Q16)
   "need_supplies",        // 14I: the fuel/ammo mission request
   "need_rescue",          // downed operator calling the carrier (OP_DOWN only)
+  "thanks",               // B5: social glue — acknowledge the rescue/escort
 ]);
 
 // Downed seats may only cry for rescue; driving seats say anything BUT that

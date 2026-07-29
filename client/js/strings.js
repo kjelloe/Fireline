@@ -182,6 +182,10 @@ export const CATALOGS = {
     "ping.safe_route": "SAFE ROUTE MARKED",
     "ping.need_rescue": "NEED RESCUE",
     "ping.need_supplies": "NEED SUPPLIES",
+    "ping.thanks": "THANKS",
+    // B5 auto-callouts
+    "callout.contact": "CONTACT — {chassis}",
+    "callout.contact_dir": "CONTACT — {chassis} to the {dir}",
     "status.no_fuel": "OUT OF FUEL — a truck can refuel you (V beside you)",
     "status.low_fuel": "Fuel low ({n})",
     "status.no_ammo": "OUT OF AMMO — resupply at base or from a truck",
@@ -470,6 +474,10 @@ export const CATALOGS = {
     "ping.safe_route": "TRYGG RUTE MERKET",
     "ping.need_rescue": "TRENGER REDNING",
     "ping.need_supplies": "TRENGER FORSYNINGER",
+    "ping.thanks": "TAKK",
+    // B5 auto-callouts
+    "callout.contact": "KONTAKT — {chassis}",
+    "callout.contact_dir": "KONTAKT — {chassis} i {dir}",
     "status.no_fuel": "TOM FOR DRIVSTOFF — en lastebil kan fylle deg (V ved siden av)",
     "status.low_fuel": "Lite drivstoff ({n})",
     "status.no_ammo": "TOM FOR AMMO — etterforsyn i basen eller fra en lastebil",

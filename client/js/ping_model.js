@@ -10,7 +10,10 @@ const DEFAULTS = () => [
   { kind: "rally", label: t("ping.rally") },
 ];
 
-export function pingOptionsFor(view, operatorId) {
+// The UNSLICED context list — what this seat could meaningfully say.
+// pingOptionsFor (the 1/2/3 keys) takes the top three; wheelOptionsFor
+// (B5) takes all of it.
+function contextOptionsFor(view, operatorId) {
   if ((view?.downedOperators ?? []).some((d) => d.operatorId === operatorId)) {
     return [{ kind: "need_rescue", label: t("ping.need_rescue") }];
   }
@@ -43,9 +46,34 @@ export function pingOptionsFor(view, operatorId) {
   if (me.type === 3 && !towing) {
     options.push({ kind: "road_blocked", label: t("ping.road_blocked") });
   }
+  return options;
+}
+
+export function pingOptionsFor(view, operatorId) {
+  const options = contextOptionsFor(view, operatorId);
+  if (options.length === 1 && options[0].kind === "need_rescue") return options;
   for (const d of DEFAULTS()) {
     if (options.length >= 3) break;
     if (!options.some((o) => o.kind === d.kind)) options.push(d);
   }
   return options.slice(0, 3);
+}
+
+// B5 comm wheel: the FULL context vocabulary, not the 1/2/3 top-three.
+// Same context logic (the wheel of a downed seat is just NEED RESCUE),
+// padded with the defaults + the always-available social kinds, capped
+// at 8 sectors and deduped. Pure — the wheel renderer just draws it.
+export function wheelOptionsFor(view, operatorId) {
+  const out = contextOptionsFor(view, operatorId);
+  if (out.length === 1 && out[0].kind === "need_rescue") return out;
+  const extras = [
+    ...DEFAULTS(),
+    { kind: "need_supplies", label: t("ping.need_supplies") },
+    { kind: "thanks", label: t("ping.thanks") },
+  ];
+  for (const e of extras) {
+    if (out.length >= 8) break;
+    if (!out.some((o) => o.kind === e.kind)) out.push(e);
+  }
+  return out;
 }

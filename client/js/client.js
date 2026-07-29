@@ -22,7 +22,8 @@ import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors } from "./feedback_model.js";
-import { pingOptionsFor } from "./ping_model.js";
+import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
+import { compassOctant } from "../../engine/reducer.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
@@ -58,6 +59,15 @@ let mySelectedAssetId = null;
 let autoSelectSent = false; // post-playtest: crew a unit automatically on join
 let lastDrivenAssetId = -1; // B7: which hull was mine, one view ago
 let deathRecap = null;      // B7: the asset_disabled event that unseated me
+// B5 comm wheel: options while Q is held, else null. pick = hovered
+// sector. lastPointer feeds both sector selection and the release-time
+// ground pick.
+let commWheel = null;
+let lastPointer = { x: 0, y: 0 };
+// B5 auto-callouts: enemyId -> last-seen ms, so a fog flicker does not
+// re-announce the same hull every second.
+const contactSeen = new Map();
+let lastCalloutAt = 0;
 const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
@@ -281,6 +291,8 @@ function init() {
     // 9E: M lays a mine under the tank; C clears the nearest adjacent
     // known mine with a truck.
     if (k === BINDS.mine) send({ type: "deploy_mine" });
+    // B5: hold Q for the comm wheel (release sends, centre = cancel).
+    if (k === BINDS.comm && !e.repeat) showCommWheel();
     // 10C: 1/2/3 send context pings (what they mean depends on your seat).
     if (e.key === "1" || e.key === "2" || e.key === "3") {
       const opts = pingOptionsFor(interpolator.latest(), joined?.operatorId);
@@ -302,6 +314,11 @@ function init() {
       driveHeld[e.key.toLowerCase()] = false;
       sendDriveIntent();
     }
+    if (e.key.toLowerCase() === BINDS.comm) releaseCommWheel(); // B5
+  });
+  window.addEventListener("pointermove", (e) => { // B5: wheel + ground pick
+    lastPointer = { x: e.clientX, y: e.clientY };
+    if (commWheel) updateCommWheel();
   });
   renderer.domElement.addEventListener("wheel", (e) => {
     freeCam.zoomBy(e.deltaY > 0 ? 1.15 : 1 / 1.15);
@@ -536,6 +553,7 @@ function connect() {
       updateNextAssetButton(msg.view); // item 22
       updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
+      announceContacts(msg.view); // B5: fog reveals become callouts
       // B7: track the asset I drive AFTER the event pass — on the death
       // tick the view already shows me unseated, so the recap match
       // needs the PREVIOUS view's answer to "which hull is mine".
@@ -886,6 +904,100 @@ function selectNextAsset() {
   const next = pool[(idx + 1) % pool.length];
   mySelectedAssetId = next.id;
   send(buildSelectCommand(next.id));
+}
+
+// B5: the comm wheel. Held-open radial of the seat's FULL ping
+// vocabulary (the 1/2/3 keys keep their top-three); release sends the
+// highlighted ping at the cursor's ground cell. A centre dead zone
+// means open-and-release says nothing.
+function showCommWheel() {
+  const el = document.getElementById("comm-wheel");
+  if (!el || commWheel || !joined || joined.spectator) return;
+  const options = wheelOptionsFor(interpolator.latest(), joined.operatorId);
+  if (!options.length) return;
+  if (lastPointer.x === 0 && lastPointer.y === 0) {
+    lastPointer = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+  }
+  el.innerHTML = "";
+  const R = 130;
+  options.forEach((o, i) => {
+    const a = (i / options.length) * 2 * Math.PI - Math.PI / 2;
+    const b = document.createElement("div");
+    b.textContent = o.label;
+    b.style.cssText =
+      "position:absolute; transform:translate(-50%,-50%); white-space:nowrap;" +
+      "background:rgba(10,10,14,0.85); color:#cfe; padding:6px 12px;" +
+      "border-radius:6px; font:bold 13px sans-serif; border:1px solid #345;" +
+      `left:${Math.round(Math.cos(a) * R)}px; top:${Math.round(Math.sin(a) * R)}px;`;
+    el.appendChild(b);
+  });
+  el.style.display = "block";
+  commWheel = { options, pick: -1 };
+  updateCommWheel();
+}
+
+function updateCommWheel() {
+  if (!commWheel) return;
+  const el = document.getElementById("comm-wheel");
+  const dx = lastPointer.x - window.innerWidth / 2;
+  const dy = lastPointer.y - window.innerHeight / 2;
+  let pick = -1;
+  if (dx * dx + dy * dy > 30 * 30) {
+    const n = commWheel.options.length;
+    const a = Math.atan2(dy, dx) + Math.PI / 2; // sector 0 sits at 12 o'clock
+    pick = ((Math.round((a / (2 * Math.PI)) * n) % n) + n) % n;
+  }
+  commWheel.pick = pick;
+  [...el.children].forEach((c, i) => {
+    c.style.background = i === pick ? "#2b4a2b" : "rgba(10,10,14,0.85)";
+    c.style.color = i === pick ? "#9fe89f" : "#cfe";
+  });
+}
+
+function releaseCommWheel() {
+  if (!commWheel) return;
+  const el = document.getElementById("comm-wheel");
+  const { options, pick } = commWheel;
+  commWheel = null;
+  if (el) { el.style.display = "none"; el.innerHTML = ""; }
+  if (pick < 0) return;
+  const cmd = { type: "ping", kind: options[pick].kind };
+  const mouse = new THREE.Vector2(
+    (lastPointer.x / window.innerWidth) * 2 - 1,
+    -(lastPointer.y / window.innerHeight) * 2 + 1
+  );
+  raycaster.setFromCamera(mouse, camera);
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  const target = new THREE.Vector3();
+  if (raycaster.ray.intersectPlane(plane, target)) {
+    const { cellX, cellY } = scenePointToCell(target.x, target.z);
+    cmd.targetCellX = cellX;
+    cmd.targetCellY = cellY;
+  }
+  send(cmd);
+}
+
+// B5 auto-callouts: a hull emerging from fog is NEWS — once. A 60 s
+// per-hull memory beats fog flicker; an 8 s global cooldown keeps the
+// feed from turning into a spotter's monologue.
+function announceContacts(view) {
+  const now = performance.now();
+  const mine = view.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  for (const en of view.visibleEnemies ?? []) {
+    const last = contactSeen.get(en.id) ?? -1e9;
+    contactSeen.set(en.id, now);
+    if (now - last < 60000) continue;
+    if (now - lastCalloutAt < 8000) continue;
+    lastCalloutAt = now;
+    let line = t("callout.contact", { chassis: t(`chassis.${en.type}`) });
+    if (mine) {
+      const oct = compassOctant(en.x - mine.x, en.y - mine.y);
+      if (oct >= 0) {
+        line = t("callout.contact_dir", { chassis: t(`chassis.${en.type}`), dir: t(`dir.${oct}`) });
+      }
+    }
+    pushEvent(line);
+  }
 }
 
 function onPointerDown(event) {
