@@ -2910,3 +2910,32 @@ consequence of the geometry shift.
 **Every pre-change balance number is now void** — band tuning (51.3%),
 B1's ending mix, and both map verdicts were all measured on the old
 geometry. They need re-running at battery scale before anything is tuned.
+
+## worker `resync` (2026-07-30, prompt 83)
+
+The re-measurement battery started on the WRONG BUILD: the worker was
+seven commits behind (no cell-centred positions), so 1,800 wars would
+have re-measured the exact geometry we had just declared void. Caught by
+checking the worker's reported commit against HEAD before trusting a
+single number; the queued jobs were dropped mid-flight.
+
+Cause: the branch had been REBASED upstream, so the PC's commits and
+origin's are permanently unrelated — `--ff-only` cannot fix that, and
+`update` deliberately refuses to merge. It has now blocked the lane
+twice.
+
+`resync` is the permanent answer: fetch, hard-reset to `origin/<branch>`,
+re-exec. It is safe on the WORKER in a way it would never be on a dev
+machine — the worker authors nothing, and its only valuable output
+(`reports/sweeps/` CSVs) is gitignored, so a hard reset cannot destroy a
+result. Kept explicit and opt-in rather than folded into `update`, so
+nothing ever silently discards history.
+
+Covered by `debugging/test_worker_autostash.sh` (14/14), which now builds
+a genuinely diverged clone and proves resync lands on upstream with the
+gitignored results intact.
+
+**Operational lesson, recorded because it nearly cost hours: always
+check the worker's commit against HEAD before reading its numbers.** The
+mail says which commit produced them; a battery is only as valid as the
+build under it.

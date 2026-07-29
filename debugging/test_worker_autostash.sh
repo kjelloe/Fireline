@@ -74,6 +74,19 @@ ahead=$(git log --oneline @{u}..HEAD 2>/dev/null | head -3 | tr '\n' ' ')
 check "the local commit is nameable for the mail" "true" \
   "$([ -n "$ahead" ] && echo true || echo false)"
 
+
+echo "case 3: RESYNC recovers a diverged worker (the rebase case)"
+cd "$TMP/worker"
+git fetch origin >/dev/null 2>&1
+branch=$(git rev-parse --abbrev-ref HEAD)
+check "still diverged before resync" "1" \
+  "$(git pull --ff-only >/dev/null 2>&1 && echo 0 || echo 1)"
+git reset --hard "origin/$branch" >/dev/null 2>&1
+check "resync makes HEAD equal upstream" "true" \
+  "$([ "$(git rev-parse HEAD)" = "$(git rev-parse origin/$branch)" ] && echo true || echo false)"
+check "a gitignored RESULT survives the hard reset" "true" \
+  "$([ -f reports/sweeps/run.csv ] && echo true || echo false)"
+
 echo
 echo "passed $pass, failed $fail"
 [ "$fail" -eq 0 ]

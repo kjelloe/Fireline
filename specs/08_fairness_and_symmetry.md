@@ -25,8 +25,9 @@ a player-facing win-rate skew.
    Casebook: heading-snap ties (fixed: even direction index), movement
    floor-div (fixed: truncDiv), nearest-node ties (fixed: off-axis
    rank), mirror-partner node ties (fixed: origin-side), relay-seek
-   ties (fixed: same ladder), turnToward 180° tie (KNOWN, rare,
-   mirror-odd; fix sketch: turn away from map center).
+   ties (fixed: same ladder), turnToward 180° tie (FIXED 2026-07-30:
+   keyed to the unit's side of the map), and the coordinate convention
+   itself (FIXED: cell CENTRES, so positions reflect exactly).
 
 ## 2. The instruments (all in debugging/)
 
@@ -60,9 +61,10 @@ the NORMAL world). Verdict rules of thumb:
   faction-swap gate (the 12D authority).
 - ENGINE equivariance: the mirror world and the divergence probes —
   unchanged.
-- A mirror-only side×faction interaction exists (normal ~48% A vs
-  mirrored ~66% A on frontier, 2026-07-29) — filed as methodology
-  curiosity; investigate only if it ever leaks into the normal world.
+- A mirror-only side×faction interaction was filed here as a
+  "methodology curiosity" (normal ~48% A vs mirrored ~66% A on frontier).
+  **SOLVED 2026-07-30: the mirror world was never a mirror** — see §4.
+  The curiosity was the harness, not the game.
 
 ## 3.6 Stat levers saturate; worlds diverge in meaning
 
@@ -95,35 +97,35 @@ Consequences, now doctrine:
 
 ## 4. Known accepted residues
 
-- **The mirror HARNESS was itself asymmetric (found 2026-07-30, and it
-  changes how every mirror result must be read).** The reflection was
-  `(W-1)*256 - x`, which is anchor-preserving about cell CENTRES: correct
-  only for exact cell centres, one cell too far WEST for any mid-cell
-  position, and it sent the map's east edge (32767) to **-255**, off the
-  map. Now `(W*256-1) - x`: an involution, never off-map, and exact for
-  every position.
-- **Exact equivariance is still unreachable, and the reason is the
-  coordinate convention.** Entities sit on cell LEFT EDGES
-  (`cellToWorld(c) = c*256`), and a left edge does not reflect onto a
-  left edge — so a mirrored world starts up to 255 units (~1 cell) out of
-  step, and AI targets, which are always cell-aligned, do not reflect
-  onto each other either. The divergence probe now shows all maps parting
-  company at tick 2 for exactly this reason.
-  **Consequence: mirror-world splits carry a ≤1-cell artifact and cannot
-  be trusted at the few-percent level.** The "side leans" measured on
-  blackwood (west ~59/41) and sawtooth (east ~54-63) are therefore NOT
-  established — they must be re-measured before anyone tunes a map for
-  them. The NORMAL-world verdicts (band tuning, B1, pacing) are
-  untouched: they never used the transform.
-  **The real fix is cell-CENTRED positions** (`c*256+128`), which mirror
-  onto each other exactly. That is an engine change with a fixture repin,
-  not a harness tweak — filed as a decision, not done.
-- **The 180° turn tie is FIXED (was the last known chirality).** At
+- **The mirror harness was asymmetric, and so was the coordinate
+  convention (found and FIXED 2026-07-30).** Two compounding faults:
+  the reflection `(W-1)*256 - x` was anchor-preserving about cell centres
+  (one cell too far west for any mid-cell position, and it sent the east
+  edge to -255, off the map); and entities sat on cell LEFT EDGES, which
+  do not reflect onto left edges, so no transform could ever be exact.
+  **Both are fixed.** `cellToWorld(c) = c*256 + 128` (centres), reflected
+  about the map's centre line (`x' = W*256 - x`), maps the centre of cell
+  c onto the centre of cell W-1-c exactly. Mirror divergence moved from
+  tick 2 to ticks 54-166 and the residual is now SUB-CELL (7-16 units)
+  integer rounding in diagonal movement — a smaller, different problem.
+- **The 180° turn tie is FIXED** (was the last listed chirality). At
   exactly 180° both turns are equally short and `diff > 128` never fired,
-  so every unit turned the same way regardless of reflection. It is now
-  keyed to the unit's side of the map — which itself flips under the
-  mirror — so mirrored worlds make mirrored choices. A unit can never sit
-  exactly on the axis (2x is even, W-1 odd), so the tie-break has no tie.
+  so every unit turned the same way regardless of reflection. Now keyed
+  to the unit's side of the map, which itself flips under reflection; a
+  unit can never sit exactly on the axis (2x even, W-1 odd), so the
+  tie-break has no tie of its own.
+- **Consequence, and it is a big one: every balance number measured
+  before 2026-07-30 was taken on the old geometry and is VOID.** That
+  includes the band tuning (51.3%), B1's ending mix, and both new maps'
+  verdicts. Re-measured at n=40, blackwood and sawtooth BOTH flipped from
+  side-linked to TEAM-linked leans, in opposite directions — blackwood
+  favouring the Outliers (a trail map, the Skimmer's affinity), sawtooth
+  the Directorate (gap chokes, the Sentinel's anchors). That is §3.7
+  exactly, and it means the 600-war battery that "overturned" the
+  original 30-war sawtooth faction verdict was itself read through the
+  broken harness: the first verdict was right.
+  **Lesson for the casebook: when an instrument and a hypothesis
+  disagree, suspect the instrument before rewriting the hypothesis.**
 - `homeCellFor` centers floor east by half a cell for both teams.
 - Riverline carries a side lean (west 73/27 post-13C; the map-aware
   ticket majority collapsed it to ~58/42) with PERFECT mirror

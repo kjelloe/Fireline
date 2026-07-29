@@ -6,6 +6,7 @@
 #   bash tools/batch_send.sh mirror 600        # sides swapped (question 18)
 #   bash tools/batch_send.sh matrix 2 100      # hard-AI run
 #   bash tools/batch_send.sh map blackwood 300 # per-profile promotion battery
+#   bash tools/batch_send.sh resync           # after a REBASE: match upstream exactly
 #   bash tools/batch_send.sh perf              # GPU render harness
 #   bash tools/batch_send.sh collect           # deliver + settle results
 #   bash tools/batch_send.sh board             # who is doing what
@@ -22,9 +23,10 @@ case "${1:-}" in
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
+  resync) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"resync\"}" ;;
   matrix) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"matrix\",\"difficulty\":${2:-2},\"count\":${3:-100}}" ;;
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|perf|update|sendresults|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|perf|update|resync|sendresults|collect|board [args]"; exit 1 ;;
 esac

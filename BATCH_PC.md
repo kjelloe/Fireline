@@ -187,6 +187,7 @@ reported by mail:
 |---|---|
 | Clean tree | Straight `git pull --ff-only`, re-exec. |
 | Local EDITS | Autostashed, pulled, popped back. If the pop conflicts (your edit touched a file the pull moved) the worktree is HARD RESET to the clean pulled tree and your work is kept in the stash — because re-exec'ing into a tree full of conflict markers would break every later job. The mail names the stash ref. |
+| **After a REBASE upstream** | `update` can never fix this: rewritten hashes mean the PC's commits diverge permanently. Queue **`bash tools/batch_send.sh resync`** — it fetches and hard-resets to `origin/<branch>`, then re-execs. Safe on the worker specifically: it authors nothing, and `reports/sweeps/` is gitignored so no result is touched. |
 | Local COMMITS (diverged) | No stash can fix this; `--ff-only` refuses and the mail NAMES the local commits (`git log @{u}..HEAD`). Fix by hand: keep them (rebase/push) or `git reset --hard origin/dev_night`. |
 
 Results are never at risk — `reports/sweeps/` is gitignored, so the

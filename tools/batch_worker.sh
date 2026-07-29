@@ -274,6 +274,33 @@ handle_job() { # $1 = JSON body
         $AM send --from $ME --to dev --tag done \
           "update FAILED on $TAG: ${pullmsg:0:180}${ahead:+ | local commits ahead: $ahead}"
       fi ;;
+    resync)
+      # prompt-83: the permanent answer to a DIVERGED worker. `update`
+      # deliberately refuses to merge, and after a rebase upstream the
+      # PC's old commits can never fast-forward — which has now blocked
+      # the lane twice. This discards local history and matches upstream
+      # exactly.
+      #
+      # Safe here in a way it would NOT be on a dev machine: the worker
+      # authors nothing, and its only valuable output (reports/sweeps
+      # CSVs) is gitignored, so `reset --hard` cannot touch a result.
+      # Still explicit and opt-in — never folded into `update`.
+      local branch fetchmsg before
+      before=$(git describe --tags --always)
+      branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo dev_night)
+      if ! fetchmsg=$(git fetch origin 2>&1); then
+        fail_loud "resync: fetch failed: ${fetchmsg:0:200}"
+        $AM status --as $ME "idle on $TAG; waiting for jobs" >/dev/null
+        return
+      fi
+      if git reset --hard "origin/$branch" >/dev/null 2>&1; then
+        log "resync: $before -> $(git describe --tags --always) (hard reset to origin/$branch)"
+        $AM send --from $ME --to dev --tag done \
+          "resync: $before -> $(git describe --tags --always) on origin/$branch; re-exec" >/dev/null
+        exec bash "$0"
+      else
+        fail_loud "resync: reset to origin/$branch failed - needs a human on the PC."
+      fi ;;
     perf)
       $AM status --as $ME "running perf harness on $TAG" >/dev/null
       if node tools/perf_harness.mjs > "$OUT/perf_run.log" 2>&1; then
@@ -288,7 +315,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/matrix/perf/sendresults/update." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.

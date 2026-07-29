@@ -36,6 +36,11 @@ redeploys; replay OK. (History: the pre-13H wording here misread a 16B
 gate once — never panic on 5 seeds; confirm tempo shifts with a 300-seed
 sweep before tuning anything.)
 
+**Balance numbers taken before 2026-07-30 are VOID** — they were
+measured on the old cell-left-edge geometry and through a mirror
+transform that was not a true reflection. Re-measure rather than cite
+them (see specs/08 §4).
+
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
 / riverline / blackwood / sawtooth), `UNIQUES=0` disables the
