@@ -1,4 +1,5 @@
 import { t } from "./strings.js";
+import { MAP_PREMIUM } from "../../engine/premium.js";
 // client/js/objective_model.js — "what do I do now?" (post-playtest slice).
 // Pure view-derived guidance: standard status lines, relay tally, and one
 // prioritized hint. Born from LAN playtest #1: "did not understand what was
@@ -62,10 +63,13 @@ export function currentHint(view, myTeam, opts = {}) {
 }
 
 // The join briefing, shown once per war (playtest: nobody reads a hint bar).
-export function briefingText(myTeam, faction = null) {
+// The underdog premium (prompt-68) must be DISCLOSED — a hidden
+// handicap system reads as favouritism the day someone finds it.
+export function briefingText(myTeam, faction = null, mapProfile = null) {
   const teamName = faction
     ? `${faction.name.toUpperCase()} — ${faction.tacticalIdentity}`
     : myTeam === 0 ? "GREEN (west)" : "RED (east)";
+  const premiumTeam = mapProfile != null ? MAP_PREMIUM[mapProfile] : undefined;
   return [
     t("brief.fight_for", { name: teamName }),
     ...(faction ? [faction.line] : []),
@@ -73,6 +77,8 @@ export function briefingText(myTeam, faction = null) {
     t("brief.relays"),
     t("brief.fog"),
     t("brief.clicks"),
+    ...(premiumTeam === myTeam ? [t("brief.premium_underdog")] : []),
+    ...(premiumTeam !== undefined && premiumTeam !== myTeam ? [t("brief.premium_favoured")] : []),
   ].join("\n");
 }
 

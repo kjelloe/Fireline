@@ -3572,3 +3572,17 @@ A wins 69% — mechanism UNRESOLVED, needs an instrumented hunt slice
 stat is touched (§3.8). Rectification options laid out in the report;
 the underdog premium generator convicts sawtooth at 69% and is the
 ruled interim response (prompt-68 experimental-with-premium).
+
+## slice-premium-sawtooth: the first conviction goes live (DISCLOSED)
+
+The generator's verdict on the sawtooth pair (69.0% A, team-linked)
+becomes the first MAP_PREMIUM entry: team B earns +25% recognition on
+sawtooth while the map is HELD and the mechanism hunt runs — the
+prompt-68 experimental-with-premium response, exactly as ruled.
+DISCLOSURE is part of the mechanic: the join briefing now tells BOTH
+sides (underdog: "your recognition earns +25% here"; favourite: "the
+enemy earns a premium — expect them to fight for it"). view gains
+mapProfile (unhashed, both builders) so the client knows which map's
+law applies. Dormant-table test updated to pin the conviction. Suite
+652/652 double-run, smoke + acceptance green. No repin (scores were
+always hashed; frontier fixture untouched by a sawtooth-only rule).

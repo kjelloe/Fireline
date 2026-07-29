@@ -1559,7 +1559,8 @@ function upsertStandardMesh(st) {
 function showBriefing() {
   const el = document.getElementById("briefing-overlay");
   document.getElementById("briefing-text").innerText =
-    briefingText(joined?.team, joined ? factionFor(joined.team) : null); // 12A/15B
+    briefingText(joined?.team, joined ? factionFor(joined.team) : null,
+      interpolator.latest()?.mapProfile ?? null); // 12A/15B; premium disclosure
   el.style.display = "flex";
   const close = () => { el.style.display = "none"; window.removeEventListener("keydown", onKey); };
   const onKey = (e) => { if (e.key === "Enter" || e.key === "Escape") close(); };

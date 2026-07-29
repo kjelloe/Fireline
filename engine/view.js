@@ -44,6 +44,7 @@ export function buildSpectatorView(state) {
   }));
   return {
     tick: state.tick,
+    mapProfile: state.mapProfile, // premium disclosure + map-aware UI
     team: -1,
     spectator: true,
     phase: state.phase,
@@ -134,6 +135,7 @@ export function buildView(state, team) {
 
   return {
     tick: state.tick,
+    mapProfile: state.mapProfile, // premium disclosure + map-aware UI
     team,
     operators,
     phase: state.phase,

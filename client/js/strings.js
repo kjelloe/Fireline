@@ -188,6 +188,9 @@ export const CATALOGS = {
     "callout.contact_dir": "CONTACT — {chassis} to the {dir}",
     // B6 supply drop
     "task.secure_drop": "SECURE THE SUPPLY DROP",
+    // Underdog premium disclosure (prompt-68: measured lean, disclosed)
+    "brief.premium_underdog": "UNDERDOG PREMIUM — this map measurably favours the enemy. Your recognition earns +25% here.",
+    "brief.premium_favoured": "This map measurably favours your side. The enemy earns a +25% recognition premium — expect them to fight for it.",
     "ev.drop_incoming": "SUPPLY DROP INCOMING — first team to hold it takes the packet.",
     "ev.drop_secured_us": "Supply drop secured — tickets recovered.",
     "ev.drop_secured_them": "The enemy took the supply drop.",
@@ -491,6 +494,9 @@ export const CATALOGS = {
     "callout.contact_dir": "KONTAKT — {chassis} i {dir}",
     // B6 supply drop
     "task.secure_drop": "SIKRE FORSYNINGSSLIPPET",
+    // Underdog premium disclosure (prompt-68)
+    "brief.premium_underdog": "UNDERDOG-PREMIE — dette kartet favoriserer målbart fienden. Din anerkjennelse gir +25% her.",
+    "brief.premium_favoured": "Dette kartet favoriserer målbart din side. Fienden får +25% anerkjennelsespremie — regn med at de kjemper for den.",
     "ev.drop_incoming": "FORSYNINGSSLIPP PÅ VEI — første lag som holder det tar pakken.",
     "ev.drop_secured_us": "Forsyningsslipp sikret — billetter gjenvunnet.",
     "ev.drop_secured_them": "Fienden tok forsyningsslippet.",
