@@ -3090,3 +3090,24 @@ against ~20 elsewhere. Pre-fix it was 87% tickets. The coordinate change
 moved it, and the shape — long, indecisive, almost no recovery traffic —
 is the same class of problem 18C found on sawtooth. Its DIFFICULTY is
 approved by playtest; its pacing is not.
+
+### blackwood's regression is largely CURED by B3 (measured after the fact)
+
+The battery ran on a57dded, which predates mercy/overtime. Re-running
+blackwood on the current build (B3 + field repair):
+
+| | tickets | horn | undecided | avg | A-rate |
+|---|---|---|---|---|---|
+| a57dded (no B3) | 41% | 55% | **9.3%** | 15479 | 47.4% |
+| current (B3) | 63% | 33% | **0%** | 12643 | 53.3% |
+
+Mercy bleed is exactly the right medicine for a map whose wars were
+decided but grinding: undecided went to zero and the horn nearly halved.
+So blackwood does NOT need its own 18C-style rebuild — the general rule
+fixed it, which is the better outcome.
+
+Two things remain true of the map and are probably its IDENTITY rather
+than faults, given the playtest verdict ("more difficult, which was
+good"): the horn still ends a third of wars (frontier: 13%), and tows run
+at ~2-4 per war against ~20 elsewhere, because wrecks in dense woodland
+are hard to reach. Flagged for the designer rather than tuned away.
