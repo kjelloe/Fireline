@@ -59,8 +59,10 @@ outcome. Renderer presents fog-filtered views only.
   must commute with the mirror. FOUR profiles (MAP= env; per-profile
   layout in `MAP_LAYOUTS`, graphs in `route_graph.js` GRAPHS, patrols
   in `ai_regency.js` PATROLS — all three mirror-closed, enumeration-
-  tested): `frontier_corridor` (default), `riverline` + `blackwood` +
-  `sawtooth` (EXPERIMENTAL until their 300-war PC battery passes).
+  tested): `frontier_corridor` (default), `blackwood` (PROMOTED
+  2026-07-31 — battery + corridors + playtest all passed), `riverline`
+  (EXPERIMENTAL, battery owed) + `sawtooth` (battery passed, HELD for
+  the human playtest per ruling).
   Design of record + hard profile constraints + 6-map bank:
   specs/10_map_roster.md. Wall rule (18B/18E): impassable (0-speed)
   cells REFUSE entry (speed samples the CURRENT cell, so entering would

@@ -236,7 +236,7 @@ docker run -p 8080:8080 -e MAP_SEED=2026 more-firepower
 ```bash
 PORT=8080 MAP_SEED=2026 AI_DIFFICULTY=1 npm start   # defaults shown
 MAP=riverline npm start                              # second profile (experimental)
-npm run start:blackwood                              # third profile (18A, experimental)
+npm run start:blackwood                              # third profile (18A, PROMOTED 2026-07-31)
 npm run start:sawtooth                               # fourth profile (18B, experimental)
 RULES=easy|normal|hard npm start                     # 13G difficulty presets
 # Global discovery (colocation: run tools/master.js on the same VM):

@@ -308,6 +308,30 @@ spawn-row chassis order are the suspects for both.
 prompt-68 both maps are candidates to ship experimental-with-premium
 while that hunt runs.
 
+## 4d. Blackwood — PROMOTED (2026-07-31)
+
+The promotion-grade batteries on the corrected geometry + 18G logging
+roads + pool 315 (n=300 x4: uniques-off pair and live-config pair):
+
+| run (live config) | A | B | undecided | A-rate |
+|---|---|---|---|---|
+| normal | 135 | 154 | 11 | 46.7% |
+| mirrored | 152 | 140 | 8 | 52.1% |
+
+The lean FLIPS with the mirror (side class, small) and BOTH worlds sit
+inside the 45-55 band — the old west-lean verdict (§4b, VOID era) does
+not reproduce on current geometry. Pacing: undecided halved by the 18G
+corridors (28 → 8-16 of 300), recovery loop works (tow completion
+44%→73%, restores ~1.7/war) while keeping the scarce-rescue identity
+(~2.5 tows/war vs frontier ~9). Human playtest APPROVED (§3 banner).
+The faction-band precondition ("promote after retune") resolved
+2026-07-31: the band measured 52.9% A aggregate / fair-chaos flips at
+the current lever values — NO retune was needed.
+
+**DECISION: blackwood leaves EXPERIMENTAL and enters rotation.**
+Riverline stays experimental (its 300-war battery is still owed);
+sawtooth stays HELD for the human playtest per the designer ruling.
+
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
 1. **archipelago** — island chain, causeways + water highways; the

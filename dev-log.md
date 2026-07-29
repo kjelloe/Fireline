@@ -3341,3 +3341,24 @@ Ladder queued on the PC against pool 315: 416 baseline normal+mirror
 and 352 normal+mirror. Decision doctrine: normal-world A-rate toward
 52/48, drift to 54/46 tolerated (user override), the mirror pair
 separates faction from side before believing anything.
+
+## band verdict: NO retune — and blackwood PROMOTED
+
+The skimtrail ladder (416/384/352, each 300+300 mirrored, vs pool 315)
+came back with the story inverted: the standing 57-62% Outlier read is
+GONE. At the current 416: A 54.5% normal / 51.3% mirrored; the paired
+analyzer says flip rate 47.2%, aggregate 52.9% A — its "fair chaos"
+verdict, no team conviction. All three rungs sit within noise of each
+other (52.9/54.9/51.4% A), so the lever showed no signal worth moving
+on. What actually retuned the band was the PACING ERA itself — B1
+ticket costs, B3 mercy, field repair, pool 315 — landing between the
+old measurement and this one. Lesson (again, §3.8): REBASELINE after
+gameplay changes; the lean you are chasing may already be gone.
+PATH_SPEED_AMPHIBIOUS stays 416. The lever lane stays built — next
+time the band drifts, the ladder is one queue command.
+
+With the band inside tolerance, the designer's standing order
+("promote blackwood after retune") resolved: blackwood leaves
+EXPERIMENTAL (specs/10 §4d — batteries, corridors, playtest all
+green). Riverline stays experimental (battery owed); sawtooth stays
+held for the human playtest.
