@@ -12,7 +12,14 @@ outcome. Renderer presents fog-filtered views only.
 
 ## Determinism (non-negotiable)
 - No `Math.random`, wall-clock, or floats in `shared/` or `engine/`.
-  Integer/fixed-point math (256 units per cell), deterministic PRNG
+  Integer/fixed-point math (256 units per cell). **Entities sit at cell
+  CENTRES: `cellToWorld(c) = c*256 + 128`** (2026-07-30). Left edges do
+  not reflect onto left edges, so the old convention made mirror
+  equivariance unreachable and every mirror measurement carried a ~1-cell
+  artifact. Centres reflect exactly about the map's centre line
+  (`x' = W*256 - x`). Never pin a world coordinate as a literal in a
+  test — write `cellToWorld(c)` or the convention change churns it.
+  Deterministic PRNG
   (`shared/prng.js` — algorithms pinned by fixtures 0C/0D), stable iteration
   order, canonical little-endian serialization (`shared/canonical.js`).
 - No file/network I/O and no new dependencies in `shared/` or `engine/`.

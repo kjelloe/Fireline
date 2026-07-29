@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-07-29 (suite 547/547, fixture v40). HTML twin:
+*Updated 2026-07-30 (suite 590/590, fixture v41). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -100,11 +100,21 @@ plus three experimental maps that have not earned promotion.
 | Telemetry & heatmaps | ⬜ V2.x (`/metrics` is the seed) |
 | Achievements, modding, custom modes, campaign | ⬜ Horizon |
 
+## ⚠ Balance baseline reset (2026-07-30)
+
+Entities moved from cell left EDGES to cell CENTRES so mirrored worlds
+reflect exactly (specs/08 §4). That changed the geometry of every war,
+so **every balance number taken before this date is void** — band
+tuning, B1's ending mix, and both new-map verdicts. A 7-job battery is
+queued to re-establish them. Nothing should be tuned until it lands.
+
 ## What is actually blocking progress
 
-1. **PC worker** — idle on an old commit with a diverged checkout, so no
-   300-war battery has run and no experimental map can be promoted. One
-   manual fix on the PC, then it self-heals (autostash).
+1. **PC worker** — DIVERGED by the upstream rebase, so `update` can
+   never fast-forward. Fix once on the PC
+   (`git fetch && git reset --hard origin/dev_night`), and thereafter
+   `bash tools/batch_send.sh resync` does it remotely. Until then no
+   battery can run, so the balance baseline stays void.
 2. **Sawtooth fairness** — pacing is now excellent, but the faction lean
    returned with it. Needs 18F.
 3. **Blackwood has never been played by a human** — its identity measured

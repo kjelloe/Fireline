@@ -40,7 +40,7 @@
 <body><main>
 
 <h1>FIRELINE <span>COMMAND</span> — Version 2</h1>
-<p class="sub">Updated 2026-07-29 · suite 547/547 · fixture v40 · twin of plan-version2.md · v1: SHIPPED</p>
+<p class="sub">Updated 2026-07-29 · suite 590/590 · fixture v41 · twin of plan-version2.md · v1: SHIPPED</p>
 
 <div class="banner"><strong class="ok">V2.0 “The Rescue Update” shipped — and so did the faction era, the pacing era and the map roster.</strong>
 What remains is mostly ECONOMY, NPCs and presentation, plus three experimental maps that have not earned promotion.
@@ -52,6 +52,11 @@ Rulings: <code>specs/07_rulings_register.md</code> · maps: <code>specs/10_map_r
 <h2>Track D — Coordination &amp; social</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Pings / task cards / takeover confirms</td><td class="ok">✅</td><td>10c / 11t / 10b</td></tr><tr><td>Recognition scoring + honors</td><td class="ok">✅</td><td>slice-11k — rescue outranks kills</td></tr><tr><td>Category awards + death recap</td><td class="later">⬜</td><td>B4 / B7 — ruled, filler-sized</td></tr><tr><td>Quick-command wheel</td><td class="later">⬜</td><td>B5 — client-side atop pings</td></tr><tr><td>Persistent profiles / leaderboard</td><td class="later">⬜</td><td>V2.x — carries the <b>underdog premium</b> (faction AND map)</td></tr><tr><td>Join flow / lobbies</td><td class="later">⛔</td><td>VERSION 3 by ruling</td></tr></table>
 <h2>Track E — Presentation &amp; platforms</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Direct control + targeting</td><td class="ok">✅</td><td>11l / 11o</td></tr><tr><td>Art: props, faction palette, motion, baked sprites</td><td class="ok">✅</td><td>11q · 14a · 14b · 14c · 14d</td></tr><tr><td>Base compounds · Field Encyclopedia</td><td class="ok">✅</td><td>14g · 14k</td></tr><tr><td>Replay viewer / spectator</td><td class="ok">✅</td><td>11h / 10a</td></tr><tr><td>i18n (en+no) + a11y + mobile touch</td><td class="ok">✅</td><td>15b / 15c / 15a</td></tr><tr><td>Discovery (master + global list)</td><td class="ok">✅</td><td>slice-15h</td></tr><tr><td><b>Client feel batch (playtest 8)</b></td><td class="ok">✅</td><td>18d — honest centre-on-me, war clock, fog notice, right-drag pan, stats key</td></tr><tr><td>Audio identity</td><td class="later">⬜</td><td>V2.x — ruled synth-first</td></tr><tr><td>Camera/diorama + chase cam</td><td class="later">⬜</td><td>V2.x</td></tr><tr><td>Native perf numbers</td><td class="next">🔜</td><td>RUNNER WORKS (<code>tools/perf_native.md</code>); a run succeeded on the PC, numbers not yet collected</td></tr></table>
 <h2>Track F — Meta &amp; live ops</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Ops hardening</td><td class="ok">✅</td><td>slice-11j</td></tr><tr><td>Batch-PC lane</td><td class="ok">✅</td><td>11p + per-map <code>map</code> job + self-update with autostash</td></tr><tr><td>Telemetry & heatmaps</td><td class="later">⬜</td><td>V2.x (<code>/metrics</code> is the seed)</td></tr><tr><td>Achievements · modding · campaign</td><td class="later">⬜</td><td>Horizon</td></tr></table>
+
+<h2>&#9888; Balance baseline reset (2026-07-30)</h2>
+<div class="card">Entities moved from cell left EDGES to cell CENTRES so mirrored worlds reflect exactly (specs/08 &sect;4).
+That changed the geometry of every war, so <strong>every balance number taken before this date is void</strong> &mdash;
+band tuning, B1's ending mix, and both new-map verdicts. A 7-job battery is queued to re-establish them.</div>
 
 <h2>What is actually blocking progress</h2>
 <div class="card"><ul>

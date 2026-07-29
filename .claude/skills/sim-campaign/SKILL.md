@@ -19,7 +19,13 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, current baseline (**B1 ERA** — a wreck costs its owner a
+> **⚠ The numbers in this section are VOID as of 2026-07-30** — they
+> were measured before entities moved to cell CENTRES, which changed the
+> geometry of every war. Treat them as the SHAPE to expect (tickets
+> dominant, horn a minority, mixed winners), not as values to compare
+> against, until the re-measurement battery lands.
+
+Healthy war, last measured baseline (**B1 ERA** — a wreck costs its owner a
 ticket, refunded on recovery; measured 600 wars on frontier, 2026-07-29):
 endings **tickets ~79% / points-horn ~13% / Command Standard ~8%**,
 undecided <2%, median decided war ~13,300 ticks, decided A-rate 51–53%

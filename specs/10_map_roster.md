@@ -232,7 +232,18 @@ candidate to ship EXPERIMENTAL-WITH-PREMIUM: a measured lean no longer
 disqualifies a map outright if it is disclosed and the disadvantaged
 side still plays well.
 
-## 4b. Blackwood — the 600-war battery verdict (2026-07-29)
+> **⚠ EVERY BATTERY VERDICT BELOW IS VOID (2026-07-30).** All of them
+> were measured on the old cell-left-edge geometry, through a mirror
+> transform that was not a true reflection (specs/08 §4). The coordinate
+> convention has since changed, which moved every entity 128 units and
+> changed the game as well as the measurement. Re-measured at n=40, BOTH
+> maps flipped from side-linked to TEAM-linked leans — blackwood
+> favouring the Outliers (a trail map: the Skimmer's affinity), sawtooth
+> the Directorate (gap chokes: the Sentinel's anchors), which is the
+> §3.7 per-map faction doctrine. Battery-scale re-measurement is queued.
+> Read the sections below as HISTORY, not as current fact.
+
+## 4b. Blackwood — the 600-war battery verdict (2026-07-29, VOID)
 
 The first promotion battery to actually run. 300 normal + 300 mirrored,
 on the PC, at the pre-18E commit (valid: blackwood has no blocking
@@ -263,7 +274,7 @@ experimental-WITH-PREMIUM (the east side earns the underdog bonus)
 while the west-lean cause is chased — the lean is disclosed, the map is
 otherwise healthy, and the disadvantaged side is far from hopeless.
 
-## 4c. Sawtooth — the 600-war battery OVERTURNS the 18E verdict
+## 4c. Sawtooth — the 600-war battery OVERTURNS the 18E verdict (VOID)
 
 | run | A | B | undecided | A-rate | tickets | horn |
 |---|---|---|---|---|---|---|
