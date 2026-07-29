@@ -253,8 +253,9 @@ at all (18C, below).
 
 ## Open design questions from playtest 9
 
-- **FIELD HULL REPAIR — does it exist? (item 32, UNRULED, blocking half
-  the request.)** The ask was "request repairs when HP is under a certain
+- **FIELD HULL REPAIR — RESOLVED (ruled prompt 85, built same day):**
+  capped truck repair to HALF hull, AI doctrine followed (prompt 86).
+  Original question kept for the reasoning:** The ask was "request repairs when HP is under a certain
   level". Investigating it turned up something we had never noticed:
   **nothing in this game repairs a damaged LIVING hull.** Base resupply
   restores ammo and fuel only; trucks repair SITES; a wreck is only fixed

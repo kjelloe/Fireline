@@ -150,6 +150,18 @@ npm start                              # host machine
   glancing approach SLIDES along the face; a dead-on approach stops the
   unit (so you, or the AI planner, can pick a way around) rather than
   grinding in place. Design of record: specs/10_map_roster.md.
+- Waypoints (item 34): SHIFT-click queues up to 8 legs; a plain click
+  replaces the whole route. On touch, long-press queues. The unit walks
+  the route unattended.
+- Field repair (item 32, ruled): a logistics truck carrying materiel
+  patches an adjacent damaged friendly UP TO HALF hull — a wreck still
+  needs the tow home. Dry or badly damaged teammates raise RESUPPLY /
+  PATCH mission cards automatically, ranked below every rescue and tow.
+- War endings (B1/B3): every vehicle loss now costs your team a ticket,
+  refunded if the wreck is recovered — so towing visibly saves the war.
+  A decided war ends faster (mercy), and an empty pool waits for a live
+  capture or standard run to resolve (overtime) — no more photo finishes
+  stolen by the clock.
 - Camera (playtest 8): hold the RIGHT mouse button and drag to pan, the
   same as the arrow keys but continuous. **Center** and **center on me**
   both find YOU — including while you are on foot or riding someone

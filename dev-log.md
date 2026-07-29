@@ -3140,3 +3140,30 @@ comeback rate, lead changes, standard attempts, mercy/overtime
 engagement.
 
 Suite 617/617.
+
+## pool probes, first read (2026-07-30, n=20 per value — provisional)
+
+The new instrument's first real use. Frontier, current build:
+
+| pool | median | q75 | horn | comebacks | mercy engaged |
+|---|---|---|---|---|---|
+| 300 | 18.2 min | 12010 | 5% | 30% | 90% |
+| 330 | 19.2 min | 14950 | 10% | 25% | 90% |
+| 350 | **20.3 min** | 15275 | 15% | 25% | 80% |
+| 375 | 21.2 min* | 15705 | 15%* | 21% | 79% |
+
+*375 finalised after the table was first drafted: the partial read (14
+wars) over-sampled early seeds; completed it sits at 21.2 min / 15%
+horn — inside target, same horn as 350.
+
+The trade the designer warned about is real and visible: every ticket
+added buys length AND horn. 375 overshoots straight past the horn
+ceiling; both **350 and 375 land inside the 20-22 minute target at 15% horn** —
+too close to call at n=20. Lead changes hold steady ~2.8 across the
+range, so the extra minutes are not creating extra swings — they mostly
+stretch the existing arc. The PC battery decides between 350 and 375,
+and it runs BEFORE the Skimmer retune (the two interact).
+
+Also worth noting: mercy engages in 80-90% of wars — it has quietly
+become a MAIN pacing mechanism rather than an edge-case rescue. Flagged
+for the designer's awareness rather than action.

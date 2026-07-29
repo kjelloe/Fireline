@@ -1,5 +1,10 @@
 # Fireline Command — four design decisions
 
+> **ANSWERED 2026-07-30.** The designer's rulings are recorded in
+> `specs/07_rulings_register.md` ("Designer rulings, 2026-07-30") and the
+> measurement doctrine in `specs/08` §3.8. This document is kept as the
+> question set for reference.
+
 *Written for a designer who does not need to know the codebase. Everything
 here is measured, not guessed: each war below is a full AI-vs-AI match,
 and the numbers come from batches of 300–600 of them.*

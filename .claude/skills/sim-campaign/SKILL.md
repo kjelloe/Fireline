@@ -39,6 +39,13 @@ A lean surviving the mirror is faction/doctrine, not geometry. The band
 needs re-tuning on the new coordinates; until it is, do not read a
 per-map A-rate as a map verdict.
 
+STORY COLUMNS (prompt 88): every sweep row now also records leadChanges,
+majorityFlips, winnerMaxDeficit, winnerMargin, stdAttempts/stdScored,
+fieldRepairs, bridge events, mercyBleeds (heuristic), overtimeTicks —
+summarise with `python3 debugging/analyze_story.py <csv...>`. Judge any
+pacing change on THESE ("did the extra minutes create stories?"), not on
+average length. `TICKETPOOL=350` overrides the pool per run.
+
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
 / riverline / blackwood / sawtooth), `UNIQUES=0` disables the

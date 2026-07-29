@@ -47,7 +47,10 @@ outcome. Renderer presents fog-filtered views only.
   consumption). Phase 12-17 modules: `shared/factions.js` (Directorate/
   Outliers identity), `engine/route_graph.js` (13C equivariant Dijkstra
   waypoints), body collision + parity march order in the reducer (17),
-  hybrid ticket bleed 13H (hashed `tickets`, WIN_TICKETS=5), respawn law
+  hybrid ticket bleed 13H (hashed `tickets`; B1 ticketPerDisable — a wreck
+  costs its owner a ticket, refunded on recovery; B3 mercy accelerates a
+  decided war and overtime holds an empty pool open while a play is
+  live), respawn law
   15/15G (hashed respawnTicks/carrierSpawnAt/abandonTimer), session
   rules 13F/13G/13H (`RULES=` presets). MAP: frontier has EIGHT mirrored
   relays — road 32/58/69/95 + lateral 44/83 at rows 40/86 — mirrored
@@ -78,7 +81,8 @@ outcome. Renderer presents fog-filtered views only.
   heavy (11N paths), canCapture (11R — bikes neither capture nor
   contest), siege (11R — only artillery breaches sites), deployable
   (12B Sentinel), amphibious (12C Skimmer).
-- Commands: join/select(confirm)/move/fire(asset|drone|site)/tow/crawl/
+- Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
+  fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
   charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).

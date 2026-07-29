@@ -45,8 +45,11 @@ plus three experimental maps that have not earned promotion.
 | Full cargo manifest | ✅ `slice-13a` + AI resupply runner `13b` |
 | **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; AI doctrine landed (`slice-13e2`) |
 | Meaningful deaths (B1) | ✅ `slice-b1` — a wreck costs a ticket, refunded on recovery; 600-war verdict: horn 27%->13%, standard held at 8%, fairness untouched |
-| Mercy + overtime (B3) | ⬜ ruled — small victory-logic slice |
+| Mercy + overtime (B3) | ✅ `slice-b3` — mercy retargeted (ruled trigger was unreachable); horn 5-15%; cured blackwood's 9.3% undecided |
 | Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |
+| Field hull repair + AI doctrine | ✅ ruled + landed — capped at half hull; wrecks still need the bay |
+| Waypoints (item 34) | ✅ `slice-34` — shift-click/long-press queues up to 8 legs |
+| Story instrument (prompt 88) | ✅ — sweep records lead changes/comebacks/majority flips/std attempts; `analyze_story.py` |
 | Salvage economy | ⬜ ruled (designer eval #1); may be reshaped by B1 first |
 | Last Convoy finale | ⬜ ruled (designer eval #7) |
 | Fog ghosts / convoys | ⬜ V2.x |
@@ -110,17 +113,12 @@ queued to re-establish them. Nothing should be tuned until it lands.
 
 ## What is actually blocking progress
 
-1. **PC worker** — DIVERGED by the upstream rebase, so `update` can
-   never fast-forward. Fix once on the PC
-   (`git fetch && git reset --hard origin/dev_night`), and thereafter
-   `bash tools/batch_send.sh resync` does it remotely. Until then no
-   battery can run, so the balance baseline stays void.
-2. **Sawtooth fairness** — pacing is now excellent, but the faction lean
-   returned with it. Needs 18F.
-3. **Blackwood has never been played by a human** — its identity measured
-   well; whether "quiet" reads as tense or dull is a play question.
-4. **Designer calls** — the numbered questions in
-   `reports/2026-07-29_maps_and_playtest8.md`.
+1. **Pool decision** — 350 vs 375 both hit 20-22 min at 15% horn at
+   n=20; the PC battery decides, then the Skimmer trail-speed retune
+   runs against the chosen pool (they interact).
+2. **Faction retune** — Outliers lead everywhere (~57-62% on frontier); ruled lever: conservative Skimmer trail speed; target 52/48, tolerate 54/46.
+3. **Blackwood recovery corridors** — terrain-only (ruled); winch/depot/ranger BANKED. Promote after retune.
+4. **Sawtooth playtest** — HOLD for human verdict despite best-in-class sim numbers (ruled): does it feel tactically sharp or artificially constrained?
 
 ## Version 3 (parking lot)
 
