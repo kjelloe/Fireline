@@ -19,33 +19,25 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-> **⚠ The numbers in this section are VOID as of 2026-07-30** — they
-> were measured before entities moved to cell CENTRES, which changed the
-> geometry of every war. Treat them as the SHAPE to expect (tickets
-> dominant, horn a minority, mixed winners), not as values to compare
-> against, until the re-measurement battery lands.
+Healthy war, current baseline (**post-coordinate-fix, 1800 wars,
+2026-07-30** — the first numbers measured on cell-centred geometry;
+everything older is void):
 
-Healthy war, last measured baseline (**B1 ERA** — a wreck costs its owner a
-ticket, refunded on recovery; measured 600 wars on frontier, 2026-07-29):
-endings **tickets ~79% / points-horn ~13% / Command Standard ~8%**,
-undecided <2%, median decided war ~13,300 ticks, decided A-rate 51–53%
-across mirror worlds, tows ~20/war with ~16 restored.
+| profile | tickets | horn | std | undecided | avg ticks | tows |
+|---|---|---|---|---|---|---|
+| frontier | 74-80% | 11-13% | 9-12% | <1% | ~13300 | ~21 |
+| sawtooth | 96% | 3% | 1% | <1% | ~12400 | ~20 |
+| blackwood | 63%* | 33%* | 3% | 0%* | ~12600 | 2-4 |
 
-What CHANGED when B1 landed (the pre-B1 numbers were tickets 63 / horn
-27 / standard 10, avg 14,500): the anticlimactic horn HALVED, wars got
-~8% shorter, and the Command Standard slipped 10% -> 8% — small, and
-worth watching rather than acting on. If you see horn back above ~20%,
-suspect `ticketPerDisable` has been zeroed or the recovery loop has
-broken. Gate seeds: expect reason-5 (tickets) to dominate, with
-reason-3/4 as the minority; *mixed* winners; downs cycling with
-redeploys; replay OK. (History: the pre-13H wording here misread a 16B
-gate once — never panic on 5 seeds; confirm tempo shifts with a 300-seed
-sweep before tuning anything.)
+*blackwood measured AFTER B3 mercy landed, which cured a 9.3% undecided
+rate and a 55% horn. Its low tow count is the map, not a fault: wrecks
+in dense woodland are hard to reach.
 
-**Balance numbers taken before 2026-07-30 are VOID** — they were
-measured on the old cell-left-edge geometry and through a mirror
-transform that was not a true reflection. Re-measure rather than cite
-them (see specs/08 §4).
+FAIRNESS, and this is the live issue: all three profiles lean to team B
+(the Outliers) in BOTH mirror worlds — decisively on frontier (~57-62%).
+A lean surviving the mirror is faction/doctrine, not geometry. The band
+needs re-tuning on the new coordinates; until it is, do not read a
+per-map A-rate as a map verdict.
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
