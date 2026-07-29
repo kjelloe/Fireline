@@ -324,6 +324,12 @@ while that hunt runs.
 6. **fortress_breach** — attack/defense session-rules scenario (the
    objective-phases idea from the evolved eval, special mode not core).
 
+Banked map-specific MECHANICS (prompt 88, designer suggestion for
+blackwood, deferred in favour of terrain-only fixes): forest winch
+station / logging crane, tow depot, temporary repair shack, capturable
+ranger station — local infrastructure that would make recovery on a
+harsh map a fought-over capability rather than a background rule.
+
 ## 6. Build order (decided)
 
 1. **18A blackwood** — now (no new engine tech; pure profile slice).

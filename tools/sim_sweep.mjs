@@ -14,6 +14,7 @@
 // lives in map/fixedmath geometry.
 
 import { GameServer } from "../engine/server.js";
+import { createWarMetrics, METRIC_COLUMNS } from "./war_metrics.mjs";
 
 const COUNT = Number(process.argv[2] ?? 20);
 const MAP = process.env.MAP || "frontier_corridor"; // 11M profiles
@@ -24,14 +25,21 @@ const UNIQUES = process.env.UNIQUES !== "0"; // 16B: unique crewing (DEFAULT ON 
 const SHARDS = Number(process.env.SHARDS ?? 1);
 const SHARD = Number(process.env.SHARD ?? 0);
 const HORIZON = Number(process.env.TICKS ?? 18000);
+// prompt-88 pool probes: TICKETPOOL=350 overrides the session rule so
+// the designer's 330/350/375 candidates can be swept without a code edit.
+const TICKETPOOL = process.env.TICKETPOOL ? Number(process.env.TICKETPOOL) : null;
 
-console.log("seed,mirror,difficulty,ticks,winner,reason,scoreA,scoreB,tows,restored,rescued,downs,mines,detonations,captures,shells");
+// prompt-88: story columns appended AFTER the legacy ones, so positional
+// consumers (the worker's summary awk, old analysis snippets) keep
+// working and DictReader consumers pick the new names up by header.
+console.log("seed,mirror,difficulty,ticks,winner,reason,scoreA,scoreB,tows,restored,rescued,downs,mines,detonations,captures,shells," + METRIC_COLUMNS.join(","));
 if (FACTIONSWAP) console.error("factionswap: Sentinel<->Skimmer sides traded");
 for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES,
+    rules: TICKETPOOL ? { ticketPool: TICKETPOOL } : null,
   });
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every
@@ -82,10 +90,13 @@ for (let seed = 1; seed <= COUNT; seed++) {
     server.state.assets[30].type = 7;
   }
   const c = {};
+  const metrics = createWarMetrics(); // prompt-88 story instrument
   for (let i = 0; i < HORIZON && server.state.phase === 0; i++) {
     server.step();
+    metrics.observe(server.state);
     for (const e of server.state.events) c[e.type] = (c[e.type] ?? 0) + 1;
   }
+  const story = metrics.finish(server.state);
   const s = server.state;
   console.log([
     seed, MIRROR ? 1 : 0, DIFFICULTY, s.tick, s.winner, s.winReason,
@@ -93,5 +104,6 @@ for (let seed = 1; seed <= COUNT; seed++) {
     c.tow_started ?? 0, c.asset_restored ?? 0, c.operator_rescued ?? 0,
     c.operator_downed ?? 0, c.mine_deployed ?? 0, c.mine_detonated ?? 0,
     c.site_captured ?? 0, c.site_shelled ?? 0,
+    ...METRIC_COLUMNS.map((k) => story[k]),
   ].join(","));
 }

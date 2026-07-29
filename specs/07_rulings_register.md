@@ -221,7 +221,9 @@ at all (18C, below).
   Explicit reasoning to keep: in a team objective game a 60% faction
   becomes the CORRECT faction, not the different one. The 54/46
   tolerance is CONDITIONAL on the stronger faction varying by map —
-  ours currently leads on all three, so we hold to 52/48.
+  ours currently leads on all three — the user has RULED the drift to
+  54/46 acceptable anyway (prompt 88): tune toward 52/48, stop pulling
+  levers once inside 54/46.
 - **Lever: conservative Skimmer MOBILITY first (trail speed), NOT the
   capture-speed redesign.** Capture speed is a faction-identity change,
   not a balance knob: it would make the Outliers better at both halves
@@ -241,7 +243,9 @@ at all (18C, below).
   recovery corridors (narrow tow trails, logging roads, clearings at
   wreck zones, risk/reward routes) — "do not turn Blackwood into
   Frontier with trees". Diagnose WHY wars time out before opening
-  terrain.
+  terrain. Prompt-88 scope: TERRAIN ONLY first; the map-specific
+  recovery infrastructure ideas (forest winch station, tow depot,
+  capturable ranger station) are BANKED for later, not built.
 - **Rotation: promote blackwood after the retune; HOLD sawtooth for a
   human playtest** despite excellent AI metrics, because narrow-gap maps
   need human frustration testing specifically (constrained? predictable?

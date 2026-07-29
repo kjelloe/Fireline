@@ -3111,3 +3111,32 @@ than faults, given the playtest verdict ("more difficult, which was
 good"): the horn still ends a third of wars (frontier: 13%), and tows run
 at ~2-4 per war against ~20 elsewhere, because wrecks in dense woodland
 are hard to reach. Flagged for the designer rather than tuned away.
+
+## the story instrument (2026-07-30, prompt 88)
+
+The designer's judging criteria for any pacing change — lead changes,
+comebacks, majority swings, standard attempts, "did the extra minutes
+create stories, or just delay the result?" — were things the sweep CSV
+simply did not record. Per the ruling, the instrument came before the
+tuning.
+
+`tools/war_metrics.mjs`: a pure per-war collector (lead changes counted
+as SIGN CROSSINGS of the ticket difference; majority flips against the
+map-aware bleed threshold; the winner's max deficit as the comeback
+measure; standard attempts vs scored; field repairs; bridge events;
+mercy engagement — a documented HEURISTIC read off pool drops, since the
+bleed is silent by repin discipline; overtime ticks). Unit-tested
+against synthetic wars with known answers, plus one real war — an
+untested instrument is how a broken mirror survived long enough to
+manufacture a month of false side-leans. A drift test pins the column
+list to the collector output.
+
+Wired into `tools/sim_sweep.mjs` with the new columns APPENDED, so the
+worker's positional awk summary and every DictReader consumer keep
+working untouched. `TICKETPOOL=` env override added for the designer's
+330/350/375 pool candidates. `debugging/analyze_story.py` prints the
+verdict the designer asked for: median and quartile lengths, ending mix,
+comeback rate, lead changes, standard attempts, mercy/overtime
+engagement.
+
+Suite 617/617.
