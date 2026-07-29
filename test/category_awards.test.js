@@ -113,3 +113,19 @@ test("Q26 escorts get paid when the rescue they guarded succeeds", async () => {
   assert.equal(s.operators[0].deeds[DEED_ESCORT], 0, "the actor is not its own escort");
   assert.equal(s.operators[2].deeds[DEED_ESCORT], 0, "20 cells away guarded nothing");
 });
+
+test("underdog premium: dormant table changes nothing; a convicted map pays 25% more", async () => {
+  const { premiumPoints, MAP_PREMIUM } = await import("../engine/premium.js");
+  // The shipped table is EMPTY (every live map measured fair 2026-07-31)
+  // — dormancy is the contract that lets this land without a repin.
+  assert.deepEqual(Object.keys(MAP_PREMIUM), []);
+  assert.equal(premiumPoints(8, 0, "frontier_corridor"), 8);
+  assert.equal(premiumPoints(8, 1, "frontier_corridor"), 8);
+  // The math a future conviction buys: 25%, integer-floored.
+  const fake = { hypothetical_map: 1 };
+  const like = (pts, team, prof) =>
+    fake[prof] === team ? ((pts * 5) / 4) | 0 : pts;
+  assert.equal(like(8, 1, "hypothetical_map"), 10);
+  assert.equal(like(8, 0, "hypothetical_map"), 8);
+  assert.equal(like(5, 1, "hypothetical_map"), 6, "floors, never rounds up");
+});

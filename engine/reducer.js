@@ -31,6 +31,7 @@ import {
 import {
   DROP_HOLD_TICKS, DROP_RADIUS_CELLS, DROP_TICKET_PACKET, dropActive, dropWorld,
 } from "./drops.js";
+import { premiumPoints } from "./premium.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -115,7 +116,10 @@ function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
   const seat = next.operators[operatorId];
   if (!seat) return;
-  seat.score += points;
+  // Underdog premium (58/68): a measured-disadvantaged team earns 25%
+  // more Recognition on that map. Table is generated from batteries
+  // and currently EMPTY (every live map measures fair) — dormant.
+  seat.score += premiumPoints(points, seat.team, next.mapProfile);
   if (deed >= 0) seat.deeds[deed] += 1; // B4
 }
 

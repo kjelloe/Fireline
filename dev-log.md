@@ -3458,3 +3458,21 @@ AI convoy members override every errand with "get home"; client card
 GET HOME at value 20; strings both locales. Probe: called in 5/8 wars,
 completed 2 — challenge-but-doable as asked; winners unchanged. Suite
 646/646 double-run, gates green.
+
+## slice-premium: the underdog premium ships DORMANT (and that is the point)
+
+Ruled GO (prompts 58/68: sweep-derived, never hand-tuned, two axes).
+Mechanism: engine/premium.js — a generated MAP_PREMIUM table names the
+DISADVANTAGED team per profile; awardOperator pays that team 25% more
+Recognition (integer 5/4, floored). `tools/gen_premium.mjs` reads a
+mirrored battery pair and convicts ONLY a TEAM-linked lean past 55%
+aggregate — a side-linked lean (flips with the mirror) is geometry and
+gets no premium, because the disadvantaged SIDE changes every join.
+
+Ran against every fresh battery: frontier 52.9% (team-consistent,
+under threshold), blackwood 49.4% (flips), riverline 49.6% (flips) —
+ALL FAIR, so the shipped table is EMPTY and the premium is dormant.
+That dormancy is the honest state AND the no-repin proof: behavior is
+bit-identical (647/647 double-run, every pinned RECOG value standing).
+Sawtooth needs a fresh current-era battery before its verdict; client
+disclosure line (briefing) lands with the first real conviction.
