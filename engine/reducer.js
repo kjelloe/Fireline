@@ -840,9 +840,24 @@ function bearing16(dx, dy) {
   return dir;
 }
 
-function turnToward(heading, desiredBrads, turnRate) {
+// The 180-degree tie is the LAST known mirror chirality (specs/08 §4
+// sketched this fix; the sweep harness's own reflection bug was masking
+// it). When the target lies exactly astern, clockwise and anticlockwise
+// are equally short — and any FIXED choice fails to commute with the
+// mirror, because mirroring negates the turn but not the rule.
+//
+// The tie-break therefore has to be keyed to something that itself flips
+// under the mirror. The unit's side of the map is exactly that: west of
+// the axis turns one way, east turns the other, so a mirrored world
+// makes the mirrored choice. (2x is even and W-1 = 127 is odd, so a unit
+// can never sit exactly ON the axis: there is no tie in the tie-break.)
+function turnToward(heading, desiredBrads, turnRate, worldX = null, mapWidth = 128) {
   let diff = (desiredBrads - heading) & 255;
   if (diff > 128) diff -= 256; // shortest arc in [-128, 127]
+  if (absI32(diff) === 128 && worldX !== null) {
+    const westOfAxis = 2 * worldToCellFloor(worldX) < mapWidth - 1;
+    diff = westOfAxis ? 128 : -128;
+  }
   if (absI32(diff) <= turnRate) return desiredBrads;
   return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
 }
@@ -947,7 +962,7 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
   }
 
   const desired = bearing16(dx, dy) * 16;
-  asset.heading = turnToward(asset.heading, desired, stats.turnRate);
+  asset.heading = turnToward(asset.heading, desired, stats.turnRate, asset.x, map.width);
 
   // Facing too far off the bearing: pivot in place this tick.
   let off = (desired - asset.heading) & 255;

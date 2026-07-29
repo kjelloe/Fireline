@@ -51,7 +51,32 @@ for (let seed = 1; seed <= COUNT; seed++) {
         const t = cells[a]; cells[a] = cells[b]; cells[b] = t;
       }
     }
-    const mx = (worldX) => (W - 1) * 256 - worldX;
+    // MIRROR TRANSFORM (fixed 2026-07-30). It used to be
+    //   (W - 1) * 256 - x
+    // which is an ANCHOR-PRESERVING reflection about cell CENTRES: it is
+    // correct only for exact cell centres, maps every other position one
+    // cell too far west, and sends the map's east edge (32767) to -255 —
+    // off the map. Every mirrored run therefore measured a world that was
+    // NOT the mirror of the normal one, which is enough to manufacture a
+    // "side lean" out of terrain the unit never actually stood on.
+    // The world spans 0..W*256-1, so the reflection is (W*256-1) - x.
+    // MIRROR TRANSFORM. The world spans 0..W*256-1, so the reflection is
+    // (W*256-1) - x. This is the mathematically correct one: it is an
+    // involution, never leaves the map, and maps cell c to cell W-1-c for
+    // EVERY position. (The original, (W-1)*256 - x, put any mid-cell
+    // position one cell too far west and sent the east edge to -255.)
+    //
+    // NOTE, and it matters for how mirror results are read: exact
+    // equivariance is UNREACHABLE while entities sit on cell LEFT EDGES
+    // (cellToWorld(c) = c*256). A left edge does not reflect onto a left
+    // edge, so a mirrored world starts up to 255 units (~1 cell) out of
+    // step with the normal one, and AI targets - which are always
+    // cell-aligned - do not reflect onto each other either. Mirror
+    // sweeps therefore carry a <=1-cell artifact, which is the residue
+    // specs/08 §4 recorded. Removing it means cell-CENTRED positions
+    // (c*256+128), which mirror onto each other exactly - an engine
+    // change with a fixture repin, not a harness tweak.
+    const mx = (worldX) => (W * 256 - 1) - worldX;
     for (const a of s.assets) {
       a.x = mx(a.x); a.targetX = mx(a.targetX);
       a.heading = (128 - a.heading) & 255;

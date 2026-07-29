@@ -95,10 +95,35 @@ Consequences, now doctrine:
 
 ## 4. Known accepted residues
 
-- Mid-cell terrain sampling is not exactly mirror-equivariant under the
-  anchor-preserving reflection (±1 cell at boundaries). Proven
-  direction-symmetric in-world; treat probe divergences at that scale
-  as artifact.
+- **The mirror HARNESS was itself asymmetric (found 2026-07-30, and it
+  changes how every mirror result must be read).** The reflection was
+  `(W-1)*256 - x`, which is anchor-preserving about cell CENTRES: correct
+  only for exact cell centres, one cell too far WEST for any mid-cell
+  position, and it sent the map's east edge (32767) to **-255**, off the
+  map. Now `(W*256-1) - x`: an involution, never off-map, and exact for
+  every position.
+- **Exact equivariance is still unreachable, and the reason is the
+  coordinate convention.** Entities sit on cell LEFT EDGES
+  (`cellToWorld(c) = c*256`), and a left edge does not reflect onto a
+  left edge — so a mirrored world starts up to 255 units (~1 cell) out of
+  step, and AI targets, which are always cell-aligned, do not reflect
+  onto each other either. The divergence probe now shows all maps parting
+  company at tick 2 for exactly this reason.
+  **Consequence: mirror-world splits carry a ≤1-cell artifact and cannot
+  be trusted at the few-percent level.** The "side leans" measured on
+  blackwood (west ~59/41) and sawtooth (east ~54-63) are therefore NOT
+  established — they must be re-measured before anyone tunes a map for
+  them. The NORMAL-world verdicts (band tuning, B1, pacing) are
+  untouched: they never used the transform.
+  **The real fix is cell-CENTRED positions** (`c*256+128`), which mirror
+  onto each other exactly. That is an engine change with a fixture repin,
+  not a harness tweak — filed as a decision, not done.
+- **The 180° turn tie is FIXED (was the last known chirality).** At
+  exactly 180° both turns are equally short and `diff > 128` never fired,
+  so every unit turned the same way regardless of reflection. It is now
+  keyed to the unit's side of the map — which itself flips under the
+  mirror — so mirrored worlds make mirrored choices. A unit can never sit
+  exactly on the axis (2x is even, W-1 odd), so the tie-break has no tie.
 - `homeCellFor` centers floor east by half a cell for both teams.
 - Riverline carries a side lean (west 73/27 post-13C; the map-aware
   ticket majority collapsed it to ~58/42) with PERFECT mirror

@@ -2796,3 +2796,42 @@ is exactly why the battery exists. At scale, on frontier:
 
 **B1 PASSES.** The sim-campaign skill's baseline has been moved to the B1
 era — a stale baseline would make every future gate misread.
+
+## 18F — the side-lean hunt found the INSTRUMENT (2026-07-30)
+
+The hunt for blackwood's west lean and sawtooth's east lean did not find
+a map bug. It found two bugs in how we MEASURE mirrors.
+
+**1. The mirror transform was wrong.** `(W-1)*256 - x` is
+anchor-preserving about cell CENTRES: exact only for cell centres, one
+cell too far WEST for any mid-cell position, and it maps the map's east
+edge (32767) to **-255** — off the map. The divergence probe localised it
+in 38 ticks: a unit at cell 13 was being mirrored into cell 113 when its
+true mirror is cell 114, so the two worlds sampled different terrain and
+diverged from there. Now `(W*256-1) - x`, an involution that never leaves
+the map.
+
+**2. The 180° turn tie, the last known chirality.** `diff > 128` never
+fires at exactly 128, so a unit ordered dead astern always turned the
+same way — which cannot commute with the mirror, since reflection negates
+the turn but not the rule. Now keyed to the unit's side of the map, which
+flips under reflection. specs/08 §4 sketched this fix long ago; the
+harness bug had been masking how much it mattered.
+
+**And the finding that matters most: exact equivariance is unreachable
+while entities sit on cell LEFT EDGES.** `cellToWorld(c) = c*256`, and a
+left edge does not reflect onto a left edge; AI targets are always
+cell-aligned and do not reflect onto each other either. After both fixes
+all three maps still part company at tick 2 for this reason alone.
+
+**Therefore the measured side leans are NOT established.** Blackwood's
+~59/41 west and sawtooth's ~54-63 east were read off a harness that was
+never producing a true mirror. They must be re-measured. The
+normal-world verdicts (band tuning 51.3%, B1, all pacing) never used the
+transform and are untouched.
+
+The real fix is cell-CENTRED positions (`c*256+128`), which mirror onto
+each other exactly — an engine change with a fixture repin. Filed as a
+decision, not taken unilaterally.
+
+Suite 582/582 (9F's 180° expectation updated with an equivariance test).

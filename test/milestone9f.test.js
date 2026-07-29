@@ -30,8 +30,15 @@ test("9F aligned straight-line movement is unchanged (historical pins hold)", ()
 
 test("9F a 180-degree order means pivoting first, then driving", () => {
   // Tank faces east (0), ordered due west: 128 brads away, turnRate 8.
-  // Ticks 1-11 pivot (off-axis > 32 brads); tick 12 reaches 96 brads —
-  // exactly 45 degrees off — and starts rolling while still turning.
+  // Ticks 1-11 pivot (off-axis > 32 brads); tick 12 reaches 45 degrees
+  // off and starts rolling while still turning.
+  //
+  // WHICH WAY it pivots is the 180-degree tie, and since the mirror fix
+  // that is decided by the unit's side of the map: this sandbox is 64
+  // wide, so cell 40 is EAST of the axis and turns anticlockwise (0 ->
+  // 248 -> ... -> 168). A fixed direction here would not commute with
+  // the mirror, which is the whole point — see the equivariance test
+  // below.
   let s = sandbox([
     { team: 0, cellX: 40, state: ASSET_MOVING, targetX: cellToWorld(10), heading: 0 },
   ]);
@@ -40,9 +47,9 @@ test("9F a 180-degree order means pivoting first, then driving", () => {
     s = apply(s, { type: "advance_tick" });
     assert.equal(s.assets[0].x, x0, `tick ${i + 1}: still pivoting`);
   }
-  assert.equal(s.assets[0].heading, 88, "11 ticks x 8 brads");
+  assert.equal(s.assets[0].heading, 168, "11 ticks x 8 brads, east of the axis");
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].heading, 96, "still turning as it rolls");
+  assert.equal(s.assets[0].heading, 160, "still turning as it rolls");
   assert.ok(s.assets[0].x < x0, "driving begins at 45 degrees off-axis");
 });
 
@@ -95,4 +102,24 @@ test("9F heading is hashed and movement stays deterministic", () => {
   const a = sandbox([{ team: 0, cellX: 0, heading: 0 }]);
   const b = sandbox([{ team: 0, cellX: 0, heading: 64 }]);
   assert.notEqual(hashState(a), hashState(b), "heading participates in the hash");
+});
+
+test("9F the 180-degree tie COMMUTES WITH THE MIRROR (specs/08 §4)", () => {
+  // The last known chirality: at exactly 180 degrees both turns are the
+  // same length, and any FIXED choice breaks under reflection because
+  // mirroring negates the turn but not the rule. Keying it to the unit's
+  // side of the map makes a mirrored world make the mirrored choice.
+  const W = 64;
+  const run = (cellX, targetCell, heading) => {
+    let s = sandbox([
+      { team: 0, cellX, state: ASSET_MOVING, targetX: cellToWorld(targetCell), heading },
+    ]);
+    for (let i = 0; i < 6; i++) s = apply(s, { type: "advance_tick" });
+    return s.assets[0].heading;
+  };
+  // West-of-axis unit ordered due east, and its exact mirror.
+  const west = run(20, 50, 128);                    // faces west, ordered east
+  const east = run(W - 1 - 20, W - 1 - 50, 0);      // the reflection
+  assert.equal(east, (128 - west) & 255,
+    `mirrored 180-degree pivots must mirror: west turned to ${west}, east to ${east}`);
 });
