@@ -897,6 +897,37 @@ export class AIRegency {
             target = [span.geom.cols[0] - 1, span.by];
           }
         }
+        // FIELD REPAIR (ruled 2026-07-30): patch a badly mauled teammate.
+        // Ranked LAST of the materiel errands on purpose — infrastructure
+        // is worth 8 Recognition and a patch 4, so a damaged relay or a
+        // dropped span still outranks a hurt hull, exactly as the mission
+        // card ordering tells human players.
+        //
+        // Only targets a hull BELOW half (the cap means anything above it
+        // cannot be helped), and drives BESIDE it: adjacency does the work,
+        // so parking on top would just body-block a wounded friendly.
+        if (!target) {
+          let patient = null;
+          let patientDist = Infinity;
+          for (const other of state.assets) {
+            if (other.id === asset.id || other.team !== asset.team) continue;
+            if (isWreck(other) || other.operatorId === -1) continue;
+            if (other.hp * 2 >= getUnitStats(other.type).hp) continue;
+            const d = Math.max(
+              Math.abs(worldToCellFloor(other.x) - cellX0),
+              Math.abs(worldToCellFloor(other.y) - cellY0)
+            );
+            // Ties by asset id keep the choice deterministic; distance is
+            // mirror-invariant so this does not introduce a chirality.
+            if (d < patientDist || (d === patientDist && patient && other.id < patient.id)) {
+              patientDist = d;
+              patient = other;
+            }
+          }
+          if (patient && patientDist > 1 && patientDist <= RESCUE_SEEK_CELLS) {
+            target = [worldToCellFloor(patient.x) + 1, worldToCellFloor(patient.y)];
+          }
+        }
       }
 
       // 11E full AI rescue play (Q5). Trucks: hook the nearest claimable

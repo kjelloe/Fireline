@@ -76,6 +76,14 @@ next riverline slice and may shift its balance anyway — tune once, after.
 
 ## 3. Map 3 — `blackwood` (dense woodland; the close-quarters answer)
 
+> **PLAYTEST VERDICT (2026-07-30): APPROVED.** "More difficult, which was
+> good." The quiet, positional character the sweeps measured (downs
+> ~12/war vs frontier's ~70) reads as DIFFICULTY, not dullness — which
+> was the one question no battery could answer. The map's identity is
+> settled; only its fairness numbers remain open, pending the
+> re-measurement battery.
+
+
 Identity: the DENSE map (§5) frontier deliberately isn't. Forest
 dominates; heavies are road-bound and mineable; scouts, bikes, mines,
 satchels, and the Sentinel own the woods. Weather fronts here are

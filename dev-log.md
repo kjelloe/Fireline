@@ -2992,3 +2992,30 @@ doctrine is a follow-up slice with its own sweep — the same discipline
 used for waypoints.
 
 Suite 603/603, smoke clean, 12-war AI sanity sweep unchanged (tows 19.2).
+
+## AI field-repair doctrine (2026-07-30, ruled)
+
+Trucks now patch mauled teammates themselves. Ranked LAST of the materiel
+errands on purpose: infrastructure is worth 8 Recognition and a patch 4,
+so a damaged relay or a dropped span still outranks a hurt hull — exactly
+the ordering the mission cards show human players. It only targets a hull
+BELOW half (above it the cap means nothing can be done) and parks BESIDE
+it, since adjacency does the work and stopping on top would body-block a
+wounded friendly.
+
+Probed before trusting (`debugging/dbg_field_repair.mjs`): fired in 3/3
+wars, 9.3 repairs per war.
+
+The worry worth measuring was whether patching hulls would starve the
+recovery economy B1 depends on — fewer wrecks means fewer tows means
+fewer tickets coming back. It does not:
+
+| | tickets | horn | standard | avg ticks | tows |
+|---|---|---|---|---|---|
+| repair OFF (n=40) | 65% | 27% | 8% | 14055 | ~20 |
+| repair ON (n=24) | 67% | 17% | 17% | 12827 | 18.1 |
+
+Tows held at 18.1, the horn fell, and Command Standard endings ROSE —
+plausibly because a patched hull survives long enough to finish a run.
+Small samples both sides; flagged for battery confirmation rather than
+claimed.
