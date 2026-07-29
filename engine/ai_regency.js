@@ -249,6 +249,9 @@ function pickFireTarget(state, asset, visibleSet) {
 
 // 11C: how far off-plan an agent will divert to flip a nearby relay.
 export const CAPTURE_SEEK_CELLS = 16;
+// Q31 seat-swap: how long a unique may earn nothing before its regent
+// gives up on it (2.5 min - two patrol legs, one full errand).
+export const EARN_WINDOW_TICKS = 1500;
 
 // 11D (Q11): tanks fortify ground this close to an owned relay (never the
 // site cell itself — that's protected); trucks clear marked mines they pass.
@@ -278,6 +281,15 @@ export class AIRegency {
     // gate -> no-squat Sentinel -> trail affinity). UNIQUES=0 disables
     // for A/B sweeps.
     this.uniqueCrewing = options.uniqueCrewing !== false;
+    // Q31 SEAT-SWAP DOCTRINE (ruled 2026-07-31): "the punishment for a
+    // bad unique is surviving in it" — the sawtooth conviction showed a
+    // regent imprisoned all war in a Skimmer that earned nothing. A
+    // regent crewing a UNIQUE whose seat gained no recognition across a
+    // whole earn window abandons it for a real hull, and the unique is
+    // BENCHED for the rest of the war (else the crewing doctrine would
+    // walk somebody straight back in).
+    this.earnCheck = new Map(); // operatorId -> {score, tick}
+    this.benched = new Set();   // asset ids given up as not earning
   }
 
   assume(operatorId) {
@@ -594,7 +606,8 @@ export class AIRegency {
             a.team === team && a.operatorId !== -1 && !isWreck(a) && isUnique(a));
           if (!uniqueCrewed) {
             roleUnique = state.assets.find((a) =>
-              a.team === team && a.operatorId === -1 && !isWreck(a) && isUnique(a));
+              a.team === team && a.operatorId === -1 && !isWreck(a) && isUnique(a) &&
+              !this.benched.has(a.id)); // Q31: a benched unique stays benched
           }
         }
         if (roleCarrier) {
@@ -626,6 +639,33 @@ export class AIRegency {
       const asset = state.assets[operator.assetId];
       // The AI never evicts humans or drives assets it does not operate.
       if (!asset || asset.operatorId !== operatorId || isWreck(asset)) continue;
+
+      // Q31 SEAT-SWAP: a regent in a UNIQUE that earned NOTHING across a
+      // full earn window abandons it for a free real hull and benches
+      // the unique for the war. Humans are never touched (this loop is
+      // regents only), and a unique that IS earning keeps its crew.
+      {
+        const st31 = getUnitStats(asset.type);
+        if (st31.amphibious === true || st31.deployable === true) {
+          const mark = this.earnCheck.get(operatorId);
+          if (!mark || mark.assetId !== asset.id) {
+            this.earnCheck.set(operatorId, { assetId: asset.id, score: operator.score, tick: state.tick });
+          } else if (state.tick - mark.tick >= EARN_WINDOW_TICKS) {
+            if (operator.score === mark.score) {
+              const hull = state.assets.find((a) =>
+                a.team === operator.team && a.operatorId === -1 && !isWreck(a) &&
+                !getUnitStats(a.type).amphibious && !getUnitStats(a.type).deployable);
+              if (hull) {
+                this.benched.add(asset.id);
+                this.earnCheck.delete(operatorId);
+                commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: hull.id, confirm: true });
+                continue;
+              }
+            }
+            this.earnCheck.set(operatorId, { assetId: asset.id, score: operator.score, tick: state.tick });
+          }
+        }
+      }
 
       // Fire doctrine: engage the nearest visible enemy in range when the
       // gun is loaded (8E). Easy regents observe a duty cycle: they only

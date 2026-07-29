@@ -3616,3 +3616,32 @@ Rectification menu for the designer (Q31, now with causal evidence):
 3. Sentinel stat changes — WRONG lever: it is individually weak.
 Premium (live, disclosed) protects sawtooth players meanwhile.
 PC confirmation battery queued (map kind grew a swap flag).
+
+## slice-q31: the raider's clause + the seat-swap doctrine (ruled, landed)
+
+Both levers from the Q31 ruling, in one slice because they attack the
+two arms of the seat-economics conviction:
+
+RAIDER'S CLAUSE (banked variant, activated): the Skimmer gains
+contract flag `raider` — capture progress DOUBLES only when no
+operable enemy is within RAID_RADIUS_CELLS (8) of the flag. The raid
+is rewarded, the brawl never is (the bonus dies before the fight
+starts), so it cannot compound the way raw capture speed would — the
+designer's original objection, answered by construction. units.json
+mirror regenerated ({units: ...} wrapper — the first regen attempt
+wrote the bare table and 3A caught it).
+
+SEAT-SWAP DOCTRINE: a regent crewing a UNIQUE whose seat earned no
+recognition across EARN_WINDOW_TICKS (1500) abandons it for a free
+real hull and BENCHES the unique for the war (without the bench, the
+16B crewing doctrine walks the next free seat straight back in).
+Humans untouched. AI-memory-based (earnCheck/benched) — legal, since
+replays record commands, not planner state.
+
+FIRST READ (30+30 mirrored, sawtooth): 69.0% -> 61.0% A aggregate.
+Right direction, ~8 points recovered, NOT yet in band — but n=60 is a
+direction check, not a verdict (never convict on 30). The n=300
+battery decides whether these levers suffice or need a second turn
+(raid radius up, earn window down). The premium stays LIVE on
+sawtooth until a battery shows the band restored. Suite 654/654
+double-run (two new Q31 tests + the 3A mirror).

@@ -120,3 +120,67 @@ test("32: only a cargo chassis is offered the resupply card", () => {
   assert.ok(!tasksFor(base, 7).some((c) => c.kind === "resupply"),
     "a tank is never told to go and resupply someone");
 });
+
+test("Q31 raider's clause: an unguarded flag falls twice as fast to a Skimmer", async () => {
+  const { apply } = await import("../engine/reducer.js");
+  const { SITE_CAPTURE_TICKS } = await import("../engine/sites.js");
+  const { sandbox, joinAndSelect } = await import("./helpers.js");
+  const OFF = [
+    { team: 0, x: 0, y: 0, width: 4, height: 4 },
+    { team: 1, x: 60, y: 60, width: 4, height: 4 },
+  ];
+  // A lone Skimmer on an empty neutral flag: double clock.
+  let raid = sandbox([{ team: 1, type: 8, cellX: 30, cellY: 30 }],
+    [{ cellX: 30, cellY: 30 }], { bases: OFF });
+  raid = joinAndSelect(raid, 16, 1, 0);
+  for (let i = 0; i < Math.ceil(SITE_CAPTURE_TICKS / 2); i++) raid = apply(raid, { type: "advance_tick" });
+  assert.equal(raid.sites[0].owner, 1, "raid completed in half the ticks");
+
+  // Same raid with an enemy lurking 6 cells away: normal clock.
+  let guarded = sandbox([
+    { team: 1, type: 8, cellX: 30, cellY: 30 },
+    { team: 0, type: 0, cellX: 36, cellY: 30 },
+  ], [{ cellX: 30, cellY: 30 }], { bases: OFF });
+  guarded = joinAndSelect(guarded, 16, 1, 0);
+  for (let i = 0; i < Math.ceil(SITE_CAPTURE_TICKS / 2); i++) guarded = apply(guarded, { type: "advance_tick" });
+  assert.equal(guarded.sites[0].owner, -1, "a guard within 8 cells kills the bonus");
+
+  // A tank on the same empty flag: normal clock (the clause is the raider's).
+  let tank = sandbox([{ team: 1, type: 0, cellX: 30, cellY: 30 }],
+    [{ cellX: 30, cellY: 30 }], { bases: OFF });
+  tank = joinAndSelect(tank, 16, 1, 0);
+  for (let i = 0; i < Math.ceil(SITE_CAPTURE_TICKS / 2); i++) tank = apply(tank, { type: "advance_tick" });
+  assert.equal(tank.sites[0].owner, -1, "no bonus for non-raiders");
+});
+
+test("Q31 seat-swap: a regent abandons a unique that earned nothing", async () => {
+  const { AIRegency, EARN_WINDOW_TICKS } = await import("../engine/ai_regency.js");
+  const { sandbox, joinAndSelect } = await import("./helpers.js");
+  let s = sandbox([
+    { team: 1, type: 8, cellX: 30, cellY: 30 },  // the Skimmer, op 16 aboard
+    { team: 1, type: 0, cellX: 32, cellY: 30 },  // a free real tank
+  ]);
+  s = joinAndSelect(s, 16, 1, 0);
+  const ai = new AIRegency({ fixedAgents: false });
+  ai.assume(16);
+  ai.plan(s);                       // arms the earn window
+  s.tick += EARN_WINDOW_TICKS;      // a whole window passes, score unchanged
+  const swap = ai.plan(s).find((c) => c.type === "select_asset" && c.operatorId === 16);
+  assert.ok(swap, "the regent gives up the seat");
+  assert.equal(swap.assetId, 1, "and takes the real hull");
+  assert.ok(ai.benched.has(0), "the unique is benched for the war");
+
+  // An EARNING unique keeps its crew.
+  let earn = sandbox([
+    { team: 1, type: 8, cellX: 30, cellY: 30 },
+    { team: 1, type: 0, cellX: 32, cellY: 30 },
+  ]);
+  earn = joinAndSelect(earn, 16, 1, 0);
+  const ai2 = new AIRegency({ fixedAgents: false });
+  ai2.assume(16);
+  ai2.plan(earn);
+  earn.tick += EARN_WINDOW_TICKS;
+  earn.operators[16] = { ...earn.operators[16], score: earn.operators[16].score + 10 };
+  const stay = ai2.plan(earn).find((c) => c.type === "select_asset" && c.operatorId === 16);
+  assert.equal(stay, undefined, "recognition earned = the seat is justified");
+});

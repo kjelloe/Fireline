@@ -112,6 +112,10 @@ export const SALVAGE_TICKS_PER_POINT = 100; // 10 s off the wave per point
 // LAST CONVOY: each crew that makes it home when the quota lands.
 // Tow-tier pay — surviving a rout IS a deed, honors-now by ruling.
 export const RECOG_CONVOY_EVAC = 8;
+// Q31 raider's clause: "unguarded" = no operable enemy this close to
+// the flag. 8 cells ~ a sensor's early warning: if they could plausibly
+// interrupt you, the raid bonus is off.
+export const RAID_RADIUS_CELLS = 8;
 
 function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
@@ -1362,6 +1366,30 @@ function applyAdvanceTick(next) {
         site.captureProgress = 0;
       }
       site.captureProgress += 1;
+      // Q31 RAIDER'S CLAUSE: a raider chassis on an UNGUARDED flag (no
+      // operable enemy within RAID_RADIUS_CELLS of the site) doubles the
+      // clock. Presence of any enemy nearby kills the bonus before the
+      // fight even starts — this rewards the raid, never the brawl.
+      {
+        let raiderHere = false;
+        for (const a of next.assets) {
+          if (a.team !== team || !getUnitStats(a.type).raider) continue;
+          if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+          if (captureCheck(next, a.id)?.id === site.id) { raiderHere = true; break; }
+        }
+        if (raiderHere) {
+          let guarded = false;
+          for (const e of next.assets) {
+            if (e.team === team) continue;
+            if (e.state === ASSET_DISABLED || e.state === ASSET_SALVAGED) continue;
+            const d = Math.max(
+              absI32(worldToCellFloor(e.x) - site.cellX),
+              absI32(worldToCellFloor(e.y) - site.cellY));
+            if (d <= RAID_RADIUS_CELLS) { guarded = true; break; }
+          }
+          if (!guarded) site.captureProgress += 1;
+        }
+      }
       if (site.owner !== -1 && site.captureProgress >= SITE_NEUTRALIZE_TICKS) {
         site.owner = -1;
         site.captureProgress = 0;

@@ -105,6 +105,13 @@ export const UNIT_STATS = Object.freeze({
     canCapture: true, siege: false,
     deployable: false,
     amphibious: true,
+    // Q31 ruling (2026-07-31): the RAIDER'S CLAUSE — the banked
+    // conditional capture variant, activated after the sawtooth seat-
+    // economics conviction. Captures at double speed ONLY when no
+    // enemy is near (the empty rear relay): mobility becomes earnings
+    // on every map, and the condition dies the moment a fight starts,
+    // so it cannot compound the way raw capture speed would.
+    raider: true,
   }),
   // 11S (prompt 22): the Mortar Carrier — artillery's little brother that
   // keeps up with a push. Indirect fire on the move-and-stop rhythm:

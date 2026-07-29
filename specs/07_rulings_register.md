@@ -293,3 +293,23 @@ at all (18C, below).
   that genuinely block a selection (downed, respawning, aboard, nothing
   free). If the rule IS wanted: it needs a reducer gate, an AI doctrine
   answer for field re-crewing, and a sweep to confirm tempo survives.
+
+## Q31 ruling (2026-07-31): the sawtooth rectification
+
+User ruled BOTH levers after the factionswap conviction (the unique
+pair decides sawtooth; mechanism = seat economics):
+
+1. **The RAIDER'S CLAUSE** — the banked conditional capture variant,
+   now live: the Skimmer (contract flag `raider`) captures at DOUBLE
+   speed only when no operable enemy is within `RAID_RADIUS_CELLS`
+   (8) of the flag. Mobility becomes earnings on every map; the bonus
+   dies the moment a fight starts, so it cannot compound (the
+   original objection to raw capture speed).
+2. **AI SEAT-SWAP DOCTRINE** — a regent crewing a unique whose seat
+   earned NO recognition across `EARN_WINDOW_TICKS` (1500) abandons
+   it for a free real hull; the unique is benched for the rest of the
+   war. Humans untouched. ("The punishment for a bad unique is
+   surviving in it" — ended.)
+
+Gate: sawtooth 30+30 mirrored after both levers, then the PC battery.
+The premium stays live until a battery shows the band restored.

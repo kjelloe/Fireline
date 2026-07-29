@@ -96,7 +96,8 @@ outcome. Renderer presents fog-filtered views only.
   chassis: canTow, canCarryStandard, capacity, canMine, canClearMines,
   heavy (11N paths), canCapture (11R — bikes neither capture nor
   contest), siege (11R — only artillery breaches sites), deployable
-  (12B Sentinel), amphibious (12C Skimmer).
+  (12B Sentinel), amphibious (12C Skimmer), raider (Q31 — double
+  capture speed on unguarded flags only).
 - Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
   fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
