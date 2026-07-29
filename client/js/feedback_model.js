@@ -131,6 +131,38 @@ export function topOperators(view, n = 3) {
     });
 }
 
+// B4 category honors: one award per category, to the operator with the
+// most deeds of that kind (count > 0; ties break to the lower id — the
+// deterministic convention everywhere else). "Best Escort" from the
+// eval has no recognition counter to read, so it does not exist yet.
+// Deed indices mirror the reducer's DEED_* order.
+const HONORS = [
+  { key: "honor.raider", deeds: [0] },            // kills
+  { key: "honor.recovery", deeds: [1, 2] },       // tows + rescues
+  { key: "honor.capturer", deeds: [3] },          // relays
+  { key: "honor.convoy", deeds: [4, 5] },         // standard return + capture
+  { key: "honor.mechanic", deeds: [6] },          // field repairs
+];
+
+export function categoryHonors(view) {
+  const out = [];
+  for (const h of HONORS) {
+    let best = null;
+    let bestN = 0;
+    // Operators arrive id-ascending, so strict > IS the lowest-id tie-break.
+    for (const o of view?.operators ?? []) {
+      const n = h.deeds.reduce((s, i) => s + (o.deeds?.[i] ?? 0), 0);
+      if (n > bestN) { best = o; bestN = n; }
+    }
+    if (best && bestN > 0) {
+      const who = best.id < 16 ? `Operator ${best.id}` : `Regent ${best.id}`;
+      const side = best.team === 0 ? "A" : "B";
+      out.push(t(h.key, { who: `${who} (${side})`, n: bestN }));
+    }
+  }
+  return out;
+}
+
 // End-of-war summary for the overlay.
 export function summarizeGameOver(view, myTeam, postgameSeconds = 30) {
   if (!view || view.phase !== 1) return null;

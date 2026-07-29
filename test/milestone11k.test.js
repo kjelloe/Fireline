@@ -113,7 +113,8 @@ test("11K standing a relay capture out pays 10; the scoreboard is public", () =>
   assert.equal(s.operators[0].score, RECOG_RELAY);
 
   const board = buildView(s, 1).operators;
-  assert.deepEqual(board, [{ id: 0, team: 0, score: RECOG_RELAY, respawnTicks: 0 }],
+  assert.deepEqual(board,
+    [{ id: 0, team: 0, score: RECOG_RELAY, respawnTicks: 0, deeds: [0, 0, 0, 1, 0, 0, 0] }], // B4: one DEED_RELAY
     "both teams read the same scoreboard");
 });
 

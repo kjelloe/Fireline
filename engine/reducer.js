@@ -75,10 +75,23 @@ export const RECOG_STANDARD_CAPTURE = 25;
 export const RECOG_RELAY = 10;
 export const RECOG_KILL = 5;
 
-function awardOperator(next, operatorId, points) {
+// B4: deed categories — indices into operator.deeds. The counters are
+// hashed state (they decide end-of-war honors), so the order is a
+// contract: append only, never reorder.
+export const DEED_KILL = 0;
+export const DEED_TOW = 1;
+export const DEED_RESCUE = 2;
+export const DEED_RELAY = 3;
+export const DEED_STD_RETURN = 4;
+export const DEED_STD_CAPTURE = 5;
+export const DEED_FIELD_REPAIR = 6;
+
+function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
   const seat = next.operators[operatorId];
-  if (seat) seat.score += points;
+  if (!seat) return;
+  seat.score += points;
+  if (deed >= 0) seat.deeds[deed] += 1; // B4
 }
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32, truncDivI32 } from "../shared/fixedmath.js";
@@ -109,8 +122,12 @@ function copyState(state) {
   return {
     ...state,
     teamScores: [...state.teamScores],
-    operators: state.operators.map((o) => ({ ...o })),
-    assets: state.assets.map((a) => ({ ...a })),
+    // deeds is nested MUTABLE state (awardOperator writes in place) —
+    // without its own copy, every historical snapshot shares one array
+    // and a backward replay scrub reads the future. 11H caught this.
+    operators: state.operators.map((o) => ({ ...o, deeds: o.deeds ? [...o.deeds] : o.deeds })),
+    // waypoints: same aliasing trap as deeds (push/shift write in place).
+    assets: state.assets.map((a) => ({ ...a, waypoints: a.waypoints ? [...a.waypoints] : a.waypoints })),
     sites: state.sites.map((s) => ({ ...s })),
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
@@ -341,7 +358,7 @@ function applyFireOrder(next, command) {
       kind: "asset", byType: attacker.type,
       dir: compassOctant(attacker.x - target.x, attacker.y - target.y),
     });
-    awardOperator(next, attacker.operatorId, RECOG_KILL); // 11K
+    awardOperator(next, attacker.operatorId, RECOG_KILL, DEED_KILL); // 11K
   }
   return next;
 }
@@ -781,7 +798,7 @@ function applySatchel(next, command) {
       kind: "satchel",
       dir: compassOctant(down.x - target.x, down.y - target.y),
     });
-    awardOperator(next, operator.id, RECOG_KILL);
+    awardOperator(next, operator.id, RECOG_KILL, DEED_KILL);
   }
   return next;
 }
@@ -1281,7 +1298,7 @@ function applyAdvanceTick(next) {
         for (const a of next.assets) { // 11K: whoever stood the flag out
           if (a.team === team && a.operatorId !== -1 &&
               captureCheck(next, a.id)?.id === site.id) {
-            awardOperator(next, a.operatorId, RECOG_RELAY);
+            awardOperator(next, a.operatorId, RECOG_RELAY, DEED_RELAY);
           }
         }
         next.events.push({ type: "site_captured", siteId: site.id, team });
@@ -1308,7 +1325,7 @@ function applyAdvanceTick(next) {
       returnable.droppedTimer = 0;
       returnable.x = cellToWorld(returnable.homeCellX);
       returnable.y = cellToWorld(returnable.homeCellY);
-      awardOperator(next, asset.operatorId, RECOG_STANDARD_RETURN); // 11K
+      awardOperator(next, asset.operatorId, RECOG_STANDARD_RETURN, DEED_STD_RETURN); // 11K
       next.events.push({ type: "standard_returned", standardId: returnable.id, team: asset.team });
     }
   }
@@ -1318,7 +1335,7 @@ function applyAdvanceTick(next) {
     if (carrier && canScore(next, carrier)) {
       st.status = STD_SCORED;
       st.carrierAssetId = -1;
-      awardOperator(next, carrier.operatorId, RECOG_STANDARD_CAPTURE); // 11K
+      awardOperator(next, carrier.operatorId, RECOG_STANDARD_CAPTURE, DEED_STD_CAPTURE); // 11K
       next.events.push({ type: "standard_scored", standardId: st.id, byTeam: carrier.team });
     }
   }
@@ -1371,7 +1388,7 @@ function applyAdvanceTick(next) {
       const seat = next.operators[operatorId];
       seat.state = OP_ACTIVE;
       seat.assetId = -1;
-      awardOperator(next, carrier.operatorId, RECOG_RESCUE); // 11K
+      awardOperator(next, carrier.operatorId, RECOG_RESCUE, DEED_RESCUE); // 11K
       next.events.push({ type: "operator_delivered", operatorId });
     }
   }
@@ -1380,7 +1397,7 @@ function applyAdvanceTick(next) {
   // repair bay; timers count down; repaired assets return at half hull.
   for (const wreck of next.assets) {
     if (wreck.towedBy !== -1 && inOwnBase(next, wreck)) {
-      awardOperator(next, next.assets[wreck.towedBy]?.operatorId, RECOG_TOW); // 11K
+      awardOperator(next, next.assets[wreck.towedBy]?.operatorId, RECOG_TOW, DEED_TOW); // 11K
       wreck.towedBy = -1;
       wreck.recoverTimer = REPAIR_TICKS;
       next.events.push({ type: "recovery_started", assetId: wreck.id });
@@ -1501,7 +1518,7 @@ function applyAdvanceTick(next) {
       const before = patient.hp;
       patient.hp = restoredHp(patient.type);
       asset.materiel = 0;
-      awardOperator(next, asset.operatorId, RECOG_FIELD_REPAIR);
+      awardOperator(next, asset.operatorId, RECOG_FIELD_REPAIR, DEED_FIELD_REPAIR);
       next.events.push({
         type: "asset_field_repaired", assetId: patient.id, byAssetId: asset.id,
         hp: patient.hp, healed: patient.hp - before,

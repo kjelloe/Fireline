@@ -3285,3 +3285,27 @@ Collector fix: a re-collect used to overwrite same-label CSVs — the
 pre-corridor map_blackwood.csv died exactly that way tonight, taking
 the tow-column comparator with it. batch_collect now shelves a
 differing old result as <name>.prev (tested). Suite 623/623.
+
+## slice-B4: category honors (+ an aliasing bug the scrub test caught)
+
+Per-operator DEED COUNTERS (7 hashed ints: kill/tow/rescue/relay/
+std-return/std-capture/field-repair) land beside the recognition score
+— awardOperator now takes the deed index; all eight award sites
+threaded. Hashed in snapshot + the 1A local hash together; fixture
+repinned v43 (events verbatim). Deeds ride the public scoreboard view.
+End screen: categoryHonors() in feedback_model — BEST RAIDER / BEST
+RECOVERY (tow+rescue) / BEST CAPTURER / HERO OF THE CONVOY (standard
+plays) / FIELD MECHANIC, top count wins, ties to the lower id, zero
+counts award nobody. "Best Escort" from the eval has no recognition
+counter to read — noted in the model, not invented. Strings both
+locales.
+
+THE CATCH: 11H's backward-scrub test went red the moment deeds landed
+— copyState's operators were SHALLOW copies, so every historical
+snapshot shared one deeds array and an in-place award rewrote history.
+Fixed with a per-clone copy — and the SAME latent trap existed for
+slice-34 waypoints (push/shift on the shared array), which no test had
+ever caught because the AI never queues. Both fixed, both pinned by a
+new scrub-trap regression test. Suite 628/628 double-run, client
+smoke + acceptance green, frontier gate outcomes bit-identical to
+pre-B4 (counters observe, they must not steer).

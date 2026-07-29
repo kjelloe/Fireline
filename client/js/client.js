@@ -21,7 +21,7 @@ import { TIME_LIMIT_TICKS } from "../../engine/victory.js"; // item 27: the war 
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
-import { describeEvent, summarizeGameOver, topOperators, deathRecapLine } from "./feedback_model.js";
+import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors } from "./feedback_model.js";
 import { pingOptionsFor } from "./ping_model.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
@@ -977,8 +977,10 @@ function showEndScreen() {
   const el = document.getElementById("end-overlay");
   document.getElementById("end-title").innerText = summary.title;
   const honors = topOperators(view);
+  const awards = categoryHonors(view); // B4: per-category honors
   document.getElementById("end-reason").innerText = summary.reason +
-    (honors.length ? "\n\nHONORS\n" + honors.join("\n") : "");
+    (honors.length ? "\n\nHONORS\n" + honors.join("\n") : "") +
+    (awards.length ? "\n\n" + awards.join("\n") : "");
   document.getElementById("end-scores").innerText =
     `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
   el.style.opacity = "1";
