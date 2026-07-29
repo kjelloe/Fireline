@@ -76,7 +76,11 @@ export function createAppServer(options = {}) {
     // 13G: these were silently dropped here — MAP=riverline served frontier.
     mapProfile: options.mapProfile ?? "frontier_corridor",
     rules: options.rules ?? null,
-    uniqueCrewing: options.uniqueCrewing === true, // 16B (dormant default)
+    // 16B: default ON per the standing design ("uniques crew by
+    // default"); UNIQUES=0 disables for A/B runs. The old `=== true`
+    // here + in GameServer meant the SERVED game never crewed uniques.
+    uniqueCrewing: options.uniqueCrewing !== false &&
+      process.env.UNIQUES !== "0",
   });
   const transport = new NetworkTransport(gameServer, wss);
 

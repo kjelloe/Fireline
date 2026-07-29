@@ -3545,3 +3545,30 @@ pair (tonight's earlier one predates pathfind+walls = stale). Pacing
 note: walls added ~2 min median (23.1) and nudged standard endings up
 (13%) — gates funnel defence, raids get cleaner exits; watch it at
 n=300.
+
+## THE CREWING BUG (found chasing the walls-fairness question)
+
+The walls investigation ended somewhere else entirely. Verdict chain:
+(1) WALLS EXONERATED — frontier live-config 52.9%→55.2% A (+2.3, 1.2
+sigma, no conviction); the sawtooth lean is IDENTICAL pre/post-walls
+(68.6% on the .prev shelf vs 69.0% tonight — the collector's .prev fix
+paid for itself the day after it landed). (2) SAWTOOTH HAS A REAL 69% A
+LEAN at n=1200, uniques-linked (uniques-OFF frontier reads 45.2% A —
+the pair swings ~10 points). Never seen before because a live-config
+sawtooth battery had never run. (3) THE PROBES REFUTED THEMSELVES:
+"Sentinel never deploys/kills" was an artifact of the REAL bug —
+GameServer coerced uniqueCrewing with `=== true` while AIRegency
+defaults true, and server/index.js never set it. Consequence: THE
+SERVED GAME, every 5-seed gate, and every debugging probe since 16B
+ran with unique crewing OFF; only sim_sweep (explicit UNIQUES) ever
+measured the intended game. Every playtest so far was played without
+AI-crewed uniques; the band numbers describe a game nobody played
+live. FIXED to default-ON both places (+ UNIQUES=0 env respected by
+the server). Suite 652/652 double-run, gate + smoke green. No repin
+(crewing is AI-side, unhashed). Re-probed with crewing: uniques crew
+and fight; the Sentinel dies 3x more than the Skimmer on sawtooth yet
+A wins 69% — mechanism UNRESOLVED, needs an instrumented hunt slice
+(anchor time, contest freezes, per-unique ticket flow) before any
+stat is touched (§3.8). Rectification options laid out in the report;
+the underdog premium generator convicts sawtooth at 69% and is the
+ruled interim response (prompt-68 experimental-with-premium).

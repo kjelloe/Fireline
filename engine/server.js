@@ -26,7 +26,13 @@ export class GameServer {
     this.clock = null;
     this.aiDifficulty = options.aiDifficulty ?? 1;
     this.ai = options.enableAi === true
-      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true, uniqueCrewing: options.uniqueCrewing === true })
+      // 16B intent is DEFAULT-ON ("uniques crew by default") and
+      // AIRegency itself defaults true — but this wrapper coerced with
+      // `=== true`, silently vetoing that default for every caller that
+      // didn't pass the option: the LIVE SERVER, every 5-seed gate,
+      // every debugging probe. Only sim_sweep (explicit UNIQUES) ever
+      // measured the intended game. Found 2026-07-31 chasing a lean.
+      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true, uniqueCrewing: options.uniqueCrewing !== false })
       : null;
     // 1K: authoritative command log (client + AI + advance_tick, in order).
     this.commandLog = [];
