@@ -95,6 +95,10 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     driveThrottle: 0, driveTurn: 0, // 11L: direct-control intent
     deployed: 0, deployTimer: 0, // 12B: Deploy Hardpoint
     abandonTimer: 0, // 15: forced-respawn self-recall clock
+    // Item 34: queued move orders (shift-click / long-press). Bounded so
+    // the hashed state stays small; the AI never queues, so regent
+    // behaviour and every balance measurement are untouched.
+    waypoints: [],
   };
 }
 

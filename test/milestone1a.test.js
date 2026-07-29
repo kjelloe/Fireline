@@ -84,6 +84,10 @@ function stateHash(s) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetAssetId); w.writeI32LE(d.ageTicks); w.writeI32LE(d.hitTimer);
   }
+  for (const a of (s.assets ?? [])) { // added item-34 waypoints
+    w.writeI32LE((a.waypoints ?? []).length);
+    for (const wp of (a.waypoints ?? [])) { w.writeI32LE(wp.x); w.writeI32LE(wp.y); }
+  }
   for (const b of (s.bridges ?? [])) { // added 13E — empty on frontier, so no repin
     w.writeI32LE(b.id); w.writeI32LE(b.hp);
   }

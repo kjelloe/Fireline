@@ -2939,3 +2939,27 @@ gitignored results intact.
 check the worker's commit against HEAD before reading its numbers.** The
 mail says which commit produced them; a battery is only as valid as the
 build under it.
+
+## slice-34 — waypoints (2026-07-30, playtest-9 item 34)
+
+SHIFT-click (long-press on touch) queues a leg; a plain click still means
+exactly what it always meant and wipes the plan. The unit walks the whole
+route unattended.
+
+Design notes worth keeping:
+- **The AI never queues.** That is deliberate, not an oversight: regent
+  behaviour is identical, so this slice cannot disturb AI-only balance
+  measurements — important with a re-measurement battery pending. A test
+  drives a 1200-tick war and asserts no regent ever queued a leg.
+- **Only MOVEMENT queues.** A queued shot or tow is meaningless, so the
+  flag is dropped for those commands rather than half-honoured.
+- **Bounded at 8 legs** (`MAX_WAYPOINTS`), because the queue is hashed
+  state and an unbounded one is both a hash-size and a scripting risk.
+  A full queue refuses politely with human text in both locales — the 8H
+  source sweep caught the missing string, as designed.
+- Queuing while STANDING STILL starts the unit moving: the first queued
+  leg simply is the current one, so the feature needs no special case in
+  the player's head.
+
+Fixture v42 (waypoints are hashed). Suite 596/596, smoke + UI acceptance
+clean, and a 12-war AI sanity sweep is unchanged as predicted.

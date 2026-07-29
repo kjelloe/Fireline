@@ -62,6 +62,9 @@ export const SCORE_DISABLE = 5;
 
 // 11K Recognition scoring (prompt 19): per-OPERATOR credit for verified
 // reducer facts. Rescue work outranks kills by design (spec 04 §4).
+// Item 34: a bounded queue keeps hashed state small and stops a script
+// from stuffing the world with legs.
+export const MAX_WAYPOINTS = 8;
 export const RECOG_TOW = 8;
 export const RECOG_RESCUE = 10;
 export const RECOG_STANDARD_RETURN = 10;
@@ -174,8 +177,31 @@ function applyMoveOrder(next, command) {
   if (asset.deployed === 1 || asset.deployTimer > 0) {
     return reject(next, command, "deployed — undeploy to move"); // 12B
   }
-  asset.targetX = cellToWorld(command.targetCellX);
-  asset.targetY = cellToWorld(command.targetCellY);
+  // Item 34: shift-click / long-press QUEUES a leg instead of replacing
+  // the route. A plain order always clears the queue, so the normal
+  // click keeps meaning exactly what it always meant.
+  const legX = cellToWorld(command.targetCellX);
+  const legY = cellToWorld(command.targetCellY);
+  if (command.queue === true) {
+    asset.waypoints = asset.waypoints ?? [];
+    if (asset.waypoints.length >= MAX_WAYPOINTS) {
+      return reject(next, command, "waypoint queue full");
+    }
+    if (asset.state === ASSET_MOVING) {
+      // Already under way: this becomes a later leg.
+      asset.waypoints.push({ x: legX, y: legY });
+      next.events.push({
+        type: "waypoint_queued", assetId: asset.id,
+        targetX: legX, targetY: legY, queued: asset.waypoints.length,
+      });
+      return next;
+    }
+    // Standing still: the first queued leg IS the current one.
+  } else {
+    asset.waypoints = [];
+  }
+  asset.targetX = legX;
+  asset.targetY = legY;
   asset.state = ASSET_MOVING;
   next.events.push({
     type: "move_ordered", assetId: asset.id, targetX: asset.targetX, targetY: asset.targetY,
@@ -957,6 +983,14 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
     if (terrainWalled(map, asset.targetX, asset.targetY, stats)) return; // 18B
     asset.x = asset.targetX;
     asset.y = asset.targetY;
+    // Item 34: a queued leg means the journey continues without the
+    // player touching anything.
+    if (asset.waypoints && asset.waypoints.length > 0) {
+      const leg = asset.waypoints.shift();
+      asset.targetX = leg.x;
+      asset.targetY = leg.y;
+      return; // stays ASSET_MOVING
+    }
     asset.state = ASSET_IDLE;
     return;
   }

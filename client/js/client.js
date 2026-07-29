@@ -910,6 +910,9 @@ function onPointerDown(event) {
     fireRadiusCells: 1, myOperatorId: joined.operatorId,
     canTow: own ? own.type === 3 : false,
     directMode, // 11O: weapons-only clicks with aim assist
+    // Item 34: SHIFT-click queues a leg (classic RTS); on touch the
+    // long-press does the same thing (setupTouch passes queue too).
+    queue: event.shiftKey === true,
   });
   if (!cmd) return; // direct mode: nothing near the cursor — hold fire
   spawnOrderMarker(cmd, cellX, cellY); // 14I: show WHAT was ordered WHERE

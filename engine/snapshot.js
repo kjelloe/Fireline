@@ -77,6 +77,10 @@ export function hashState(state) {
     w.writeI32LE(d.x); w.writeI32LE(d.y);
     w.writeI32LE(d.targetAssetId); w.writeI32LE(d.ageTicks); w.writeI32LE(d.hitTimer);
   }
+  for (const a of (state.assets ?? [])) { // added item-34 waypoints
+    w.writeI32LE((a.waypoints ?? []).length);
+    for (const wp of (a.waypoints ?? [])) { w.writeI32LE(wp.x); w.writeI32LE(wp.y); }
+  }
   for (const b of (state.bridges ?? [])) { // added 13E — empty = no bytes
     w.writeI32LE(b.id); w.writeI32LE(b.hp);
   }

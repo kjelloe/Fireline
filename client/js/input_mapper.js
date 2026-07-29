@@ -46,7 +46,10 @@ export const DIRECT_ASSIST_CELLS = 3;
 // cursor fires (with assist); anything else returns null (the wheel owns
 // movement, so a stray click must never send the tank somewhere).
 export function buildCommandForClick(view, cellX, cellY, opts = {}) {
-  const { fireRadiusCells = 0, myOperatorId = null, canTow = true, directMode = false } = opts;
+  const {
+    fireRadiusCells = 0, myOperatorId = null, canTow = true, directMode = false,
+    queue = false, // item 34: shift-click / long-press appends a leg
+  } = opts;
   if (directMode) {
     const assist = Math.max(fireRadiusCells, DIRECT_ASSIST_CELLS);
     const drone = (view?.drones ?? [])
@@ -93,7 +96,11 @@ export function buildCommandForClick(view, cellX, cellY, opts = {}) {
     return { type: "tow_order", wreckAssetId: wrecks[0].id };
   }
 
-  return { type: "move_order", targetCellX: cellX, targetCellY: cellY };
+  // Item 34: only MOVEMENT queues — a queued shot or tow makes no sense,
+  // and silently dropping the flag elsewhere is the honest behaviour.
+  return queue
+    ? { type: "move_order", targetCellX: cellX, targetCellY: cellY, queue: true }
+    : { type: "move_order", targetCellX: cellX, targetCellY: cellY };
 }
 
 export function buildSelectCommand(assetId) {

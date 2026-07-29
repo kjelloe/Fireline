@@ -53,6 +53,9 @@ export function validate(cmd) {
 
     case CMD_MOVE_ORDER:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (cmd.queue !== undefined && typeof cmd.queue !== "boolean") {
+        return { ok: false, reason: "invalid queue" }; // item 34
+      }
       if (!isCell(cmd.targetCellX))     return { ok: false, reason: "invalid targetCellX" };
       if (!isCell(cmd.targetCellY))     return { ok: false, reason: "invalid targetCellY" };
       return { ok: true };
