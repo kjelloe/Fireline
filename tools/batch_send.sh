@@ -6,6 +6,7 @@
 #   bash tools/batch_send.sh mirror 600        # sides swapped (question 18)
 #   bash tools/batch_send.sh matrix 2 100      # hard-AI run
 #   bash tools/batch_send.sh map blackwood 300 # per-profile promotion battery
+#   bash tools/batch_send.sh pool 350 300      # pacing battery (TICKETPOOL override)
 #   bash tools/batch_send.sh resync           # after a REBASE: match upstream exactly
 #   bash tools/batch_send.sh perf              # GPU render harness
 #   bash tools/batch_send.sh collect           # deliver + settle results
@@ -21,6 +22,7 @@ case "${1:-}" in
   riverline) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"riverline\",\"count\":${2:-100}}" ;;
   map)    $AM queue add --for batch-pc --as dev --body "{\"kind\":\"map\",\"map\":\"${2:?usage: batch_send.sh map <profile> [count] [mirror]}\",\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
+  pool)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pool\",\"ticketPool\":${2:?usage: batch_send.sh pool <ticketPool> [count] [map]},\"count\":${3:-300},\"map\":\"${4:-frontier_corridor}\"}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
   resync) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"resync\"}" ;;
@@ -28,5 +30,5 @@ case "${1:-}" in
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|perf|update|resync|sendresults|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|pool|perf|update|resync|sendresults|collect|board [args]"; exit 1 ;;
 esac

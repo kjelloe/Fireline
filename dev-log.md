@@ -3167,3 +3167,20 @@ and it runs BEFORE the Skimmer retune (the two interact).
 Also worth noting: mercy engages in 80-90% of wars — it has quietly
 become a MAIN pacing mechanism rather than an edge-case rescue. Flagged
 for the designer's awareness rather than action.
+
+## pool battery lane (2026-07-31)
+
+The worker could not run the pool candidates: `run_sweep` forwards
+FACTIONSWAP/UNIQUES/MAP/MIRROR/DIFFICULTY but not TICKETPOOL, and its
+legacy `UNIQUES:-0` default would have measured a different game than
+the local probes (which ran the live config — uniques ON since 16B).
+New `pool` job kind ({"kind":"pool","ticketPool":350,"count":300}) pins
+UNIQUES=1, forwards TICKETPOOL=, labels the CSV `pool_<n>`; batch_send
+grew the matching verb. Verified locally: winnerMargin above 300 proves
+the override took; an empty TICKETPOOL= falls back to the default.
+
+Queued on the PC after the standing commit check: update, then
+pool 350 x300 and pool 375 x300. Decision rule (from the probe round):
+pick the value with the better story numbers inside 20-22 min; on a
+true tie take 350 — fewer tickets is the smaller change from the
+shipped default. Skimmer retune starts only after the pool is fixed.

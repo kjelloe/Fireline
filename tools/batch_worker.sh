@@ -10,6 +10,7 @@
 #   {"kind":"sweep","count":600}            CPU census, auto-sharded
 #   {"kind":"mirror","count":600}           sides-swapped run (question 18)
 #   {"kind":"matrix","difficulty":2,"count":100}
+#   {"kind":"pool","ticketPool":350,"count":300}   pacing battery (prompt 88)
 #   {"kind":"perf"}                         Playwright+WebGL harness
 # Anything else is refused by mail — the worker never runs arbitrary text.
 #
@@ -89,7 +90,7 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} TICKETPOOL=${TICKETPOOL:-} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
@@ -213,6 +214,19 @@ handle_job() { # $1 = JSON body
       UNIQUES=1 FACTIONSWAP=$uq_swap run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
         "$uq_mirror" 1 "uniques$([ "$uq_swap" = 1 ] && echo _swap)$([ "$uq_mirror" = 1 ] && echo _mirror)" ;;
+    pool)
+      # prompt-88 pacing battery: {"kind":"pool","ticketPool":350,
+      # "count":300,"map":"frontier_corridor"}. Overrides the session
+      # ticket pool via TICKETPOOL=. UNIQUES is pinned ON because the
+      # local probes this battery must be comparable with ran the live
+      # game config (uniques crew by default since 16B) — the worker's
+      # legacy UNIQUES=0 default would measure a different game.
+      local tp tp_map
+      tp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('ticketPool',300))" "$body")
+      tp_map=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
+      TICKETPOOL=$tp UNIQUES=1 MAP=$tp_map run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
+        0 1 "pool_${tp}" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -315,7 +329,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/matrix/perf/sendresults/update/resync." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.
