@@ -133,15 +133,15 @@ export function topOperators(view, n = 3) {
 
 // B4 category honors: one award per category, to the operator with the
 // most deeds of that kind (count > 0; ties break to the lower id — the
-// deterministic convention everywhere else). "Best Escort" from the
-// eval has no recognition counter to read, so it does not exist yet.
-// Deed indices mirror the reducer's DEED_* order.
+// deterministic convention everywhere else). Deed indices mirror the
+// reducer's DEED_* order.
 const HONORS = [
   { key: "honor.raider", deeds: [0] },            // kills
   { key: "honor.recovery", deeds: [1, 2] },       // tows + rescues
   { key: "honor.capturer", deeds: [3] },          // relays
   { key: "honor.convoy", deeds: [4, 5] },         // standard return + capture
   { key: "honor.mechanic", deeds: [6] },          // field repairs
+  { key: "honor.escort", deeds: [7] },            // escorts (Q26 ruling)
 ];
 
 export function categoryHonors(view) {

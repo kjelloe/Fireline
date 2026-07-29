@@ -3362,3 +3362,16 @@ With the band inside tolerance, the designer's standing order
 EXPERIMENTAL (specs/10 §4d — batteries, corridors, playtest all
 green). Riverline stays experimental (battery owed); sawtooth stays
 held for the human playtest.
+
+## slice-Q26: escort recognition ("the guards get paid")
+
+Ruled YES. RECOG_ESCORT = 4 (field-repair tier — support work that can
+fan out), DEED_ESCORT = 7 (deeds 7→8, hashed, fixture v45). The deed
+fires when the thing you guarded SUCCEEDS: at a field rescue
+(operator_rescued) and at a standard coming home (standard_scored),
+every crewed operable friendly within ESCORT_RADIUS_CELLS (6) of the
+actor — never the actor itself — earns it. Payoff-driven and rare
+(~3-4 events/war), so idling next to a carrier farms nothing. BEST
+ESCORT joins the end-screen honors, both locales. Suite 630/630
+double-run, gate green (5 decided, rescues firing). The B4 "Best
+Escort has no counter" note is now history — removed.

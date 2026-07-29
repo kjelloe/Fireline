@@ -24,11 +24,12 @@ test("B4 a gun kill counts one DEED_KILL beside its 5 points", () => {
   assert.equal(s.operators[0].deeds.reduce((a, b) => a + b, 0), 1, "and nothing else");
 });
 
-test("B4 the deed indices are seven distinct columns", () => {
+test("B4/Q26 the deed indices are eight distinct columns", async () => {
+  const { DEED_ESCORT } = await import("../engine/reducer.js");
   const all = [DEED_KILL, DEED_TOW, DEED_RESCUE, DEED_RELAY,
-    DEED_STD_RETURN, DEED_STD_CAPTURE, DEED_FIELD_REPAIR];
-  assert.equal(new Set(all).size, 7);
-  assert.deepEqual([...all].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6]);
+    DEED_STD_RETURN, DEED_STD_CAPTURE, DEED_FIELD_REPAIR, DEED_ESCORT];
+  assert.equal(new Set(all).size, 8);
+  assert.deepEqual([...all].sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6, 7]);
 });
 
 test("B4 deeds ride the public view scoreboard", () => {
@@ -80,4 +81,35 @@ test("B4 honors go to the top count per category, ties to the lower id, empty to
   assert.match(lines[0], /Operator 0 \(A\)/, "tie broke to the lower id");
   assert.match(lines[1], /Operator 2 \(A\).*3/);
   assert.match(lines[2], /Regent 16 \(B\)/);
+});
+
+test("Q26 escorts get paid when the rescue they guarded succeeds", async () => {
+  const { RECOG_ESCORT, DEED_ESCORT } = await import("../engine/reducer.js");
+  const { cellToWorld } = await import("../shared/fixedmath.js");
+  // A carrier scoops a downed body; a crewed tank 3 cells off held the
+  // corridor; another sits 20 cells away; an uncrewed hull watches.
+  let s = sandbox([
+    { team: 0, cellX: 30, cellY: 30, type: 4 },              // 0: the carrier (actor)
+    { team: 0, cellX: 33, cellY: 30 },                        // 1: escort in reach
+    { team: 0, cellX: 50, cellY: 30 },                        // 2: too far
+    { team: 0, cellX: 31, cellY: 31 },                        // 3: in reach but uncrewed
+  ], [], { bases: [
+    { team: 0, x: 0, y: 0, width: 4, height: 4 },
+    { team: 1, x: 60, y: 60, width: 4, height: 4 },
+  ] });
+  s = joinAndSelect(s, 0, 0, 0);   // op 0 drives the carrier
+  s = joinAndSelect(s, 1, 0, 1);   // op 1 drives the near tank
+  s = joinAndSelect(s, 2, 0, 2);   // op 2 drives the far tank
+  s.operators[3] = { ...s.operators[3], state: 2, team: 0, assetId: -1, autoRescue: 1 };
+  s.downed.push({
+    operatorId: 3, team: 0,
+    x: cellToWorld(31), y: cellToWorld(30),
+    targetX: cellToWorld(31), targetY: cellToWorld(30), downTicks: 0,
+  });
+  s = apply(s, { type: "advance_tick" });
+  assert.ok(s.events.some((e) => e.type === "operator_rescued"), "the pickup happened");
+  assert.equal(s.operators[1].deeds[DEED_ESCORT], 1, "the corridor holder is seen");
+  assert.equal(s.operators[1].score, RECOG_ESCORT);
+  assert.equal(s.operators[0].deeds[DEED_ESCORT], 0, "the actor is not its own escort");
+  assert.equal(s.operators[2].deeds[DEED_ESCORT], 0, "20 cells away guarded nothing");
 });

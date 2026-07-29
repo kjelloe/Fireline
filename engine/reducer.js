@@ -85,6 +85,11 @@ export const DEED_RELAY = 3;
 export const DEED_STD_RETURN = 4;
 export const DEED_STD_CAPTURE = 5;
 export const DEED_FIELD_REPAIR = 6;
+export const DEED_ESCORT = 7; // Q26 ruling: escorts get seen too
+// Escort pay sits at field-repair level: guarding a payoff is support
+// work, and it can fan out to several hulls at once.
+export const RECOG_ESCORT = 4;
+export const ESCORT_RADIUS_CELLS = 6;
 
 function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
@@ -92,6 +97,20 @@ function awardOperator(next, operatorId, points, deed = -1) {
   if (!seat) return;
   seat.score += points;
   if (deed >= 0) seat.deeds[deed] += 1; // B4
+}
+
+// Q26: the guards get paid when the thing they guarded succeeds — every
+// crewed, operable friendly within reach of the actor at the payoff
+// moment (a field rescue, the standard coming home), never the actor
+// itself. Event-driven and rare (~3-4/war), so it cannot be farmed by
+// idling next to a carrier.
+function awardEscorts(next, actor) {
+  for (const a of next.assets) {
+    if (a.id === actor.id || a.team !== actor.team || a.operatorId === -1) continue;
+    if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+    if (chebyshevCells(a, actor) > ESCORT_RADIUS_CELLS) continue;
+    awardOperator(next, a.operatorId, RECOG_ESCORT, DEED_ESCORT);
+  }
 }
 import { speedMultiplier } from "./terrain.js";
 import { cellToWorld, worldToCellFloor, absI32, floorDivI32, truncDivI32 } from "../shared/fixedmath.js";
@@ -1336,6 +1355,7 @@ function applyAdvanceTick(next) {
       st.status = STD_SCORED;
       st.carrierAssetId = -1;
       awardOperator(next, carrier.operatorId, RECOG_STANDARD_CAPTURE, DEED_STD_CAPTURE); // 11K
+      awardEscorts(next, carrier); // Q26: whoever held the final leg
       next.events.push({ type: "standard_scored", standardId: st.id, byTeam: carrier.team });
     }
   }
@@ -1374,6 +1394,7 @@ function applyAdvanceTick(next) {
       next.events.push({
         type: "operator_rescued", operatorId: bunkable.operatorId, byAssetId: carrier.id,
       });
+      awardEscorts(next, carrier); // Q26: the corridor holders get seen
       bunkable = boardableBy(next, carrier);
     }
   }
