@@ -3586,3 +3586,33 @@ mapProfile (unhashed, both builders) so the client knows which map's
 law applies. Dormant-table test updated to pin the conviction. Suite
 652/652 double-run, smoke + acceptance green. No repin (scores were
 always hashed; frontier fixture untouched by a sawtooth-only rule).
+
+## slice-hunt: the sawtooth mechanism CONVICTED — it is the unique pair
+
+FACTIONSWAP is the causal knife: uniques trade sides, everything else
+stays. Sawtooth, 30+30 mirrored, crewing ON: unswapped A (Sentinel
+side) wins 69%; SWAPPED, B (now the Sentinel side) wins 70/76% — the
+lean follows the pair EXACTLY, both mirror worlds. Team and doctrine
+exonerated at combined n~1260.
+
+Activity profiles (debugging/dbg_unique_mechanism.mjs) refine the
+mechanism: the Sentinel almost never deploys (1-7 samples of
+thousands — the reactive doctrine barely triggers), fights little
+(2-4 kills/5 wars), dies fast (12-14 deaths) and is rarely towed —
+while the Skimmer survives nearly all war. The Sentinel-side advantage
+is NOT hardpoint dominance. Working model: (a) the Sentinel is an
+expendable 120hp body near relays whose early death FREES its regent
+seat for a real tank; (b) the Skimmer IMPRISONS its seat all war in a
+chassis that earns nothing on a waterless choke map. "The punishment
+for a bad unique is surviving in it." Frontier stays near-fair because
+the Skimmer's trail web there is real work.
+
+Rectification menu for the designer (Q31, now with causal evidence):
+1. Skimmer CONDITIONAL VARIANT (banked in specs/07) — make it worth
+   its seat on waterless maps; direct fix for the imprisonment arm.
+2. AI seat-swap doctrine — a regent may abandon the unique when it
+   stops earning (no engine rule change; touches the open field-swap
+   design question).
+3. Sentinel stat changes — WRONG lever: it is individually weak.
+Premium (live, disclosed) protects sawtooth players meanwhile.
+PC confirmation battery queued (map kind grew a swap flag).
