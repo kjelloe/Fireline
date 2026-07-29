@@ -199,13 +199,16 @@ handle_job() { # $1 = JSON body
     map)
       # 18B: generic per-profile battery — {"kind":"map","map":"blackwood",
       # "count":300,"mirror":0}. Covers every registered profile without a
-      # new job kind per map.
-      local mp mp_mirror
+      # new job kind per map. Optional "uniques":1 runs the LIVE game
+      # config (16B crewing on) — default stays 0 so old batteries remain
+      # comparable; label gains _uq so the two configs never mix in a CSV.
+      local mp mp_mirror mp_uq
       mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
       mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
-      MAP=$mp run_sweep \
+      mp_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',0))" "$body")
+      MAP=$mp UNIQUES=$mp_uq run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
-        "$mp_mirror" 1 "map_${mp}$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror
