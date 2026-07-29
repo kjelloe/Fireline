@@ -5,6 +5,7 @@
 // while in supply), and regency takeover of human operator slots whose
 // connection dropped (the war keeps moving without them).
 
+import { bridgeSpans, bridgeIntact, adjacentToBridge } from "./bridges.js";
 import {
   OP_ABSENT, OP_ACTIVE, ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED,
 } from "./state.js";
@@ -287,6 +288,62 @@ export class AIRegency {
     this.regented.delete(operatorId);
   }
 
+  // 13E-2: which span should THIS tube drop, or -1.
+  //
+  // Conditions, all deliberate:
+  //  - siege chassis only (the reducer enforces it too; this keeps the
+  //    AI from emitting orders it knows will be refused),
+  //  - the span must still be standing and in range,
+  //  - the team must be LOSING this crossing - measured as the enemy
+  //    holding more relays on the far side of the river than we do.
+  //    Demolition is a momentum-breaker, not an opening move.
+  //  - ONE besieger per span: the lowest operator id already in range
+  //    owns it, the capture-seek designation pattern. Without this every
+  //    tube in the war shells the same crossing and nothing else happens.
+  pickBridgeToBreach(state, asset) {
+    const stats = getUnitStats(asset.type);
+    if (!stats.siege) return -1;
+    const spans = bridgeSpans(state.mapProfile);
+    if (!spans.length) return -1;
+    const cellX = worldToCellFloor(asset.x);
+    const foe = asset.team === 0 ? 1 : 0;
+    // Are we behind on the far bank? Count relays by side of the river.
+    const mid = 63;
+    const weAreEast = cellX > mid;
+    let ours = 0;
+    let theirs = 0;
+    for (const site of state.sites) {
+      const farSide = weAreEast ? site.cellX < mid : site.cellX > mid;
+      if (!farSide) continue;
+      if (site.owner === asset.team) ours += 1;
+      else if (site.owner === foe) theirs += 1;
+    }
+    if (theirs <= ours) return -1; // winning or level: leave the road open
+
+    let best = -1;
+    for (let id = 0; id < spans.length; id++) {
+      const b = (state.bridges ?? []).find((x) => x.id === id);
+      if (!b || !bridgeIntact(b)) continue;
+      const geom = spans[id];
+      const pos = {
+        x: ((geom.cols[0] + geom.cols[1]) >> 1) * 256,
+        y: ((geom.rows[0] + geom.rows[1]) >> 1) * 256,
+      };
+      if (!inFireRange(asset, pos)) continue;
+      // Designation: the lowest-id friendly siege tube in range owns it.
+      let owner = asset.operatorId;
+      for (const other of state.assets) {
+        if (other.team !== asset.team || other.operatorId === -1 || isWreck(other)) continue;
+        if (!getUnitStats(other.type).siege) continue;
+        if (!inFireRange(other, pos)) continue;
+        if (other.operatorId < owner) owner = other.operatorId;
+      }
+      if (owner !== asset.operatorId) continue;
+      if (best === -1) best = id;
+    }
+    return best;
+  }
+
   plan(state) {
     const commands = [];
     const visibleByTeam = [computeVisible(state, 0), computeVisible(state, 1)];
@@ -562,6 +619,16 @@ export class AIRegency {
           commands.push({ type: CMD_FIRE_ORDER, operatorId, targetAssetId: target.id });
           continue;
         }
+        // 13E-2 SIEGE: with no hull to shoot, a siege tube may drop a
+        // bridge — but only when its side is LOSING the crossing, so
+        // demolition reads as "break their momentum", not vandalism.
+        // ONE besieger per span (the capture-seek designation pattern),
+        // or every tube in the war shells the same crossing.
+        const bridgeTarget = this.pickBridgeToBreach(state, asset);
+        if (bridgeTarget !== -1) {
+          commands.push({ type: CMD_FIRE_ORDER, operatorId, targetBridgeId: bridgeTarget });
+          continue;
+        }
       }
 
       // 11D alive-world doctrine (Q11/Q16) — the world acts even with one
@@ -807,6 +874,28 @@ export class AIRegency {
         }
         if (hurt && bestDist > 1 && bestDist <= RESCUE_SEEK_CELLS) {
           target = [hurt.cellX, hurt.cellY + 1]; // park beside, not on it
+        }
+        // 13E-2 REBUILD: a dropped span is a repair errand too. Either
+        // team may rebuild any bridge (prompt-70), so the only question
+        // is distance - and standing beside it does the work.
+        if (!target) {
+          let span = null;
+          let spanDist = Infinity;
+          for (const b of state.bridges ?? []) {
+            if (bridgeIntact(b)) continue;
+            const geom = bridgeSpans(state.mapProfile)[b.id];
+            if (!geom) continue;
+            const bx = (geom.cols[0] + geom.cols[1]) >> 1;
+            const by = (geom.rows[0] + geom.rows[1]) >> 1;
+            const d = Math.max(Math.abs(bx - cellX0), Math.abs(by - cellY0));
+            if (d < spanDist) { spanDist = d; span = { geom, bx, by }; }
+          }
+          if (span && spanDist <= RESCUE_SEEK_CELLS &&
+              !adjacentToBridge(state.mapProfile, 0, cellX0, cellY0)) {
+            // Park just outside the span's western edge; adjacency does
+            // the rest. Deterministic and side-neutral.
+            target = [span.geom.cols[0] - 1, span.by];
+          }
         }
       }
 

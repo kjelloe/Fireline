@@ -2627,3 +2627,35 @@ so even a run started without flags leaves a record.
 
 `debugging/test_worker_reports.sh` grew to 19 checks, including that a
 failed send is NOT recorded (and succeeds on retry once the hub is back).
+
+## slice-13e2 — AI bridge doctrine (2026-07-29)
+
+The half 13E deferred: regents now DROP and REBUILD spans themselves.
+
+**Siege** (`pickBridgeToBreach`): a siege tube with no hull worth shooting
+may drop a bridge — but only when its side is LOSING that crossing,
+measured as the enemy holding more relays on the far bank. Demolition is
+a momentum-breaker, not an opening move, and a team that is winning
+leaves the road open because it wants to use it. ONE besieger per span,
+designated by lowest operator id in range (the capture-seek pattern) —
+without that every tube in the war shells the same crossing and nothing
+else gets done.
+
+**Rebuild**: the truck materiel errand now also considers a dropped span,
+ranked after damaged relays. Either team may rebuild any bridge
+(prompt-70), so the only question is distance; parking beside it does the
+work.
+
+Probed before trusting it (`debugging/dbg_13e2_doctrine.mjs`), because
+the escort doctrine needed three iterations for exactly this reason — a
+doctrine that never fires looks identical to one that works:
+
+  3/3 wars saw a bridge dropped; 29 shells, 6 breaches, 5 rebuilds
+  spans were DOWN between 2.3% and 49% of a war
+
+Seed 2 is the fantasy working: the losing side dropped the central span
+and it stayed down for half the war. Gate (16 wars): A 6 / B 10, 0
+undecided, tickets 12/16, avg 14270 ticks — tempo unchanged from the
+pre-doctrine run (tickets 8/12, avg 14080).
+
+Suite 561/561.
