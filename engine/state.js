@@ -343,6 +343,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     ], // 13H: per-team pools, hashed
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
+    salvage: [0, 0], // ruled 2026-07-31: recovered wrecks bank MPG-wave discounts
     mines: [], // 9E: deployed mines
     nextMineId: 0,
     drones: [], // 9G: anti-camping drones aloft

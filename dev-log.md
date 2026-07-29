@@ -3425,3 +3425,18 @@ rate, 55% A aggregate = n=60 noise around the measured 52.9% baseline
 (never convict on 30). Gate horizon RAISED 12000->16000: pool-315
 medians outgrew the old cap and half the gate would read "running".
 Suite 638/638 double-run, smoke + acceptance green.
+
+## slice-salvage: the rescue economy gets a strategic ledger (fixture v47)
+
+Ruled: MPG sink first, garage refit BANKED (specs/07). Every RECOVERED
+wreck banks SALVAGE_PER_RECOVERY (1) beside its B1 ticket refund — the
+refund undoes the loss, salvage funds the comeback, and yes a tow pays
+twice BY DESIGN (rescue is the identity; flagged for ratification in
+the designer brief). Banked points discount the next Slow Manufacture
+wave: 100 ticks per point, capped at 6 per wave, CONSUMED only when
+the wave launches (a hold-at-threshold never drinks the bank). Accrual
+is silent (repin discipline); hashed per-team pools (v47), public in
+the view like tickets. "Your tows bought this wave." Gate: 5/5 decided
+at the new 16k horizon, mixed winners/reasons, 23 manufacture events
+on seed 2026 — the discount engages where gutted teams rebuild. Suite
+642/642 double-run.

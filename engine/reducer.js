@@ -97,6 +97,17 @@ export const ESCORT_RADIUS_CELLS = 6;
 // only, no deed column — it is a windfall, not a category of service.
 export const RECOG_DROP = 5;
 
+// SALVAGE (ruled 2026-07-31, eval #1 — MPG sink first, garage refit
+// BANKED): every RECOVERED wreck banks a point of team salvage beside
+// its B1 ticket refund — the refund undoes the loss, salvage funds the
+// come-back. Banked points discount the next Slow Manufacture wave
+// (consumed when the wave launches, never while it merely counts).
+// "Your tows bought this wave" is the whole point: accrual is silent
+// (repin discipline), the spend is visible in the wave event.
+export const SALVAGE_PER_RECOVERY = 1;
+export const SALVAGE_BOOST_CAP = 6;        // points a single wave can drink
+export const SALVAGE_TICKS_PER_POINT = 100; // 10 s off the wave per point
+
 function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
   const seat = next.operators[operatorId];
@@ -164,6 +175,7 @@ function copyState(state) {
     bridges: (state.bridges ?? []).map((b) => ({ ...b })),
     rules: { ...state.rules }, // 13F
     manufacture: [...state.manufacture],
+    salvage: state.salvage ? [...state.salvage] : [0, 0],
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
@@ -1488,6 +1500,7 @@ function applyAdvanceTick(next) {
         wreck.targetX = wreck.x;
         wreck.targetY = wreck.y;
         refundWreckTicket(next, wreck.team); // B1: the tow paid for itself
+        next.salvage[wreck.team] += SALVAGE_PER_RECOVERY; // and banked a wave discount
         next.events.push({ type: "asset_restored", assetId: wreck.id });
       }
     }
@@ -1503,8 +1516,13 @@ function applyAdvanceTick(next) {
       next.manufacture[team] = 0;
       continue;
     }
+    // Salvage discount: banked recoveries shorten THIS wave's wait. The
+    // points are consumed only when the wave actually launches below.
+    const salvageBoost = Math.min(next.salvage?.[team] ?? 0, SALVAGE_BOOST_CAP);
+    const waveNeed = (next.rules?.mpgTicks ?? MPG_TICKS) -
+      salvageBoost * SALVAGE_TICKS_PER_POINT;
     if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) next.manufacture[team] += 1;
-    if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) continue;
+    if (next.manufacture[team] < waveNeed) continue;
     // BF2-study ruling (prompt 51): rebuilds arrive as a FULL WAVE — every
     // eligible wreck at once, so a gutted team counter-pushes as a
     // formation instead of feeding hulls in one at a time.
@@ -1530,6 +1548,7 @@ function applyAdvanceTick(next) {
       wreck.fuel = FUEL_MAX;
       next.events.push({ type: "asset_manufactured", assetId: wreck.id, team });
     }
+    next.salvage[team] -= salvageBoost; // the wave drinks what it used
     next.manufacture[team] = 0;
   }
 

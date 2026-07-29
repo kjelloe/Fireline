@@ -96,6 +96,7 @@ function stateHash(s) {
     w.writeI32LE(d.id); w.writeI32LE(d.cellY); w.writeI32LE(d.activateTick);
     w.writeI32LE(d.holdTicks); w.writeI32LE(d.heldBy); w.writeI32LE(d.securedBy);
   }
+  for (const sv of (s.salvage ?? [0, 0])) w.writeI32LE(sv); // added salvage era
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

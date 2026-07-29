@@ -41,6 +41,7 @@ export function buildSpectatorView(state) {
     winner: state.winner,
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H: public pacing info
+    salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     drops: projectDrops(state), // B6: announced to everyone, no fog
     events: state.events,
     mapCells: state.map.cells,
@@ -129,6 +130,7 @@ export function buildView(state, team) {
     winner: state.winner,
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H
+    salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     drops: projectDrops(state), // B6: announced to everyone, no fog
     // 10C: events carrying toTeam are that team's business only (pings).
     events: state.events.filter((e) => e.toTeam === undefined || e.toTeam === team),
