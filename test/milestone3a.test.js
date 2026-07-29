@@ -12,6 +12,7 @@ import { apply, createInitialState, BASE_SPEED } from "../engine/reducer.js";
 import { resolveShot } from "../engine/combat.js";
 import { ASSET_MOVING } from "../engine/state.js";
 import { sandbox } from "./helpers.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 
 test("3A stat table is pinned", () => {
   assert.deepEqual(getUnitStats(UNIT_TANK), {
@@ -61,9 +62,9 @@ test("3A scout outruns tank on the same terrain", () => {
     { team: 0, cellX: 0, cellY: 4, type: UNIT_ARTILLERY, state: ASSET_MOVING, targetX: 4096 },
   ]);
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x, 32);
-  assert.equal(s.assets[1].x, 56);
-  assert.equal(s.assets[2].x, 16);
+  assert.equal(s.assets[0].x, cellToWorld(0) + 32);
+  assert.equal(s.assets[1].x, cellToWorld(0) + 56);
+  assert.equal(s.assets[2].x, cellToWorld(0) + 16);
 });
 
 test("3A damage comes from the attacker's chassis", () => {

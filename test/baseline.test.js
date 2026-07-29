@@ -56,7 +56,8 @@ test("fixedmath negative-domain behavior", () => {
   assert.equal(worldToCellFloor(-257), -2);
   assert.equal(floorDivI32(-1, 256), -1);
   assert.equal(manhattanDistanceI32(-5, -5, 5, 5), 20);
-  assert.equal(cellToWorld(-2), -512);
+  // cell CENTRES since the mirror fix: -2 -> -512 + 128
+  assert.equal(cellToWorld(-2), -384);
 });
 
 // ── reducer component behavior ────────────────────────────────────────────────

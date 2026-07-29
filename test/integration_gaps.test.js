@@ -10,6 +10,7 @@ import { GameServer } from "../engine/server.js";
 import { createInitialState, apply } from "../engine/reducer.js";
 import { replayLog } from "../engine/replay.js";
 import { hashState } from "../engine/snapshot.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
@@ -43,7 +44,7 @@ test("integration: a rejoined player actually drives their old asset", async () 
     b.ws.send(JSON.stringify({ type: "move_order", targetCellX: 20, targetCellY: 56 }));
     await settle();
     appServer.gameServer.step();
-    assert.equal(appServer.gameServer.state.assets[0].x, 7 * 256 + 32,
+    assert.equal(appServer.gameServer.state.assets[0].x, cellToWorld(7) + 32,
       "post-rejoin orders drive the same asset");
     b.ws.close();
   });

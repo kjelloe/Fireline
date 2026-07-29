@@ -36,7 +36,7 @@ test("3E teams with no fielded assets are not 'eliminated'", () => {
   let s = sandbox([{ team: 0, cellX: 0, state: ASSET_MOVING, targetX: cellToWorld(5) }]);
   s = apply(s, { type: "advance_tick" });
   assert.equal(s.phase, 0, "single-team sandbox keeps running");
-  assert.equal(s.assets[0].x, 32, "and keeps moving");
+  assert.equal(s.assets[0].x, cellToWorld(0) + 32, "and keeps moving");
 });
 
 test("3E domination requires holding every relay for the full timer", () => {

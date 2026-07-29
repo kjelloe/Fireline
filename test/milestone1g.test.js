@@ -54,7 +54,7 @@ test("1G disabled asset cannot move", () => {
     { type: "rejected", cmd: "move_order", reason: "asset not operable" },
   ]);
   const ticked = apply(s, { type: "advance_tick" });
-  assert.equal(ticked.assets[0].x, 0, "disabled asset must not move");
+  assert.equal(ticked.assets[0].x, s.assets[0].x, "disabled asset must not move");
 });
 
 test("1G disabled asset cannot fire", () => {

@@ -23,8 +23,8 @@ test("9F aligned straight-line movement is unchanged (historical pins hold)", ()
     { team: 0, cellX: 0, state: ASSET_MOVING, targetX: cellToWorld(20), heading: 0 },
   ]);
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.assets[0].x, 32, "east-facing tank drives east at full speed");
-  assert.equal(s.assets[0].y, 0);
+  assert.equal(s.assets[0].x, cellToWorld(0) + 32, "east-facing tank drives east at full speed");
+  assert.equal(s.assets[0].y, cellToWorld(0), "no drift off the lane");
   assert.equal(s.assets[0].heading, 0);
 });
 

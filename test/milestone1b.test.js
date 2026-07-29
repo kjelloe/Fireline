@@ -4,6 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { TICK_MS, TickClock } from "../engine/clock.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 import { GameServer } from "../engine/server.js";
 
 test("1B tick clock contract and idempotent lifecycle", () => {
@@ -33,7 +34,7 @@ test("1B queue drains FIFO before its authoritative tick", () => {
   assert.equal(server.queue.length, 0);
   assert.deepEqual(snapshot.views[0].events.map(e => e.type), ["operator_joined", "asset_selected", "move_ordered"]);
   assert.equal(server.state.assets[0].state, 1, "asset should be moving");
-  assert.equal(server.state.assets[0].x, 7 * 256 + 32, "tick should move after order resolution");
+  assert.equal(server.state.assets[0].x, cellToWorld(7) + 32, "tick should move after order resolution");
 });
 
 test("1B snapshot ring retains exactly its newest capacity", () => {

@@ -10,6 +10,7 @@ import { WebSocket } from "ws";
 import { createAppServer } from "../server/index.js";
 import { buildCommandForClick } from "../client/js/input_mapper.js";
 import { createInterpolator } from "../client/js/interpolator.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
@@ -98,7 +99,7 @@ test("2F interpolator smooths a real command-driven movement", async () => {
     }
     const sampled = interp.sample(fakeNow - 50); // target lands between snapshots 2 and 3
     const own = sampled.friendlyAssets.find((x) => x.id === 0);
-    const start = 7 * 256;
+    const start = cellToWorld(7);
     assert.ok(own.x > start + 32 && own.x < start + 96, `interpolated x=${own.x}`);
     a.ws.close();
   } finally {

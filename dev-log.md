@@ -2835,3 +2835,47 @@ each other exactly — an engine change with a fixture repin. Filed as a
 decision, not taken unilaterally.
 
 Suite 582/582 (9F's 180° expectation updated with an equivariance test).
+
+## cell-centred positions (2026-07-30) — the mirror-equivariance fix
+
+Entities moved from cell LEFT EDGES to cell CENTRES:
+`cellToWorld(c) = c*256 + 128`. One line, large blast radius.
+
+**Why.** A left edge does not reflect onto a left edge, so no mirror
+transform could ever be exact: a mirrored world started up to 255 units
+(~1 cell) out of step, and AI targets — always cell-aligned — did not
+reflect onto each other either. Centres DO reflect onto centres, exactly:
+reflecting about the map's centre line (x' = W*256 - x) maps the centre
+of cell c onto the centre of cell W-1-c for every c. The harness
+transform was corrected to match.
+
+**Safety net first** (`test/coordinate_invariants.test.js`, written and
+green BEFORE the change): cell round-trip, position-inside-its-own-cell,
+a move order landing in the ordered cell, capture by presence, firing in
+and out of range, war determinism, and spawn/site mirror pairing. All
+eight still pass — the behaviour is intact, only the encoding moved.
+
+**Fixture repin to v41.** The repin guard refused the change, correctly:
+`move_ordered` carries world coordinates, so its payload shifted. Rather
+than adding a blanket force flag I taught the guard a narrow, provable
+path — `--shift-coords=128` accepts drift ONLY where every difference is
+that exact delta on a coordinate field and nothing else has moved. It
+accepted 3 events on that basis; anything unexplained still aborts.
+
+**Result — the hypothesis holds.** The divergence probe (same seed,
+normal vs mirrored, lockstep):
+
+| map | before | after |
+|---|---|---|
+| frontier | tick 2 | **tick 166** |
+| blackwood | tick 2 | **tick 54** |
+| sawtooth | tick 2 | **tick 58** |
+| riverline | tick 2 | **tick 126** |
+
+and the residual is now 7-16 units — SUB-CELL arithmetic drift, not the
+old ~1-cell structural offset. What remains is integer rounding in
+diagonal movement, a different and much smaller problem.
+
+Test churn was all convention pins (positions off by exactly 128);
+each was rewritten against `cellToWorld(...)` rather than a literal, so
+this cannot churn again. Suite 590/590 double-run.

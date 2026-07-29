@@ -5,6 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { GameServer } from "../engine/server.js";
 import { OP_ACTIVE, ASSET_MOVING } from "../engine/state.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 
 test("1D AI Regency claims initial unoccupied assets deterministically", () => {
   const server = new GameServer({ mapSeed: 42, enableAi: true });
@@ -28,8 +29,8 @@ test("1D AI issues normal move_order commands on its next decision pass", () => 
   for (let assetId = 0; assetId < 8; assetId++) {
     assert.equal(server.state.assets[assetId].state, ASSET_MOVING);
   }
-  assert.ok(server.state.assets[0].x > 7 * 256, "team A regent should advance east");
-  assert.ok(server.state.assets[4].x < 120 * 256, "team B regent should advance west");
+  assert.ok(server.state.assets[0].x > cellToWorld(7), "team A regent should advance east");
+  assert.ok(server.state.assets[4].x < cellToWorld(120), "team B regent should advance west");
 });
 
 test("1D human command resolves before AI and AI does not evict that human", () => {

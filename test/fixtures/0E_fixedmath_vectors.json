@@ -75,7 +75,7 @@
       "args": [
         0
       ],
-      "expected": 0
+      "expected": 128
     },
     {
       "id": "cellToWorld_1",
@@ -83,7 +83,7 @@
       "args": [
         1
       ],
-      "expected": 256
+      "expected": 384
     },
     {
       "id": "cellToWorld_n",
@@ -91,7 +91,7 @@
       "args": [
         -1
       ],
-      "expected": -256
+      "expected": -128
     },
     {
       "id": "worldToCell_0",
@@ -196,5 +196,6 @@
       ],
       "expected": 4
     }
-  ]
+  ],
+  "note": "2026-07-30: cellToWorld moved from cell LEFT EDGE to cell CENTRE (c*256+128) so mirrored worlds reflect centre-to-centre exactly; see specs/08 \u00a74."
 }

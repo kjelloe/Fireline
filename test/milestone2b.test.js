@@ -7,6 +7,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { WebSocket } from "ws";
 import { createAppServer } from "../server/index.js";
+import { cellToWorld } from "../shared/fixedmath.js";
 
 function connect(port) {
   const ws = new WebSocket(`ws://localhost:${port}`);
@@ -81,7 +82,7 @@ test("2B commands dispatch through ws and views broadcast per team", async () =>
     assert.ok(snapshotMsg, "client receives snapshot");
     assert.equal(snapshotMsg.view.team, 0);
     assert.equal(appServer.gameServer.state.assets[0].operatorId, 0);
-    assert.equal(appServer.gameServer.state.assets[0].x, 7 * 256 + 32, "move applied");
+    assert.equal(appServer.gameServer.state.assets[0].x, cellToWorld(7) + 32, "move applied");
     assert.equal("visibleEnemies" in snapshotMsg.view, true, "fog-filtered view shape");
     a.ws.close();
   });

@@ -27,8 +27,17 @@ export function absI32(v) {
   return v < 0 ? (-v | 0) : (v | 0);
 }
 
+// Entities live at the CENTRE of their cell, not its left edge.
+//
+// The left-edge convention (cell * 256) made exact mirror-equivariance
+// unreachable: a left edge does not reflect onto a left edge, so a
+// mirrored world started up to 255 units (~1 cell) out of step with the
+// normal one and every mirror measurement carried that artifact. Centres
+// reflect onto centres exactly — (W*256-1) - (c*256+128) is precisely
+// the centre of cell W-1-c — so the mirror world is finally a true
+// mirror. See specs/08 §4.
 export function cellToWorld(cell) {
-  return (cell * CELL_SIZE) | 0;
+  return ((cell * CELL_SIZE) + (CELL_SIZE >> 1)) | 0;
 }
 
 export function worldToCellFloor(world) {
