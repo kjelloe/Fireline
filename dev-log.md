@@ -3051,3 +3051,42 @@ avg 10571 ticks. Suite 610/610.
 addition — ~14.5k ticks before B1, 12.8k with AI field repair, now 10.6k.
 That is ~17.5 minutes against a 20-30 minute design target. The lever is
 the ticket pool, not any one rule.
+
+## THE RE-MEASUREMENT BATTERY (2026-07-30, 1800 wars on a57dded)
+
+The first balance numbers taken on the corrected geometry. Build is
+cell-centred positions + waypoints, WITHOUT field repair or B3, so this
+is a clean baseline for the coordinate change alone.
+
+| run | A-rate | tickets | horn | std | undecided | avg | tows |
+|---|---|---|---|---|---|---|---|
+| frontier normal | 43.4% | 74% | 13% | 12% | 1% | 13390 | 21.1 |
+| frontier mirror | 38.3% | 80% | 11% | 9% | 0% | 13151 | 20.2 |
+| blackwood normal | 47.4% | 41% | 55% | 3% | **9.3%** | 15479 | 3.9 |
+| blackwood mirror | 47.4% | 45% | 53% | 3% | **9.3%** | 15345 | 2.9 |
+| sawtooth normal | 49.5% | 96% | 3% | 1% | 0.3% | 12070 | 19.5 |
+| sawtooth mirror | 46.0% | 97% | 2% | 1% | 0% | 12691 | 21.2 |
+
+**1. All three maps now lean the SAME way, and it is TEAM-linked.** B is
+ahead in both mirror worlds on every profile — decisively on frontier
+(~57-62%), mildly on blackwood and sawtooth. A lean that survives
+mirroring is doctrine/faction, not geometry, and B is the Outliers. So
+the faction pair now favours the Skimmer side, and the old band tuning
+(51.3% A) was indeed an artifact of the old geometry. **The band needs
+re-tuning on the new coordinates — on the DEFAULT map first.**
+
+(Blackwood's normal and mirrored aggregates came out identical, 129/143/
+28 twice, which looked like proof of perfect equivariance. It is not —
+per-seed the two runs differ. Coincidence of totals; checked rather than
+believed.)
+
+**2. Sawtooth is now the best-paced map we have**: 96% ticket endings,
+3% horn, 1 undecided in 600, and A-rate within a couple of points of
+even. 18C and 18E did their job completely.
+
+**3. Blackwood has REGRESSED into a horn-bound map**: 55% horn, 41%
+tickets, 9.3% undecided (the bar is <5%), and only 3-4 tows per war
+against ~20 elsewhere. Pre-fix it was 87% tickets. The coordinate change
+moved it, and the shape — long, indecisive, almost no recovery traffic —
+is the same class of problem 18C found on sawtooth. Its DIFFICULTY is
+approved by playtest; its pacing is not.
