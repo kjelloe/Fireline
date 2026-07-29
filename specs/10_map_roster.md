@@ -346,14 +346,24 @@ Directorate, and sawtooth's waterless choke geometry amplifies it to
 casebook), and the coordinate fix already rehabilitated the original
 verdict once.
 
-Mechanism NOT yet established: with crewing on, the Sentinel dies 3x
-more than the Skimmer here and scores almost no kills — the advantage
-is not gunfire. Next: an instrumented hunt (anchor time on flags,
-contest freezes, per-unique ticket flow) BEFORE any stat is touched
-(§3.8). Interim per the prompt-68 ruling: the underdog premium
-generator convicts sawtooth (69% ≥ 55%) — activation for team B is the
-ruled experimental-with-premium response. The map stays HELD for the
-human playtest either way.
+MECHANISM CONVICTED (2026-07-31, factionswap): with the uniques
+swapped, the Sentinel side STILL wins — 69% unswapped, 70/76% swapped,
+both mirror worlds (combined n~1260). The pair is the cause; team and
+doctrine are exonerated. Activity profiles refine it: the Sentinel
+almost never deploys and fights little — the advantage is SEAT
+ECONOMICS, not hardpoint power. The Sentinel is an expendable body
+whose early death frees its regent seat for a real tank; the Skimmer
+survives all war, imprisoning its seat in a chassis that earns nothing
+on a waterless choke map. Frontier stays near-fair because the trail
+web gives the Skimmer real work.
+
+Rectification menu (Q31, evidence-backed): (1) the BANKED Skimmer
+conditional variant — make it worth its seat on waterless maps; (2) an
+AI seat-swap doctrine (a regent may abandon a unique that stops
+earning — touches the open field-swap design question); (3) Sentinel
+stat changes are the WRONG lever (it is individually weak). Interim:
+the underdog premium is LIVE for team B here (prompt-68), disclosed in
+the join briefing. The map stays HELD for the human playtest.
 
 ## 4e. BANKED (playtest-10 item 40): `caldera` — the circle map
 
