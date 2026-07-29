@@ -2879,3 +2879,34 @@ diagonal movement, a different and much smaller problem.
 Test churn was all convention pins (positions off by exactly 128);
 each was rewritten against `cellToWorld(...)` rather than a literal, so
 this cannot churn again. Suite 590/590 double-run.
+
+### cell-centring: what it did to the BALANCE baseline (verify-before-proceed)
+
+The convention change moved every entity 128 units, so it changed the
+GAME as well as the measurement. Re-measured at n=40 per cell (noisy,
++/-8pts — indicative only):
+
+| map | old convention | NEW convention | reading |
+|---|---|---|---|
+| blackwood | 59.4 / 43.6 (side, west) | 42.1 / 35.9 | **B ahead in BOTH worlds = TEAM-linked** |
+| sawtooth | 45.6 / 63.0 (side, east) | 72.5 / 65.0 | **A ahead in BOTH worlds = TEAM-linked** |
+| frontier | — | 46.2 / 57.5 | edge flips; aggregate 51.9% = broadly fair |
+
+Both new maps have flipped from SIDE-linked to TEAM-linked, in opposite
+directions — and that is a coherent story rather than noise: blackwood is
+a trail map (the Skimmer's affinity) and favours the Outliers; sawtooth
+is a map of gap chokes (the Sentinel's anchors) and favours the
+Directorate. That is exactly the specs/08 §3.7 doctrine, now with clean
+evidence.
+
+It also means the 600-war battery that "overturned" the original 30-war
+sawtooth faction verdict was itself measured through the broken harness —
+the first reading was right after all.
+
+Frontier pacing needs watching: horn came back at 27% here vs B1's 13% at
+600 wars, and wars ran ~5% longer. Could be n=40 noise (p~0.02) or a real
+consequence of the geometry shift.
+
+**Every pre-change balance number is now void** — band tuning (51.3%),
+B1's ending mix, and both map verdicts were all measured on the old
+geometry. They need re-running at battery scale before anything is tuned.
