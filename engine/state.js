@@ -344,6 +344,12 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     salvage: [0, 0], // ruled 2026-07-31: recovered wrecks bank MPG-wave discounts
+    // LAST CONVOY (ruled 2026-07-31): the losing team's endgame. One
+    // per team per war; ids = the hulls in the field when it was called.
+    convoy: [
+      { active: 0, need: 0, done: 0, ids: [] },
+      { active: 0, need: 0, done: 0, ids: [] },
+    ],
     mines: [], // 9E: deployed mines
     nextMineId: 0,
     drones: [], // 9G: anti-camping drones aloft

@@ -80,6 +80,10 @@ export function describeEvent(e, myTeam) {
     case "supply_drop_incoming": return t("ev.drop_incoming");
     case "supply_drop_secured":
       return t(e.byTeam === myTeam ? "ev.drop_secured_us" : "ev.drop_secured_them");
+    case "last_convoy_called":
+      return t(e.team === myTeam ? "ev.convoy_called_us" : "ev.convoy_called_them", { n: e.need });
+    case "last_convoy_complete":
+      return t(e.team === myTeam ? "ev.convoy_complete_us" : "ev.convoy_complete_them", { n: e.evacuated });
     case "mine_deployed":
       return e.team === myTeam ? t("ev.mine_deployed", { n: e.minesLeft }) : null;
     case "mine_marked": return t("ev.mine_marked");

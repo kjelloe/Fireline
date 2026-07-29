@@ -107,6 +107,9 @@ export const RECOG_DROP = 5;
 export const SALVAGE_PER_RECOVERY = 1;
 export const SALVAGE_BOOST_CAP = 6;        // points a single wave can drink
 export const SALVAGE_TICKS_PER_POINT = 100; // 10 s off the wave per point
+// LAST CONVOY: each crew that makes it home when the quota lands.
+// Tow-tier pay — surviving a rout IS a deed, honors-now by ruling.
+export const RECOG_CONVOY_EVAC = 8;
 
 function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
@@ -176,6 +179,10 @@ function copyState(state) {
     rules: { ...state.rules }, // 13F
     manufacture: [...state.manufacture],
     salvage: state.salvage ? [...state.salvage] : [0, 0],
+    convoy: (state.convoy ?? [
+      { active: 0, need: 0, done: 0, ids: [] },
+      { active: 0, need: 0, done: 0, ids: [] },
+    ]).map((c) => ({ ...c, ids: [...c.ids] })), // nested ids: the aliasing lesson
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
@@ -1674,6 +1681,32 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "asset_recalled", assetId: asset.id });
     }
   }
+  // LAST CONVOY progress: done = convoy hulls now safe at home, still
+  // operable and crewed — recomputed every tick, so arrivals need no
+  // marking and a hull that dies on the road stops counting. Crossing
+  // the quota pays each escaped crew, once, and the mercy suspension
+  // below lifts (the goal is met; the war may end).
+  for (const team of [0, 1]) {
+    const cv = next.convoy[team];
+    if (!cv.active) continue;
+    const prevDone = cv.done;
+    cv.done = cv.ids.filter((id) => {
+      const a = next.assets[id];
+      return a && a.operatorId !== -1 &&
+        a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+        inOwnBase(next, a);
+    }).length;
+    if (prevDone < cv.need && cv.done >= cv.need) {
+      for (const id of cv.ids) {
+        const a = next.assets[id];
+        if (a && a.operatorId !== -1 && a.state !== ASSET_DISABLED &&
+            a.state !== ASSET_SALVAGED && inOwnBase(next, a)) {
+          awardOperator(next, a.operatorId, RECOG_CONVOY_EVAC);
+        }
+      }
+      next.events.push({ type: "last_convoy_complete", team, evacuated: cv.done });
+    }
+  }
   // 13H ticket bleed (hybrid, prompt-51): a relay MAJORITY drains the
   // enemy pool one ticket per cadence. Silent (no per-tick events — the
   // repin discipline); the pools are hashed and ride the view for UI.
@@ -1707,8 +1740,34 @@ function applyAdvanceTick(next) {
       const nearlyOut = (team) => next.tickets[team] > 0 &&
         next.tickets[team] * mercyFloor <= pool;
       const fightingBack = (team) => next.sites.some((site) => site.capturingTeam === team);
+      // THE LAST CONVOY (ruled 2026-07-31): the moment mercy WOULD
+      // engage, the losing team's endgame flips instead — get N hulls
+      // home before the pool empties. Calling it SUSPENDS the mercy
+      // bleed (ruled: the convoy replaces drag with a goal, which is
+      // mercy's whole purpose). N = ceil(fielded/3) clamped 3..5, from
+      // the hulls OUTSIDE the base at the call; fewer than 3 in the
+      // field means no convoy — a fully gutted team cannot be quota'd,
+      // and mercy carries on ending the war instead.
+      for (const team of [0, 1]) {
+        const foe = team === 0 ? 1 : 0;
+        const cv = next.convoy[team];
+        if (cv.active || !nearlyOut(team) || owned[foe] < majority) continue;
+        const fielded = next.assets.filter((a) =>
+          a.team === team && a.operatorId !== -1 &&
+          a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+          !inOwnBase(next, a));
+        if (fielded.length < 3) continue;
+        cv.active = 1;
+        cv.ids = fielded.map((a) => a.id);
+        cv.need = Math.min(5, Math.max(3, Math.ceil(fielded.length / 3)));
+        cv.done = 0;
+        next.events.push({ type: "last_convoy_called", team, need: cv.need });
+      }
       const rate = (team) => {
         const foe = team === 0 ? 1 : 0;
+        if (next.convoy[foe].active && next.convoy[foe].done < next.convoy[foe].need) {
+          return 1; // the convoy is running: no mercy acceleration
+        }
         return (nearlyOut(foe) && !fightingBack(foe)) ? mercyRate : 1;
       };
       if (owned[0] >= majority && next.tickets[1] > 0) {

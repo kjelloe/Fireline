@@ -7,6 +7,15 @@ export { FOG_RADIUS_CELLS } from "./los.js";
 import { computeVisible } from "./los.js";
 import { dropActive } from "./drops.js";
 
+// LAST CONVOY: a public emergency — the hunted and the hunters both
+// need the count. Membership ids stay engine-side; the client only
+// needs the scoreboard shape.
+function projectConvoy(state) {
+  return (state.convoy ?? []).map((c) => ({
+    active: c.active, need: c.need, done: c.done,
+  }));
+}
+
 // B6: the supply drop is ANNOUNCED — both teams see it the moment it
 // activates, fog or not (an unannounced windfall is just luck).
 function projectDrops(state) {
@@ -42,6 +51,7 @@ export function buildSpectatorView(state) {
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H: public pacing info
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
+    convoy: projectConvoy(state), // Last Convoy: a public emergency
     drops: projectDrops(state), // B6: announced to everyone, no fog
     events: state.events,
     mapCells: state.map.cells,
@@ -131,6 +141,7 @@ export function buildView(state, team) {
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
+    convoy: projectConvoy(state), // Last Convoy: a public emergency
     drops: projectDrops(state), // B6: announced to everyone, no fog
     // 10C: events carrying toTeam are that team's business only (pings).
     events: state.events.filter((e) => e.toTeam === undefined || e.toTeam === team),

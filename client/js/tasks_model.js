@@ -22,6 +22,7 @@ function cellOf(worldX) {
 const TASK_VALUE = Object.freeze({
   stop_thief: 25,       // denies the enemy the biggest score in the game
   secure_standard: 25,  // our own standard run, same stake
+  join_convoy: 20,      // the team's remaining story — above everything but the standard
   secure_drop: 15,      // B6: a one-shot ticket packet with a shared clock
   towing_now: 12,       // a tow already under way beats starting another
   escort_carrier: 11,   // protects the 25-point run without scoring itself
@@ -56,6 +57,20 @@ export function tasksFor(view, myOperatorId = null) {
       label: t("task.secure_standard"),
       cellX: cellOf(own.x), cellY: cellOf(own.y), ping: "recovery_in_progress",
     });
+  }
+  // LAST CONVOY: my team's emergency card — home is the mission.
+  const cv = view?.convoy?.[myTeam];
+  if (cv?.active && cv.done < cv.need) {
+    const home = (view?.bases ?? []).find((b) => b.team === myTeam);
+    if (home) {
+      tasks.push({
+        kind: "join_convoy", priority: 0,
+        label: t("task.join_convoy"),
+        cellX: home.x + Math.floor(home.width / 2),
+        cellY: home.y + Math.floor(home.height / 2),
+        ping: "rally",
+      });
+    }
   }
   // B6: a live supply drop is EVERYONE's card — first team on it for
   // 10 s takes the packet; the card dies when it is secured (the view

@@ -3440,3 +3440,21 @@ the view like tickets. "Your tows bought this wave." Gate: 5/5 decided
 at the new 16k horizon, mixed winners/reasons, 23 manufacture events
 on seed 2026 — the discount engages where gutted teams rebuild. Suite
 642/642 double-run.
+
+## slice-last-convoy: the losing team's final act (fixture v48)
+
+Ruled: trigger SUSPENDS the mercy bleed; N "a challenge but doable".
+The moment mercy WOULD engage (leader holds majority + loser nearly
+out), the losing team's endgame flips instead: N = ceil(fielded/3)
+clamped 3..5 hulls must reach home before the pool empties. Fielded =
+crewed operable hulls OUTSIDE the base at the call; under 3 fielded =
+no convoy, mercy carries on (a gutted team cannot be quota'd). done is
+RECOMPUTED live (a hull that dies on the road stops counting; no
+arrival marking). Quota crossed: RECOG_CONVOY_EVAC 8 per escaped crew,
+once, loud both-team events — then mercy resumes (goal met, the war
+may end). Hashed per-team {active, need, done, ids} (v48; ids arrays
+deep-copied — the aliasing lesson, applied preemptively this time).
+AI convoy members override every errand with "get home"; client card
+GET HOME at value 20; strings both locales. Probe: called in 5/8 wars,
+completed 2 — challenge-but-doable as asked; winners unchanged. Suite
+646/646 double-run, gates green.

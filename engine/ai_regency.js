@@ -1006,6 +1006,21 @@ export class AIRegency {
         }
       }
 
+      // LAST CONVOY: a convoy member's one job is getting home. Beats
+      // every other errand — the quota is the team's remaining story.
+      if (!target) {
+        const cv = state.convoy?.[asset.team];
+        if (cv?.active && cv.done < cv.need && cv.ids.includes(asset.id)) {
+          const home = state.bases.find((b) => b.team === asset.team);
+          if (home) {
+            const hx = home.x + ((home.width / 2) | 0);
+            const hy = home.y + ((home.height / 2) | 0);
+            if (worldToCellFloor(asset.x) !== hx || worldToCellFloor(asset.y) !== hy) {
+              target = [hx, hy];
+            }
+          }
+        }
+      }
       // B6: the designated drop-securer rides for the crate before any
       // relay errand — the packet is one-shot and the window is shared.
       if (!target && securerFor.get(asset.team) === operatorId) {

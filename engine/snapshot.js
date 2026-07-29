@@ -90,6 +90,11 @@ export function hashState(state) {
     w.writeI32LE(d.holdTicks); w.writeI32LE(d.heldBy); w.writeI32LE(d.securedBy);
   }
   for (const sv of (state.salvage ?? [0, 0])) w.writeI32LE(sv); // added salvage era
+  for (const c of (state.convoy ?? [])) { // added Last Convoy
+    w.writeI32LE(c.active); w.writeI32LE(c.need); w.writeI32LE(c.done);
+    w.writeI32LE(c.ids.length);
+    for (const id of c.ids) w.writeI32LE(id);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }
