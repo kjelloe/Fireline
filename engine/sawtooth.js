@@ -9,6 +9,7 @@
 // mirrors east (x' = 127-x).
 
 import { seedSfc32, sfc32Next } from "../shared/prng.js";
+import { applyBaseWalls } from "./basewalls.js";
 
 export const SAWTOOTH = Object.freeze({
   id: "sawtooth",
@@ -101,5 +102,7 @@ export function generateSawtooth(rootSeed) {
       }
     }
   }
+  applyBaseWalls(cells, p.width, p.teamABase, true);  // item 38
+  applyBaseWalls(cells, p.width, p.teamBBase, false);
   return { width: p.width, height: p.height, cells, seed: rootSeed >>> 0 };
 }

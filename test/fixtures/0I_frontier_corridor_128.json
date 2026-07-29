@@ -1,5 +1,5 @@
 {
- "fixtureVersion": 4,
+ "fixtureVersion": 5,
  "id": "0I_frontier_corridor_128",
  "purpose": "Compact deterministic parity contract for the 128x128 named profile. Does not store the 16,384-cell array.",
  "profile": {
@@ -20,13 +20,13 @@
   {
    "id": "seed_42",
    "rootSeed": 42,
-   "expectedHashFnv1a64": "8845506128dc2ec9",
+   "expectedHashFnv1a64": "4b5c4c818a5860c9",
    "expectedTerrainCounts": [
-    13656,
+    13548,
     640,
     816,
     952,
-    0,
+    108,
     320,
     0
    ],
@@ -64,12 +64,12 @@
     {
      "x": 6,
      "y": 54,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 23,
      "y": 73,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 56,
@@ -84,12 +84,12 @@
     {
      "x": 104,
      "y": 54,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 121,
      "y": 73,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 32,
@@ -106,13 +106,13 @@
   {
    "id": "seed_3735928559",
    "rootSeed": 3735928559,
-   "expectedHashFnv1a64": "eabdf5f363c8060b",
+   "expectedHashFnv1a64": "0d5753f7a34ba4eb",
    "expectedTerrainCounts": [
-    13644,
+    13536,
     640,
     822,
     958,
-    0,
+    108,
     320,
     0
    ],
@@ -150,12 +150,12 @@
     {
      "x": 6,
      "y": 54,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 23,
      "y": 73,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 56,
@@ -170,12 +170,12 @@
     {
      "x": 104,
      "y": 54,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 121,
      "y": 73,
-     "expectedTerrain": 0
+     "expectedTerrain": 4
     },
     {
      "x": 32,

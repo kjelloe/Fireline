@@ -9,6 +9,7 @@
 // and mirrors east (x' = 127-x) — the riverline pattern.
 
 import { seedSfc32, sfc32Next } from "../shared/prng.js";
+import { applyBaseWalls } from "./basewalls.js";
 
 export const BLACKWOOD = Object.freeze({
   id: "blackwood",
@@ -123,5 +124,7 @@ export function generateBlackwood(rootSeed) {
       }
     }
   }
+  applyBaseWalls(cells, p.width, p.teamABase, true);  // item 38
+  applyBaseWalls(cells, p.width, p.teamBBase, false);
   return { width: p.width, height: p.height, cells, seed: rootSeed >>> 0 };
 }

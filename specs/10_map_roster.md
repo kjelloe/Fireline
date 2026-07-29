@@ -332,6 +332,20 @@ the current lever values — NO retune was needed.
 Riverline stays experimental (its 300-war battery is still owed);
 sawtooth stays HELD for the human playtest per the designer ruling.
 
+## 4e. BANKED (playtest-10 item 40): `caldera` — the circle map
+
+The user's design, verbatim intent: side gates feed a MAIN ROAD that
+runs in a RING both ways to the other base; the centre holds only a
+dirt road (trail); two mountains (T_BLOCKING) sit inside the ring as
+obstacles. Natural properties: two equal road routes (north ring /
+south ring) + one risky centre shortcut = the exact route-choice
+triangle the asymmetric Convoy Escort mode needs (see
+maps-asymmetric-gamemode*.md — the designer's #1 prototype). BUILD IT
+AS THE CONVOY MAP: symmetric ring for standard wars first (battery
+gate as usual), then the convoy route decisions come free. Front
+gates (item 38) face the ring tangents; mountains use the 18C mesa
+kit; relays at ring cardinal points + centre trail junctions.
+
 ## 5. The bank — up to 6 later (one line each, in likely order)
 
 1. **archipelago** — island chain, causeways + water highways; the

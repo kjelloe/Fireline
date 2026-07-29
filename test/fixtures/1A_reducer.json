@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 48,
+  "fixtureVersion": 49,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 48 (2026-07-29): Last Convoy: hashed per-team convoy state (active/need/done/ids); never triggers inside the 14 steps, events verbatim; hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
+  "note": "fixtureVersion 49 (2026-07-29): item 38 base walls: frontier terrain gains wall rings + gates (map cells hashed); events verbatim; hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "ec2abf871d39e7be",
@@ -86,7 +86,7 @@
           "targetY": 16256
         }
       ],
-      "stateHashAfter": "ae49b2d39e6c1f42",
+      "stateHashAfter": "a7e6b9352569576f",
       "tick": 0
     },
     {
@@ -94,7 +94,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "b24cdaeae7295fa8",
+      "stateHashAfter": "9b4d4925330899e5",
       "tick": 1
     },
     {
@@ -102,7 +102,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "8610086b06e62096",
+      "stateHashAfter": "504ef1b038c1581e",
       "tick": 2
     },
     {
@@ -110,7 +110,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "44b36b46c38adcac",
+      "stateHashAfter": "b03bcf0f5ed00fdf",
       "tick": 3
     },
     {
@@ -126,7 +126,7 @@
           "reason": "operator already active"
         }
       ],
-      "stateHashAfter": "44b36b46c38adcac",
+      "stateHashAfter": "b03bcf0f5ed00fdf",
       "tick": 3
     },
     {
@@ -142,7 +142,7 @@
           "reason": "asset belongs to other team"
         }
       ],
-      "stateHashAfter": "44b36b46c38adcac",
+      "stateHashAfter": "b03bcf0f5ed00fdf",
       "tick": 3
     },
     {
@@ -160,7 +160,7 @@
           "targetY": 16256
         }
       ],
-      "stateHashAfter": "8aa8e5c0e37a9a51",
+      "stateHashAfter": "066fb90a2ec1bffe",
       "tick": 3
     },
     {
@@ -176,7 +176,7 @@
           "assetId": 4
         }
       ],
-      "stateHashAfter": "8aa8e5c0e37a9a51",
+      "stateHashAfter": "066fb90a2ec1bffe",
       "tick": 3
     },
     {
@@ -194,7 +194,7 @@
           "targetY": 16256
         }
       ],
-      "stateHashAfter": "f325636b9ab7051c",
+      "stateHashAfter": "7172e2464a4949db",
       "tick": 3
     },
     {
@@ -202,7 +202,7 @@
         "type": "advance_tick"
       },
       "events": [],
-      "stateHashAfter": "2bc3b3c6b84a7db4",
+      "stateHashAfter": "b90acf88fb8a5183",
       "tick": 4
     }
   ],
@@ -248,5 +248,5 @@
       "expectedReason": "invalid targetCellX"
     }
   ],
-  "finalStateHash": "2bc3b3c6b84a7db4"
+  "finalStateHash": "b90acf88fb8a5183"
 }

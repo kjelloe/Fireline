@@ -9,6 +9,7 @@ import { apply, MAX_WAYPOINTS } from "../engine/reducer.js";
 import { cellToWorld, worldToCellFloor } from "../shared/fixedmath.js";
 import { validate } from "../engine/commands.js";
 import { GameServer } from "../engine/server.js";
+import { AIRegency } from "../engine/ai_regency.js";
 import { hashState } from "../engine/snapshot.js";
 import { sandbox, joinAndSelect } from "./helpers.js";
 
@@ -84,11 +85,22 @@ test("34: waypoints are hashed, and the AI still never queues", () => {
   b = apply(b, move(0, 20, 20, true));
   assert.notEqual(hashState(a), hashState(b), "a queued leg must change the hash");
 
-  // The regents drive an entire war without ever queueing a leg — which
-  // is what keeps AI-only balance measurements comparable across this
-  // change.
+  // The invariant EVOLVED with item 39: waypoint queues now also carry
+  // PATHFIND legs (a plain order around a wall), which both teams get
+  // from the same deterministic, mirror-equivariant planner — so they
+  // do not break measurement comparability the way manual human
+  // queueing would. What must stay true: the AI never issues a MANUAL
+  // queue (queue: true) — its plans are always plain orders.
   const war = new GameServer({ mapSeed: 2026, enableAi: true, aiDifficulty: 1 });
-  for (let i = 0; i < 1200; i++) war.step();
-  assert.ok(war.state.assets.every((x) => (x.waypoints ?? []).length === 0),
-    "no regent queued a waypoint");
+  const ai = new AIRegency({ fixedAgents: false });
+  for (let op = 16; op < 24; op++) ai.assume(op);
+  for (let i = 0; i < 1200; i++) {
+    war.step();
+    if (i % 100 === 0) {
+      for (const cmd of ai.plan(war.state)) {
+        assert.notEqual(cmd.queue, true, "the AI never queues manually");
+      }
+    }
+  }
+  assert.ok(war.state.tick >= 1200, "the war ran");
 });

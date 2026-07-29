@@ -3,6 +3,7 @@
 // Pure and renderer-independent. Terrain IDs match engine/mapgen.js / data/rules.json.
 
 import { seedSfc32, sfc32Next } from "../shared/prng.js";
+import { applyBaseWalls } from "./basewalls.js";
 
 export const FRONTIER_CORRIDOR = Object.freeze({
   id: "frontier_corridor",
@@ -78,6 +79,10 @@ export function generateFrontierCorridor(rootSeed) {
     }
   }
   stampInfrastructure(cells);
+  // Item 38: base walls with gates (Fireball homage) — last, so the ring
+  // wraps the cleared compound; roads through the perimeter stay open.
+  applyBaseWalls(cells, p.width, p.teamABase, true);
+  applyBaseWalls(cells, p.width, p.teamBBase, false);
   return { id: p.id, seed: rootSeed >>> 0, width: p.width, height: p.height, cells };
 }
 

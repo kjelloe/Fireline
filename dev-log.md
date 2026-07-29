@@ -3501,3 +3501,47 @@ pinning the OLD (broken) heading contract; updated to the new
 motionHeading field with an explicit "brads pass through untouched"
 pin. Actually 647/647 as of THIS commit. Lesson: read the fail count,
 not the exit code.
+
+## slice-18I (playtest-10 items 39 + 38): pathfinding + the Fireball walls
+
+ITEM 39 — engine/pathfind.js: a PLAIN move order whose straight ray
+crosses a wall now gets a real path. Grid A* (8-connected, no corner
+cutting, integer costs 256/362, octile heuristic), corners simplified
+by string-pulling, stuffed into the EXISTING hashed waypoint queue —
+one mechanism for humans and AI. Tie-breaks commute with the mirror
+(the route-graph |2x-(W-1)| law; pinned by a test that reflects the
+whole map and demands the exact mirrored path). Enclosed target or
+expansion cap = old honest ray/slide. Inert wherever there are no
+walls, so it never engaged on frontier... until item 38 an hour later.
+The waypoints "AI never queues" invariant EVOLVED: pathfind legs are
+fine (both teams, deterministic, equivariant); what stays true is no
+MANUAL queue:true from AI plans — test rewritten to assert that.
+
+ITEM 38 — engine/basewalls.js: every base on every map gets a
+T_BLOCKING ring with a 4-cell front gate facing the enemy, two side
+gates, and the rule that ROADS ARE NEVER WALLED (any road crossing
+the perimeter is a natural gate — every existing artery survives).
+Mirrors by construction. Spawns verified inside (x=7-9 vs wall x=6).
+Destructible walls banked for the destructible-terrain era. Churn:
+0I fixture re-pinned v5 (regen tool existed), operational-zone
+invariant now permits perimeter walls AND asserts all three gates
+open per base, props test allows rock mass on walls (18C behaviour
+arriving on frontier), 1A fixture v49. Playtest-10 item 40 (circle
+map) BANKED as `caldera` in specs/10 §4e — converges with the
+designer's Convoy Escort mode (their #1 prototype recommendation).
+
+BALANCE FLAG (open): two independent n=60 mirrored reads since
+pathfind+walls lean A the same way — frontier-with-walls 62.7%
+aggregate (flip rate 55% = decorrelated), sawtooth-with-pathfind
+66.7%. Each alone is 2-2.5 sigma; together they earn a battery, not a
+conviction. Prime suspect: SENTINEL x GATES — item 38 just gave every
+base three chokepoints and the Sentinel is the choke king (A =
+Directorate). Discriminator queued on the PC: live-config frontier
+pair (skimtrail 416 = uniques ON) vs UNIQUES=0 pair (plain
+sweep/mirror) — if the lean vanishes without uniques, it is the
+Sentinel meta and the gate geometry (wider gates / no-deploy zones
+near gates) is the lever, not the map. Also re-queued the sawtooth uq
+pair (tonight's earlier one predates pathfind+walls = stale). Pacing
+note: walls added ~2 min median (23.1) and nudged standard endings up
+(13%) — gates funnel defence, raids get cleaner exits; watch it at
+n=300.

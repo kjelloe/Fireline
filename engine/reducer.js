@@ -32,6 +32,7 @@ import {
   DROP_HOLD_TICKS, DROP_RADIUS_CELLS, DROP_TICKET_PACKET, dropActive, dropWorld,
 } from "./drops.js";
 import { premiumPoints } from "./premium.js";
+import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -275,9 +276,31 @@ function applyMoveOrder(next, command) {
   }
   asset.targetX = legX;
   asset.targetY = legY;
+  // Playtest-10 item 39: a PLAIN order whose straight ray crosses a
+  // wall gets a real path — A* corners land in the (hashed) waypoint
+  // queue, the same mechanism a human shift-click uses, so player and
+  // AI orders steer around mesas instead of grinding along the face.
+  // Queued legs are the player's own routing and stay verbatim. No
+  // path (enclosed target / cap) keeps the old ray + slide behaviour.
+  // Inert on wall-less maps: frontier/riverline/blackwood rays are
+  // never blocked, so the 1A fixture never sees this branch.
+  if (command.queue !== true) {
+    const stats = getUnitStats(asset.type);
+    if (segmentBlocked(next.map, asset.x, asset.y, legX, legY, stats)) {
+      const path = findCellPath(
+        next.map, worldToCellFloor(asset.x), worldToCellFloor(asset.y),
+        command.targetCellX, command.targetCellY, stats);
+      const legs = pathToWaypoints(next.map, path, stats, MAX_WAYPOINTS);
+      if (legs.length > 0) {
+        asset.targetX = legs[0].x;
+        asset.targetY = legs[0].y;
+        asset.waypoints = legs.slice(1);
+      }
+    }
+  }
   asset.state = ASSET_MOVING;
   next.events.push({
-    type: "move_ordered", assetId: asset.id, targetX: asset.targetX, targetY: asset.targetY,
+    type: "move_ordered", assetId: asset.id, targetX: legX, targetY: legY,
   });
   return next;
 }

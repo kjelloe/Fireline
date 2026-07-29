@@ -7,6 +7,7 @@
 // ground — the balance invariant the frontier map learned the hard way.
 
 import { seedSfc32, sfc32Next } from "../shared/prng.js";
+import { applyBaseWalls } from "./basewalls.js";
 
 export const RIVERLINE = Object.freeze({
   id: "riverline",
@@ -90,5 +91,7 @@ export function generateRiverline(rootSeed) {
       for (const x of p.riverCols) cells[idx(x, y)] = T_ROAD;
     }
   }
+  applyBaseWalls(cells, p.width, p.teamABase, true);  // item 38
+  applyBaseWalls(cells, p.width, p.teamBBase, false);
   return { width: p.width, height: p.height, cells, seed: rootSeed >>> 0 };
 }

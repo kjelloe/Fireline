@@ -124,7 +124,9 @@ test("11X props are deterministic, terrain-correct, and density-bounded", async 
   for (const p of a) {
     const terrain = at(p.x, p.y);
     if (p.kind === "tree") assert.equal(terrain, 2, `tree on forest at ${p.x},${p.y}`);
-    if (p.kind === "rock") assert.equal(terrain, 3, `rock on rough at ${p.x},${p.y}`);
+    // 18C put rock mass on T_BLOCKING; item 38's base walls brought
+    // blocking cells to frontier, so rocks now sit on rough OR walls.
+    if (p.kind === "rock") assert.ok(terrain === 3 || terrain === 4, `rock on rough/wall at ${p.x},${p.y}`);
     if (p.kind === "rut") assert.equal(terrain, 5, `rut on path at ${p.x},${p.y}`);
   }
   const forestCells = map.cells.filter((c) => c === 2).length;

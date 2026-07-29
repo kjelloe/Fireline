@@ -99,3 +99,71 @@ stays held for your playtest.
   your vsync change.
 - **Q24–Q26 above** (pool ratification, mercy's new prominence, award
   names + the missing escort counter).
+
+---
+
+# Addendum: prompt-92 wave, playtest 10, and the asymmetric question
+
+## The prompt-92 rulings, all landed
+
+Escort recognition (BEST ESCORT is real — paid when the thing you
+guarded succeeds), B5 comm wheel (hold Q; new "thanks" ping;
+fog-reveal contact callouts), B6 neutral supply drop (mirror-line
+placement, 10 s exclusive hold, +15 tickets), salvage (recoveries bank
+rebuild-wave discounts — MPG sink as ruled, garage refit banked),
+THE LAST CONVOY (suspends mercy as ruled; N = ceil(fielded/3) clamped
+3..5 — called in 5/8 wars, completed in 2: challenge-but-doable), and
+the underdog premium (ships DORMANT — every live map measures fair,
+which is the honest state; the generator convicts future leans from
+battery pairs automatically). Fixtures v45→v48 along the way.
+
+**Riverline verdict** (its first-ever battery): fairness PASSES,
+pacing FAILS — 41% horn, 27-minute median. Pre-corridor blackwood's
+disease. Stays experimental; a pacing slice is queued.
+
+## Playtest 10
+
+- **36 (coarse rotation / east-west sliding) was a real bug, and a deep
+  one**: the interpolator overwrote the engine's heading (brads) with
+  motion radians, which then mis-read as "brads 0-3" — every moving
+  unit rendered facing ~east since 9F. The engine's 16-way heading
+  never reached a renderer. Fixed; slides now face their actual motion.
+- **37**: no more range tip over wrecks.
+- **39 (pathfinding)**: plain move orders whose ray crosses a wall now
+  get real A* paths — corners land in the same hashed waypoint queue
+  shift-click uses, for humans AND the AI. Mirror-equivariant
+  tie-breaks (the route-graph law); an enclosed target keeps the old
+  honest slide/stall. The unit-level proof: a tank ordered across a
+  40-cell wall arrives around it without stalling.
+- **38 (Fireball walls)**: every base on every map now has a
+  T_BLOCKING wall ring with a front gate facing the enemy and two side
+  gates; roads crossing the perimeter are never walled (natural
+  gates). Destructible walls BANKED for the destructible-terrain era.
+- **40 (circle map)**: BANKED as `caldera` in specs/10 §4e — and it
+  converges perfectly with the designer's asymmetric work (below).
+
+## The asymmetric-modes question (both designer docs read)
+
+**Recommendation: prototype CONVOY ESCORT first** — the designer's own
+#1, and ours:
+
+1. It reuses the deepest machinery we have: tow/field-repair/recovery
+   (the convoy vehicle "stops when damaged, repairable, towable" is
+   literally our loop), mines and the Sentinel as ambush tools, route
+   choice via the route graph, and tonight's Last Convoy arrival
+   counting.
+2. **Your circle map IS the convoy map.** Ring road both ways + risky
+   centre trail = the route-decision triangle the mode needs. One map,
+   two purposes: symmetric standard wars first (normal battery gate),
+   then the convoy mode on the same geometry.
+3. Honourable mention — **Scavenge (#9) is the cheap one**: it is B6's
+   supply drop times fifteen plus carry-home, and it is SYMMETRIC, so
+   it needs no attacker/defender rotation infrastructure at all. It
+   could ship as a session-rules mode before any true asymmetric mode.
+
+**What every asymmetric mode needs first** (one infrastructure slice):
+a mode framework in victory.js (per-mode win triggers), side rotation
+between wars (fairness by role swap replaces mirror fairness), and the
+§5 metrics (phase depth, context-for-defeat) in the story instrument.
+Recommend: mode framework → caldera map → Convoy Escort prototype →
+AI-sim battery against the §5 metrics → your playtest.
