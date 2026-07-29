@@ -2713,3 +2713,30 @@ ending — the PRIMARY objective — is being crowded out, or whether 12% vs
 17% is just n=16 noise. A 300-war battery decides it; queued.
 
 Suite 572/572.
+
+## slice-18f — playtest 9: the stranding, and range at a glance (2026-07-29)
+
+**Item 35 was a real stranding, and the engine half had been there since
+carriers could carry.** `disableAsset` released the crew, the tow and the
+standard — and silently forgot the PASSENGERS. A player who respawned
+aboard a carrier (15F) and then watched it die stayed marked `aboard` a
+WRECK forever: "centre on me" pointed at the hulk, and they could never
+take another asset. Nothing in the engine ever released them.
+
+Passengers now bail out on foot exactly like the crew, which is both the
+rescue fantasy (the van is gone, the people in it are not) and the fix.
+The client half was mine from playtest 8: `whereAmI` treated ANY carrier
+listing you as "riding", wreck or not, and `selectBlockedReason` then
+refused Next-asset — so my own change had turned an engine bug into a
+hard lock. Only an OPERABLE carrier counts as riding now.
+
+Three tests pin it: passengers land on foot with crawlable entities, a
+released passenger can redeploy and crew again (the stranding itself),
+and a LIVING carrier still carries.
+
+**Item 33**: hovering a visible enemy now answers "can I shoot that?"
+before the click — IN RANGE / OUT OF RANGE / TOO CLOSE (dead zone) with
+the distance in cells, drawn from the same `weaponRangeOverlay` model as
+the targeting ring, so the tip and the ring cannot disagree.
+
+Suite 575/575, smoke clean.

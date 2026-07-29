@@ -809,8 +809,12 @@ function whereAmI(view) {
   if (mine) return { kind: "asset", x: mine.x, y: mine.y, assetId: mine.id };
   const down = view.downedOperators?.find((d) => d.operatorId === joined.operatorId);
   if (down) return { kind: "downed", x: down.x, y: down.y };
+  // Item 35: only an OPERABLE carrier counts as "riding". A wrecked one
+  // must never anchor you to it — that stranded a player on the hulk of
+  // the van they had spawned into.
   const carrier = view.friendlyAssets?.find(
-    (a) => a.aboard1 === joined.operatorId || a.aboard2 === joined.operatorId);
+    (a) => (a.aboard1 === joined.operatorId || a.aboard2 === joined.operatorId) &&
+      a.state !== STATE_DISABLED && a.state !== 3 /* SALVAGED */);
   if (carrier) return { kind: "aboard", x: carrier.x, y: carrier.y, assetId: carrier.id };
   return null;
 }
@@ -1998,6 +2002,31 @@ let lastHoverMs = 0;
 function updateHoverTip(view) {
   const el = document.getElementById("hover-tip");
   if (!el || hoverAssetId === null) { if (el) el.style.display = "none"; return; }
+  // Item 33: hovering a visible ENEMY answers "can I actually shoot
+  // that?" before you waste a click. Uses the same range model the
+  // targeting ring draws, so the tip and the ring can never disagree —
+  // including the DEAD ZONE that indirect tubes have.
+  const foe = (view?.visibleEnemies ?? []).find((x) => x.id === hoverAssetId);
+  if (foe) {
+    const ring = weaponRangeOverlay(view, joined?.operatorId);
+    if (!ring) { el.style.display = "none"; return; }
+    const dx = foe.x / CELL - (ring.centerX - 0.5);
+    const dy = foe.y / CELL - (ring.centerY - 0.5);
+    const dist = Math.hypot(dx, dy);
+    const tooFar = dist > ring.radiusCells;
+    const tooClose = ring.minRadiusCells > 0 && dist < ring.minRadiusCells;
+    const pos = new THREE.Vector3(foe.x / CELL + 0.5, 1.2, foe.y / CELL + 0.5).project(camera);
+    el.style.left = `${Math.round((pos.x * 0.5 + 0.5) * window.innerWidth - 60)}px`;
+    el.style.top = `${Math.round((-pos.y * 0.5 + 0.5) * window.innerHeight - 46)}px`;
+    el.style.display = "block";
+    const label = tooFar ? t("hover.out_of_range")
+      : tooClose ? t("hover.too_close")
+      : t("hover.in_range");
+    const colour = tooFar || tooClose ? "#ff6b52" : "#57c46b";
+    el.innerHTML = `<span style="color:${colour}; font-weight:bold;">${label}</span>` +
+      `<span style="color:#9ab;"> ${Math.round(dist)}c</span>`;
+    return;
+  }
   const a = view?.friendlyAssets?.find((x) => x.id === hoverAssetId);
   if (!a || a.operatorId !== -1 || a.state === STATE_DISABLED || a.state === 3) {
     el.style.display = "none";

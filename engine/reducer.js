@@ -360,6 +360,23 @@ function disableAsset(next, target, scoringTeam) {
     next.events.push({ type: "operator_downed", operatorId: seat.id });
     target.operatorId = -1;
   }
+  // Playtest-9 item 35: a disabled carrier RELEASES ITS PASSENGERS. They
+  // bail out on foot exactly like the crew — which is both the rescue
+  // fantasy (the van is gone, the people in it are not) and the fix for
+  // a genuine stranding: passengers used to stay marked aboard a WRECK
+  // forever, so "centre on me" pointed at the hulk and the player could
+  // never take another asset. Nothing released them, ever.
+  for (const seatField of ["aboard1", "aboard2"]) {
+    const riderId = target[seatField];
+    if (riderId === -1) continue;
+    target[seatField] = -1;
+    const rider = next.operators[riderId];
+    if (!rider || rider.state !== OP_ACTIVE) continue;
+    rider.assetId = -1;
+    rider.state = OP_DOWN;
+    next.downed.push(createDowned(rider, target));
+    next.events.push({ type: "operator_downed", operatorId: rider.id });
+  }
   // 8D: a disabled tower releases anything it was towing.
   const inTow = towedWreck(next, target.id);
   if (inTow) inTow.towedBy = -1;

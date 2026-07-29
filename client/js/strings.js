@@ -172,6 +172,9 @@ export const CATALOGS = {
     "status.request": "REQUEST SUPPLIES",
     "hover.vacant": "{name} — vacant · click to take",
     "hover.stats": "ⓘ stats",
+    "hover.out_of_range": "OUT OF RANGE",
+    "hover.too_close": "TOO CLOSE (dead zone)",
+    "hover.in_range": "IN RANGE",
     "codex.traits": "Traits",
     "toast.mission": "MISSION COMPLETE  +{n} pts",
     // ── playtest 8: centre notices ──
@@ -432,6 +435,9 @@ export const CATALOGS = {
     "status.request": "BE OM FORSYNINGER",
     "hover.vacant": "{name} — ledig · klikk for å ta",
     "hover.stats": "ⓘ fakta",
+    "hover.out_of_range": "UTENFOR REKKEVIDDE",
+    "hover.too_close": "FOR NÆRT (dødsone)",
+    "hover.in_range": "INNENFOR REKKEVIDDE",
     "codex.traits": "Egenskaper",
     "toast.mission": "OPPDRAG FULLFØRT  +{n} pts",
     // ── playtest 8: midtvarsler ──
