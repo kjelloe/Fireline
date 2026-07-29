@@ -2679,3 +2679,37 @@ prefix matching — "blackwod" is the typo people actually make and prefix
 matching misses it entirely.
 
 Suite 567/567.
+
+## slice-b1 — meaningful deaths (2026-07-29, designer eval #35)
+
+A wreck now costs the owning team ONE ticket, refunded when the wreck is
+recovered. Deaths were free before this, which left the rescue economy
+thematically central but mechanically optional; now every tow visibly
+saves the war and the game's two identities pull on the same rope.
+
+**The ledger balances by construction.** Every transition INTO a wreck
+charges, every restore refunds — including the abandoned-hull self-recall
+path, which matters more than it looks: charging only combat deaths would
+have let a team abandon a hull for free, tow it home and bank a refund
+for a ticket nobody ever paid. Balancing both paths also avoids a
+per-asset "was charged" flag, and therefore avoids a fixture repin (v40
+still stands — the 14-step 1A script disables nothing).
+
+Clamped at both ends: a pool cannot go negative, and a refund cannot mint
+tickets above the starting pool. `ticketPerDisable: 0` restores the
+pre-B1 world exactly.
+
+**Measured (16 wars, frontier).** Deaths net-drain ~46 tickets of 300
+(62 downs, 16 restored) — 15% of the pool, so B1 mostly converts the
+ANTICLIMACTIC HORN into a decision:
+
+| | tickets | standard | horn | avg ticks |
+|---|---|---|---|---|
+| baseline (300 wars) | 57% | 17% | 27% | 14267 |
+| B1 (16 wars) | 87% | 12% | **0%** | 12809 |
+
+Tows held at 20.2/war. The open question is whether the Command Standard
+ending — the PRIMARY objective — is being crowded out, or whether 12% vs
+17% is just n=16 noise. A 300-war battery decides it; queued.
+
+Suite 572/572.

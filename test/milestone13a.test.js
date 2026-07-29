@@ -116,6 +116,7 @@ test("13F session rules: defaults change nothing; custom rules change the law", 
   assert.deepEqual(DEFAULT_RULES, {
     mpgMinOperable: MPG_MIN_OPERABLE, mpgTicks: MPG_TICKS,
     ticketPool: 300, ticketBleedTicks: 20, ticketMajority: 5,
+    ticketPerDisable: 1, // B1: a wreck costs a ticket, refunded on recovery
   });
   const plain = createInitialState(42, "frontier_corridor");
   const explicit = createInitialState(42, "frontier_corridor", { ...DEFAULT_RULES });

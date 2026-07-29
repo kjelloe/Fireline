@@ -314,6 +314,31 @@ function applyFireOrder(next, command) {
   return next;
 }
 
+// B1 (meaningful deaths, designer eval #35): a wreck costs the owning
+// team ONE ticket, and recovering it gives that ticket back. Deaths were
+// free before this, which left the rescue economy thematically central
+// but mechanically optional; now every tow visibly saves the war and the
+// two identities of this game finally pull on the same rope.
+//
+// The ledger is exactly balanced by construction - every transition INTO
+// a wreck charges, every restore refunds - so no per-asset bookkeeping
+// (and no fixture repin) is needed. Clamped at both ends: a pool cannot
+// go negative, and a refund cannot mint tickets above the starting pool.
+function chargeWreckTicket(next, team) {
+  if (!next.tickets || team !== 0 && team !== 1) return;
+  const cost = next.rules?.ticketPerDisable ?? 1;
+  if (cost <= 0) return;
+  next.tickets[team] = Math.max(0, next.tickets[team] - cost);
+}
+
+function refundWreckTicket(next, team) {
+  if (!next.tickets || team !== 0 && team !== 1) return;
+  const cost = next.rules?.ticketPerDisable ?? 1;
+  if (cost <= 0) return;
+  const ceiling = next.rules?.ticketPool ?? 300;
+  next.tickets[team] = Math.min(ceiling, next.tickets[team] + cost);
+}
+
 // The one true disablement path — fire (1E) and mine detonations (9E) share
 // it so bail-out, tow release, and standard drops can never diverge.
 function disableAsset(next, target, scoringTeam) {
@@ -323,6 +348,7 @@ function disableAsset(next, target, scoringTeam) {
   target.deployed = 0;
   target.deployTimer = 0; // 12B: wrecked legs fold
   next.teamScores[scoringTeam] += SCORE_DISABLE;
+  chargeWreckTicket(next, target.team); // B1
   next.events.push({ type: "asset_disabled", assetId: target.id });
   // 9B: the crew bails out as a downed operator (the wreck repairs to
   // uncrewed — the human/AI seat carries on on foot).
@@ -1266,6 +1292,7 @@ function applyAdvanceTick(next) {
         wreck.hp = restoredHp(wreck.type);
         wreck.targetX = wreck.x;
         wreck.targetY = wreck.y;
+        refundWreckTicket(next, wreck.team); // B1: the tow paid for itself
         next.events.push({ type: "asset_restored", assetId: wreck.id });
       }
     }
@@ -1394,6 +1421,13 @@ function applyAdvanceTick(next) {
       if (inOwnBase(next, asset)) continue; // safe at home
       asset.state = ASSET_DISABLED;
       asset.hp = 0;
+      // B1: a hull left to rot in the field is materiel lost, so it costs
+      // the same ticket a combat wreck does. Charging BOTH wreck paths is
+      // what lets the refund work without a per-asset "was charged" flag
+      // (which would need a fixture repin) - and it closes the exploit of
+      // abandoning a hull for free, towing it home, and banking a refund
+      // for a ticket nobody ever paid.
+      chargeWreckTicket(next, asset.team);
       next.events.push({ type: "asset_recalled", assetId: asset.id });
     }
   }

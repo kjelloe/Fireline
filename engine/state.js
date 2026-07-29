@@ -251,6 +251,9 @@ export const DEFAULT_RULES = Object.freeze({
   ticketPool: 300,
   ticketBleedTicks: 20,  // 2 s per ticket at 10 Hz
   ticketMajority: 5,     // of the 8 frontier relays; >= half+1 either map
+  // B1: what a wreck costs its owner, refunded when the wreck is
+  // recovered. 0 restores the pre-B1 world (deaths are free).
+  ticketPerDisable: 1,
 });
 
 // 13G (playtest 6.7 ruling): named difficulty presets over the session
@@ -258,9 +261,9 @@ export const DEFAULT_RULES = Object.freeze({
 // default session can never drift. Easier = rebuild sooner and while
 // stronger; harder = only a gutted team rebuilds, and slowly.
 export const RULE_PRESETS = Object.freeze({
-  easy: Object.freeze({ mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5 }),
+  easy: Object.freeze({ mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5, ticketPerDisable: 1 }),
   normal: DEFAULT_RULES,
-  hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5 }),
+  hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5, ticketPerDisable: 1 }),
 });
 
 // 13E-selector: the CLI and any menu must validate against the REAL

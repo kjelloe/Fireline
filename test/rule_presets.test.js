@@ -18,9 +18,9 @@ test("normal preset IS the default law — byte-identical, forever", () => {
 
 test("preset numbers as ratified: easy 8/600, hard 4/1500 (+13H ticket law)", () => {
   assert.deepEqual(RULE_PRESETS.easy,
-    { mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5 });
+    { mpgMinOperable: 8, mpgTicks: 600, ticketPool: 400, ticketBleedTicks: 20, ticketMajority: 5, ticketPerDisable: 1 });
   assert.deepEqual(RULE_PRESETS.hard,
-    { mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5 });
+    { mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5, ticketPerDisable: 1 });
 });
 
 test("rulesForPreset resolves names and refuses garbage", () => {
