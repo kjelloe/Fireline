@@ -2963,3 +2963,32 @@ Design notes worth keeping:
 
 Fixture v42 (waypoints are hashed). Suite 596/596, smoke + UI acceptance
 clean, and a 12-war AI sanity sweep is unchanged as predicted.
+
+## field hull repair (2026-07-30, playtest-9 item 32, ruled capped)
+
+A truck carrying materiel patches an adjacent LIVING friendly up to HALF
+hull. The cap reuses `restoredHp()` — the exact figure the repair bay
+gives a recovered wreck — so the number needed no invention and is
+already covered by tests.
+
+**The cap is the entire design.** B1 made recovery ticket-relevant, so an
+uncapped field repair would have quietly deleted the tow economy. As
+built it cannot: a WRECK is still only fixable by towing it home, and a
+hull already above half gets nothing, so a patch buys a mauled unit one
+more push rather than replacing the bay. Self-repair is excluded (you
+cannot work on your own vehicle while driving it) and enemies are not
+patched.
+
+Recognition: `RECOG_FIELD_REPAIR = 4`, deliberately below a tow (8) — it
+keeps someone fighting, it does not bring a wreck back. The mission card
+(`repair_hull`) carries the same value, so the to-do list and the
+scoreboard still agree, and it only appears while the target is BELOW
+half — i.e. exactly when the repair would do something.
+
+**The AI does not field-repair yet, on purpose.** A 1,800-war
+re-measurement battery is running right now; leaving regent behaviour
+untouched keeps those numbers a valid baseline for this change. AI
+doctrine is a follow-up slice with its own sweep — the same discipline
+used for waypoints.
+
+Suite 603/603, smoke clean, 12-war AI sanity sweep unchanged (tows 19.2).

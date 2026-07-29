@@ -29,6 +29,7 @@ const TASK_VALUE = Object.freeze({
   recover: 8,           // RECOG_TOW
   repair_site: 8,       // rebuilding infrastructure, tow-class effort
   resupply: 4,          // keeps someone else scoring; below every rescue
+  repair_hull: 4,       // RECOG_FIELD_REPAIR - same support tier
 });
 function taskValue(task) {
   return TASK_VALUE[task.kind] ?? 0;
@@ -76,12 +77,24 @@ export function tasksFor(view, myOperatorId = null) {
     if (a.state === 2 || a.state === 3) continue; // wrecks are a tow, not a top-up
     const dry = (a.ammo !== undefined && a.ammo <= 3) ||
                 (a.fuel !== undefined && a.fuel <= 800);
-    if (!dry) continue;
-    tasks.push({
-      kind: "resupply", priority: 7,
-      label: t("task.resupply", { id: a.id }),
-      cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "need_supplies",
-    });
+    if (dry) {
+      tasks.push({
+        kind: "resupply", priority: 7,
+        label: t("task.resupply", { id: a.id }),
+        cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "need_supplies",
+      });
+    }
+    // Item 32 (ruled): badly damaged but still fighting - a truck can
+    // patch it to half hull. Only worth a card while it is BELOW half,
+    // which is exactly when the repair would do something.
+    const maxHp = (UNIT_STATS[a.type] ?? {}).hp;
+    if (maxHp && a.hp !== undefined && a.hp * 2 < maxHp) {
+      tasks.push({
+        kind: "repair_hull", priority: 7,
+        label: t("task.repair_hull", { id: a.id }),
+        cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "need_supplies",
+      });
+    }
   }
   for (const d of (view?.downedOperators ?? [])) {
     if (d.operatorId === myOperatorId) continue; // your card is the R prompt
@@ -148,7 +161,7 @@ export function tasksFor(view, myOperatorId = null) {
     fitted = tasks.filter((task) => {
       if (task.kind === "recover" || task.kind === "repair_site") return !!stats.canTow;
       if (task.kind === "rescue") return (stats.capacity ?? 0) > 0;
-      if (task.kind === "resupply") return !!stats.canTow; // the cargo chassis
+      if (task.kind === "resupply" || task.kind === "repair_hull") return !!stats.canTow;
       return true; // stop_thief/secure/escort/defend/towing_now: everyone
     });
   }

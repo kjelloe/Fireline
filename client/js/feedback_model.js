@@ -52,6 +52,8 @@ export function describeEvent(e, myTeam) {
     case "bridge_shelled": return t("ev.bridge_shelled", { id: e.bridgeId });
     case "bridge_breached": return t("ev.bridge_breached", { id: e.bridgeId });
     case "bridge_repaired": return t("ev.bridge_repaired", { id: e.bridgeId });
+    case "asset_field_repaired":
+      return t("ev.asset_field_repaired", { id: e.assetId, by: e.byAssetId, hp: e.hp });
     case "site_neutralized":
       return t(e.byTeam === myTeam ? "ev.site_neutralized_us" : "ev.site_neutralized_them", { id: e.siteId });
     case "site_captured":

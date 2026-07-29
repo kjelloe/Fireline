@@ -66,6 +66,9 @@ export const SCORE_DISABLE = 5;
 // from stuffing the world with legs.
 export const MAX_WAYPOINTS = 8;
 export const RECOG_TOW = 8;
+// A field patch is support work below a full recovery: it keeps someone
+// fighting, it does not bring a wreck back.
+export const RECOG_FIELD_REPAIR = 4;
 export const RECOG_RESCUE = 10;
 export const RECOG_STANDARD_RETURN = 10;
 export const RECOG_STANDARD_CAPTURE = 25;
@@ -1443,6 +1446,35 @@ function applyAdvanceTick(next) {
       asset.materiel = 0;
       applyBridgeTerrain(next.map, next.mapProfile, bridge.id, true);
       next.events.push({ type: "bridge_repaired", bridgeId: bridge.id, byAssetId: asset.id });
+      continue;
+    }
+    // FIELD HULL REPAIR (playtest-9 item 32, ruled capped). A truck with
+    // materiel patches an adjacent LIVING friendly up to half hull — the
+    // same figure the repair bay gives a recovered wreck.
+    //
+    // The cap is what protects B1's recovery economy: a WRECK still can
+    // only be fixed by towing it home, and a hull already above half
+    // gets nothing, so this buys a mauled-but-alive unit one more push
+    // rather than replacing the bay. You cannot work on your own vehicle
+    // while driving it, so self-repair is excluded.
+    const patient = next.assets.find((other) => {
+      if (other.id === asset.id || other.team !== asset.team) return false;
+      if (other.state === ASSET_DISABLED || other.state === ASSET_SALVAGED) return false;
+      if (other.hp >= restoredHp(other.type)) return false;
+      return Math.max(
+        Math.abs(worldToCellFloor(other.x) - cx),
+        Math.abs(worldToCellFloor(other.y) - cy)
+      ) <= 1;
+    });
+    if (patient) {
+      const before = patient.hp;
+      patient.hp = restoredHp(patient.type);
+      asset.materiel = 0;
+      awardOperator(next, asset.operatorId, RECOG_FIELD_REPAIR);
+      next.events.push({
+        type: "asset_field_repaired", assetId: patient.id, byAssetId: asset.id,
+        hp: patient.hp, healed: patient.hp - before,
+      });
     }
   }
 
