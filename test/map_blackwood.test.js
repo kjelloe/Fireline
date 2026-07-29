@@ -46,9 +46,15 @@ test("18A the woods dominate but the infrastructure survives them", () => {
   assert.equal(at(60, 99), T_PATH, "south ring row");
   assert.equal(at(58, 50), T_PATH, "west center alley");
   assert.equal(at(69, 50), T_PATH, "east center alley");
-  // Relay clearings are carved open (sampled beside the trail crossing).
-  assert.equal(at(60, 45), T_OPEN, "deep-woods clearing NW pair");
-  assert.equal(at(67, 82), T_OPEN, "deep-woods clearing SE pair");
+  // 18G logging roads: lateral recovery corridors through the heart.
+  assert.equal(at(45, 45), T_PATH, "north logging road, west leg");
+  assert.equal(at(82, 45), T_PATH, "north logging road, east leg");
+  assert.equal(at(45, 82), T_PATH, "south logging road, west leg");
+  assert.equal(at(82, 82), T_PATH, "south logging road, east leg");
+  // Relay clearings are carved open (sampled beside the trail crossings —
+  // the alleys AND the 18G logging roads both run through them).
+  assert.equal(at(60, 44), T_OPEN, "deep-woods clearing NW pair");
+  assert.equal(at(67, 80), T_OPEN, "deep-woods clearing SE pair");
   assert.equal(at(34, 30), T_OPEN, "ring corner clearing");
   // Bases are clear operational ground.
   assert.equal(at(10, 60), T_OPEN, "A base");

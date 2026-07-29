@@ -22,6 +22,12 @@ export const BLACKWOOD = Object.freeze({
   ringCols: [36, 91],   // mirror pair
   ringRows: [28, 99],   // spanning x 36..91 (mirror-closed)
   alleyCols: [58, 69],  // mirror pair, y 45..82
+  // 18G logging roads (designer ruling 2026-07-30, terrain-only recovery
+  // corridors): lateral trails through the combat heart, so a loaded tow
+  // can exit the deep woods SIDEWAYS and come home around the central
+  // crossfire instead of through it. Rows span a symmetric x-range, so
+  // each is its own x-mirror.
+  spurRows: [45, 82],   // spanning x 36..91 (mirror-closed)
   // Relay clearings: ring corners + the deep-woods pairs.
   clearings: [
     [36, 28], [91, 28], [36, 99], [91, 99],
@@ -91,6 +97,9 @@ export function generateBlackwood(rootSeed) {
   }
   for (const x of p.alleyCols) {
     for (let y = 45; y <= 82; y++) cells[idx(x, y)] = T_PATH;
+  }
+  for (const y of p.spurRows) { // 18G logging roads
+    for (let x = 36; x <= 91; x++) cells[idx(x, y)] = T_PATH;
   }
 
   // Infrastructure last: the ONE road, base approaches, clear bases.

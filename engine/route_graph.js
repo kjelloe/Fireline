@@ -78,6 +78,7 @@ const GRAPHS = Object.freeze({
       [36, 28], [91, 28], [36, 99], [91, 99],    // 6-9 ring corner relays
       [58, 28], [69, 28], [58, 99], [69, 99],    // 10-13 ring mid points
       [58, 45], [69, 45], [58, 82], [69, 82],    // 14-17 deep-woods relays
+      [36, 45], [91, 45], [36, 82], [91, 82],    // 18-21 logging-road ring junctions (18G)
     ],
     e: [
       [0, 2, "road"], [2, 4, "road"], [4, 5, "road"], [5, 3, "road"], [3, 1, "road"],
@@ -86,6 +87,12 @@ const GRAPHS = Object.freeze({
       [6, 2, "trail"], [2, 8, "trail"], [7, 3, "trail"], [3, 9, "trail"],
       [14, 4, "trail"], [4, 16, "trail"], [15, 5, "trail"], [5, 17, "trail"],
       [10, 14, "open"], [11, 15, "open"], [12, 16, "open"], [13, 17, "open"],
+      // 18G logging roads: the deep-woods relays reach the ring LATERALLY
+      // on trail, so a tow's route home can skirt the central crossfire.
+      [18, 14, "trail"], [14, 15, "trail"], [15, 19, "trail"],
+      [20, 16, "trail"], [16, 17, "trail"], [17, 21, "trail"],
+      [6, 18, "trail"], [18, 2, "trail"], [7, 19, "trail"], [19, 3, "trail"],
+      [2, 20, "trail"], [20, 8, "trail"], [3, 21, "trail"], [21, 9, "trail"],
     ],
   }),
   sawtooth: Object.freeze({

@@ -3184,3 +3184,48 @@ pool 350 x300 and pool 375 x300. Decision rule (from the probe round):
 pick the value with the better story numbers inside 20-22 min; on a
 true tie take 350 — fewer tickets is the smaller change from the
 shipped default. Skimmer retune starts only after the pool is fixed.
+
+## slice-18G: blackwood logging roads (terrain-only recovery corridors)
+
+The ruling: try terrain only first; goal "fewer rescues than other maps,
+but more dramatic rescues than now". Instrument first (specs/08 §3.8):
+`debugging/dbg_blackwood_wrecks.mjs` mapped where wrecks actually die.
+The reachability story was WRONG — median wreck sits 2 cells from fast
+ground (max 5). The loop leaks at the DRAG HOME: tow completion 44% on
+blackwood vs 80% on frontier, because every route out of the combat
+heart (wreck heat at ~52,39 / 52,52 / 65,52 + mirrors) runs through the
+central crossfire. And blackwood simply has a third of frontier's
+combat (10 vs 33 disables/war) — that part is identity, not fault.
+
+Fix: two LOGGING ROADS — trail rows y=45 and y=82 spanning x 36..91,
+each its own x-mirror (and the pair y-symmetric about the road). They
+join the deep-woods relay pairs laterally to the ring columns, so a
+loaded tow exits sideways and comes home around the fight. Route graph
+grew nodes 18-21 (ring junctions at 36/91 x 45/82) and trail edges so
+the AI actually routes them; layout/graph both mirror-closed
+(enumeration tests pass untouched). The clearing samples in
+map_blackwood.test.js moved off the new rows — the roads legitimately
+run through the clearings, as the alleys always have.
+
+Measured (5-seed probe): tow completion 44%→73%, restores/war
+0.8→1.6, towStarts 1.8→2.2; disables 10→12.6/war (more traffic through
+the heart — still a third of frontier). 30+30 mirrored local: mixed
+winners both worlds (16/13, 18/11), undecided 1/30 each, horn 27%
+(from 33% at the last battery), restored/war 1.8/1.5. Character kept:
+2.5 tows/war vs frontier's ~9 — fewer rescues, but they now COMPLETE.
+Suite 617/617 double-run. PC battery (300+300 mirrored) queued behind
+the pool ladder for the promotion-grade read.
+
+## pool battery, n=300 verdict (the n=20 probes under-read by ~3 min)
+
+pool_350: median 23.1 min, horn 15%, comebacks 31%, mercy 88%.
+pool_375: median 24.6 min, horn 20%, comebacks 30%, mercy 86%.
+BOTH overshoot the 20-22 min target — the n=20 probes systematically
+under-estimated (early seeds again, same trap as the 375 partial read;
+recorded so nobody trusts a 20-seed median for pacing again). Winner
+split identical 159/140 at both pools, per-seed CHECKED not believed:
+lengths differ war by war, margins cap at exactly 350/375 (override
+proven) — a bigger pool stretches wars, it does not flip winners.
+Lead changes flat at 2.7 across the whole ladder: length is not where
+swings come from. pool_330 + pool_300 (same commit, uniques ON) queued
+to find the value that actually lands inside 20-22.
