@@ -3324,3 +3324,20 @@ cellToWorld literals). Fixture repinned v44, events verbatim. Suite
 (standard wars identical, ticket wars a few hundred ticks longer, no
 winner flips). The Skimmer trail-speed retune is now UNBLOCKED and
 measures against pool 315.
+
+## skimtrail lane: the retune ladder can run without engine commits
+
+The ruled band lever (Skimmer trail speed, specs/07) gets the same
+treatment as TICKETPOOL: `setPathSpeedAmphibious()` in terrain.js
+(tuning-only, set-before-war, garbage input restores the default),
+`SKIMTRAIL=` in sim_sweep, a `skimtrail` job kind (uniques pinned ON —
+the lever IS a unique) with the value in the CSV label. Verified: the
+lever bites (seed 3 flips an 18000-tick horn into an 11260-tick ticket
+win at 128), one insensitive seed almost fooled the first check —
+five seeds or nothing, as always. Suite 629/629.
+
+Ladder queued on the PC against pool 315: 416 baseline normal+mirror
+(the standing 57-62% Outlier read predates B4/B7/pool-315), then 384
+and 352 normal+mirror. Decision doctrine: normal-world A-rate toward
+52/48, drift to 54/46 tolerated (user override), the mirror pair
+separates faction from side before believing anything.

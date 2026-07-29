@@ -19,12 +19,22 @@ export const WATER_SPEED_AMPHIBIOUS = 307;
 // the Outlier unique's job on every map (the lateral-relay racer), and
 // the stat-side answer to the Sentinel-side 60% swap-gate verdict.
 export const PATH_SPEED_AMPHIBIOUS = 416; // prompt-56 band tightening (384 at first landing)
+// Band-tuning lane (2026-07-31): the Skimmer trail speed is THE ruled
+// faction lever (specs/07 — conservative mobility lever, never
+// capture-speed). The setter lets sweeps ladder candidate values
+// (SKIMTRAIL= in sim_sweep) without an engine commit per rung. TUNING
+// USE ONLY: call it before a war, never during one — mid-war changes
+// would break determinism and replay.
+let pathSpeedAmphibious = PATH_SPEED_AMPHIBIOUS;
+export function setPathSpeedAmphibious(v) {
+  pathSpeedAmphibious = Number.isInteger(v) && v > 0 ? v : PATH_SPEED_AMPHIBIOUS;
+}
 // 11N (Q22): a HEAVY chassis gains nothing from narrow trails — it crosses
 // them at rough speed. First per-chassis terrain rule; keep it explicit.
 export const PATH_SPEED_HEAVY = 128;
 
 export function speedMultiplier(terrainId, stats = null) {
-  if (terrainId === T_PATH && stats?.amphibious) return PATH_SPEED_AMPHIBIOUS; // prompt-54
+  if (terrainId === T_PATH && stats?.amphibious) return pathSpeedAmphibious; // prompt-54
   if (terrainId === T_PATH && stats?.heavy) return PATH_SPEED_HEAVY;
   if (terrainId === T_WATER && stats?.amphibious) return WATER_SPEED_AMPHIBIOUS; // 12C
   return TERRAIN_SPEED[terrainId] ?? 256;

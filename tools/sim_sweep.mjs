@@ -28,6 +28,10 @@ const HORIZON = Number(process.env.TICKS ?? 18000);
 // prompt-88 pool probes: TICKETPOOL=350 overrides the session rule so
 // the designer's 330/350/375 candidates can be swept without a code edit.
 const TICKETPOOL = process.env.TICKETPOOL ? Number(process.env.TICKETPOOL) : null;
+// Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
+// trail-speed lever the same way. Set once, before any war is built.
+import { setPathSpeedAmphibious } from "../engine/terrain.js";
+if (process.env.SKIMTRAIL) setPathSpeedAmphibious(Number(process.env.SKIMTRAIL));
 
 // prompt-88: story columns appended AFTER the legacy ones, so positional
 // consumers (the worker's summary awk, old analysis snippets) keep

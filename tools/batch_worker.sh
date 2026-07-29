@@ -90,7 +90,7 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} TICKETPOOL=${TICKETPOOL:-} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} TICKETPOOL=${TICKETPOOL:-} SKIMTRAIL=${SKIMTRAIL:-} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
@@ -230,6 +230,16 @@ handle_job() { # $1 = JSON body
       TICKETPOOL=$tp UNIQUES=1 MAP=$tp_map run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
         0 1 "pool_${tp}" ;;
+    skimtrail)
+      # Band retune: {"kind":"skimtrail","speed":384,"count":300,
+      # "mirror":0}. Live config (uniques ON — the lever IS a unique),
+      # frontier. Label carries the value so rungs never mix.
+      local st st_mirror
+      st=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('speed',416))" "$body")
+      st_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      SKIMTRAIL=$st UNIQUES=1 run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
+        "$st_mirror" 1 "skimtrail_${st}$([ "$st_mirror" = 1 ] && echo _mirror)" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -332,7 +342,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/matrix/perf/sendresults/update/resync." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.

@@ -85,3 +85,21 @@ test("prompt-54: Riverline Drive races TRAILS at road grade — amphibious only"
     "bikes keep ordinary trail speed — the affinity is the Skimmer's alone");
   assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_TANK)), 128, "heavies unchanged");
 });
+
+test("band lane: setPathSpeedAmphibious ladders the lever and resets clean", async () => {
+  // The SKIMTRAIL= sweep lane (2026-07-31). Tuning-only: set before a
+  // war, never during one. Bad input restores the shipped default.
+  const { speedMultiplier, setPathSpeedAmphibious, PATH_SPEED_AMPHIBIOUS } =
+    await import("../engine/terrain.js");
+  const { getUnitStats, UNIT_SKIMMER } = await import("../engine/units.js");
+  const T_PATH = 5;
+  try {
+    setPathSpeedAmphibious(352);
+    assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_SKIMMER)), 352);
+    setPathSpeedAmphibious(NaN);
+    assert.equal(speedMultiplier(T_PATH, getUnitStats(UNIT_SKIMMER)), PATH_SPEED_AMPHIBIOUS,
+      "garbage input falls back to the shipped default");
+  } finally {
+    setPathSpeedAmphibious(PATH_SPEED_AMPHIBIOUS); // never leak into other tests
+  }
+});
