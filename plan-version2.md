@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-07-30 (suite 590/590, fixture v41). HTML twin:
+*Updated 2026-07-31 late (suite 652/652, fixture v49). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -24,7 +24,7 @@ plus three experimental maps that have not earned promotion.
 | **Factions: Directorate vs Outliers** | ✅ `slice-12a` — identity, palettes, insignia (NOT the Warden/Freehold working names this file used to carry) |
 | **Sentinel** (Directorate unique) | ✅ `slice-12b` — deployable hardpoint, threat-reactive doctrine |
 | **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
-| Unique crewing + band tuning | ✅ 16B/16E/prompt-56 — uniques crew BY DEFAULT; normal-world split 51.3% |
+| Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
 | NPC infantry layer + POWs | ⬜ **12E/12F — the biggest unbuilt gameplay item.** POW mechanic RULED (raidable holding site); needs the NPC layer first |
 | Multi-crew "Landship" | ⏸ POST-V1 FLAGSHIP (designer eval #5) — needs a seat-model rework |
@@ -46,22 +46,27 @@ plus three experimental maps that have not earned promotion.
 | **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; AI doctrine landed (`slice-13e2`) |
 | Meaningful deaths (B1) | ✅ `slice-b1` — a wreck costs a ticket, refunded on recovery; 600-war verdict: horn 27%->13%, standard held at 8%, fairness untouched |
 | Mercy + overtime (B3) | ✅ `slice-b3` — mercy retargeted (ruled trigger was unreachable); horn 5-15%; cured blackwood's 9.3% undecided |
-| Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |
+| Typed node classes (B2) | ⬜ ruled — **designer brief OUT** (`reports/2026-07-31_designer_brief_node_classes.md`): needs majority-denominator, per-map assignment, magnitudes |
 | Field hull repair + AI doctrine | ✅ ruled + landed — capped at half hull; wrecks still need the bay |
 | Waypoints (item 34) | ✅ `slice-34` — shift-click/long-press queues up to 8 legs |
 | Story instrument (prompt 88) | ✅ — sweep records lead changes/comebacks/majority flips/std attempts; `analyze_story.py` |
-| Salvage economy | ⬜ ruled (designer eval #1); may be reshaped by B1 first |
-| Last Convoy finale | ⬜ ruled (designer eval #7) |
+| Salvage economy | ✅ `slice-salvage` — recoveries bank MPG-wave discounts (MPG sink as ruled; garage refit BANKED; tow double-pay awaiting ratification) |
+| Last Convoy finale | ✅ `slice-last-convoy` — suspends mercy, N=ceil(fielded/3) clamp 3..5; called 5/8 wars, completed 2 |
+| Neutral supply drop (B6) | ✅ `slice-b6` — mirror-line placement, 10 s exclusive hold, +15 tickets |
+| **Grid pathfinding (item 39)** | ✅ `slice-18i` — A* around walls into the waypoint queue, humans+AI, mirror-equivariant |
+| **Base walls + gates (item 38)** | ✅ `slice-18i` — Fireball homage on all maps; destructible walls BANKED |
+| Underdog premium (58/68) | ✅ mechanism + generator — table EMPTY (dormant); **sawtooth convicts at 69% → activation is the ruled interim response** |
 | Fog ghosts / convoys | ⬜ V2.x |
 
 ## Track C — Maps
 
 | Profile | Status |
 |---|---|
-| `frontier_corridor` | ✅ DEFAULT — 8-relay lane+lateral web, band-tuned baseline (51.3% A) |
-| `riverline` | ⚠️ EXPERIMENTAL — west lean collapsed to ~58/42 by the map-aware majority; re-measure after 13E bridges |
-| `blackwood` | ⚠️ EXPERIMENTAL — `slice-18a`; local gate passed, quiet positional identity; **never playtested by a human** |
-| `sawtooth` | ⚠️ EXPERIMENTAL — pacing excellent (90% tickets, 2 undecided in 600) but a ~54-63% **EAST side lean** (geometry, not faction — the 30-war faction verdict was overturned at scale); see specs/10 §4c |
+| `frontier_corridor` | ✅ DEFAULT — pool 315, band 55.2% A post-walls (at the 54/46 drift edge, 1.2σ from the pre-walls fair read — re-measure before acting) |
+| `riverline` | ⚠️ EXPERIMENTAL — fairness PASSES (flips with mirror), **pacing FAILS: 41% horn, 27-min median** — pacing slice queued (pre-corridor-blackwood disease) |
+| `blackwood` | ✅ **PROMOTED 2026-07-31** — batteries + 18G corridors + human playtest all green (specs/10 §4d) |
+| `sawtooth` | 🔴 HELD — **69% A lean at n=1200, uniques-linked** (identical pre/post-walls; uniques-OFF reads 45% A). Mechanism hunt slice next; premium activation is the ruled interim; human playtest pending |
+| `caldera` (circle map, item 40) | 📝 BANKED specs/10 §4e — ring road + centre trail + two mountains; doubles as the Convoy Escort mode map |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ⬜ FILED (prompt 64) — server option, minimap thumbnails per candidate, or "next map" on the end screen |
 
@@ -71,9 +76,9 @@ plus three experimental maps that have not earned promotion.
 |---|---|
 | Context pings / public tasks / takeover confirms | ✅ `10c` / `11t` / `10b` |
 | Recognition scoring + honors | ✅ `slice-11k` — rescue outranks kills |
-| Category awards + death recap (B4/B7) | ⬜ ruled, filler-sized |
-| Quick-command wheel + auto-callouts (B5) | ⬜ ruled — client-side atop pings |
-| Persistent profiles / leaderboard | ⬜ V2.x — includes the underdog-faction ranking premium (prompt 58) |
+| Category awards + death recap (B4/B7) | ✅ `slice-b4`/`slice-b7` — 8 deed counters, six honors (incl. BEST ESCORT per Q26 ruling), killer identity on the down banner |
+| Quick-command wheel + auto-callouts (B5) | ✅ `slice-b5` — hold Q, full vocabulary, "thanks" ping, fog-reveal contact callouts |
+| Persistent profiles / leaderboard | ⬜ V2.x — the premium MECHANISM landed; ranking premium still V2.x |
 | Join flow / lobbies | ⛔ VERSION 3 by ruling |
 
 ## Track E — Presentation & platforms
@@ -89,6 +94,7 @@ plus three experimental maps that have not earned promotion.
 | Mobile touch | ✅ `slice-15a` |
 | Discovery (master server + global list) | ✅ `slice-15h` |
 | **Client feel batch (playtest 8)** | ✅ `slice-18d` — honest centre-on-me, war clock, fog notice, right-drag pan, stats key |
+| **Heading render fix (playtest 10)** | ✅ `slice-18h` — interpolator clobbered engine brads with radians: every mover rendered ~east since 9F; motion-facing on slides |
 | Audio identity | ⬜ V2.x — RULED synth-first (WebAudio patch manifest) |
 | Camera/diorama + chase cam | ⬜ V2.x |
 | Native perf numbers | 🔜 RUNNER WORKS — `tools/perf_native.ps1` (+ `perf_native.sh` from WSL, docs in `tools/perf_native.md`); a run succeeded on the PC, **numbers not yet collected** |
@@ -103,22 +109,43 @@ plus three experimental maps that have not earned promotion.
 | Telemetry & heatmaps | ⬜ V2.x (`/metrics` is the seed) |
 | Achievements, modding, custom modes, campaign | ⬜ Horizon |
 
-## ⚠ Balance baseline reset (2026-07-30)
+## ⚠ Measurement eras (read before trusting any number)
 
-Entities moved from cell left EDGES to cell CENTRES so mirrored worlds
-reflect exactly (specs/08 §4). That changed the geometry of every war,
-so **every balance number taken before this date is void** — band
-tuning, B1's ending mix, and both new-map verdicts. A 7-job battery is
-queued to re-establish them. Nothing should be tuned until it lands.
+Cell-centre reset (2026-07-30) voided everything before it. Pool 315
+landed 2026-07-31 on a full n=300 ladder. **The 16B crewing bug**
+(fixed 2026-07-31) means: sweeps/batteries always measured crewing-ON;
+the SERVED game and all 5-seed gates ran crewing-OFF until the fix.
+Battery numbers stand; gate history and playtest feel predate the fix.
 
 ## What is actually blocking progress
 
-1. **Pool decision** — 350 vs 375 both hit 20-22 min at 15% horn at
-   n=20; the PC battery decides, then the Skimmer trail-speed retune
-   runs against the chosen pool (they interact).
-2. **Faction retune** — Outliers lead everywhere (~57-62% on frontier); ruled lever: conservative Skimmer trail speed; target 52/48, tolerate 54/46.
-3. **Blackwood recovery corridors** — terrain-only (ruled); winch/depot/ranger BANKED. Promote after retune.
-4. **Sawtooth playtest** — HOLD for human verdict despite best-in-class sim numbers (ruled): does it feel tactically sharp or artificially constrained?
+1. **Sawtooth 69% A lean** — mechanism hunt slice (instrument anchor
+   time / contest freezes / per-unique ticket flow with crewing ON),
+   then a rectification ruling. Interim: activate the underdog premium
+   for team B on sawtooth (ruled, prompt-68) and keep it HELD.
+2. **Riverline pacing slice** — 41% horn; same playbook as blackwood
+   18G (instrument first, then the smallest terrain/graph change).
+3. **B2 node classes** — awaiting the designer's answers to the brief.
+4. **Ratifications owed** (small, unblock by answering): Q24 pool 315,
+   Q25 mercy prominence, salvage tow double-pay, convoy N formula.
+5. **Asymmetric arc** (both designer docs read; recommendation filed):
+   mode framework slice → `caldera` map → Convoy Escort prototype.
+6. **User-side**: sawtooth playtest (now meaningful — crewing is ON),
+   uncapped perf run, and playtest-10 item 41 (message was cut off).
+
+## Open design questions (the clarify-and-design queue)
+
+| # | Question | Owner |
+|---|---|---|
+| Q24 | Ratify pool 315? (landed on ladder data) | user |
+| Q25 | Mercy engages in ~90% of wars — bless or tighten? | designer |
+| Q28 | Salvage: a tow pays twice (ticket refund + salvage point) — confirm or cap? | designer |
+| Q29 | Last Convoy N = ceil(fielded/3) clamp 3..5 — ratify? | user |
+| Q30 | B2: do typed sites count in the bleed majority? Which maps get which types? Magnitudes? | designer (brief out) |
+| Q31 | Sawtooth rectification: premium-only, Skimmer conditional variant (banked), Sentinel stat nerf (saturates), or terrain (water pocket)? Await mechanism hunt before choosing | designer |
+| Q32 | Asymmetric modes: green-light the mode-framework slice + Convoy Escort on caldera? Scavenge as the cheap symmetric first mode? | user |
+| Q33 | Playtest-10 item 41 — the message was cut off | user |
+| Q34 | 12E NPC layer — biggest unbuilt gameplay item; when does it enter the queue relative to the asymmetric arc? | user |
 
 ## Version 3 (parking lot)
 

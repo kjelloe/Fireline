@@ -103,9 +103,13 @@ outcome. Renderer presents fog-filtered views only.
   charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
   fire(...) also takes `targetBridgeId` (13E, siege chassis only).
-  Faction uniques crew BY DEFAULT (16B live; UNIQUES=0 in sweeps
-  disables); band-tuned to normal-world ~51/49 (trail affinity 416,
-  Sentinel hp 120). Weather fronts (16G): seed-scheduled sensor-halving
+  Faction uniques crew BY DEFAULT (16B — TRUE ONLY SINCE 2026-07-31:
+  a `=== true` coercion in GameServer + server/index had the SERVED
+  game and every 5-seed gate running uncrewed since 16B, while sweeps
+  measured crewing-ON; when a probe and a sweep disagree, CHECK THE
+  CONFIG PLUMBING first). UNIQUES=0 disables (sweeps + server env).
+  Band at 416/pool-315: 52.9-55.2% A frontier; SAWTOOTH 69% A
+  uniques-linked = HELD (specs/10 §4f). Weather fronts (16G): seed-scheduled sensor-halving
   in `engine/los.js weatherWindow` — pure function, never hashed.
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
   aborts on event drift (a NEW event inside the 14 steps is drift too:

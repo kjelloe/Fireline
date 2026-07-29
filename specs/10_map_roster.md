@@ -332,6 +332,29 @@ the current lever values — NO retune was needed.
 Riverline stays experimental (its 300-war battery is still owed);
 sawtooth stays HELD for the human playtest per the designer ruling.
 
+## 4f. Sawtooth — the live-config verdict (2026-07-31): 69% A, HELD
+
+The first uniques-ON sawtooth battery ever run (all earlier ones were
+uniques-OFF): **A 414 / B 186 across 300+300 mirrored = 69.0% A,
+team-linked** — and IDENTICAL before and after the item-38 walls (the
+.prev shelf held the pre-walls pair: 68.6%). So the lean is not walls,
+not pathfinding: it is the UNIQUE PAIR on this terrain (uniques-OFF
+frontier reads 45.2% A — the pair swings ~10 points toward the
+Directorate, and sawtooth's waterless choke geometry amplifies it to
+19). The 18B-era "Sentinel anchor" intuition was right all along — the
+600-war "overturning" was read through the broken mirror (see the
+casebook), and the coordinate fix already rehabilitated the original
+verdict once.
+
+Mechanism NOT yet established: with crewing on, the Sentinel dies 3x
+more than the Skimmer here and scores almost no kills — the advantage
+is not gunfire. Next: an instrumented hunt (anchor time on flags,
+contest freezes, per-unique ticket flow) BEFORE any stat is touched
+(§3.8). Interim per the prompt-68 ruling: the underdog premium
+generator convicts sawtooth (69% ≥ 55%) — activation for team B is the
+ruled experimental-with-premium response. The map stays HELD for the
+human playtest either way.
+
 ## 4e. BANKED (playtest-10 item 40): `caldera` — the circle map
 
 The user's design, verbatim intent: side gates feed a MAIN ROAD that

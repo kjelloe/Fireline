@@ -37,11 +37,13 @@ everything older is void):
 rate and a 55% horn. Its low tow count is the map, not a fault: wrecks
 in dense woodland are hard to reach.
 
-FAIRNESS, and this is the live issue: all three profiles lean to team B
-(the Outliers) in BOTH mirror worlds — decisively on frontier (~57-62%).
-A lean surviving the mirror is faction/doctrine, not geometry. The band
-needs re-tuning on the new coordinates; until it is, do not read a
-per-map A-rate as a map verdict.
+FAIRNESS, current era (2026-07-31): the old ~57-62% Outlier lean
+DISSOLVED when the pacing rules landed (B1/B3/pool-315) — the skimtrail
+ladder measured 52.9% A "fair chaos" and no retune was made. Post-walls
+frontier reads 55.2% A (1.2σ from the fair read — watch, not act).
+SAWTOOTH is the live issue: 69% A at n=1200 live config, uniques-linked
+(uniques-OFF frontier reads ~45% A — the unique pair swings ~10 pts).
+Blackwood PROMOTED (fair + corridors); riverline fair but horn-bound.
 
 STORY COLUMNS (prompt 88): every sweep row now also records leadChanges,
 majorityFlips, winnerMaxDeficit, winnerMargin, stdAttempts/stdScored,
@@ -108,3 +110,14 @@ headless, filter `state.events`, print positions/fuel/supply of suspects.
 - For big sweeps (100+ seeds, difficulty matrices, mirrored-team bias
   studies) use `node tools/sim_sweep.mjs <count>` — batch it on a
   separate machine, not in an interactive session.
+
+CREWING ERA (2026-07-31): GameServer coerced uniqueCrewing with
+`=== true`, so the SERVED game, every 5-seed gate, and every
+debugging probe ran uniques-UNCREWED since 16B — only sim_sweep
+(explicit UNIQUES) measured the intended game. Fixed to default-ON.
+Consequences: gate outcomes before the fix are a different game;
+battery/sweep numbers always were crewing-ON and stand. Any probe
+that constructs GameServer directly now gets crewing ON by default —
+pass uniqueCrewing: false only for deliberate A/B. SAWTOOTH: 69% A
+at n=1200 live config (uniques-linked; identical pre/post walls) —
+HELD, mechanism hunt before any stat change.
