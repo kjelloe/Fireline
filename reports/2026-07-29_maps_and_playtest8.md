@@ -19,6 +19,7 @@ items, and the batch worker taught to unblock itself.
 | 13E | Bridge demolition — riverline spans droppable/rebuildable |
 | — | `perf_native.ps1` + wrapper + docs: native GPU perf, finally |
 | — | Batch lane: auto-mail reports, and five silent failures made loud |
+| 13E-2 | AI bridge doctrine — regents drop and rebuild spans themselves |
 
 ## Three findings worth your attention
 
@@ -118,6 +119,12 @@ and went silent; an audit found five paths that could fail with nothing
 on stdout, stderr or mail — worst, a job whose body did not parse was
 taken off the queue and discarded without a word. All loud now, plus
 `--verbose`/`--debug` and an always-on worker.log.
+
+**13E-2 closed the loop.** Regents now drop a span only when LOSING that
+crossing (one besieger per span) and rebuild it as a truck errand.
+Probed rather than assumed: 3/3 wars saw a bridge dropped, 29 shells / 6
+breaches / 5 rebuilds, spans down 2-49% of a war. Gate unchanged (16
+wars, 0 undecided, tickets 12/16).
 
 ## Still blocked on you
 

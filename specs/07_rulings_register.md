@@ -103,8 +103,9 @@ at all (18C, below).
   concept, and the tug-of-war is the point; if instant rebuilds prove
   too cheap the lever is repair TIME, not rights). Bridges are NOT
   sites: they own nothing, project no supply or sensors, and never count
-  toward the ticket majority. AI siege/repair doctrine is deferred to
-  13E-2 and carries its own sweep.
+  toward the ticket majority. AI doctrine LANDED (13E-2): tubes drop a
+  span only when LOSING that crossing, one besieger per span; trucks
+  rebuild it as a materiel errand.
 - **Map roster (prompt 60)**: specs/10_map_roster.md is the map design
   of record — checklist audit, hard profile constraints (mirror,
   shared bases/road, west-gen, runway), maps 3 `blackwood` + 4

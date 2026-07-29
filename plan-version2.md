@@ -43,7 +43,7 @@ plus three experimental maps that have not earned promotion.
 | **Weather fronts** | ✅ `slice-16g` — seed-scheduled, sensors halve, pure function |
 | **Wall rule + sliding** | ✅ `18b`/`18e` — impassable terrain refuses entry; glancing steps slide, head-on stops so the planner re-engages |
 | Full cargo manifest | ✅ `slice-13a` + AI resupply runner `13b` |
-| **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; **AI doctrine deferred to 13E-2** |
+| **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; AI doctrine landed (`slice-13e2`) |
 | Meaningful deaths (B1) | ⬜ ruled — a disable costs a ticket unless the wreck is recovered |
 | Mercy + overtime (B3) | ⬜ ruled — small victory-logic slice |
 | Typed node classes (B2) | ⬜ ruled — RADAR / DEPOT / FACTORY personalities per site |

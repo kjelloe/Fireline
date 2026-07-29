@@ -79,6 +79,23 @@ all: `MAP_LAYOUTS` (relays, standard homes), `route_graph.js` GRAPHS
 ride the flanking surfaces (trails, ring, gaps); heavy patrols work the
 road and the objective mouths.
 
+## Bridges (13E-2)
+
+- **Siege**: a siege tube with nothing better to shoot may drop a span,
+  but ONLY when its side is losing that crossing (the enemy holds more
+  relays on the far bank). A winning team leaves the road open because
+  it wants to drive on it — demolition is a momentum-breaker, not an
+  opening move.
+- **One besieger per span**, lowest operator id in range (the
+  capture-seek designation pattern). Without it every tube in the war
+  shells the same crossing and nothing else gets done.
+- **Rebuild**: the truck materiel errand also considers a dropped span,
+  ranked after damaged relays. Either team may rebuild any bridge
+  (prompt-70), so the only question is distance.
+- Probed before being trusted (`dbg_13e2_doctrine.mjs`): 3/3 wars saw a
+  span dropped, 29 shells / 6 breaches / 5 rebuilds, spans down 2-49% of
+  a war. A doctrine that never fires looks exactly like one that works.
+
 ## Post-mortems worth remembering
 
 - **Everyone-diverts capture** froze wars at 0-0 → one capturer per
