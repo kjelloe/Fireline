@@ -95,6 +95,23 @@ Consequences, now doctrine:
 - Corollary for the roster: designing a map that denies one faction its
   surface (no water, no trails) is a balance decision, not set dressing.
 
+## 3.8 Measurement doctrine (designer-endorsed, 2026-07-30)
+
+Three rules, formalised after the mirror-harness bug:
+
+1. **Every balance claim needs instrument confidence first.** Before
+   believing a faction or map advantage, confirm the mirror works,
+   spawns are assigned symmetrically, terrain is represented
+   symmetrically, positions are symmetric where intended, both AIs get
+   equivalent information, and seeds actually vary.
+2. **Separate faction advantage from side advantage** — the mirrored
+   re-run is the standard test, not an optional extra.
+3. **Rebaseline after ANY geometry, collision or movement change.**
+   Tile geometry, vehicle offset, pathfinding, collision, road/trail
+   speed, capture radius, tow reach, projectile line-of-sight — these
+   are not implementation details in a spatial tactics game, they are
+   GAME DESIGN CHANGES, and they invalidate old balance data.
+
 ## 4. Known accepted residues
 
 - **The mirror harness was asymmetric, and so was the coordinate

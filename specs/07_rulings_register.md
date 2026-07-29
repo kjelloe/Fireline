@@ -215,6 +215,38 @@ at all (18C, below).
 - Batch PC runs sweeps via agent-mail; results return as CSV mail;
   worker self-updates via the `update` job.
 
+## Designer rulings, 2026-07-30 (the four decisions)
+
+- **Faction band: target 52/48, tolerate 54/46, 57-62% is too high.**
+  Explicit reasoning to keep: in a team objective game a 60% faction
+  becomes the CORRECT faction, not the different one. The 54/46
+  tolerance is CONDITIONAL on the stronger faction varying by map —
+  ours currently leads on all three, so we hold to 52/48.
+- **Lever: conservative Skimmer MOBILITY first (trail speed), NOT the
+  capture-speed redesign.** Capture speed is a faction-identity change,
+  not a balance knob: it would make the Outliers better at both halves
+  of objective play (reaching the point AND taking it), which compounds
+  rather than adds. Banked structural variants for later, all
+  CONDITIONAL rather than raw: Skimmer neutralises faster but does not
+  complete captures; captures faster only when uncontested; grants
+  capture speed to nearby infantry; or gains capture speed and loses
+  durability. Restore the baseline first.
+- **War length: target 20-22 minutes**, not 17-18 and not back to 25.
+  Raise the ticket pool modestly (test 330 / 350 / 375). Judge it on
+  MEDIAN and quartiles, horn rate, comeback rate, lead changes,
+  recoveries and standard attempts — "did the extra minutes create
+  stories, or just delay the result?"
+- **Blackwood: identity VALID, suppressed recovery is a FAULT.** Fewer
+  rescues than other maps is correct; near-zero is not. Fix by selective
+  recovery corridors (narrow tow trails, logging roads, clearings at
+  wreck zones, risk/reward routes) — "do not turn Blackwood into
+  Frontier with trees". Diagnose WHY wars time out before opening
+  terrain.
+- **Rotation: promote blackwood after the retune; HOLD sawtooth for a
+  human playtest** despite excellent AI metrics, because narrow-gap maps
+  need human frustration testing specifically (constrained? predictable?
+  camp-prone? punishing for picking the wrong lane?).
+
 ## Open design questions from playtest 9
 
 - **FIELD HULL REPAIR — does it exist? (item 32, UNRULED, blocking half
