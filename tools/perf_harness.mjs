@@ -22,6 +22,7 @@ const SEED = Number(process.env.SEED ?? 2026);
 const DURATION = Number(process.env.DURATION ?? 30);
 const DRY_RUN = process.env.DRY_RUN === "1";
 const HEADED = process.env.HEADED === "1";
+const UNCAPPED = process.env.UNCAPPED === "1"; // measure headroom, not the monitor
 
 const THEATER = { mines: 24, drones: 8, downed: 4 };
 
@@ -109,6 +110,14 @@ async function main() {
     args: [
       "--ignore-gpu-blocklist", "--enable-gpu-rasterization", "--enable-gpu",
       `--use-angle=${process.env.ANGLE ?? "d3d11"}`,
+      // UNCAPPED=1 removes the vsync ceiling. Without it the first real
+      // 4070 run measured a flat 61/60/59 fps — a perfect score that
+      // proves only "faster than the monitor", and tells us NOTHING
+      // about headroom. The 2D-fallback fps floor (14D) needs headroom,
+      // not a vsync reading, so it needs this.
+      ...(process.env.UNCAPPED === "1"
+        ? ["--disable-frame-rate-limit", "--disable-gpu-vsync", "--max-gum-fps=1000"]
+        : []),
     ],
   });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
@@ -158,6 +167,7 @@ async function main() {
   const fps = samples.map((s) => s.fps).sort((a, b) => a - b);
   const pick = (q) => fps[Math.min(fps.length - 1, Math.floor(q * fps.length))];
   const summary = {
+    uncapped: UNCAPPED,
     gl, seed: SEED, seconds: DURATION, scene: sceneCounts,
     fpsMedian: pick(0.5), fpsP5: pick(0.05), fpsMin: fps[0], fpsMax: fps.at(-1),
     drawCallsLast: samples.at(-1)?.drawCalls, trianglesLast: samples.at(-1)?.triangles,

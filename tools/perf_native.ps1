@@ -26,6 +26,13 @@
   Measure headless instead of headed. Usually WRONG for GPU numbers -
   provided only for comparison against the WSL baseline.
 
+.PARAMETER Uncapped
+  Remove the vsync ceiling and measure HEADROOM. The first real 4070 run
+  returned a flat 61/60/59 fps, which proves only "faster than the
+  monitor" and says nothing about how much room is left. The 2D-fallback
+  fps floor needs headroom, so it needs this. Turn vsync off in the
+  driver too for a clean reading.
+
 .PARAMETER InstallDeps
   Run 'npm ci' and 'npx playwright install chromium' first.
 
@@ -43,6 +50,7 @@ param(
   [int]$Seed = 2026,
   [ValidateSet('d3d11', 'd3d9', 'gl')][string]$Angle = 'd3d11',
   [switch]$Headless,
+  [switch]$Uncapped,
   [switch]$InstallDeps
 )
 
@@ -100,8 +108,10 @@ $env:DURATION = "$Duration"
 $env:SEED     = "$Seed"
 $env:ANGLE    = $Angle
 $env:HEADED   = if ($Headless) { '0' } else { '1' }
+$env:UNCAPPED = if ($Uncapped) { '1' } else { '0' }
 
 $mode = if ($Headless) { 'HEADLESS (comparison only)' } else { 'HEADED on the real adapter' }
+if ($Uncapped) { $mode = "$mode, UNCAPPED (headroom)" }
 Write-Host "running perf harness - $mode, angle=$Angle, ${Duration}s, seed $Seed" -ForegroundColor Cyan
 Write-Host "a browser window will open and drive itself; leave it focused and do not minimise it." -ForegroundColor Yellow
 
@@ -142,6 +152,12 @@ if ($gl -match 'SwiftShader|llvmpipe|Software') {
   exit 2
 }
 Write-Host "GPU confirmed: $gl" -ForegroundColor Green
+if (-not $Uncapped -and $summary.fpsMedian -le 63) {
+  Write-Host ''
+  Write-Warning "That median looks VSYNC-CAPPED ($($summary.fpsMedian) fps)."
+  Write-Warning "It proves the GPU keeps up, but not by how much. For headroom:"
+  Write-Warning "  bash tools/perf_native.sh -Uncapped     (and turn vsync off in the driver)"
+}
 Write-Host "CSV: reports\sweeps\perf.csv   summary: $summaryPath   log: $log"
 
 # A stamped copy, so repeated runs do not overwrite each other.

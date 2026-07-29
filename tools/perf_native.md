@@ -34,6 +34,7 @@ instead of just naming the missing folder.)
 | `-Seed <n>` | 2026 | Measure a different war |
 | `-Angle d3d11\|d3d9\|gl` | d3d11 | If d3d11 misreports the adapter, try `gl` |
 | `-Headless` | off | ONLY to reproduce the bad WSL-style numbers for comparison |
+| `-Uncapped` | off | **Remove the vsync ceiling and measure HEADROOM.** Turn vsync off in the driver too |
 | `-InstallDeps` | off | First run on a machine |
 
 ## What it guarantees
@@ -76,6 +77,16 @@ a quote, which terminates the string early; the file then fails to parse
 with errors pointing at innocent words several lines away. This cost a
 debugging round on day one. `test/powershell_ascii.test.js` now fails the
 suite if any `.ps1` gains a non-ASCII character.
+
+## Vsync: why the first numbers were not the whole story
+
+The first real 4070 run returned a flat **61 / 60 / 59 fps** with 265
+draw calls and 223k triangles. That is a pass, but it is a VSYNC
+READING: it proves the GPU is never troubled and says nothing about how
+much room is left. Run `-Uncapped` (and turn vsync off in the driver or
+raise the refresh rate) to get headroom. A capped run now warns about
+this on the way out, and the summary records `uncapped: true|false` so a
+capped reading can never be quoted as headroom later.
 
 ## What to do with the numbers
 
