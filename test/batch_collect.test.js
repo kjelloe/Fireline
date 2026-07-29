@@ -42,3 +42,27 @@ test("batch_collect extracts csv mails, ignores junk, defuses traversal", () => 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("batch_collect shelves a differing result as .prev instead of clobbering it", () => {
+  // A re-run battery reuses its label; the old result is a comparator,
+  // not garbage. (The blackwood before-CSV died this way.)
+  const dir = mkdtempSync(path.join(tmpdir(), "mf-collect-"));
+  try {
+    const store = path.join(dir, "messages.jsonl");
+    const out = path.join(dir, "sweeps");
+    const tool = new URL("../tools/batch_collect.py", import.meta.url).pathname;
+    writeFileSync(store, JSON.stringify(
+      { id: 1, from: "batch-pc", to: "dev", text: "#file:map_x.csv\nseed,winner\n1,0", tag: "csv" }));
+    execFileSync("python3", [tool, store, out]);
+    writeFileSync(store, JSON.stringify(
+      { id: 2, from: "batch-pc", to: "dev", text: "#file:map_x.csv\nseed,winner\n1,1", tag: "csv" }));
+    execFileSync("python3", [tool, store, out]);
+    assert.equal(readFileSync(path.join(out, "map_x.csv"), "utf8"), "seed,winner\n1,1\n", "newest wins the name");
+    assert.equal(readFileSync(path.join(out, "map_x.csv.prev"), "utf8"), "seed,winner\n1,0\n", "old result shelved");
+    // Same content again: no shelving churn.
+    execFileSync("python3", [tool, store, out]);
+    assert.equal(readFileSync(path.join(out, "map_x.csv.prev"), "utf8"), "seed,winner\n1,0\n", "identical re-collect keeps the shelf");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

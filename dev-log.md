@@ -3262,3 +3262,26 @@ ticks): mixed winners, tickets x2 / horn x2 (one 55-55 draw) /
 standard x1 — consistent with the sweep's 27% horn. Same casebook
 lesson, third instance: when two runs agree suspiciously, suspect the
 instrument before celebrating the consistency.
+
+## batteries in: pool ladder complete-ish, blackwood corridors verified at scale
+
+Pool (n=300 each, frontier, live config): 300 = 19.7 min / 7% horn,
+330 = 22.2 / 10%, 350 = 23.1 / 15%, 375 = 24.6 / 20%. Story metrics
+are FLAT across the whole ladder — comebacks 31%, lead changes 2.7 at
+every size. The pool buys duration and horn risk and nothing else;
+that goes to the designer verbatim, because "longer so stories can
+happen" is not what the instrument shows. Neither 300 (0.3 under the
+window) nor 330 (0.2 over) lands clean, so pool_315 is queued to fill
+the gap; whatever it reads decides.
+
+Blackwood corridors at n=300 x4 (uniques off pair + live-config pair):
+undecided nearly halved vs the same-morning pre-corridor battery
+(28 -> 8-16), restored/war ~1.7 at scale, tows/war ~2.4-2.9 (frontier
+~9 — character kept). Fairness: the lean FLIPS with the mirror
+(A 46.7% normal / 52.1% mirrored, live config) — side-linked residue
+within tolerance, no faction conviction. Corridors verdict: WORKING.
+
+Collector fix: a re-collect used to overwrite same-label CSVs — the
+pre-corridor map_blackwood.csv died exactly that way tonight, taking
+the tow-column comparator with it. batch_collect now shelves a
+differing old result as <name>.prev (tested). Suite 623/623.

@@ -37,8 +37,17 @@ for line in open(LOG):
     if not name.endswith((".csv", ".json")):
         continue
     path = os.path.join(OUT, name)
+    payload = data if data.endswith("\n") else data + "\n"
+    # A re-run battery reuses its label, so a fresh collect used to
+    # OVERWRITE the previous result — which is how a before/after
+    # comparator got destroyed the day the blackwood corridors landed.
+    # Different content shelves the old file as <name>.prev instead.
+    if os.path.exists(path):
+        with open(path) as old:
+            if old.read() != payload:
+                os.replace(path, path + ".prev")
     with open(path, "w") as f:
-        f.write(data if data.endswith("\n") else data + "\n")
+        f.write(payload)
     written.append(name)
     if m.get("id") is not None and len(sys.argv) <= 1:  # never ack a test store
         hashes.append(f"#{m['id']}")  # hashes are derived, never stored; ack by id
