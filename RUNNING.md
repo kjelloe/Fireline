@@ -16,7 +16,25 @@ npm install
 npm start             # http://localhost:8080 — join an active war
 ```
 
-Environment: `PORT` (default 8080), `MAP_SEED` (default 2026).
+### Choosing the map (prompt 76)
+
+```bash
+npm run pick                     # interactive: lists the maps, pick a number
+npm run start:blackwood          # or straight to one
+npm run start:frontier | start:riverline | start:sawtooth
+npm start -- --map blackwood     # the general form
+npm run maps                     # what is registered
+npm start -- --help              # every option
+```
+
+CLI beats env beats default, so `MAP=riverline npm start -- --map sawtooth`
+starts sawtooth. A mistyped map refuses to start and suggests the closest
+real one (`--map blackwod` -> "did you mean: blackwood?") rather than
+quietly serving the default. The startup banner always names the map you
+actually got.
+
+Environment (still honoured): `PORT` (default 8080), `MAP_SEED` (default
+2026), `MAP`, `RULES`, `AI_DIFFICULTY`.
 Open two browser windows and join opposite teams for a local skirmish.
 Controls: pick team → "Next asset" to take an asset → click ground to move,
 click a visible enemy to fire. Return to base to resupply.
@@ -202,8 +220,8 @@ docker run -p 8080:8080 -e MAP_SEED=2026 more-firepower
 ```bash
 PORT=8080 MAP_SEED=2026 AI_DIFFICULTY=1 npm start   # defaults shown
 MAP=riverline npm start                              # second profile (experimental)
-MAP=blackwood npm start                              # third profile (18A, experimental)
-MAP=sawtooth npm start                               # fourth profile (18B, experimental)
+npm run start:blackwood                              # third profile (18A, experimental)
+npm run start:sawtooth                               # fourth profile (18B, experimental)
 RULES=easy|normal|hard npm start                     # 13G difficulty presets
 # Global discovery (colocation: run tools/master.js on the same VM):
 node tools/master.js --port 8972 &

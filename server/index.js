@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { WebSocketServer } from "ws";
 import { GameServer } from "../engine/server.js";
-import { rulesForPreset } from "../engine/state.js";
+import { mapProfileNames, rulesForPreset } from "../engine/state.js";
 import { NetworkTransport } from "../engine/transport.js";
 import { PHASE_OVER } from "../engine/victory.js";
 import { mix32 } from "../shared/prng.js";
@@ -236,13 +236,94 @@ export function createAppServer(options = {}) {
   };
 }
 
+// prompt-76: choosing the map should not require remembering env-var
+// syntax. Precedence: --map wins over MAP=, which wins over the default.
+// Unknown names fail with the REAL registry listed, not a stale copy.
+function parseCliArgs(argv) {
+  const out = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    const eq = a.indexOf("=");
+    const key = eq === -1 ? a : a.slice(0, eq);
+    const inlineValue = eq === -1 ? null : a.slice(eq + 1);
+    const take = () => (inlineValue !== null ? inlineValue : argv[++i]);
+    switch (key) {
+      case "--map": case "-m": out.map = take(); break;
+      case "--seed": out.seed = take(); break;
+      case "--port": case "-p": out.port = take(); break;
+      case "--rules": out.rules = take(); break;
+      case "--difficulty": out.difficulty = take(); break;
+      case "--list-maps": out.listMaps = true; break;
+      case "--help": case "-h": out.help = true; break;
+      default:
+        if (a.startsWith("-")) out.unknown = a;
+    }
+  }
+  return out;
+}
+
+function resolveMapProfile(requested) {
+  const names = mapProfileNames();
+  if (!requested) return names[0];
+  if (names.includes(requested)) return requested;
+  // A near-miss is the common case, and it comes in two flavours: a
+  // PREFIX ("frontier" for frontier_corridor) and a TYPO ("blackwod").
+  // Prefix matching alone misses the typo, which is the one people
+  // actually make, so measure edit distance too.
+  const editDistance = (a, b) => {
+    const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+    for (let i = 1; i <= a.length; i++) {
+      let diag = prev[0];
+      prev[0] = i;
+      for (let j = 1; j <= b.length; j++) {
+        const tmp = prev[j];
+        prev[j] = Math.min(
+          prev[j] + 1,            // deletion
+          prev[j - 1] + 1,        // insertion
+          diag + (a[i - 1] === b[j - 1] ? 0 : 1) // substitution
+        );
+        diag = tmp;
+      }
+    }
+    return prev[b.length];
+  };
+  const near = names.filter((n) =>
+    n.startsWith(requested) || n.includes(requested) || editDistance(n, requested) <= 3);
+  const hint = near.length ? `\n  did you mean: ${near.join(", ")}?` : "";
+  console.error(`unknown map: ${requested}\n  available: ${names.join(", ")}${hint}`);
+  process.exit(2);
+}
+
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1]);
 if (isMain) {
-  const port = Number(process.env.PORT ?? 8080);
-  const mapSeed = Number(process.env.MAP_SEED ?? 2026);
-  const aiDifficulty = Number(process.env.AI_DIFFICULTY ?? 1);
-  const mapProfile = process.env.MAP ?? "frontier_corridor"; // 11M
-  const rules = rulesForPreset(process.env.RULES ?? "normal"); // 13G presets
+  const cli = parseCliArgs(process.argv.slice(2));
+  if (cli.help) {
+    console.log(`Fireline Command server
+
+  npm start                          # default map (${mapProfileNames()[0]})
+  npm start -- --map blackwood       # pick a map
+  npm run start:blackwood            # same thing, less typing
+  npm run maps                       # list the maps
+  npm run pick                       # interactive picker
+
+options: --map|-m <profile>  --seed <n>  --port|-p <n>  --rules <preset>
+         --difficulty <0|1|2>  --list-maps  --help
+env (still honoured, CLI wins): MAP, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
+    process.exit(0);
+  }
+  if (cli.listMaps) {
+    console.log(mapProfileNames().join("\n"));
+    process.exit(0);
+  }
+  if (cli.unknown) {
+    console.error(`unknown option: ${cli.unknown} (try --help)`);
+    process.exit(2);
+  }
+  const port = Number(cli.port ?? process.env.PORT ?? 8080);
+  const mapSeed = Number(cli.seed ?? process.env.MAP_SEED ?? 2026);
+  const aiDifficulty = Number(cli.difficulty ?? process.env.AI_DIFFICULTY ?? 1);
+  const mapProfile = resolveMapProfile(cli.map ?? process.env.MAP ?? null); // 11M
+  const rules = rulesForPreset(cli.rules ?? process.env.RULES ?? "normal"); // 13G presets
   const appServer = createAppServer({
     mapSeed, aiDifficulty, mapProfile, rules,
     // Discovery (colocation ruling): MASTER_URL points at the index,
@@ -253,7 +334,8 @@ if (isMain) {
     publicName: process.env.PUBLIC_NAME || null,
   });
   appServer.start(port).then((addr) => {
-    console.log(`Fireline Command server on http://localhost:${addr.port} (mapSeed ${mapSeed}, aiDifficulty ${aiDifficulty}, rules ${process.env.RULES ?? "normal"})`);
+    console.log(`Fireline Command server on http://localhost:${addr.port}`);
+    console.log(`  map ${mapProfile} · seed ${mapSeed} · AI ${aiDifficulty} · rules ${cli.rules ?? process.env.RULES ?? "normal"}`);
   });
   for (const signal of ["SIGTERM", "SIGINT"]) {
     process.once(signal, () => {

@@ -10,6 +10,12 @@
   },
   "scripts": {
     "start": "node server/index.js",
+    "start:frontier": "node server/index.js --map frontier_corridor",
+    "start:riverline": "node server/index.js --map riverline",
+    "start:blackwood": "node server/index.js --map blackwood",
+    "start:sawtooth": "node server/index.js --map sawtooth",
+    "pick": "node tools/pick_map.mjs",
+    "maps": "node server/index.js --list-maps",
     "sim1f": "node test/headless/sim1f.js",
     "sim1g": "node test/headless/sim1g.js",
     "sim2a": "node test/headless/sim2a.js",

@@ -2659,3 +2659,23 @@ undecided, tickets 12/16, avg 14270 ticks — tempo unchanged from the
 pre-doctrine run (tickets 8/12, avg 14080).
 
 Suite 561/561.
+
+## map selector (2026-07-29, prompt 76)
+
+`MAP=blackwood npm start` worked but nobody remembers it. The server now
+takes `--map` (and --seed/--port/--rules/--difficulty/--list-maps/--help),
+with per-map npm scripts, `npm run maps`, and `npm run pick` for an
+interactive list.
+
+Everything reads the REAL registry via a new `mapProfileNames()` export,
+so registering a profile makes it appear in the picker, the listing and
+the error message at once — no hand-copied list to rot. A test asserts
+that, plus that every `start:<map>` script names a registered profile.
+
+Two details worth keeping: a mistyped MAP exits 2 rather than quietly
+serving the default (so a playtest can never be run on the wrong map by
+accident), and the near-miss suggester uses edit distance, not just
+prefix matching — "blackwod" is the typo people actually make and prefix
+matching misses it entirely.
+
+Suite 567/567.

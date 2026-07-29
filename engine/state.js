@@ -32,7 +32,7 @@ export function isSuppressed(asset) {
 export const OPERATOR_COUNT = 32;
 export const TEAM_COUNT = 2;
 
-const MAP_PROFILES = {
+export const MAP_PROFILES = {
   frontier_corridor: generateFrontierCorridor,
   riverline: generateRiverline, // 11M
   blackwood: generateBlackwood, // 18A
@@ -262,6 +262,12 @@ export const RULE_PRESETS = Object.freeze({
   normal: DEFAULT_RULES,
   hard: Object.freeze({ mpgMinOperable: 4, mpgTicks: 1500, ticketPool: 250, ticketBleedTicks: 20, ticketMajority: 5 }),
 });
+
+// 13E-selector: the CLI and any menu must validate against the REAL
+// registry, never a hand-copied list that silently rots.
+export function mapProfileNames() {
+  return Object.keys(MAP_PROFILES);
+}
 
 export function rulesForPreset(name) {
   const preset = RULE_PRESETS[name];
