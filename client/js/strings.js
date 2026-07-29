@@ -186,6 +186,11 @@ export const CATALOGS = {
     // B5 auto-callouts
     "callout.contact": "CONTACT — {chassis}",
     "callout.contact_dir": "CONTACT — {chassis} to the {dir}",
+    // B6 supply drop
+    "task.secure_drop": "SECURE THE SUPPLY DROP",
+    "ev.drop_incoming": "SUPPLY DROP INCOMING — first team to hold it takes the packet.",
+    "ev.drop_secured_us": "Supply drop secured — tickets recovered.",
+    "ev.drop_secured_them": "The enemy took the supply drop.",
     "status.no_fuel": "OUT OF FUEL — a truck can refuel you (V beside you)",
     "status.low_fuel": "Fuel low ({n})",
     "status.no_ammo": "OUT OF AMMO — resupply at base or from a truck",
@@ -478,6 +483,11 @@ export const CATALOGS = {
     // B5 auto-callouts
     "callout.contact": "KONTAKT — {chassis}",
     "callout.contact_dir": "KONTAKT — {chassis} i {dir}",
+    // B6 supply drop
+    "task.secure_drop": "SIKRE FORSYNINGSSLIPPET",
+    "ev.drop_incoming": "FORSYNINGSSLIPP PÅ VEI — første lag som holder det tar pakken.",
+    "ev.drop_secured_us": "Forsyningsslipp sikret — billetter gjenvunnet.",
+    "ev.drop_secured_them": "Fienden tok forsyningsslippet.",
     "status.no_fuel": "TOM FOR DRIVSTOFF — en lastebil kan fylle deg (V ved siden av)",
     "status.low_fuel": "Lite drivstoff ({n})",
     "status.no_ammo": "TOM FOR AMMO — etterforsyn i basen eller fra en lastebil",

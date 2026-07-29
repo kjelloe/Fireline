@@ -85,6 +85,10 @@ export function hashState(state) {
   for (const b of (state.bridges ?? [])) { // added 13E — empty = no bytes
     w.writeI32LE(b.id); w.writeI32LE(b.hp);
   }
+  for (const d of (state.drops ?? [])) { // added B6 (supply drop schedule + hold)
+    w.writeI32LE(d.id); w.writeI32LE(d.cellY); w.writeI32LE(d.activateTick);
+    w.writeI32LE(d.holdTicks); w.writeI32LE(d.heldBy); w.writeI32LE(d.securedBy);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

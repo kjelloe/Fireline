@@ -5,6 +5,18 @@
 
 export { FOG_RADIUS_CELLS } from "./los.js";
 import { computeVisible } from "./los.js";
+import { dropActive } from "./drops.js";
+
+// B6: the supply drop is ANNOUNCED — both teams see it the moment it
+// activates, fog or not (an unannounced windfall is just luck).
+function projectDrops(state) {
+  return (state.drops ?? [])
+    .filter((d) => dropActive(d, state.tick))
+    .map((d) => ({
+      id: d.id, cellX: state.map.width >> 1, cellY: d.cellY,
+      holdTicks: d.holdTicks, heldBy: d.heldBy,
+    }));
+}
 
 // 10A: spectators see the whole war — every asset with full telemetry,
 // both teams' downed operators, every mine, all events (pings included).
@@ -29,6 +41,7 @@ export function buildSpectatorView(state) {
     winner: state.winner,
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H: public pacing info
+    drops: projectDrops(state), // B6: announced to everyone, no fog
     events: state.events,
     mapCells: state.map.cells,
     friendlyAssets,
@@ -116,6 +129,7 @@ export function buildView(state, team) {
     winner: state.winner,
     teamScores: [...state.teamScores],
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H
+    drops: projectDrops(state), // B6: announced to everyone, no fog
     // 10C: events carrying toTeam are that team's business only (pings).
     events: state.events.filter((e) => e.toTeam === undefined || e.toTeam === team),
     mapCells: state.map.cells,

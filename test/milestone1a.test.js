@@ -92,6 +92,10 @@ function stateHash(s) {
   for (const b of (s.bridges ?? [])) { // added 13E — empty on frontier, so no repin
     w.writeI32LE(b.id); w.writeI32LE(b.hp);
   }
+  for (const d of (s.drops ?? [])) { // added B6 (supply drop schedule + hold)
+    w.writeI32LE(d.id); w.writeI32LE(d.cellY); w.writeI32LE(d.activateTick);
+    w.writeI32LE(d.holdTicks); w.writeI32LE(d.heldBy); w.writeI32LE(d.securedBy);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

@@ -77,6 +77,9 @@ export function describeEvent(e, myTeam) {
     case "site_captured":
       return t(e.team === myTeam ? "ev.site_captured_us" : "ev.site_captured_them", { id: e.siteId });
     case "asset_disabled": return t("ev.asset_disabled", { id: e.assetId });
+    case "supply_drop_incoming": return t("ev.drop_incoming");
+    case "supply_drop_secured":
+      return t(e.byTeam === myTeam ? "ev.drop_secured_us" : "ev.drop_secured_them");
     case "mine_deployed":
       return e.team === myTeam ? t("ev.mine_deployed", { n: e.minesLeft }) : null;
     case "mine_marked": return t("ev.mine_marked");

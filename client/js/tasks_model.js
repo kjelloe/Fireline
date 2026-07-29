@@ -22,6 +22,7 @@ function cellOf(worldX) {
 const TASK_VALUE = Object.freeze({
   stop_thief: 25,       // denies the enemy the biggest score in the game
   secure_standard: 25,  // our own standard run, same stake
+  secure_drop: 15,      // B6: a one-shot ticket packet with a shared clock
   towing_now: 12,       // a tow already under way beats starting another
   escort_carrier: 11,   // protects the 25-point run without scoring itself
   rescue: 10,           // RECOG_RESCUE
@@ -54,6 +55,16 @@ export function tasksFor(view, myOperatorId = null) {
       kind: "secure_standard", priority: 1,
       label: t("task.secure_standard"),
       cellX: cellOf(own.x), cellY: cellOf(own.y), ping: "recovery_in_progress",
+    });
+  }
+  // B6: a live supply drop is EVERYONE's card — first team on it for
+  // 10 s takes the packet; the card dies when it is secured (the view
+  // stops projecting spent drops).
+  for (const drop of view?.drops ?? []) {
+    tasks.push({
+      kind: "secure_drop", priority: 1,
+      label: t("task.secure_drop"),
+      cellX: drop.cellX, cellY: drop.cellY, ping: "rally",
     });
   }
   if (enemy && enemy.status === 1 && enemy.carrierAssetId !== -1) {

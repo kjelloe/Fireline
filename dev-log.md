@@ -3393,3 +3393,35 @@ monologue. Client-only atop the ping system — no new commands, no
 hashed state, no repin. Suite 633/633 double-run, smoke + acceptance
 green. Touch keeps its current ping path (wheel is pointer-first;
 mobile long-press wheel noted for the touch backlog).
+
+## slice-B6: the neutral supply drop (fixture v46)
+
+Mid-war, on a seed-scheduled tick (3000-9000), a supply drop activates
+on the map's EXACT mirror line — world x = W*256/2, the one x that
+reflects onto itself, so neither side is closer by construction (the
+row is seeded; the mirror is x-only, so any row is neutral). First
+team EXCLUSIVELY in the 3-cell ring for 10 s takes the packet: +15
+tickets (capped at the session pool) and RECOG_DROP 5 to each crew on
+the spot (points only, no deed column — a windfall, not a category of
+service). Contested or empty RESETS the hold; one shot.
+
+NOT a site, deliberately — the 13E lesson: a mid-war site would move
+the ticket-majority denominator and project supply/fog. Drops are
+their own hashed array (schedule + hold state; repin v46 — activation
+is always past the 14-step script, events verbatim). Announced to both
+teams fog-or-not (view.drops); mission card SECURE THE SUPPLY DROP at
+value 15 (above a tow, below a standard); AI sends ONE designated
+securer per team (the capture-seek pattern, +8 cells leash because the
+drop is announced map-wide).
+
+FOUND ON THE WAY: copyState never cloned bridges — bridge.hp writes in
+place, so all historical states shared span objects. THIRD instance of
+the nested-aliasing class (deeds, waypoints, now bridges), latent
+since 13E because only riverline has spans. Fixed in the same clone.
+
+Probe: all 5 gate seeds fire and SECURE the drop (A x2, B x3, 170-700
+ticks after activation — a real race). 30+30 mirrored: 50.0% flip
+rate, 55% A aggregate = n=60 noise around the measured 52.9% baseline
+(never convict on 30). Gate horizon RAISED 12000->16000: pool-315
+medians outgrew the old cap and half the gate would read "running".
+Suite 638/638 double-run, smoke + acceptance green.

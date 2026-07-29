@@ -29,6 +29,9 @@ import {
   BRIDGE_HP_MAX, bridgeSpans, bridgeIntact, adjacentToBridge, applyBridgeTerrain,
 } from "./bridges.js";
 import {
+  DROP_HOLD_TICKS, DROP_RADIUS_CELLS, DROP_TICKET_PACKET, dropActive, dropWorld,
+} from "./drops.js";
+import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
 } from "./downed.js";
@@ -90,6 +93,9 @@ export const DEED_ESCORT = 7; // Q26 ruling: escorts get seen too
 // work, and it can fan out to several hulls at once.
 export const RECOG_ESCORT = 4;
 export const ESCORT_RADIUS_CELLS = 6;
+// B6: securing the neutral drop pays each crew on the spot. Points
+// only, no deed column — it is a windfall, not a category of service.
+export const RECOG_DROP = 5;
 
 function awardOperator(next, operatorId, points, deed = -1) {
   if (operatorId === -1 || operatorId === undefined) return;
@@ -151,6 +157,11 @@ function copyState(state) {
     standards: state.standards.map((st) => ({ ...st })),
     downed: state.downed.map((d) => ({ ...d })),
     tickets: state.tickets ? [...state.tickets] : state.tickets, // 13H
+    drops: (state.drops ?? []).map((d) => ({ ...d })), // B6
+    // bridges were the THIRD instance of the shared-nested-object trap
+    // (bridge.hp writes in place) — found while adding drops, latent
+    // since 13E because only riverline has spans.
+    bridges: (state.bridges ?? []).map((b) => ({ ...b })),
     rules: { ...state.rules }, // 13F
     manufacture: [...state.manufacture],
     mines: state.mines.map((m) => ({ ...m })),
@@ -1322,6 +1333,52 @@ function applyAdvanceTick(next) {
         }
         next.events.push({ type: "site_captured", siteId: site.id, team });
       }
+    }
+  }
+  // B6 supply-drop pass: once live, EXCLUSIVE presence in the ring
+  // builds the hold; contested or empty RESETS it (a crate is either
+  // yours or it is not — defending the ring is the counterplay);
+  // HOLD_TICKS alone wins the packet, once.
+  for (const drop of next.drops ?? []) {
+    if (!dropActive(drop, next.tick)) continue;
+    if (next.tick === drop.activateTick) {
+      next.events.push({
+        type: "supply_drop_incoming", dropId: drop.id,
+        cellX: next.map.width >> 1, cellY: drop.cellY,
+      });
+    }
+    const centre = dropWorld(drop, next.map.width);
+    const present = [false, false];
+    for (const a of next.assets) {
+      if (a.operatorId === -1) continue;
+      if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+      if (Math.max(absI32(a.x - centre.x), absI32(a.y - centre.y)) >
+          DROP_RADIUS_CELLS * 256) continue;
+      present[a.team] = true;
+    }
+    const holder = present[0] && !present[1] ? 0 : present[1] && !present[0] ? 1 : -1;
+    if (holder === -1) {
+      drop.heldBy = -1;
+      drop.holdTicks = 0;
+      continue;
+    }
+    if (drop.heldBy !== holder) {
+      drop.heldBy = holder;
+      drop.holdTicks = 0;
+    }
+    drop.holdTicks += 1;
+    if (drop.holdTicks >= DROP_HOLD_TICKS) {
+      drop.securedBy = holder;
+      const ceiling = next.rules?.ticketPool ?? DEFAULT_RULES.ticketPool;
+      next.tickets[holder] = Math.min(ceiling, next.tickets[holder] + DROP_TICKET_PACKET);
+      for (const a of next.assets) { // the crews on the spot get seen
+        if (a.team !== holder || a.operatorId === -1) continue;
+        if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+        if (Math.max(absI32(a.x - centre.x), absI32(a.y - centre.y)) >
+            DROP_RADIUS_CELLS * 256) continue;
+        awardOperator(next, a.operatorId, RECOG_DROP);
+      }
+      next.events.push({ type: "supply_drop_secured", dropId: drop.id, byTeam: holder });
     }
   }
   // Standard pass (8B): pickups, returns, then scoring — stable asset order.

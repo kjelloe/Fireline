@@ -425,6 +425,37 @@ export class AIRegency {
       }
     }
 
+    // B6 drop-securer: while the neutral supply drop is live, ONE
+    // designated securer per team (the capture-seek pattern — everyone
+    // diverting is how wars froze at 0-0). Wider leash than a relay:
+    // the drop is announced map-wide and worth crossing for.
+    const securerFor = new Map(); // team -> operatorId
+    for (const drop of state.drops ?? []) {
+      if (drop.securedBy !== -1 || state.tick < drop.activateTick) continue;
+      const dropX = state.map.width >> 1;
+      for (const team of [0, 1]) {
+        let bestOp = -1;
+        let bestDist = Infinity;
+        for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+          const op = state.operators[operatorId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
+          const st = getUnitStats(a.type);
+          if (!st.canCapture || st.deployable) continue; // same bench as flags
+          const dist = Math.abs(dropX - worldToCellFloor(a.x)) +
+                       Math.abs(drop.cellY - worldToCellFloor(a.y));
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestOp = operatorId;
+          }
+        }
+        if (bestOp !== -1 && bestDist <= CAPTURE_SEEK_CELLS + 8) {
+          securerFor.set(team, bestOp);
+        }
+      }
+    }
+
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when
     // the raider wants to launch but the window is closed, the two
     // nearest idle-line combat seats (not capturers, not the logistics
@@ -975,6 +1006,13 @@ export class AIRegency {
         }
       }
 
+      // B6: the designated drop-securer rides for the crate before any
+      // relay errand — the packet is one-shot and the window is shared.
+      if (!target && securerFor.get(asset.team) === operatorId) {
+        const liveDrop = (state.drops ?? []).find(
+          (d) => d.securedBy === -1 && state.tick >= d.activateTick);
+        if (liveDrop) target = [state.map.width >> 1, liveDrop.cellY];
+      }
       // 11C capture-seek (11B consequence): the countdown killed drive-by
       // captures. The designated capturer diverts to its relay and stands
       // on it (standing on the target cell issues no move — the dwell IS

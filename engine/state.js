@@ -9,6 +9,7 @@ import { generateRiverline } from "./riverline.js";
 import { generateBlackwood } from "./blackwood.js";
 import { generateSawtooth } from "./sawtooth.js";
 import { createBridges } from "./bridges.js";
+import { createDrops } from "./drops.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -350,6 +351,9 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     // the hash (and the 1A fixture) is untouched wherever bridges do not
     // exist — the same inertness the wall rule has.
     bridges: createBridges(typeof mapArg === "string" ? mapArg : "frontier_corridor"),
+    // B6: the seed-scheduled neutral supply drop (own array, NOT a site
+    // — a mid-war site would move the majority denominator; 13E lesson).
+    drops: createDrops(mapSeed >>> 0),
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,
