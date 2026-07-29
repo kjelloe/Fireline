@@ -153,6 +153,23 @@ npm start                              # host machine
 - Waypoints (item 34): SHIFT-click queues up to 8 legs; a plain click
   replaces the whole route. On touch, long-press queues. The unit walks
   the route unattended.
+- Comm wheel (B5): HOLD Q for the full ping wheel — release over an
+  option to send it at your cursor; centre = cancel. The 1/2/3 keys
+  keep their quick top-three. The feed also calls out fresh contacts:
+  "CONTACT — artillery to the north-west".
+- Supply drop (B6): mid-war a neutral supply drop lands dead-centre —
+  first team to hold its ring alone for 10 s recovers 15 tickets.
+  Everyone gets the mission card; expect a fight.
+- Salvage: every wreck your trucks bring home banks a salvage point —
+  each point shaves 10 s off your team's next rebuild wave. Your tows
+  literally buy the counterattack.
+- THE LAST CONVOY: when your team is nearly out, the war's end flips
+  to one last mission — get the quota of hulls HOME before the pool
+  empties. The bleed slows while the convoy runs; drivers who make it
+  earn honors. (The enemy is told to hunt you.)
+- End-screen honors: BEST RAIDER / RECOVERY / CAPTURER / ESCORT /
+  HERO OF THE CONVOY / FIELD MECHANIC — category awards from what you
+  actually did, beside the top-3 total.
 - Death recap (B7): when your vehicle is destroyed, the down banner
   names the killer — "DISABLED — artillery from the north-west", a mine
   under your tracks, the drone, or a satchel charge — so a new player
