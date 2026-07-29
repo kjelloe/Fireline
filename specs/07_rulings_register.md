@@ -25,6 +25,13 @@ at all (18C, below).
 
 ## Core fantasy & objective (prompts 16–19 era)
 
+- **Mission cards rank by VALUE, then locality (prompt 79)**: the card
+  strip sorts by the Recognition value of the deed, then by distance, so
+  the most valuable work surfaces and among equals the nearest one does.
+  Cards that are not themselves scored deeds take the value of what they
+  PROTECT (stop_thief / secure_standard = 25, the capture they deny or
+  defend). Keeping the two tables aligned is deliberate: a card ranked
+  high but scored low teaches the wrong lesson.
 - **Rescue outranks kills** — Recognition scoring: tow 8, rescue 10,
   standard return 10, standard capture 25, relay 10, kill 5. Awards go
   to the operator at the verified reducer fact; automatic outcomes

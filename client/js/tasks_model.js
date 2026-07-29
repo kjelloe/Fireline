@@ -14,6 +14,26 @@ function cellOf(worldX) {
 }
 
 // Priority: what loses the war fastest comes first (spec 02 §15 urgency).
+// Value of each card in Recognition points — the same table the reducer
+// awards from (tow 8, rescue 10, standard return 10, capture 25, relay
+// 10, kill 5). Cards that are not themselves a scored deed are placed by
+// what they PROTECT: stopping a thief denies a 25-point capture, so it
+// leads.
+const TASK_VALUE = Object.freeze({
+  stop_thief: 25,       // denies the enemy the biggest score in the game
+  secure_standard: 25,  // our own standard run, same stake
+  towing_now: 12,       // a tow already under way beats starting another
+  escort_carrier: 11,   // protects the 25-point run without scoring itself
+  rescue: 10,           // RECOG_RESCUE
+  defend_relay: 10,     // RECOG_RELAY
+  recover: 8,           // RECOG_TOW
+  repair_site: 8,       // rebuilding infrastructure, tow-class effort
+  resupply: 4,          // keeps someone else scoring; below every rescue
+});
+function taskValue(task) {
+  return TASK_VALUE[task.kind] ?? 0;
+}
+
 export function tasksFor(view, myOperatorId = null) {
   const tasks = [];
   const myTeam = view?.team;
@@ -119,7 +139,15 @@ export function tasksFor(view, myOperatorId = null) {
     if (!held || dist(task) < dist(held)) byKind.set(task.kind, task);
   }
   const out = [...byKind.values()];
-  out.sort((x, y) => x.priority - y.priority ||
+  // Prompt-79 ruling: rank by VALUE TO THE TEAM first, then by locality —
+  // the most important work surfaces, and among equals the nearest one
+  // does. Value comes from the Recognition table, so the to-do list and
+  // the scoreboard agree; a card ranked high but scored low would teach
+  // the wrong lesson. Cell order breaks remaining ties so two clients can
+  // never disagree about card order.
+  out.sort((x, y) =>
+    taskValue(y) - taskValue(x) ||
+    dist(x) - dist(y) ||
     x.cellX - y.cellX || x.cellY - y.cellY);
   return out.map((t, i) => ({
     ...t, id: `${t.kind}:${t.cellX},${t.cellY}`, rank: i, distance: dist(t),

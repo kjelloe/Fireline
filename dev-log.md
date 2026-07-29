@@ -2740,3 +2740,19 @@ the distance in cells, drawn from the same `weaponRangeOverlay` model as
 the targeting ring, so the tip and the ring cannot disagree.
 
 Suite 575/575, smoke clean.
+
+## mission card ranking (2026-07-29, prompt 79)
+
+Cards used to sort by a hand-assigned `priority` field, which had drifted
+from what the deeds are actually WORTH. They now sort by the Recognition
+value of the deed, then by locality, then by cell (determinism: two
+clients must never disagree about card order).
+
+The alignment is the point — the to-do list and the scoreboard now say
+the same thing. Cards that are not themselves scored deeds take the
+value of what they protect: stop_thief and secure_standard sit at 25
+because they deny or defend a capture. A test asserts the RECOG_*
+constants directly, so retuning Recognition FAILS the suite and forces
+the card values to be retuned with it.
+
+Suite 579/579.
