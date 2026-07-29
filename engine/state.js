@@ -254,7 +254,13 @@ export const DEFAULT_RULES = Object.freeze({
   mpgTicks: 900,     // ...and rebuilds on this cadence
   // 13H hybrid ticket bleed (prompt-51): relay majority drains the enemy
   // pool 1 ticket per bleed cadence; empty pool = loss; horn backstop.
-  ticketPool: 300,
+  // 315 per the 2026-07-31 pool ladder (n=300 per rung, frontier, live
+  // config): median 21.2 min — centre of the designer's 20-22 window —
+  // 9% horn, 32% comebacks. 300 read 19.7 min (under), 330 read 22.2
+  // (over); story metrics were FLAT across the whole ladder, so the
+  // pool buys duration and horn risk only. Judged on story metrics per
+  // the ruling; data in reports/sweeps/pool_*.csv + dev-log.
+  ticketPool: 315,
   ticketBleedTicks: 20,  // 2 s per ticket at 10 Hz
   ticketMajority: 5,     // of the 8 frontier relays; >= half+1 either map
   // B1: what a wreck costs its owner, refunded when the wreck is

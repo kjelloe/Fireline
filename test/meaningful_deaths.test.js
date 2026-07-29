@@ -49,10 +49,10 @@ test("B1: the pool never goes negative and a refund never mints tickets", () => 
 
   // A refund above the starting pool would be free money.
   let t = sandbox([{ team: 0, type: 0, cellX: 20, cellY: 20, state: ASSET_DISABLED, hp: 0 }]);
-  t.tickets = [300, 300];
+  t.tickets = [t.rules.ticketPool, t.rules.ticketPool]; // AT the cap, whatever the session pool is
   t.assets[0].recoverTimer = 1;
   t = apply(t, { type: "advance_tick" });
-  assert.equal(t.tickets[0], 300, "capped at the starting pool");
+  assert.equal(t.tickets[0], t.rules.ticketPool, "capped at the starting pool");
 });
 
 test("B1: ticketPerDisable 0 restores the pre-B1 world (deaths are free)", () => {

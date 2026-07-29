@@ -50,7 +50,7 @@ test("13H: an empty pool loses the war with WIN_TICKETS", () => {
 });
 
 test("13H: pools are session law — rules carry them, defaults are pinned", () => {
-  assert.equal(DEFAULT_RULES.ticketPool, 300);
+  assert.equal(DEFAULT_RULES.ticketPool, 315); // pool ladder verdict 2026-07-31
   assert.equal(DEFAULT_RULES.ticketBleedTicks, 20);
   assert.equal(DEFAULT_RULES.ticketMajority, 5);
   const s = createInitialState(42, "frontier_corridor", { ticketPool: 77 });

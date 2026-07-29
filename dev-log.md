@@ -3309,3 +3309,18 @@ ever caught because the AI never queues. Both fixed, both pinned by a
 new scrub-trap regression test. Suite 628/628 double-run, client
 smoke + acceptance green, frontier gate outcomes bit-identical to
 pre-B4 (counters observe, they must not steer).
+
+## pool verdict LANDED: ticketPool 300 -> 315 (fixture v44)
+
+pool_315 filled the ladder gap: median 21.2 min (dead centre of the
+designer's 20-22 window), horn 9%, tickets 82%, comebacks 32% — the
+best rung on every axis that moves. Landed as the DEFAULT_RULES pool;
+easy/hard presets untouched (400/250 are their own laws). Three tests
+pinned 300: the two deliberate default-pins updated to the ruling with
+provenance; the B1 refund-cap test now reads the cap from the session
+rules instead of a literal (the pin was the bug — same lesson as the
+cellToWorld literals). Fixture repinned v44, events verbatim. Suite
+628/628 double-run; 5-seed gate shows the ladder signature exactly
+(standard wars identical, ticket wars a few hundred ticks longer, no
+winner flips). The Skimmer trail-speed retune is now UNBLOCKED and
+measures against pool 315.

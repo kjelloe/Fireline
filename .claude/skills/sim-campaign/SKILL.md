@@ -49,6 +49,9 @@ fieldRepairs, bridge events, mercyBleeds (heuristic), overtimeTicks —
 summarise with `python3 debugging/analyze_story.py <csv...>`. Judge any
 pacing change on THESE ("did the extra minutes create stories?"), not on
 average length. `TICKETPOOL=350` overrides the pool per run.
+DEFAULT POOL IS 315 since 2026-07-31 (ladder verdict: 21.2 min median,
+9% horn, comebacks 32%; 300/330/350/375 all read worse — story metrics
+were FLAT across the ladder, the pool buys duration + horn risk only).
 
 Sweep flags (`tools/sim_sweep.mjs`): `MIRROR=1` world reflection,
 `FACTIONSWAP=1` uniques trade sides, `MAP=<profile>` (frontier_corridor
