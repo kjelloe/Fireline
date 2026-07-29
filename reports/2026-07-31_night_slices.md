@@ -70,16 +70,32 @@ mirror (A 46.7%/52.1%) — side-linked, small, no faction conviction.
   is no escort recognition counter to read, so it does not exist yet.
   Want an escort RECOG (engine change: award proximity-escort deeds),
   or drop it?
-- **Q27 — blackwood promotion.** With corridors verified, promotion
-  waits only on the Skimmer band retune (your ruled order). Confirm
-  auto-promote once the band lands inside 54/46, or do you want a
-  final look first?
+- **Q27 — blackwood promotion: RESOLVED by your standing ruling.** The
+  band ladder came back before you did (see below) — inside tolerance,
+  no retune needed — so blackwood was promoted per "promote blackwood
+  after retune". Revert is one line if you want a final look.
 
-## In flight / still with you
+## The band ladder verdict (landed after the report was first written)
 
-- **Skimmer trail-speed ladder** (416 baseline / 384 / 352, each
-  normal+mirror, n=300, against pool 315) — queued on the PC; verdict
-  and possibly the landed retune by the time you read this.
+**No retune needed — the lever stays at 416.** At the current value:
+A 54.5% normal / 51.3% mirrored; the paired analyzer reads flip rate
+47.2%, aggregate **52.9% A** — its "fair chaos" verdict. All three
+rungs (416/384/352) sit within noise of each other, so the trail lever
+showed no signal worth acting on. The 57–62% Outlier lean you ruled on
+was REAL when measured, but the pacing era itself (B1 deaths, B3
+mercy, field repair, pool 315) dissolved it before the lever ever
+moved. §3.8's rebaseline rule, vindicated: the lean you are chasing
+may already be gone.
+
+Consequence: **blackwood is PROMOTED** (specs/10 §4d) — batteries,
+corridors, and your playtest all green, band precondition met.
+Riverline stays experimental (its battery is still owed); sawtooth
+stays held for your playtest.
+
+## Still with you
+
 - **Sawtooth human playtest** — yours, when ready (`npm run start:sawtooth`).
 - **Uncapped perf run** — `bash tools/perf_native.sh -Uncapped` after
   your vsync change.
+- **Q24–Q26 above** (pool ratification, mercy's new prominence, award
+  names + the missing escort counter).
