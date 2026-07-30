@@ -23,6 +23,7 @@ import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors } from "./feedback_model.js";
 import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
+import { createSplash } from "./splash_model.js";
 import { compassOctant } from "../../engine/reducer.js";
 import { tasksFor } from "./tasks_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
@@ -68,6 +69,80 @@ let lastPointer = { x: 0, y: 0 };
 // re-announce the same hull every second.
 const contactSeen = new Map();
 let lastCalloutAt = 0;
+// Splash ("The Front Ignites", designer brief): splash_model owns the
+// rules; this is just the DOM hand. Removed from the DOM when done.
+let splashCtl = null;
+
+function startSplash() {
+  const el = document.getElementById("splash");
+  if (!el) return;
+  const $ = (id) => document.getElementById(id);
+  const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
+  const seen = localStorage.getItem("fc_splash_seen") === "1";
+  splashCtl = createSplash({ seenBefore: seen, reducedMotion: reduced });
+  try { localStorage.setItem("fc_splash_seen", "1"); } catch { /* private mode */ }
+  $("splash-tag").textContent = t("splash.tagline");
+  const bootLines = ["splash.boot1", "splash.boot2", "splash.boot3", "splash.boot4"];
+  const addBoot = (i) => { $("splash-boot").textContent += (i ? "\n" : "") + t(bootLines[i]); };
+  const showTitle = () => {
+    $("splash-title").style.opacity = "1";
+    $("splash-tag").style.opacity = "1";
+  };
+  if (splashCtl.state.reducedMotion) {
+    $("splash-map").style.opacity = "0.4";
+    showTitle();
+  } else {
+    const steps = [
+      [300, () => { $("splash-map").style.opacity = "1"; addBoot(0); }],
+      [800, () => {
+        const f = $("splash-front");
+        f.style.transition = "stroke-dashoffset 0.8s ease-out";
+        f.style.strokeDashoffset = "0";
+        addBoot(1);
+      }],
+      [1600, () => { $("splash-west").style.opacity = "0.35"; $("splash-east").style.opacity = "0.35"; }],
+      [2200, () => {
+        const g = $("splash-pips");
+        for (let i = 0; i < 8; i++) {
+          const p = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          p.setAttribute("cx", 340 + (i % 2) * 120 + (i * 13) % 40);
+          p.setAttribute("cy", 60 + i * 45);
+          p.setAttribute("r", 3);
+          p.setAttribute("fill", i % 2 ? "#7a3a1a" : "#2a3f5f");
+          g.appendChild(p);
+        }
+        g.style.opacity = "1";
+        addBoot(2);
+      }],
+      [2800, () => { $("splash-standard").style.opacity = "1"; }],
+      [3200, showTitle],
+      [3800, () => addBoot(3)],
+    ];
+    for (const [ms, fn] of steps) setTimeout(() => { if (!splashCtl.done()) fn(); }, ms);
+  }
+  const teardown = () => {
+    window.removeEventListener("keydown", keySkip);
+    el.style.pointerEvents = "none"; // stop intercepting the instant we fade
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 500); // REMOVED, never merely hidden
+  };
+  const settle = () => {
+    if (splashCtl.done()) { teardown(); return; }
+    showTitle(); // hold state: title up, honest status line
+    $("splash-status").textContent = splashCtl.state.preparing ? t("splash.preparing") : "";
+    $("splash-status").style.opacity = splashCtl.state.preparing ? "1" : "0";
+  };
+  const skip = () => { splashCtl.skip(); settle(); };
+  el.addEventListener("pointerdown", skip);
+  const keySkip = (e) => { if (e.key === "Enter" || e.key === " " || e.key === "Escape") skip(); };
+  window.addEventListener("keydown", keySkip);
+  setTimeout(() => { splashCtl.timeUp(); settle(); }, splashCtl.state.minMs);
+  splashCtl.notifyReady = () => { splashCtl.assetsReady(); settle(); };
+}
+
+function splashAssetsReady() {
+  splashCtl?.notifyReady?.();
+}
 const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
@@ -144,6 +219,7 @@ function webglAvailable() {
 }
 
 function init() {
+  startSplash(); // both renderers get the front-ignites boot
   if (new URLSearchParams(location.search).get("renderer") === "2d" || !webglAvailable()) {
     init2dFallback();
     return;
@@ -505,6 +581,11 @@ async function loadAssetMetadata() {
 function connect() {
   const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
   socket = new WebSocket(`${protocol}//${window.location.host}`);
+  // Splash: the JOIN MENU is the deliverable ("all assets ready ->
+  // reveal menu", the brief's ladder). Views require joining, and
+  // joining sits BEHIND the splash — gating on the first view was a
+  // deadlock the smoke gate caught on the first run.
+  socket.addEventListener("open", () => splashAssetsReady());
   socket.onmessage = (event) => {
     hideReconnectBanner(); // any live message = the link is back (item 21)
     const msg = JSON.parse(event.data);
@@ -554,6 +635,7 @@ function connect() {
       updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
       announceContacts(msg.view); // B5: fog reveals become callouts
+      splashAssetsReady(); // splash: belt-and-braces (open handler is primary)
       // B7: track the asset I drive AFTER the event pass — on the death
       // tick the view already shows me unseated, so the recap match
       // needs the PREVIOUS view's answer to "which hull is mine".

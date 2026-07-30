@@ -3665,3 +3665,24 @@ single-relay factory test ended by DOMINATION at tick 300 (the
 documented trap, counterweight site added). One unreproducible suite
 flake under load (657/658 once, then 3x green) — watching. Suite
 658/658, fixture v50.
+
+## slice-splash: "The Front Ignites" (designer concepts 1+2)
+
+The recommended first version from specs/splash-screen-setup*.md: SVG
+tactical grid, ember front line drawing across, faction territories
+blooming, pips, the standard pulse, title + tagline, with the boot
+overlay (FRONT SYNC / ACTIVE WAR FOUND / REGENT CHANNEL / FIELD
+COMMAND: ASSIGNED). All rules from the brief enforced by a PURE
+node-tested controller (splash_model.js): tied to REAL milestones
+(never fakes done), skip exits only when ready (before that it
+accelerates to the title hold + says "Preparing the front…"),
+returning players get the 1.5 s short form, prefers-reduced-motion
+collapses to a static card. Removed from the DOM on finish — never
+merely hidden (the buried-HUD scar). i18n both locales.
+
+THE SMOKE GATE EARNED ITS KEEP AGAIN: the first ready-milestone (first
+view snapshot) was a DEADLOCK — views require joining and joining sat
+behind the splash. Playwright's interception log named the exact
+polygon. Milestone corrected to socket-open (the join MENU is the
+brief's "assets ready" deliverable). Suite 663/663 double-run, smoke +
+acceptance green.

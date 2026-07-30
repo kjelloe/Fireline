@@ -48,6 +48,31 @@
 </style>
 </head>
 <body>
+    <!-- Splash (designer brief: The Front Ignites + boot overlay). Sits
+         ABOVE the join overlay (z 40) and is REMOVED from the DOM when
+         done — hidden overlays that stay resident are how the HUD got
+         buried once. Inline critical CSS so the first frame needs no JS. -->
+    <div id="splash" style="position:absolute; inset:0; background:#0a0b0d; z-index:40; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; transition:opacity 0.5s;">
+      <svg id="splash-map" viewBox="0 0 800 450" style="position:absolute; inset:0; width:100%; height:100%; opacity:0;">
+        <defs>
+          <pattern id="sgrid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M40 0H0V40" fill="none" stroke="#1a2a3a" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="800" height="450" fill="url(#sgrid)"/>
+        <polygon id="splash-west" points="0,0 340,0 300,150 360,290 320,450 0,450" fill="#2a3f5f" opacity="0"/>
+        <polygon id="splash-east" points="800,0 460,0 500,150 440,290 480,450 800,450" fill="#7a3a1a" opacity="0"/>
+        <polyline id="splash-front" points="400,0 380,110 430,220 390,330 410,450" fill="none" stroke="#e8c87a" stroke-width="3" stroke-dasharray="700" stroke-dashoffset="700"/>
+        <g id="splash-pips" opacity="0"></g>
+        <circle id="splash-standard" cx="405" cy="225" r="7" fill="#f5e96b" opacity="0"/>
+      </svg>
+      <div id="splash-boot" style="position:absolute; left:24px; bottom:96px; color:#6a8a9a; font:12px monospace; letter-spacing:0.12em; white-space:pre-line;"></div>
+      <div style="position:relative; text-align:center; z-index:1;">
+        <h1 id="splash-title" style="margin:0; color:#fff; font-family:'Impact','Arial Narrow','Oswald',sans-serif; font-size:52px; letter-spacing:0.08em; text-transform:uppercase; opacity:0; transition:opacity 0.6s;">FIRELINE COMMAND</h1>
+        <p id="splash-tag" style="margin:8px 0 0; color:#c8d8e8; letter-spacing:0.14em; text-transform:uppercase; font:15px sans-serif; opacity:0; transition:opacity 0.6s;"></p>
+        <p id="splash-status" style="margin:22px 0 0; color:#6a8a9a; font:13px sans-serif; letter-spacing:0.1em; opacity:0; transition:opacity 0.4s;"></p>
+      </div>
+    </div>
     <div id="join-overlay">
         <h1 id="game-title">FIRELINE COMMAND</h1>
         <p id="game-tagline" style="letter-spacing:1px; opacity:0.85;">Join the battle. Turn the front.</p>
