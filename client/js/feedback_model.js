@@ -85,6 +85,8 @@ export function describeEvent(e, myTeam) {
     case "station_left": return t("ev.station_left", { id: e.operatorId });
     case "station_eject_warning": return t("ev.station_eject_warning");
     case "station_ejected": return t("ev.station_ejected", { id: e.operatorId });
+    case "prison_raided":
+      return t(e.team === myTeam ? "ev.prison_raided_them" : "ev.prison_raided_us", { n: e.freed });
     case "last_convoy_called":
       return t(e.team === myTeam ? "ev.convoy_called_us" : "ev.convoy_called_them", { n: e.need });
     case "last_convoy_complete":

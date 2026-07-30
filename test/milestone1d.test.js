@@ -18,6 +18,8 @@ test("1D AI Regency claims initial unoccupied assets deterministically", () => {
     assert.equal(server.state.assets[assetId].operatorId, operatorId);
   }
   // 16 fixed regents since the 32-asset expansion (ops 16-31).
+  // (POW pre-placement defaults to 0 — with POWS=2 four of these seats
+  // would start captive; see test/prisons.test.js.)
   assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 16);
   assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 16);
 });

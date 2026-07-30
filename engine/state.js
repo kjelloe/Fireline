@@ -11,6 +11,7 @@ import { generateCaldera } from "./caldera.js";
 import { generateSawtooth } from "./sawtooth.js";
 import { createBridges } from "./bridges.js";
 import { createDrops } from "./drops.js";
+import { createPrisons, PREPLACED_POWS } from "./prisons.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
@@ -20,6 +21,9 @@ import { createStandards } from "./standards.js";
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
 export const OP_DOWN = 2;
+// POW arc (specs/12 Q35): a captive's seat is LOCKED — no join, no
+// select, no respawn — until freed and delivered home.
+export const OP_CAPTIVE = 3;
 
 export const ASSET_IDLE = 0;
 export const ASSET_MOVING = 1;
@@ -299,6 +303,13 @@ export const DEFAULT_RULES = Object.freeze({
   // B3: a full-cap hold this long accelerates the enemy's bleed (mercy),
   // and an empty pool waits while the losing side still has a play live
   // (overtime). Both tunable; overtime:false restores the hard cutoff.
+  // POW arc: pre-placed captives per prison (specs/12 Q40 wants 2 as a
+  // day-one objective — DEVIATION, flagged 2026-08-01: locking 4 regent
+  // seats collapsed AI-war tempo (3/5 gate seeds undecided) and the AI
+  // raid doctrine cannot yet spring them (0 raids in 5 wars — a lone
+  // scout dies at the wire). Default 0 until AI raids work or the
+  // owner rules it human-sessions-only; POWS=2 on the server enables.
+  powPreplaced: 0,
   mercyPoolFraction: 4,  // mercy engages at pool/4 left (25%)
   mercyMultiplier: 3,
   overtime: true,
@@ -354,12 +365,24 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     throw new RangeError("mapArg must be a profile name or map object");
   }
 
+  // POW arc: pre-placed captives start OP_CAPTIVE with their team set
+  // (they have never joined — the lock must know whose seat it holds).
+  const operators = createOperators();
+  const powN = (rules?.powPreplaced ?? DEFAULT_RULES.powPreplaced) | 0;
+  if (typeof mapArg === "string" && powN > 0) {
+    for (const [prisonTeam, powIds] of Object.entries(PREPLACED_POWS)) {
+      for (const id of powIds.slice(0, powN)) {
+        operators[id].state = OP_CAPTIVE;
+        operators[id].team = 1 - Number(prisonTeam);
+      }
+    }
+  }
   return {
     tick: 0,
     mapSeed: mapSeed >>> 0,
     map,
     teamScores: [0, 0],
-    operators: createOperators(),
+    operators,
     assets,
     sites,
     bases,
@@ -390,6 +413,9 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     // B6: the seed-scheduled neutral supply drop (own array, NOT a site
     // — a mid-war site would move the majority denominator; 13E lesson).
     drops: createDrops(mapSeed >>> 0),
+    // POW arc slice 1: one prison per base, pre-loaded symmetrically
+    // (the pre-placed enemy regents start OP_CAPTIVE — see below).
+    prisons: createPrisons(bases, powN),
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

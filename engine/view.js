@@ -16,6 +16,16 @@ function projectConvoy(state) {
   }));
 }
 
+// POW arc: prisons are public landmarks — position and HEADCOUNT are
+// visible to both teams (the day-one objective must be findable);
+// prisoner identities ride too (they are your teammates).
+function projectPrisons(state) {
+  return (state.prisons ?? []).map((p) => ({
+    team: p.team, cellX: p.cellX, cellY: p.cellY,
+    pows: [...p.pows], raidTicks: p.raidTicks,
+  }));
+}
+
 // B6: the supply drop is ANNOUNCED — both teams see it the moment it
 // activates, fog or not (an unannounced windfall is just luck).
 function projectDrops(state) {
@@ -54,6 +64,7 @@ export function buildSpectatorView(state) {
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     convoy: projectConvoy(state), // Last Convoy: a public emergency
     drops: projectDrops(state), // B6: announced to everyone, no fog
+    prisons: projectPrisons(state), // POW arc: compounds are public knowledge
     events: state.events,
     mapCells: state.map.cells,
     friendlyAssets,
@@ -147,6 +158,7 @@ export function buildView(state, team) {
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     convoy: projectConvoy(state), // Last Convoy: a public emergency
     drops: projectDrops(state), // B6: announced to everyone, no fog
+    prisons: projectPrisons(state), // POW arc: compounds are public knowledge
     // 10C: events carrying toTeam are that team's business only (pings).
     events: state.events.filter((e) => e.toTeam === undefined || e.toTeam === team),
     mapCells: state.map.cells,

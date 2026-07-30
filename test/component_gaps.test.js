@@ -49,8 +49,12 @@ test("component: snapshot never leaks authoritative state or map internals", () 
     // 11K: views carry a PUBLIC scoreboard — id/team/score only. The rest
     // of the operator table (assetId, timers, options) stays server-side.
     for (const op of view.operators) {
-      assert.deepEqual(Object.keys(op).sort(), ["id", "score", "team"],
-        "scoreboard rows leak nothing but the score");
+      // The public row grew deliberately: respawnTicks (15) and deeds
+      // (B4) are scoreboard material. NOTE: this loop never ran on a
+      // fresh state until the POW arc — pre-placed captives are the
+      // first operators visible before anyone joins.
+      assert.deepEqual(Object.keys(op).sort(), ["deeds", "id", "respawnTicks", "score", "team"],
+        "scoreboard rows leak nothing but the public scoreboard");
     }
     for (const enemy of view.visibleEnemies) {
       assert.equal("hp" in enemy, false);

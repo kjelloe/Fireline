@@ -88,8 +88,9 @@ slow — a mobile fortress that rewards coordination both ways.
   (truck? Sentinel?), build time, hp, count, does pathfinding treat
   them as walls (yes — item-39 A* handles it free), mirror discipline
   (player-built = inherently asymmetric, like mines — fine).
-- **Caltrops**: droppable by a LIGHT unit (scout bike or scout) —
-  presumably a slow/damage zone against pursuers. Design questions:
+- **Caltrops** (CORRECTED, prompt 105): droppable by a LIGHT unit
+  (scout bike or scout) — a TEMPORARY SLOW zone against pursuers,
+  NOT primarily damaging. Design questions:
   counters (trucks clear like mines?), stacking with mines, visibility
   rules (own team always, enemy scouts mark?).
   Both fit the existing deployable vocabulary (mines/hardpoint) and

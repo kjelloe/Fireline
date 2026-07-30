@@ -75,12 +75,19 @@ export function createAppServer(options = {}) {
     snapshotCapacity: options.snapshotCapacity ?? 30,
     // 13G: these were silently dropped here — MAP=riverline served frontier.
     mapProfile: options.mapProfile ?? "frontier_corridor",
-    rules: options.rules ?? null,
     // 16B: default ON per the standing design ("uniques crew by
     // default"); UNIQUES=0 disables for A/B runs. The old `=== true`
     // here + in GameServer meant the SERVED game never crewed uniques.
     uniqueCrewing: options.uniqueCrewing !== false &&
       process.env.UNIQUES !== "0",
+    // POW arc: POWS=2 pre-loads both prisons for human sessions (the
+    // designed day-one objective; default 0 — see DEFAULT_RULES note).
+    // MERGED over the preset — `??` alone never fired, because the CLI
+    // main block always passes a preset object.
+    rules: {
+      ...(options.rules ?? {}),
+      ...(process.env.POWS ? { powPreplaced: Number(process.env.POWS) } : {}),
+    },
   });
   const transport = new NetworkTransport(gameServer, wss);
 

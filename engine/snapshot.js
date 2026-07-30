@@ -67,6 +67,7 @@ export function hashState(state) {
     w.writeI32LE(d.targetX); w.writeI32LE(d.targetY);
     w.writeI32LE(d.downTicks);
     w.writeI32LE(d.satchel ?? 0); // added prompt-51
+    w.writeI32LE(d.freedPow ?? 0); // added POW arc
   }
   w.writeI32LE(state.rules?.mpgMinOperable ?? 6); w.writeI32LE(state.rules?.mpgTicks ?? 900); // added 13F
   w.writeI32LE(state.nextMineId ?? 0); // added 9E
@@ -97,6 +98,11 @@ export function hashState(state) {
     w.writeI32LE(c.active); w.writeI32LE(c.need); w.writeI32LE(c.done);
     w.writeI32LE(c.ids.length);
     for (const id of c.ids) w.writeI32LE(id);
+  }
+  for (const p of (state.prisons ?? [])) { // added POW arc slice 1
+    w.writeI32LE(p.team); w.writeI32LE(p.cellX); w.writeI32LE(p.cellY);
+    w.writeI32LE(p.raidTicks); w.writeI32LE(p.pows.length);
+    for (const id of p.pows) w.writeI32LE(id);
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

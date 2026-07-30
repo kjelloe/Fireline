@@ -3794,3 +3794,33 @@ hull's gunner keeps it all.
 Suite 674/674 double-run, smoke + acceptance green. ALSO: perf CLOSED
 (prompt 104): 144 fps sustained at a 144 Hz display, still
 vsync-bound — headroom >= 144.
+
+## slice-pow1: prisons, seat locks, and the raid (fixture v53-54)
+
+The People Update begins. Each base gains a PRISON compound (hashed
+array, the bridges pattern — never a site) at a deterministic offset
+inside the walls. Operators can be OP_CAPTIVE: the seat is LOCKED (no
+join, no select, no respawn — "seat held prisoner"). The RAID: any
+enemy-of-the-jailer unit holding within 2 cells of a stocked prison
+for 10 s springs EVERY prisoner — they walk out as DOWNED operators
+marked freedPow (self-redeploy refused: "too weak from captivity" —
+the carrier ride home IS the rescue, exactly Q37), the raider is paid
++20 per head, and delivery through the standing rescue loop unlocks
+the seat. AI doctrine: one designated prison raider per team — the
+nearest SCOUT (the specialist, Q36) rides for the wire whatever the
+distance.
+
+THE DEVIATION, flagged for the owner: Q40 wants 2 pre-placed POWs as
+a day-one objective. Landed as a SESSION RULE (powPreplaced, default
+0; POWS=2 on the server) because the full default broke the game in
+measurement: locking 4 regent seats collapsed AI-war tempo (3/5 gate
+seeds undecided at 16k, from 5/5 decided) and the AI raid NEVER
+succeeded (0 raids in 5 wars — a lone scout dies at the wire; springing
+a defended prison needs the coordinated raid party that slices 2-3
+will build). The mechanism is complete and tested end-to-end
+(lock → raid → freed → carried → unlocked); the day-one default waits
+for an AI that can actually do the mission — or an owner ruling that
+pre-placement is human-sessions-only. Server env fix on the way in:
+the CLI main block always passes a preset object, so `options.rules
+??` never fell through — POWS merges over the preset now (verified
+against /version). Suite 678/678 double-run, gate + smoke green.

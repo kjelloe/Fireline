@@ -476,6 +476,30 @@ export class AIRegency {
       }
     }
 
+    // POW arc: ONE designated prison raider per team while the ENEMY
+    // prison holds our people (pre-placed captives make this a day-one
+    // errand). The SCOUT is the POW specialist (specs/12 Q36) — the
+    // nearest controlled scout rides for the wire, whatever the
+    // distance (a deep raid is the intended shape).
+    const prisonRaiderFor = new Map(); // team -> operatorId
+    for (const prison of state.prisons ?? []) {
+      if (prison.pows.length === 0) continue;
+      const team = prison.team === 0 ? 1 : 0; // the prisoners' own team raids
+      let bestOp = -1;
+      let bestDist = Infinity;
+      for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+        const op = state.operators[operatorId];
+        if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+        const a = state.assets[op.assetId];
+        if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
+        if (a.type !== 1) continue; // scouts only — the specialist
+        const dist = Math.abs(prison.cellX - worldToCellFloor(a.x)) +
+                     Math.abs(prison.cellY - worldToCellFloor(a.y));
+        if (dist < bestDist) { bestDist = dist; bestOp = operatorId; }
+      }
+      if (bestOp !== -1) prisonRaiderFor.set(team, bestOp);
+    }
+
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when
     // the raider wants to launch but the window is closed, the two
     // nearest idle-line combat seats (not capturers, not the logistics
@@ -1068,6 +1092,13 @@ export class AIRegency {
             }
           }
         }
+      }
+      // POW arc: the designated prison raider rides for the wire —
+      // freeing seats outranks every relay errand.
+      if (!target && prisonRaiderFor.get(asset.team) === operatorId) {
+        const enemyPrison = (state.prisons ?? []).find(
+          (p) => p.team !== asset.team && p.pows.length > 0);
+        if (enemyPrison) target = [enemyPrison.cellX, enemyPrison.cellY];
       }
       // B6: the designated drop-securer rides for the crate before any
       // relay errand — the packet is one-shot and the window is shared.

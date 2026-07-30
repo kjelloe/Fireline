@@ -5,7 +5,7 @@
 // "rejected" event and change nothing else.
 
 import {
-  OP_ABSENT, OP_ACTIVE, OP_DOWN,
+  OP_ABSENT, OP_ACTIVE, OP_DOWN, OP_CAPTIVE,
   ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED,
 } from "./state.js";
 import {
@@ -33,6 +33,9 @@ import {
   DROP_HOLD_TICKS, DROP_RADIUS_CELLS, DROP_TICKET_PACKET, dropActive, dropWorld,
 } from "./drops.js";
 import { premiumPoints } from "./premium.js";
+import {
+  RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
+} from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
@@ -317,6 +320,7 @@ function copyState(state) {
       { active: 0, need: 0, done: 0, ids: [] },
       { active: 0, need: 0, done: 0, ids: [] },
     ]).map((c) => ({ ...c, ids: [...c.ids] })), // nested ids: the aliasing lesson
+    prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: [...p.pows] })), // POW arc
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
@@ -330,6 +334,8 @@ function reject(next, command, reason) {
 
 function applyJoinOperator(next, command) {
   const operator = next.operators[command.operatorId];
+  // POW arc: a captive's seat is LOCKED until freed and delivered.
+  if (operator.state === OP_CAPTIVE) return reject(next, command, "seat held prisoner");
   if (operator.state !== OP_ABSENT) return reject(next, command, "operator already active");
   operator.state = OP_ACTIVE;
   operator.team = command.team;
@@ -953,6 +959,11 @@ function applyRedeploy(next, command) {
   const downed = downedFor(next, command.operatorId);
   if (!downed) return reject(next, command, "not downed");
   if (downed.downTicks < REDEPLOY_TICKS) return reject(next, command, "still recovering nerve");
+  // POW arc: a freed prisoner is too weak to self-redeploy — the ride
+  // home IS the rescue (Q37: "must be carried by a Carrier").
+  if (downed.freedPow === 1 && command.carrierAssetId === undefined) {
+    return reject(next, command, "too weak from captivity");
+  }
   // 15F carrier field-respawn (ruled: crewed carriers only, 30 s/operator):
   // the seat spawns ABOARD like a rescue passenger and rides until
   // delivered or unboarded — the existing passenger machinery, verbatim.
@@ -1615,6 +1626,42 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "supply_drop_secured", dropId: drop.id, byTeam: holder });
     }
   }
+  // POW RAID pass (specs/12 Q37): an enemy-of-the-jailer unit holding
+  // beside a stocked prison for RAID_HOLD_TICKS springs EVERY prisoner
+  // — they walk out as DOWNED operators (freedPow: they cannot
+  // self-redeploy; the carrier ride home is the point) and the raider
+  // who held the wire is paid per head.
+  for (const prison of next.prisons ?? []) {
+    if (prison.pows.length === 0) { prison.raidTicks = 0; continue; }
+    let holder = null;
+    for (const a of next.assets) {
+      if (a.team === prison.team || a.operatorId === -1) continue;
+      if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+      const d = Math.max(
+        absI32(worldToCellFloor(a.x) - prison.cellX),
+        absI32(worldToCellFloor(a.y) - prison.cellY));
+      if (d <= PRISON_RAID_CELLS) { holder = a; break; } // lowest id holds
+    }
+    if (!holder) { prison.raidTicks = 0; continue; }
+    prison.raidTicks += 1;
+    if (prison.raidTicks < RAID_HOLD_TICKS) continue;
+    const freed = prison.pows.length;
+    for (const powId of prison.pows) {
+      const seat = next.operators[powId];
+      if (!seat) continue;
+      seat.state = OP_DOWN;
+      seat.assetId = -1;
+      const body = createDowned(seat, { x: cellToWorld(prison.cellX), y: cellToWorld(prison.cellY) });
+      body.freedPow = 1; // no self-redeploy — await the carrier
+      next.downed.push(body);
+      awardOperator(next, holder.operatorId, RECOG_FREE_POW);
+      next.events.push({ type: "operator_downed", operatorId: seat.id });
+    }
+    next.events.push({ type: "prison_raided", team: prison.team, freed, byAssetId: holder.id });
+    prison.pows = [];
+    prison.raidTicks = 0;
+  }
+
   // Standard pass (8B): pickups, returns, then scoring — stable asset order.
   for (const asset of next.assets) {
     const takeable = standardTakeableBy(next, asset);
