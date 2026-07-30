@@ -481,23 +481,57 @@ export class AIRegency {
     // errand). The SCOUT is the POW specialist (specs/12 Q36) — the
     // nearest controlled scout rides for the wire, whatever the
     // distance (a deep raid is the intended shape).
-    const prisonRaiderFor = new Map(); // team -> operatorId
+    // Slice 3: a coordinated RAID PARTY. The scout stages short of the
+    // enemy base until the window opens — two escorts at hand, or a
+    // sneak window (a thinly guarded wire) — then dives. One lone
+    // scout at a defended prison measured 0 raids in 5 wars; parties
+    // are how the mission actually completes.
+    const prisonRaiderFor = new Map(); // team -> {opId, prison, dive, stage}
     for (const prison of state.prisons ?? []) {
       if (prison.pows.length === 0) continue;
       const team = prison.team === 0 ? 1 : 0; // the prisoners' own team raids
+      // Scouts preferred (the specialist), but Q37's raid is "any
+      // raiding vehicle" — and the pre-placed captives ARE scout crews
+      // half the time (locking ops 30/31 uncrews asset 22, a scout), so
+      // a scout-only rule starved the mission to 0 raids. Any free
+      // combat hull will hold the wire.
       let bestOp = -1;
-      let bestDist = Infinity;
+      let bestScore = Infinity;
       for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
         const op = state.operators[operatorId];
         if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
         const a = state.assets[op.assetId];
         if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
-        if (a.type !== 1) continue; // scouts only — the specialist
+        const st = getUnitStats(a.type);
+        if (st.canTow || st.canCarryStandard || st.indirect || st.deployable) continue;
         const dist = Math.abs(prison.cellX - worldToCellFloor(a.x)) +
                      Math.abs(prison.cellY - worldToCellFloor(a.y));
-        if (dist < bestDist) { bestDist = dist; bestOp = operatorId; }
+        const score = dist + (a.type === 1 ? 0 : 200); // scouts outrank at any range
+        if (score < bestScore) { bestScore = score; bestOp = operatorId; }
       }
-      if (bestOp !== -1) prisonRaiderFor.set(team, bestOp);
+      if (bestOp === -1) continue;
+      const raider = state.assets[state.operators[bestOp].assetId];
+      const rcx = worldToCellFloor(raider.x);
+      const rcy = worldToCellFloor(raider.y);
+      let escortsNear = 0;
+      for (const a of state.assets) {
+        if (a.team !== team || a.id === raider.id || isWreck(a) || a.operatorId === -1) continue;
+        const st = getUnitStats(a.type);
+        if (st.canTow || st.canCarryStandard || st.indirect) continue;
+        if (Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
+                     Math.abs(worldToCellFloor(a.y) - rcy)) <= ESCORT_CELLS) escortsNear++;
+      }
+      let guards = 0;
+      for (const e of state.assets) {
+        if (e.team !== prison.team || isWreck(e) || e.operatorId === -1) continue;
+        if (Math.max(Math.abs(worldToCellFloor(e.x) - prison.cellX),
+                     Math.abs(worldToCellFloor(e.y) - prison.cellY)) <= SNEAK_SCAN_CELLS) guards++;
+      }
+      // COMMIT once the clock runs — flapping at the wire wastes the
+      // whole approach. Stage well clear of the enemy guns (24 cells).
+      const dive = prison.raidTicks > 0 || escortsNear >= 2 || guards < 2;
+      const stage = [prison.cellX + (prison.team === 0 ? 24 : -24), prison.cellY];
+      prisonRaiderFor.set(team, { opId: bestOp, prison, dive, stage });
     }
 
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when
@@ -536,6 +570,32 @@ export class AIRegency {
       }
       candidates.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
       for (const [, opId] of candidates.slice(0, 2)) escortFor.set(opId, raiderId);
+    }
+
+    // Slice 3: the PRISON raid party borrows the same convergence — two
+    // nearest free combat seats escort the designated scout (ops already
+    // escorting the carrier keep that duty; the standard outranks).
+    for (const [team, rp] of prisonRaiderFor) {
+      const raiderAsset = state.assets[state.operators[rp.opId]?.assetId];
+      if (!raiderAsset || isWreck(raiderAsset)) continue;
+      const rcx = worldToCellFloor(raiderAsset.x);
+      const rcy = worldToCellFloor(raiderAsset.y);
+      const cands = [];
+      for (const [opId] of controlled) {
+        if (escortFor.has(opId) || opId === rp.opId) continue;
+        const op = state.operators[opId];
+        if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+        const a = state.assets[op.assetId];
+        if (!a || a.team !== team || a.operatorId !== opId || isWreck(a)) continue;
+        const st = getUnitStats(a.type);
+        if (st.canTow || st.canCarryStandard || st.indirect) continue;
+        if (capturerOps.has(opId)) continue;
+        const d = Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
+                           Math.abs(worldToCellFloor(a.y) - rcy));
+        cands.push([d, opId]);
+      }
+      cands.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+      for (const [, opId] of cands.slice(0, 2)) escortFor.set(opId, raiderAsset.id);
     }
 
     // Question 18 fix: commands used to resolve in ascending operator order
@@ -1099,12 +1159,12 @@ export class AIRegency {
         const home = (state.prisons ?? []).find((p) => p.team === asset.team);
         if (home) target = [home.cellX, home.cellY];
       }
-      // POW arc: the designated prison raider rides for the wire —
-      // freeing seats outranks every relay errand.
-      if (!target && prisonRaiderFor.get(asset.team) === operatorId) {
-        const enemyPrison = (state.prisons ?? []).find(
-          (p) => p.team !== asset.team && p.pows.length > 0);
-        if (enemyPrison) target = [enemyPrison.cellX, enemyPrison.cellY];
+      // POW arc: the designated prison raider rides for the wire when
+      // the window is open, and STAGES short of the base while the
+      // party assembles — freeing seats outranks every relay errand.
+      if (!target && prisonRaiderFor.get(asset.team)?.opId === operatorId) {
+        const rp = prisonRaiderFor.get(asset.team);
+        target = rp.dive ? [rp.prison.cellX, rp.prison.cellY] : rp.stage;
       }
       // B6: the designated drop-securer rides for the crate before any
       // relay errand — the packet is one-shot and the window is shared.

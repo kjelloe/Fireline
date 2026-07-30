@@ -3844,3 +3844,29 @@ fluctuate 0-1 without any pre-placement); tempo held at scale (30-war
 median 21.6 min, 0% undecided) though era horn has drifted to ~17%
 since walls+clause — next PC battery re-baselines. Suite 681/681
 double-run, gate + smoke green.
+
+## slice-pow3: the raid party — built, measured, NOT yet good enough
+
+The coordinated spring (specs/12 order #3): the designated raider now
+STAGES 24 cells short of the enemy wire while two escorts converge on
+it (the carrier-raid assembly machinery, reused verbatim), dives when
+the window opens (party assembled, thin guard, or the raid clock
+already running — commit, never flap), and any free combat hull can be
+the raider with scouts preferred (the scout-only rule was starving the
+mission: the pre-placed captives ARE scout crews — locking ops 30/31
+uncrews asset 22, a scout. Found by tracing: every B scout sat
+uncrewed at distance 108 all war).
+
+MEASURED HONESTLY: 0/5 raids before the party, 1/5 after (seed 9001
+runs the full arc: raid -> 2 freed -> carried -> delivered -> war
+DECIDES instead of dragging undecided). The prompt-106 bar ("AI raids
+work, then adjust powPreplaced") is NOT met — the default stays 0.
+Remaining bottlenecks for the next doctrine session: escort
+convergence through walled gates under fire, and the guard count
+(bases always hold >= 2 defenders + MPG waves spawn there, so the
+sneak window basically never opens — the window test may need to
+count only units NEAR the prison quadrant, not the whole base).
+Dormant in default sims (no pows, no designation) but LIVE organically
+when slice-2 captures create prisoners. Suite 681/681 double-run,
+gate 4/5 (the era signature). One load-sensitive flake ("outruns real
+time" perf margin — passed clean twice).
