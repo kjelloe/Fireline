@@ -33,6 +33,7 @@ export function makeAsset(id, spec) {
     stationOp: spec.stationOp ?? -1, // prompt-100 stations
     stationAmmo: spec.stationAmmo ?? (getUnitStats(spec.type ?? 0).station?.shots ?? 0),
     stationReload: spec.stationReload ?? 0,
+    ejectTimer: spec.ejectTimer ?? 0, // Q41
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }

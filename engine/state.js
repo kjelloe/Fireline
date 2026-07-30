@@ -94,6 +94,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     stationOp: -1,
     stationAmmo: getUnitStats(type).station?.shots ?? 0,
     stationReload: 0,
+    ejectTimer: 0, // Q41: driver-eject countdown
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery

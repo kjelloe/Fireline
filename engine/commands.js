@@ -28,6 +28,9 @@ export const CMD_CALL_MEDIC     = "call_medic";
 export const CMD_BOARD_STATION  = "board_station";
 export const CMD_LEAVE_STATION  = "leave_station";
 export const CMD_STATION_FIRE   = "station_fire";
+// Q41 ruling: the driver may EJECT station crew — with a server-run
+// delay + a warning event, so the crew always sees it coming.
+export const CMD_EJECT_STATION  = "eject_station";
 export const CMD_RESPAWN        = "respawn";
 export const CMD_SATCHEL        = "satchel"; // prompt-51: downed-crew AT charge
 
@@ -143,6 +146,10 @@ export function validate(cmd) {
     case CMD_STATION_FIRE:
       if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
       if (!isUint(cmd.targetAssetId, 63))  return { ok: false, reason: "invalid targetAssetId" };
+      return { ok: true };
+
+    case CMD_EJECT_STATION:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };
 
     case CMD_PING:

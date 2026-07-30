@@ -370,9 +370,14 @@ function init() {
     // B5: hold Q for the comm wheel (release sends, centre = cancel).
     if (k === BINDS.comm && !e.repeat) showCommWheel();
     // Prompt-100: J joins the hovered vacant station, or leaves mine.
+    // Q41: a DRIVER pressing J with a manned station starts the EJECT
+    // (server-run 2.5s warning the crew sees on their own screen).
     if (k === BINDS.station) {
       const v = interpolator.latest();
-      if (whereAmI(v)?.kind === "stationed") {
+      const driving = v?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+      if (driving && driving.stationOp !== -1) {
+        send({ type: "eject_station" });
+      } else if (whereAmI(v)?.kind === "stationed") {
         send({ type: "leave_station" });
       } else if (hoverAssetId !== null) {
         const target = v?.friendlyAssets?.find((x) => x.id === hoverAssetId);
@@ -1177,6 +1182,10 @@ function handleEvents(events) {
       pendingTakeover = lastSelectAttempt;
     }
     if (e.type === "ping") teamPings.push(e); // 10C (view is already team-scoped)
+    // Q41: the eject warning lands CENTRE-SCREEN for the affected crew.
+    if (e.type === "station_eject_warning" && e.operatorId === joined?.operatorId) {
+      flashNotice(t("ev.station_eject_warning"), 2600, "#ff6b52");
+    }
     // Item 26: the front rolling in halves every sensor on the map —
     // players must be TOLD, not left to notice their scouts going blind.
     if (e.type === "weather_front") {

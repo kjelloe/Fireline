@@ -84,7 +84,10 @@ test("stations: the MG fires off the hull's ammo, suppresses, and kills pay the 
   }
   s = apply(s, { type: "station_fire", operatorId: 1, targetAssetId: 1 });
   assert.equal(s.assets[1].state, ASSET_DISABLED, "second burst kills");
-  assert.equal(s.operators[1].score, RECOG_KILL, "the trigger seat gets the kill");
+  // Q41 ruling: station kills are SHARED — equal split, odd point +
+  // deed to the trigger seat (5 -> gunner 3, driver 2).
+  assert.equal(s.operators[1].score, 3, "gunner: half rounded up");
+  assert.equal(s.operators[0].score, 2, "driver: positioned the hull");
   assert.equal(s.operators[1].deeds[DEED_KILL], 1);
 });
 
@@ -130,4 +133,53 @@ test("stations: the crew bails out with the hull, like a driver", () => {
   assert.equal(e.assets[0].stationOp, -1, "the seat is empty");
   assert.equal(e.operators[1].state, OP_DOWN, "the gunner is on foot");
   assert.ok(e.downed.some((d) => d.operatorId === 1), "with a body on the ground");
+});
+
+test("Q41: eject warns first, the crew exits DOWNED, dismount cancels it", async () => {
+  const { EJECT_WARNING_TICKS } = await import("../engine/reducer.js");
+  // OFF-base: with whole-map bases the ejected crew lands at the
+  // carrier, gets auto-scooped, and is DELIVERED in the same tick (the
+  // whole rescue chain — correct, but it hides the downed state).
+  let s = sandbox([
+    { team: 0, type: 4, cellX: 20, cellY: 20 },
+  ], [], { bases: OFF_BASES });
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "join_operator", operatorId: 1, team: 0 });
+  s = apply(s, { type: "board_station", operatorId: 1, assetId: 0 });
+  s = apply(s, { type: "eject_station", operatorId: 0 });
+  assert.ok(s.events.some((e) => e.type === "station_eject_warning"),
+    "the crew is WARNED, on their own screen");
+  assert.equal(s.assets[0].ejectTimer, EJECT_WARNING_TICKS);
+  for (let i = 0; i < EJECT_WARNING_TICKS; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[0].stationOp, -1, "the seat is empty");
+  // Ejected crew exits DOWNED at the hull — and the standing rescue
+  // machinery may already have scooped them aboard the very carrier
+  // that ejected them (petty, but correct).
+  const aboard = s.assets[0].aboard1 === 1 || s.assets[0].aboard2 === 1;
+  assert.ok(s.operators[1].state === OP_DOWN || aboard,
+    "downed at the hull (or already scooped into the rescue flow)");
+  assert.ok(s.events.some((e) => e.type === "station_ejected") ||
+    s.downed.some((d) => d.operatorId === 1) || aboard);
+
+  // Dismounting during the countdown cancels it — no ghost ejections.
+  let c = sandbox([{ team: 0, type: 4, cellX: 20, cellY: 20 }]);
+  c = joinAndSelect(c, 0, 0, 0);
+  c = apply(c, { type: "join_operator", operatorId: 1, team: 0 });
+  c = apply(c, { type: "board_station", operatorId: 1, assetId: 0 });
+  c = apply(c, { type: "eject_station", operatorId: 0 });
+  c = apply(c, { type: "leave_station", operatorId: 1 });
+  c = apply(c, { type: "advance_tick" });
+  assert.equal(c.assets[0].ejectTimer, 0, "countdown cancelled");
+  assert.notEqual(c.operators[1].state, OP_DOWN, "a dismount is not an ejection");
+});
+
+test("Q41: station kills are SHARED — equal split, deed and odd point to the trigger seat", () => {
+  let s = crewedCarrierScene();
+  s = apply(s, { type: "board_station", operatorId: 1, assetId: 0 });
+  s.assets[1].hp = 4; // one MG burst kills
+  s = apply(s, { type: "station_fire", operatorId: 1, targetAssetId: 1 });
+  assert.equal(s.operators[1].score, 3, "gunner: half rounded up");
+  assert.equal(s.operators[0].score, 2, "driver: half rounded down");
+  assert.equal(s.operators[1].deeds[0], 1, "the DEED is the trigger seat's");
+  assert.equal(s.operators[0].deeds[0], 0);
 });

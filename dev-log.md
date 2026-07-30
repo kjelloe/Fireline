@@ -3770,3 +3770,27 @@ geometry interact more than any corridor could. EXPERIMENTAL with a
 FIX-FIRST flag (specs/10 §4g); battery deliberately NOT queued (the
 result is known). Never convict on 5 seeds — and never TRUST 5 seeds
 either. Suite 672/672 double-run.
+
+## slice-q41: eject + shared recognition (the seat rulings land)
+
+The designer's Q35-Q42 rulings are recorded as design-of-record in
+specs/12_pow_npc_seat_rulings.md (with the owner's Q45 sandbags/
+caltrops additions banked for proposal). Landed immediately from Q41:
+
+EJECT — a driver may put station crew out, but never silently: the
+command starts a SERVER-RUN 2.5 s countdown (hashed ejectTimer, v52)
+with a warning event the crew sees centre-screen; the countdown
+cancels if the driver leaves or the crew dismounts first; on zero the
+crew exits DOWNED at the hull (no damage — a bruised ego walks). The
+sandbox found the poetry: ejected beside your own carrier in base, the
+standing rescue machinery scoops you straight back aboard and delivers
+you — petty, but correct. Driver UX: J with a manned station ejects
+(J stays join/dismount for everyone else).
+
+SHARED RECOGNITION — station kills split equally (odd point + the
+DEED to the trigger seat; 5 -> gunner 3 / driver 2); a driverless
+hull's gunner keeps it all.
+
+Suite 674/674 double-run, smoke + acceptance green. ALSO: perf CLOSED
+(prompt 104): 144 fps sustained at a 144 Hz display, still
+vsync-bound — headroom >= 144.

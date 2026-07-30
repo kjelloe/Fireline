@@ -15,7 +15,7 @@ import {
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
-  CMD_BOARD_STATION, CMD_LEAVE_STATION, CMD_STATION_FIRE, validate,
+  CMD_BOARD_STATION, CMD_LEAVE_STATION, CMD_STATION_FIRE, CMD_EJECT_STATION, validate,
 } from "./commands.js";
 import {
   MINE_ARM_TICKS, MINE_DAMAGE, MINE_DETECT_RADIUS_CELLS,
@@ -215,8 +215,41 @@ function applyStationFire(next, command) {
       kind: "asset", byType: asset.type,
       dir: compassOctant(asset.x - target.x, asset.y - target.y),
     });
-    awardOperator(next, operator.id, RECOG_KILL, DEED_KILL); // the trigger seat
+    // Q41 ruling: station kills are SHARED — the driver positioned the
+    // hull, the gunner pulled the trigger. Equal split (the gunner is
+    // the shooter); the odd point and the DEED go to the trigger seat.
+    // A driverless hull's gunner keeps it all.
+    if (asset.operatorId !== -1) {
+      const half = floorDivI32(RECOG_KILL, 2);
+      awardOperator(next, operator.id, RECOG_KILL - half, DEED_KILL);
+      awardOperator(next, asset.operatorId, half);
+    } else {
+      awardOperator(next, operator.id, RECOG_KILL, DEED_KILL);
+    }
   }
+  return next;
+}
+
+// Q41: the driver may EJECT station crew — server-run delay (the
+// ruling's "short delay" option) with a WARNING event, so the crew
+// always sees it coming on their own screen. The timer cancels if the
+// driver leaves or the crew dismounts first; on zero the crew exits
+// as a DOWNED operator at the hull (no damage — a bruised ego walks).
+export const EJECT_WARNING_TICKS = 25; // 2.5 s
+function applyEjectStation(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (!operator || operator.state !== OP_ACTIVE || operator.assetId === -1) {
+    return reject(next, command, "no asset selected");
+  }
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) return reject(next, command, "no asset selected");
+  if (asset.stationOp === -1) return reject(next, command, "station is empty");
+  if (asset.ejectTimer > 0) return reject(next, command, "eject already running");
+  asset.ejectTimer = EJECT_WARNING_TICKS;
+  next.events.push({
+    type: "station_eject_warning", assetId: asset.id,
+    operatorId: asset.stationOp, byOperatorId: operator.id,
+  });
   return next;
 }
 
@@ -1276,6 +1309,25 @@ function applyAdvanceTick(next) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
     if (asset.stationReload > 0) asset.stationReload -= 1; // prompt-100
+    // Q41 eject countdown: cancels if the driver left or the crew
+    // already dismounted; on zero the crew exits DOWNED at the hull.
+    if ((asset.ejectTimer ?? 0) > 0) {
+      if (asset.operatorId === -1 || asset.stationOp === -1) {
+        asset.ejectTimer = 0;
+      } else {
+        asset.ejectTimer -= 1;
+        if (asset.ejectTimer === 0) {
+          const seat = next.operators[asset.stationOp];
+          if (seat) {
+            seat.state = OP_DOWN;
+            seat.assetId = -1;
+            next.downed.push(createDowned(seat, asset));
+            next.events.push({ type: "station_ejected", operatorId: seat.id, assetId: asset.id });
+          }
+          asset.stationOp = -1;
+        }
+      }
+    }
     // 12B: hardpoint legs working — immobile; announce completion.
     if (asset.deployTimer > 0) {
       asset.deployTimer -= 1;
@@ -2012,6 +2064,7 @@ export function apply(state, command) {
     case CMD_BOARD_STATION: return applyBoardStation(next, command);
     case CMD_LEAVE_STATION: return applyLeaveStation(next, command);
     case CMD_STATION_FIRE: return applyStationFire(next, command);
+    case CMD_EJECT_STATION: return applyEjectStation(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
