@@ -3684,5 +3684,22 @@ THE SMOKE GATE EARNED ITS KEEP AGAIN: the first ready-milestone (first
 view snapshot) was a DEADLOCK — views require joining and joining sat
 behind the splash. Playwright's interception log named the exact
 polygon. Milestone corrected to socket-open (the join MENU is the
-brief's "assets ready" deliverable). Suite 663/663 double-run, smoke +
+brief's "assets ready" deliverable). Suite 662/662 double-run (the 663 in the commit message was a typo), smoke +
 acceptance green.
+
+## Q31 battery verdicts (n=300+300 each)
+
+1. SWAP CONFIRMATION (pre-lever code): Sentinel-side wins 67%
+   aggregate with uniques swapped — the factionswap conviction stands
+   at n=600.
+2. SAWTOOTH POST-LEVERS: 69.0% -> 58.5% A aggregate. The two levers
+   recovered ~10.5 points at scale. Still past the 55% premium
+   threshold, so the premium STAYS (correctly — the generator's
+   verdict is unchanged). Second-turn candidates if the designer wants
+   band: raid radius 8->10, earn window 1500->1000.
+3. FRONTIER POST-LEVERS: 55.2% -> 46.3% A aggregate — the raider's
+   clause swung frontier ~9 points toward B and landed INSIDE the
+   54/46 tolerance (B-side edge now). One conditional clause moved
+   two maps ~10 points each: THE lever of this era. Watch it in the
+   next battery round; if frontier drifts past 46, the clause
+   magnitude (not the trail speed) is the knob.
