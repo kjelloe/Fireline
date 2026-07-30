@@ -3736,3 +3736,19 @@ stationReload (v51). AI does not man stations v1 — humans-only feature,
 sims unchanged (gate outcomes identical). Rejections have text in both
 locales (8H sweep enforced it). Client UX half (vacant-seat indicator,
 JOIN AS GUNNER hover, driver's call ping, station HUD) is next.
+
+## slice-stations (client): both halves of the owner's seat UX
+
+The two discovery paths the owner designed, both built: (1) OTHER
+players see it — hovering any operable friendly with a vacant station
+shows "JOIN AS GUNNER (J)" / "JOIN AS AT GUNNER (J)" (a crewed hull's
+tip is just the join line; a vacant hull keeps its stats tip plus it);
+(2) the DRIVER can call for crew — new "need_gunner" ping kind, offered
+on the 1/2/3 keys and the Q-wheel while driving a station hull with
+the seat open. J boards the hovered station or dismounts yours; a
+DRIVING operator may step ACROSS to another hull's station (the driven
+hull is released under select_asset law — engine amendment this
+slice). At a station: clicks fire the mount (never command vehicles),
+the banner shows the mount + missile count + dismount key, whereAmI
+anchors centre-on-me to the hull. Feed lines + rejections both
+locales. Suite 668/668 double-run, smoke + acceptance green.

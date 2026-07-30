@@ -369,6 +369,18 @@ function init() {
     if (k === BINDS.mine) send({ type: "deploy_mine" });
     // B5: hold Q for the comm wheel (release sends, centre = cancel).
     if (k === BINDS.comm && !e.repeat) showCommWheel();
+    // Prompt-100: J joins the hovered vacant station, or leaves mine.
+    if (k === BINDS.station) {
+      const v = interpolator.latest();
+      if (whereAmI(v)?.kind === "stationed") {
+        send({ type: "leave_station" });
+      } else if (hoverAssetId !== null) {
+        const target = v?.friendlyAssets?.find((x) => x.id === hoverAssetId);
+        if (target && getUnitStats(target.type).station && target.stationOp === -1) {
+          send({ type: "board_station", assetId: target.id });
+        }
+      }
+    }
     // 10C: 1/2/3 send context pings (what they mean depends on your seat).
     if (e.key === "1" || e.key === "2" || e.key === "3") {
       const opts = pingOptionsFor(interpolator.latest(), joined?.operatorId);
@@ -917,6 +929,11 @@ function whereAmI(view) {
   if (!view || !joined) return null;
   const mine = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
   if (mine) return { kind: "asset", x: mine.x, y: mine.y, assetId: mine.id };
+  // Prompt-100: manning a station anchors you to that hull.
+  const manned = view.friendlyAssets?.find(
+    (a) => a.stationOp === joined.operatorId &&
+      a.state !== STATE_DISABLED && a.state !== 3);
+  if (manned) return { kind: "stationed", x: manned.x, y: manned.y, assetId: manned.id };
   const down = view.downedOperators?.find((d) => d.operatorId === joined.operatorId);
   if (down) return { kind: "downed", x: down.x, y: down.y };
   // Item 35: only an OPERABLE carrier counts as "riding". A wrecked one
@@ -1096,6 +1113,13 @@ function onPointerDown(event) {
 
   const view = interpolator.latest();
   const { cellX, cellY } = scenePointToCell(target.x, target.z);
+  // Prompt-100: at a station, clicking a visible enemy FIRES the mount.
+  if (whereAmI(view)?.kind === "stationed") {
+    const foe = (view?.visibleEnemies ?? []).find((e2) =>
+      Math.floor(e2.x / CELL) === cellX && Math.floor(e2.y / CELL) === cellY);
+    if (foe) send({ type: "station_fire", targetAssetId: foe.id });
+    return; // a gunner's clicks never command vehicles
+  }
   // 9B: while your seat is down, clicks crawl instead of commanding vehicles.
   if (view?.downedOperators?.some((d) => d.operatorId === joined.operatorId)) {
     // Prompt-51 AT satchel: clicking an ADJACENT enemy hull plants the
@@ -1930,6 +1954,24 @@ function updateActionBanner(view) {
   if (!el || !joined || joined.spectator) return;
   let text = null;
   bannerAction = null;
+  // Prompt-100: the station banner — what you man, how to fire, how to
+  // leave. AT gunners see their missile count.
+  const myStation = view?.friendlyAssets?.find(
+    (a) => a.stationOp === joined.operatorId && a.state !== STATE_DISABLED && a.state !== 3);
+  if (myStation) {
+    const st = getUnitStats(myStation.type).station;
+    const el2 = document.getElementById("action-banner");
+    if (el2) {
+      const text = st.kind === "mg"
+        ? t("banner.station_mg", { key: BINDS.station.toUpperCase() })
+        : t("banner.station_at", { n: myStation.stationAmmo, key: BINDS.station.toUpperCase() });
+      if (el2.textContent !== text) el2.textContent = text;
+      el2.style.display = "block";
+      el2.style.color = "#9fe89f";
+      bannerAction = () => send({ type: "leave_station" });
+    }
+    return;
+  }
   const myDown = view?.downedOperators?.find((d) => d.operatorId === joined.operatorId);
   if (myDown) {
     // B7: the death recap rides the down banner — what got you, and
@@ -2264,7 +2306,12 @@ function updateHoverTip(view) {
     return;
   }
   const a = view?.friendlyAssets?.find((x) => x.id === hoverAssetId);
-  if (!a || a.operatorId !== -1 || a.state === STATE_DISABLED || a.state === 3) {
+  const operable = a && a.state !== STATE_DISABLED && a.state !== 3;
+  // Prompt-100: a VACANT STATION on any operable friendly is worth a
+  // tip of its own, even when a driver is aboard.
+  const stationStats = operable ? getUnitStats(a.type).station : null;
+  const stationOpen = stationStats && a.stationOp === -1;
+  if (!a || !operable || (a.operatorId !== -1 && !stationOpen)) {
     el.style.display = "none";
     return;
   }
@@ -2275,11 +2322,19 @@ function updateHoverTip(view) {
   el.style.top = `${Math.round(sy - 46)}px`;
   el.style.display = "block";
   const name = codexFor(a.type)?.name?.toUpperCase() ?? "UNIT";
+  const stationLine = stationOpen
+    ? ` <span style="color:#9fe89f;">${t(stationStats.kind === "mg" ? "hover.join_mg" : "hover.join_at")}</span>`
+    : "";
+  if (a.operatorId !== -1) {
+    // Crewed hull, open station: the tip is ONLY the join line.
+    el.innerHTML = stationLine;
+    return;
+  }
   // Item 31: the key is the reliable route — the link stays for mouse
   // users who manage to reach it, but the tip now names the shortcut.
   el.innerHTML = `${t("hover.vacant", { name })} ` +
     `<span id="hover-stats" style="color:#7fd4ff; cursor:pointer;">${t("hover.stats")}</span>` +
-    ` <span style="color:#9ab;">(${BINDS.stats.toUpperCase()})</span>`;
+    ` <span style="color:#9ab;">(${BINDS.stats.toUpperCase()})</span>` + stationLine;
   const link = document.getElementById("hover-stats");
   if (link) link.onclick = (ev) => { ev.stopPropagation(); showCodex(a.type); };
 }

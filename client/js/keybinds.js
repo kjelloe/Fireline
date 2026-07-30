@@ -23,6 +23,8 @@ export const DEFAULT_BINDS = Object.freeze({
   // ping at the cursor. "q" for quick-comm — the genre convention — and
   // free of the WASD pan cluster.
   comm: "q",
+  // Prompt-100: J joins the hovered vacant crew station / leaves yours.
+  station: "j",
 });
 
 export function loadBinds(storage = globalThis.localStorage) {

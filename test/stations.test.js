@@ -36,9 +36,20 @@ test("stations: board is garage-style, one body one post, no double manning", ()
     { type: "board_station", operatorId: 2, assetId: 0 });
   assert.equal(second.events.at(-1).reason, "station taken");
 
-  // The DRIVER cannot man the ring while driving.
+  // The DRIVER cannot man their OWN hull's ring...
   const driver = apply(s, { type: "board_station", operatorId: 0, assetId: 0 });
   assert.equal(driver.events.at(-1).reason, "leave your asset first");
+  // ...but CAN step across to another hull's station — the driven hull
+  // is released exactly like a field seat-swap (select_asset law).
+  let cross = sandbox([
+    { team: 0, type: 0, cellX: 18, cellY: 20 },
+    { team: 0, type: 4, cellX: 20, cellY: 20 },
+  ]);
+  cross = joinAndSelect(cross, 0, 0, 0);
+  cross = apply(cross, { type: "board_station", operatorId: 0, assetId: 1 });
+  assert.equal(cross.assets[1].stationOp, 0, "stepped across to the ring");
+  assert.equal(cross.assets[0].operatorId, -1, "the tank is walked away from");
+  assert.equal(cross.operators[0].assetId, -1, "one body, one post");
 
   // Taking a driving seat releases the station.
   s.assets.push(s.assets[0]); // placeholder guard: never used

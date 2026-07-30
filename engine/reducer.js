@@ -146,16 +146,24 @@ function applyBoardStation(next, command) {
   if (!operator || operator.state !== OP_ACTIVE) {
     return reject(next, command, "operator not active");
   }
-  if (operator.assetId !== -1) return reject(next, command, "leave your asset first");
   if (stationFor(next, operator.id)) return reject(next, command, "already manning a station");
   const asset = next.assets[command.assetId];
   if (!asset || asset.team !== operator.team) return reject(next, command, "no such asset");
+  if (asset.operatorId === operator.id) return reject(next, command, "leave your asset first");
   if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
   }
   const st = getUnitStats(asset.type).station;
   if (!st) return reject(next, command, "no station on that chassis");
   if (asset.stationOp !== -1) return reject(next, command, "station taken");
+  // A DRIVING operator may step across to a station: the driven hull is
+  // released exactly the way select_asset releases it (field swaps are
+  // legal; the abandon-recall clock covers the walked-away hull).
+  if (operator.assetId !== -1) {
+    const previous = next.assets[operator.assetId];
+    if (previous && previous.operatorId === operator.id) previous.operatorId = -1;
+    operator.assetId = -1;
+  }
   asset.stationOp = operator.id;
   next.events.push({ type: "station_boarded", operatorId: operator.id, assetId: asset.id, kind: st.kind });
   return next;

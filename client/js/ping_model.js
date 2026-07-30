@@ -46,6 +46,11 @@ function contextOptionsFor(view, operatorId) {
   if (me.type === 3 && !towing) {
     options.push({ kind: "road_blocked", label: t("ping.road_blocked") });
   }
+  // Prompt-100: driving a station hull with the seat open — put out
+  // the call (the owner's "driver alert" half of the seat UX).
+  if (me.stationOp === -1 && (me.type === 4 || me.type === 1)) {
+    options.push({ kind: "need_gunner", label: t("ping.need_gunner") });
+  }
   return options;
 }
 
