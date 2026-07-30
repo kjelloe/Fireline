@@ -24,6 +24,7 @@ case "${1:-}" in
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
   pool)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pool\",\"ticketPool\":${2:?usage: batch_send.sh pool <ticketPool> [count] [map]},\"count\":${3:-300},\"map\":\"${4:-frontier_corridor}\"}" ;;
   skimtrail) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"skimtrail\",\"speed\":${2:?usage: batch_send.sh skimtrail <speed> [count] [mirror]},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
+  pows)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pows\",\"n\":${2:-2},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
   resync) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"resync\"}" ;;

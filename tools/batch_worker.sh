@@ -241,6 +241,16 @@ handle_job() { # $1 = JSON body
       SKIMTRAIL=$st UNIQUES=1 run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
         "$st_mirror" 1 "skimtrail_${st}$([ "$st_mirror" = 1 ] && echo _mirror)" ;;
+    pows)
+      # Q46 battery: {"kind":"pows","n":2,"count":300,"mirror":0}.
+      # Pre-placed captives (the designed POW experience) at scale, live
+      # config, frontier — judges the powPreplaced default flip.
+      local pw pw_mirror
+      pw=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('n',2))" "$body")
+      pw_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      POWS=$pw UNIQUES=1 run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
+        "$pw_mirror" 1 "pows_${pw}$([ "$pw_mirror" = 1 ] && echo _mirror)" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -343,7 +353,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/matrix/perf/sendresults/update/resync." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/pows/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.

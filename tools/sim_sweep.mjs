@@ -28,6 +28,9 @@ const HORIZON = Number(process.env.TICKS ?? 18000);
 // prompt-88 pool probes: TICKETPOOL=350 overrides the session rule so
 // the designer's 330/350/375 candidates can be swept without a code edit.
 const TICKETPOOL = process.env.TICKETPOOL ? Number(process.env.TICKETPOOL) : null;
+// Q46 battery: POWS=2 pre-places captives (the designed POW experience)
+// so the flip of the powPreplaced default can be judged at n=300.
+const POWS = process.env.POWS ? Number(process.env.POWS) : null;
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -43,8 +46,18 @@ for (let seed = 1; seed <= COUNT; seed++) {
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES,
-    rules: TICKETPOOL ? { ticketPool: TICKETPOOL } : null,
+    rules: TICKETPOOL || POWS !== null
+      ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
+          ...(POWS !== null ? { powPreplaced: POWS } : {}) }
+      : null,
   });
+  // Config-plumbing self-check (the crewing-bug lesson): say what the
+  // FIRST war actually starts with, so a mis-wired rules object can
+  // never masquerade as a null result at n=300.
+  if (POWS !== null && seed === 1) {
+    const captive = server.state.operators.filter((o) => o.state === 3).length;
+    console.error(`pows: powPreplaced=${POWS} -> ${captive} captive seats at tick 0`);
+  }
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every
     // entity across x' = W-1-x, headings across the vertical axis, and
