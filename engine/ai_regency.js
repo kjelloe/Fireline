@@ -23,8 +23,8 @@ import { inFireRange } from "./combat.js";
 import { inSupply } from "./supply.js";
 import { getUnitStats } from "./units.js";
 import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
-import { CMD_REDEPLOY } from "./commands.js";
-import { downedFor, REDEPLOY_TICKS } from "./downed.js";
+import { CMD_REDEPLOY, CMD_CRAWL_ORDER } from "./commands.js";
+import { downedFor, REDEPLOY_TICKS, CRAWL_RADIUS_CELLS } from "./downed.js";
 import { towRejection, towedWreck } from "./recovery.js";
 import { OP_DOWN } from "./state.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
@@ -156,6 +156,31 @@ function mapHasRunway(state) {
 // standard — cheap, deterministic, good enough for a window test).
 export const ESCORT_CELLS = 6;
 export const SNEAK_SCAN_CELLS = 12;
+// Formation primitive (prompt 110 queue): a party ASSEMBLES at a rally
+// cell before it ADVANCES, and the soft leader holds inside cohesion
+// range of its escorts. Chasing a fast leader's live position never
+// converged (the raid-party diagnosis: 2,478 dive ticks, zero holds,
+// raiders dying solo at the wire).
+export const FORM_UP_CELLS = 3;      // party counts as assembled within this of the rally
+export const RAID_COHESION_CELLS = 4; // soft leader stays this close to an escort
+// An empty wire is only a sneak window if the raider is already CLOSE.
+// Guard count is measured 5 cells around the prison — at war start
+// that quadrant is empty and both raiders solo-dived across the whole
+// map from tick 2 (the trace: guards=0, dive=true, t=2). The route is
+// the danger, not the wire.
+export const SNEAK_DIVE_CELLS = 12;
+// Approach lanes. Three designs measured before this one: a shared
+// row (parties meet head-on at map centre and annihilate — traced at
+// x≈64, t≈475, every war), a ±6 straddle (the compound-INTERIOR row
+// wall-jams: team 1 sprang its people 3/3 seeds, team 0 never), and
+// alternating time windows (parties die waiting at the rally — 2/5
+// seeds raided). What works: BOTH lanes south of the compound in the
+// same open band (prison row +6 / +10), four rows apart — passing
+// parties trade a shot or two instead of body-blocking. y-offsets
+// commute with the x-mirror; the +6/+10 split is the residual
+// asymmetry, and it is measured, not assumed (see dev-log).
+export const RAID_LANE_ROWS = [10, 6]; // by team
+export const RAID_TURN_IN_CELLS = 12;
 function raidWindowOpen(state, carrier, visibleSet) {
   const cx = worldToCellFloor(carrier.x);
   const cy = worldToCellFloor(carrier.y);
@@ -521,17 +546,6 @@ export class AIRegency {
         (this.raidDebug ??= {})[team] = { tick: state.tick, opId: -1, reason: "no eligible raider" };
         continue;
       }
-      const raider = state.assets[state.operators[bestOp].assetId];
-      const rcx = worldToCellFloor(raider.x);
-      const rcy = worldToCellFloor(raider.y);
-      let escortsNear = 0;
-      for (const a of state.assets) {
-        if (a.team !== team || a.id === raider.id || isWreck(a) || a.operatorId === -1) continue;
-        const st = getUnitStats(a.type);
-        if (st.canTow || st.canCarryStandard || st.indirect) continue;
-        if (Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
-                     Math.abs(worldToCellFloor(a.y) - rcy)) <= ESCORT_CELLS) escortsNear++;
-      }
       // Guard count = the prison QUADRANT only (radius 5). Counting the
       // whole base garrison (radius 12 covered it, plus MPG waves spawn
       // there) meant the sneak window never opened — measured 1/5 raids.
@@ -541,18 +555,22 @@ export class AIRegency {
         if (Math.max(Math.abs(worldToCellFloor(e.x) - prison.cellX),
                      Math.abs(worldToCellFloor(e.y) - prison.cellY)) <= 5) guards++;
       }
-      // COMMIT once the clock runs — flapping at the wire wastes the
-      // whole approach. Stage well clear of the enemy guns (24 cells).
-      const dive = prison.raidTicks > 0 || escortsNear >= 2 || guards < 2;
-      const stage = [prison.cellX + (prison.team === 0 ? 24 : -24), prison.cellY];
-      prisonRaiderFor.set(team, { opId: bestOp, prison, dive, stage });
-      // Telemetry for doctrine work (AI memory, unhashed): the dive
-      // decision per plan, readable by probes via server.ai.raidDebug.
-      (this.raidDebug ??= {})[team] = {
-        tick: state.tick, opId: bestOp, assetId: raider.id,
-        dive, escortsNear, guards,
-        raiderCell: [rcx, rcy], hp: raider.hp,
-      };
+      // The rally cell sits near OWN lines — 12 cells out from the home
+      // base toward the target, on the prison's row. The first version
+      // staged at prison−24 (deep in the enemy half): the scout parked
+      // there alone for ~1000 ticks while its tanks crossed, and died
+      // waiting, every time. Assemble where it's safe, advance together.
+      // Geometry-derived (base centre + prison), so it commutes with
+      // the mirror.
+      const homeBase = state.bases.find((b) => b.team === team);
+      const bx = homeBase ? homeBase.x + ((homeBase.width / 2) | 0) : prison.cellX;
+      const sx = prison.cellX > bx ? 1 : prison.cellX < bx ? -1 : 0;
+      const laneY = Math.min(state.map.height - 1, prison.cellY + RAID_LANE_ROWS[team]);
+      const stage = [
+        Math.abs(prison.cellX - bx) > 12 ? bx + sx * 12 : prison.cellX,
+        laneY,
+      ];
+      prisonRaiderFor.set(team, { opId: bestOp, prison, guards, stage, escorts: [] });
     }
 
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when
@@ -594,30 +612,86 @@ export class AIRegency {
       for (const [, opId] of candidates.slice(0, 2)) escortFor.set(opId, raiderId);
     }
 
-    // Slice 3: the PRISON raid party borrows the same convergence — two
-    // nearest free combat seats escort the designated scout (ops already
-    // escorting the carrier keep that duty; the standard outranks).
+    // FORMATION (the group-movement primitive, v1 consumer: the prison
+    // raid party). Two nearest free combat seats join the raider's
+    // PARTY (ops already escorting the carrier keep that duty; the
+    // standard outranks). The party has a persistent phase in AI
+    // memory: ASSEMBLE — everyone rides to the rally cell (the stage,
+    // 24 cells short of the wire) — then ADVANCE once all living
+    // members stand within FORM_UP_CELLS of it. Escorts lead the
+    // advance; the raider holds inside RAID_COHESION_CELLS of one.
+    // Solo dives only through a truly empty wire (guards === 0) — the
+    // old `guards < 2` window is the documented meat grinder.
+    for (const team of [0, 1]) {
+      if (!prisonRaiderFor.has(team) && this.raidParty?.[team]) delete this.raidParty[team];
+    }
     for (const [team, rp] of prisonRaiderFor) {
       const raiderAsset = state.assets[state.operators[rp.opId]?.assetId];
-      if (!raiderAsset || isWreck(raiderAsset)) continue;
+      if (!raiderAsset || isWreck(raiderAsset)) { prisonRaiderFor.delete(team); continue; }
       const rcx = worldToCellFloor(raiderAsset.x);
       const rcy = worldToCellFloor(raiderAsset.y);
+      // Seat scarcity is the real starvation (measured: esc=0 in
+      // 11,905 of 12,000 plan passes): with POWS locking 4 seats a
+      // team runs ~6 regents, and the carrier raid doctrine held both
+      // tanks as its standing escorts. So: carrier escorts are
+      // poachable while the standard raid is SPECULATIVE (enemy
+      // standard safe at home), locked while it is LIVE (carried).
+      // Capturers are last-resort. Rank: free hulls, +50 carrier
+      // escorts, +100 capturers.
+      const eStd = state.standards.length === 2 ? state.standards[team === 0 ? 1 : 0] : null;
+      const stdRaidLive = eStd ? eStd.status === STD_CARRIED : false;
       const cands = [];
       for (const [opId] of controlled) {
-        if (escortFor.has(opId) || opId === rp.opId) continue;
+        if (opId === rp.opId) continue;
+        if (escortFor.has(opId) && stdRaidLive) continue;
         const op = state.operators[opId];
         if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
         const a = state.assets[op.assetId];
         if (!a || a.team !== team || a.operatorId !== opId || isWreck(a)) continue;
         const st = getUnitStats(a.type);
         if (st.canTow || st.canCarryStandard || st.indirect) continue;
-        if (capturerOps.has(opId)) continue;
         const d = Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
-                           Math.abs(worldToCellFloor(a.y) - rcy));
+                           Math.abs(worldToCellFloor(a.y) - rcy)) +
+                  (escortFor.has(opId) ? 50 : 0) +
+                  (capturerOps.has(opId) ? 100 : 0);
         cands.push([d, opId]);
       }
       cands.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
-      for (const [, opId] of cands.slice(0, 2)) escortFor.set(opId, raiderAsset.id);
+      rp.escorts = cands.slice(0, 2).map(([, opId]) => opId);
+      // Persistent phase (AI memory, unhashed — recomputed state stays
+      // in the plan pass; only the assemble/advance latch survives).
+      const mem = (this.raidParty ??= {});
+      let ph = mem[team];
+      if (!ph || ph.raiderOp !== rp.opId) ph = mem[team] = { raiderOp: rp.opId, phase: 0 };
+      const memberCells = [[rcx, rcy]];
+      for (const opId of rp.escorts) {
+        const a = state.assets[state.operators[opId].assetId];
+        memberCells.push([worldToCellFloor(a.x), worldToCellFloor(a.y)]);
+      }
+      if (ph.phase === 0 && rp.escorts.length >= 2 && memberCells.every(([cx, cy]) =>
+        Math.max(Math.abs(cx - rp.stage[0]), Math.abs(cy - rp.stage[1])) <= FORM_UP_CELLS)) {
+        ph.phase = 1; // formed up — advance together
+      }
+      // Escorts all gone before the clock started → re-form. Committed
+      // clocks (raidTicks > 0) press on: flapping at the wire wastes
+      // the whole approach.
+      if (ph.phase === 1 && rp.escorts.length === 0 &&
+          rp.prison.raidTicks === 0 && rp.guards > 0) {
+        ph.phase = 0;
+      }
+      rp.phase = ph.phase;
+      const raiderDist = Math.max(Math.abs(rcx - rp.prison.cellX),
+                                  Math.abs(rcy - rp.prison.cellY));
+      rp.sneak = rp.guards === 0 && raiderDist <= SNEAK_DIVE_CELLS;
+      rp.dive = rp.prison.raidTicks > 0 || ph.phase === 1 || rp.sneak;
+      // Telemetry for doctrine work: the decision per plan, readable
+      // by probes via server.ai.raidDebug — records phase now too.
+      (this.raidDebug ??= {})[team] = {
+        tick: state.tick, opId: rp.opId, assetId: raiderAsset.id,
+        dive: rp.dive, phase: ph.phase, escorts: rp.escorts.length, guards: rp.guards,
+        raiderCell: [rcx, rcy], hp: raiderAsset.hp,
+        stage: rp.stage, escortCells: memberCells.slice(1),
+      };
     }
 
     // Question 18 fix: commands used to resolve in ascending operator order
@@ -639,6 +713,33 @@ export class AIRegency {
       // operable and free; regented seats take the lowest free operable asset.
       if (operator.state === OP_DOWN) {
         const down = downedFor(state, operatorId);
+        // A freed POW cannot self-redeploy (the carrier ride IS the
+        // rescue) — but lying at the wire re-secures them in 600 ticks.
+        // Freed prisoners CRAWL for home: it breaks the re-secure
+        // radius and moves the pickup toward friendly lines.
+        if (down && down.freedPow === 1) {
+          const home = state.bases.find((b) => b.team === operator.team);
+          if (home) {
+            // Crawl is capped at CRAWL_RADIUS_CELLS per order ("move
+            // minimally to cover") — a cross-map target is rejected.
+            // Short LEGS toward home instead: 3 cells at a time, one
+            // axis then the other, re-issued as each leg completes.
+            const hx = home.x + ((home.width / 2) | 0);
+            const hy = home.y + ((home.height / 2) | 0);
+            const cx = worldToCellFloor(down.x);
+            const cy = worldToCellFloor(down.y);
+            const dx = Math.max(-CRAWL_RADIUS_CELLS, Math.min(CRAWL_RADIUS_CELLS, hx - cx));
+            const legX = cx + dx;
+            const legY = cy + Math.max(-(CRAWL_RADIUS_CELLS - Math.abs(dx)),
+              Math.min(CRAWL_RADIUS_CELLS - Math.abs(dx), hy - cy));
+            const tx = worldToCellFloor(down.targetX);
+            const ty = worldToCellFloor(down.targetY);
+            if ((legX !== cx || legY !== cy) && (tx !== legX || ty !== legY)) {
+              commands.push({ type: CMD_CRAWL_ORDER, operatorId, targetCellX: legX, targetCellY: legY });
+            }
+          }
+          continue;
+        }
         if (down && down.downTicks >= REDEPLOY_TICKS) {
           commands.push({ type: CMD_REDEPLOY, operatorId });
         }
@@ -781,6 +882,15 @@ export class AIRegency {
         }
       }
 
+      // A raid-party member FIGHTS ON THE MOVE: firing is legal while
+      // MOVING, and the fire doctrine's `continue` was pinning whole
+      // parties at their rally in endless roadside firefights (measured:
+      // 29,662 advance ticks, zero arrivals, seed 2026). The member
+      // shoots AND falls through to the formation movement below.
+      const partyNow = prisonRaiderFor.get(asset.team);
+      const fightsMoving = !!partyNow && (asset.prisoner ?? -1) === -1 &&
+        (partyNow.opId === operatorId || partyNow.escorts.includes(operatorId));
+
       // Fire doctrine: engage the nearest visible enemy in range when the
       // gun is loaded (8E). Easy regents observe a duty cycle: they only
       // engage during the first half of every double-reload window (6D).
@@ -802,7 +912,7 @@ export class AIRegency {
         const target = pickFireTarget(state, asset, visibleByTeam[asset.team]);
         if (target) {
           commands.push({ type: CMD_FIRE_ORDER, operatorId, targetAssetId: target.id });
-          continue;
+          if (!fightsMoving) continue;
         }
         // 13E-2 SIEGE: with no hull to shoot, a siege tube may drop a
         // bridge — but only when its side is LOSING the crossing, so
@@ -960,6 +1070,68 @@ export class AIRegency {
             });
             continue;
           }
+        }
+      }
+      // FORMATION movement (pre-gate — members re-target while moving,
+      // stale rendezvous cells are how the chase version failed). One
+      // law for the whole party:
+      //   assemble → everyone rides to the rally cell;
+      //   advance  → escorts LEAD straight at the objective; the soft
+      //              leader presses only inside RAID_COHESION_CELLS of
+      //              a living escort, else it closes on the nearest
+      //              escort instead of outrunning its armour.
+      // A raider in custody is exempt — the capture pays at the prison
+      // gate and the homing law (post-gate) owns that trip.
+      {
+        const rp = prisonRaiderFor.get(asset.team);
+        const partyRole = rp && (asset.prisoner ?? -1) === -1
+          ? (rp.opId === operatorId ? 1 : rp.escorts.includes(operatorId) ? 2 : 0)
+          : 0;
+        if (partyRole !== 0) {
+          const myCx = worldToCellFloor(asset.x);
+          const myCy = worldToCellFloor(asset.y);
+          // In-lane until the final stretch, then turn onto the wire.
+          const goal = Math.abs(myCx - rp.prison.cellX) <= RAID_TURN_IN_CELLS
+            ? [rp.prison.cellX, rp.prison.cellY]
+            : [rp.prison.cellX, rp.stage[1]];
+          let desired = null;
+          if (rp.phase !== 1) {
+            desired = rp.dive ? goal : rp.stage;
+          } else if (partyRole === 2) {
+            desired = goal;
+          } else {
+            // The leader: hold cohesion with the nearest living escort.
+            let nearest = null;
+            let nd = Infinity;
+            for (const opId of rp.escorts) {
+              const e = state.assets[state.operators[opId].assetId];
+              const d = Math.max(Math.abs(worldToCellFloor(e.x) - myCx),
+                                 Math.abs(worldToCellFloor(e.y) - myCy));
+              if (d < nd) { nd = d; nearest = e; }
+            }
+            if (rp.prison.raidTicks > 0 || rp.sneak || nearest === null || nd <= RAID_COHESION_CELLS) {
+              desired = goal;
+            } else {
+              desired = [worldToCellFloor(nearest.x), worldToCellFloor(nearest.y)];
+            }
+          }
+          // Raw moves, not route-graph legs: waypoint re-issue from a
+          // pre-gate block livelocked the party (the leg target flaps
+          // as the route recomputes mid-leg — 26-30k advance ticks,
+          // zero arrivals, zero deaths). The lane row IS the road here.
+          if (desired && (myCx !== desired[0] || myCy !== desired[1])) {
+            const stale = Math.max(
+              Math.abs(worldToCellFloor(asset.targetX) - desired[0]),
+              Math.abs(worldToCellFloor(asset.targetY) - desired[1])) > 2;
+            if (asset.state === ASSET_IDLE || stale) {
+              commands.push({
+                type: CMD_MOVE_ORDER, operatorId,
+                targetCellX: desired[0], targetCellY: desired[1],
+              });
+            }
+            continue;
+          }
+          if (desired) continue; // standing on the goal cell — the dwell is the job
         }
       }
       // Item 11 escorts follow TIGHT (pre-gate): an escort whose carrier
@@ -1181,13 +1353,8 @@ export class AIRegency {
         const home = (state.prisons ?? []).find((p) => p.team === asset.team);
         if (home) target = [home.cellX, home.cellY];
       }
-      // POW arc: the designated prison raider rides for the wire when
-      // the window is open, and STAGES short of the base while the
-      // party assembles — freeing seats outranks every relay errand.
-      if (!target && prisonRaiderFor.get(asset.team)?.opId === operatorId) {
-        const rp = prisonRaiderFor.get(asset.team);
-        target = rp.dive ? [rp.prison.cellX, rp.prison.cellY] : rp.stage;
-      }
+      // (POW raid movement lives in the FORMATION block above — the
+      // party pre-gate law owns raider and escorts alike.)
       // B6: the designated drop-securer rides for the crate before any
       // relay errand — the packet is one-shot and the window is shared.
       if (!target && securerFor.get(asset.team) === operatorId) {

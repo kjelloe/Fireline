@@ -60,3 +60,49 @@ slice of the next session.
   disclosure in the briefing, and the raider's clause live.
 - Uncapped perf run (yours): `bash tools/perf_native.sh` — no flag
   needed now that the display can do 144 Hz.
+
+---
+
+## Addendum: formation primitive + re-baseline (same day, after the review round)
+
+### PC re-baseline verdicts (1,800 wars on d37e979 — the fresh era table)
+
+| profile (live) | A-rate aggregate | verdict |
+|---|---|---|
+| frontier | **48.5%** (48.8 normal / 48.1 mirror) | FAIR, both worlds |
+| sawtooth | **56.7%** (was 58.5 post-levers, 69 pre) | HELD; premium stays (>55) |
+| blackwood | **49.2%**, edge flips with mirror | fair; promotion holds |
+
+Frontier pacing: median 21.7 min, horn 15%, tickets 76%, comebacks 25%.
+The era horn settled at 15% (pool-ladder days were 9%) — stable, priced
+in as the era's number. The skill baseline table now says exactly this.
+
+### Formation/group-movement primitive (slice-formation) — LANDED
+
+The next-major-slice from the People Update queue. The AI raid party
+now: assembles at a rally near its OWN lines, advances together with
+escorts leading, the scout holds cohesion instead of outrunning its
+armour, and everyone fights on the move. Reducer got one small rule:
+a second raider at the wire doubles the raid clock (10 s solo → 5 s
+pair — inside the designer's 8-12 s band, noted in specs/12).
+
+**Verdict (5 seeds, POWS=2):** raids complete in 3/5 seeds and BOTH
+teams are capable — seed 777 emptied both prisons, 9001 team 0 won
+off its rescue, 2026 team 1 did. Freed crews crawl clear of the wire,
+are carried home, and re-seat into their paired hulls. The winner
+tracks who springs their people — the seat economics thesis, now
+observable in AI wars.
+
+Getting here burned four measured wrong designs (shared row = head-on
+annihilation at map centre; ±6 straddle = one team's lane wall-jams,
+3/3 one-sided; time windows = parties die waiting; route-graph legs
+pre-gate = livelock). Full autopsy in dev-log.
+
+**powPreplaced stays 0 for now** (your prompt-106 ruling said "until
+AI raids work, then adjust"): raids work, but 2/5 seeds still outran
+16k ticks with seats locked. Q46: OK to flip the default to 2 once a
+300-war POWS=2 PC battery shows tempo (undecided <5%) and fairness
+hold? The battery job is ready to queue on your go — the flip repins
+the fixture, so I want the evidence first.
+
+Convoy Escort inherits this party law next.

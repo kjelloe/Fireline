@@ -44,7 +44,9 @@ outcome. Renderer presents fog-filtered views only.
   `engine/sites.js`, materiel/repair + Slow Manufacture passes in the
   reducer, AI doctrine (roles, capture-seek, rescue, mining, pings) in
   `engine/ai_regency.js` (+ escorts 11x, roleTruck ladder, route-graph
-  consumption). Phase 12-17 modules: `shared/factions.js` (Directorate/
+  consumption, FORMATION party law — rally near own lines, phase latch
+  in AI memory, escorts lead, fights-on-the-move; the prison raid
+  party rides it, Convoy Escort is next). Phase 12-17 modules: `shared/factions.js` (Directorate/
   Outliers identity), `engine/route_graph.js` (13C equivariant Dijkstra
   waypoints), body collision + parity march order in the reducer (17),
   hybrid ticket bleed 13H (hashed `tickets`; B1 ticketPerDisable — a wreck

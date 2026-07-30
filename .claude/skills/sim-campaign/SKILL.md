@@ -124,3 +124,14 @@ and ERA HORN DRIFT to ~15-20% (accumulated across walls/clause/
 captures — RE-BASELINE with a PC battery round before tuning anything
 against the pool-ladder-era numbers). powPreplaced defaults 0 (ruled)
 — POWS=2 only for human sessions until the AI raid party works.
+FORMATION ERA (2026-08-01, slice-formation): the AI raid party rides
+the group-movement primitive (rally near own lines → advance together,
+escorts lead, fights-on-the-move). With POWS=2 raids complete for BOTH
+teams (5-seed probe: 3/5 seeds, 777 emptied both prisons) and freed
+seats re-seat. The powPreplaced default flip is gated on a 300-war
+POWS=2 PC battery ({"kind":"sweep",...} with rules) — 2/5 seeds still
+outran 16k with locked seats. Organic captures activate the party
+doctrine in DEFAULT wars too: expect occasional pow_delivered /
+prison_raided in gate seeds, and judge raid health by
+server.ai.raidDebug (phase/escorts/guards per plan), not by staring
+at unit orders.

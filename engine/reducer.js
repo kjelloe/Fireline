@@ -1659,13 +1659,17 @@ function applyAdvanceTick(next) {
   for (const prison of next.prisons ?? []) {
     if (prison.pows.length === 0) { prison.raidTicks = 0; continue; }
     let holder = null;
+    let hands = 0;
     for (const a of next.assets) {
       if (a.team === prison.team || a.operatorId === -1) continue;
       if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
       const d = Math.max(
         absI32(worldToCellFloor(a.x) - prison.cellX),
         absI32(worldToCellFloor(a.y) - prison.cellY));
-      if (d <= PRISON_RAID_CELLS) { holder = a; break; } // lowest id holds
+      if (d <= PRISON_RAID_CELLS) {
+        hands += 1;
+        if (!holder) holder = a; // lowest id holds (and is paid)
+      }
     }
     if (!holder) {
       // The cut wire stays cut a while: the clock DECAYS instead of
@@ -1675,7 +1679,12 @@ function applyAdvanceTick(next) {
       if (prison.raidTicks > 0) prison.raidTicks = Math.max(0, prison.raidTicks - 2);
       continue;
     }
-    prison.raidTicks += 1;
+    // MANY HANDS cut faster: a second raider at the wire doubles the
+    // clock (10 s solo, 5 s as a pair — the formation slice's reason
+    // to arrive together; a lone party survivor rarely outlives a
+    // 100-tick hold under base fire). Capped at 2x, inside the
+    // designer's 8-12 s solo band.
+    prison.raidTicks += hands >= 2 ? 2 : 1;
     if (prison.raidTicks < RAID_HOLD_TICKS) continue;
     const freed = prison.pows.length;
     for (const { id: powId } of prison.pows) {

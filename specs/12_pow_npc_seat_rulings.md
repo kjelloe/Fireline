@@ -183,3 +183,5 @@ hard constraint when bigger bases or outside-base prisons arrive.
 5. Vault (first map-special, on a map that earns it).
 6. Farmhands + road workers (ambience pass).
 7. Scientist/lab + trader convoy (escortable NPC era).
+
+> Build-order update (2026-08-01): formation/group-movement primitive LANDED (slice-formation); the AI raid party rides it — raids complete for BOTH teams (5-seed probe). powPreplaced default flip awaits a 300-war POWS=2 battery.

@@ -3950,3 +3950,58 @@ crossing solo; guards only make raids harder, so the no-guard test is
 the conservative case) — which matches their own Order A anyway.
 POW death: we are currently SAFER than their v1 ask (no death
 mechanism exists at all). Suite 683/683 double-run, gate + smoke green.
+
+## slice-formation: the group-movement primitive (2026-08-01)
+
+The prompt-110 queue's next major slice — assemble-then-move for the
+prison raid party, the piece the three-layer raid diagnosis said was
+missing. Suite 690/690 x2, gate 3/5 mixed + organic pow_delivered.
+
+WHAT LANDED
+- `AIRegency` party law: persistent ASSEMBLE→ADVANCE phase latch
+  (`this.raidParty`, AI memory, unhashed), rally near OWN lines
+  (base centre +12 toward target, geometry-derived so it commutes
+  with the mirror), FORM_UP_CELLS 3, escorts lead, the soft leader
+  holds inside RAID_COHESION_CELLS 4 of an escort or closes on it.
+- Solo dives only through a truly empty wire AND close (guards === 0
+  && dist <= SNEAK_DIVE_CELLS 12) — the old `guards < 2` window
+  solo-dived from spawn at t=2 (the wire count never measured the
+  route danger).
+- Party members FIGHT ON THE MOVE: their fire order falls through to
+  the movement law (firing is legal while MOVING). The fire
+  doctrine's `continue` had pinned whole parties at the rally in
+  roadside firefights — 29,662 advance ticks, zero arrivals, seed
+  2026.
+- Approach lanes prison-row +10 (team 0) / +6 (team 1), both south
+  of the compound in the same open band, turn-in at 12 cells.
+  Measured alternatives: shared row = head-on annihilation at map
+  centre (x≈64, t≈475, every war); ±6 straddle = the interior row
+  wall-jams (team 1 sprang 3/3, team 0 never — a fairness breaker);
+  time windows = parties die waiting at the rally (2/5). Route-graph
+  legs from the pre-gate block livelock (leg target flaps as the
+  route recomputes mid-leg — 26-30k advance ticks, zero arrivals).
+- Escort candidacy: carrier escorts poachable while the standard
+  raid is SPECULATIVE (enemy standard at home), locked while LIVE;
+  capturers last-resort (+100). Seat scarcity was the real
+  starvation — POWS=2 leaves ~6 regents/team and the carrier
+  doctrine held both tanks forever (esc=0 in 11,905/12,000 passes).
+- Reducer: MANY HANDS at the wire — a second raider doubles the raid
+  clock (10 s solo, 5 s pair, cap 2x, inside the designer's 8-12 s
+  solo band). The formation's reason to arrive together.
+- Freed AI POWs CRAWL for home in CRAWL_RADIUS_CELLS legs (a
+  cross-map crawl target is rejected by crawlRejection — found when
+  every sprung prisoner lay at the wire until re-secured).
+
+VERDICT (5 seeds, POWS=2, 16k ticks): raids complete in 3/5 seeds,
+BOTH teams capable (2026 team 1, 9001 team 0, 777 BOTH prisons
+emptied, captiveEnd 0), freed seats re-seat into their paired hulls,
+zero re-secures, and the winner tracks who springs — the seat
+economics working as designed. Wars that spring seats decide FAST
+(6177/5932 ticks).
+
+powPreplaced DEFAULT STAYS 0: 2/5 seeds still end 16k undecided with
+locked seats. The flip is ruled ("until AI raids work, then adjust")
+but gets its own slice behind a 300-war POWS=2 PC battery — tempo
+and fairness at n=5 is not evidence, and the flip repins the fixture
+and voids the morning's re-baseline. Formation primitive itself is
+DONE; Convoy Escort inherits the same party law.
