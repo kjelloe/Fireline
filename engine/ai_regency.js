@@ -1093,6 +1093,12 @@ export class AIRegency {
           }
         }
       }
+      // POW slice 2: a scout IN CUSTODY heads straight home — the
+      // capture pays at the prison gate, nowhere else.
+      if (!target && asset.type === 1 && (asset.prisoner ?? -1) !== -1) {
+        const home = (state.prisons ?? []).find((p) => p.team === asset.team);
+        if (home) target = [home.cellX, home.cellY];
+      }
       // POW arc: the designated prison raider rides for the wire —
       // freeing seats outranks every relay errand.
       if (!target && prisonRaiderFor.get(asset.team) === operatorId) {

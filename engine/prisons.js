@@ -21,6 +21,11 @@ export const RAID_HOLD_TICKS = 100;   // 10 s beside the wire (Q37: 8-12 s)
 export const RAID_RADIUS_CELLS = 2;   // "beside" the compound
 export const PRISON_CAPACITY = 6;     // Q40: 4-6; the ceiling
 export const RECOG_FREE_POW = 20;     // Q35 table
+// Slice 2 (Q36): the scout's dark specialty.
+export const CAPTURE_HOLD_TICKS = 30; // 3 s over the body — no drive-bys
+export const RECOG_CAPTURE = 15;      // Q35 table
+export const RECOG_POW_HOLD = 5;      // per held minute, to the captor
+export const HOLD_PAY_TICKS = 600;    // one minute
 // Pre-placed captives: the LAST TWO AI regents of the enemy team
 // (A regents are ops 16-19 + 24-27, B regents 20-23 + 28-31) —
 // deterministic and exactly mirror-fair.
@@ -38,7 +43,9 @@ export function createPrisons(bases, powN = 0) {
       team: b.team,
       cellX: b.x + 5,
       cellY: b.y + 15,
-      pows: [...(PREPLACED_POWS[b.team] ?? [])].slice(0, powN | 0),
+      // pows are {id, by}: by = the capturing operator (-1 for the
+      // pre-placed), so the Q35 hold-pay knows whom to credit.
+      pows: [...(PREPLACED_POWS[b.team] ?? [])].slice(0, powN | 0).map((id) => ({ id, by: -1 })),
       raidTicks: 0,
     }));
 }

@@ -38,7 +38,7 @@ test("POW: a raid springs every prisoner into the rescue loop", () => {
     ],
   });
   s.operators[30] = { ...s.operators[30], state: OP_CAPTIVE, team: 1 };
-  s.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [30], raidTicks: 0 }];
+  s.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [{ id: 30, by: -1 }], raidTicks: 0 }];
   s = joinAndSelect(s, 20, 1, 0);
   for (let i = 0; i < RAID_HOLD_TICKS; i++) s = apply(s, { type: "advance_tick" });
   assert.equal(s.prisons[0].pows.length, 0, "the compound is empty");
@@ -63,7 +63,7 @@ test("POW: the raid clock needs a live enemy at the wire and resets without one"
     ],
   });
   s.operators[30] = { ...s.operators[30], state: OP_CAPTIVE, team: 1 };
-  s.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [30], raidTicks: 50 }];
+  s.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [{ id: 30, by: -1 }], raidTicks: 50 }];
   s = joinAndSelect(s, 20, 1, 0); // crewed, but 30 cells away
   s = apply(s, { type: "advance_tick" });
   assert.equal(s.prisons[0].raidTicks, 0, "no one at the wire, the clock resets");
@@ -89,4 +89,90 @@ test("POW: delivery through the standing rescue loop unlocks the seat", () => {
   s = apply(s, { type: "advance_tick" }); // scoop
   s = apply(s, { type: "advance_tick" }); // deliver (idle in own base)
   assert.equal(s.operators[30].state, OP_ACTIVE, "home — the seat is UNLOCKED");
+});
+
+test("POW slice 2: the scout's capture — hold, custody, delivery, seat lock", async () => {
+  const { CAPTURE_HOLD_TICKS, RECOG_CAPTURE } = await import("../engine/prisons.js");
+  // A crewed enemy scout parks beside a downed team-1 operator.
+  let s = sandbox([{ team: 0, type: 1, cellX: 30, cellY: 30 }], [], {
+    bases: [
+      { team: 0, x: 0, y: 0, width: 8, height: 8 },
+      { team: 1, x: 56, y: 56, width: 8, height: 8 },
+    ],
+  });
+  s.prisons = [{ team: 0, cellX: 4, cellY: 4, pows: [], raidTicks: 0 }];
+  s.operators[20] = { ...s.operators[20], state: OP_DOWN, team: 1 };
+  s.downed.push({
+    operatorId: 20, team: 1,
+    x: cellToWorld(31), y: cellToWorld(30),
+    targetX: cellToWorld(31), targetY: cellToWorld(30), downTicks: 0,
+  });
+  s = joinAndSelect(s, 16, 0, 0);
+  for (let i = 0; i < CAPTURE_HOLD_TICKS; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[0].prisoner, 20, "in custody");
+  assert.ok(!s.downed.some((d) => d.operatorId === 20), "the body left the field");
+  assert.ok(s.events.some((e) => e.type === "operator_captured"));
+
+  // Drive home; standing beside our prison completes the capture.
+  s.assets[0].x = cellToWorld(5);
+  s.assets[0].y = cellToWorld(4);
+  s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[0].prisoner, -1, "handed over");
+  assert.deepEqual(s.prisons[0].pows, [{ id: 20, by: 16 }], "behind the wire, captor known");
+  assert.equal(s.operators[20].state, 3, "seat LOCKED (OP_CAPTIVE)");
+  assert.equal(s.operators[16].score, RECOG_CAPTURE, "the captor is paid");
+});
+
+test("POW slice 2: escape window and the wrecked transport", async () => {
+  const { CAPTURE_HOLD_TICKS } = await import("../engine/prisons.js");
+  // The victim crawls away mid-hold: the clock resets.
+  let s = sandbox([{ team: 0, type: 1, cellX: 30, cellY: 30 }], [], {
+    bases: [
+      { team: 0, x: 0, y: 0, width: 4, height: 4 },
+      { team: 1, x: 60, y: 60, width: 4, height: 4 },
+    ],
+  });
+  s.prisons = [];
+  s.operators[20] = { ...s.operators[20], state: OP_DOWN, team: 1 };
+  s.downed.push({
+    operatorId: 20, team: 1,
+    x: cellToWorld(31), y: cellToWorld(30),
+    targetX: cellToWorld(31), targetY: cellToWorld(30), downTicks: 0,
+  });
+  s = joinAndSelect(s, 16, 0, 0);
+  for (let i = 0; i < CAPTURE_HOLD_TICKS - 5; i++) s = apply(s, { type: "advance_tick" });
+  const body = s.downed.find((d) => d.operatorId === 20);
+  body.x = cellToWorld(40); body.y = cellToWorld(40); // crawled clear
+  s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[0].captureTicks, 0, "the hold resets — the escape window is real");
+  assert.equal(s.assets[0].prisoner, -1);
+
+  // A wrecked transport spills the prisoner as ordinary downed.
+  let w = sandbox([
+    { team: 0, type: 1, cellX: 30, cellY: 30, hp: 5, prisoner: 20 },
+    { team: 1, type: 0, cellX: 32, cellY: 30 },
+  ]);
+  w.operators[20] = { ...w.operators[20], state: OP_DOWN, team: 1 };
+  w = joinAndSelect(w, 21, 1, 1);
+  w = apply(w, { type: "fire_order", operatorId: 21, targetAssetId: 0 });
+  assert.equal(w.assets[0].prisoner, -1, "custody broken");
+  const spilled = w.downed.find((d) => d.operatorId === 20);
+  assert.ok(spilled, "the prisoner is back on the field");
+  assert.notEqual(spilled.freedPow, 1, "ordinary downed — rescue or recapture");
+});
+
+test("POW slice 2: each held minute pays the captor, never the warden of the pre-placed", async () => {
+  const { HOLD_PAY_TICKS, RECOG_POW_HOLD } = await import("../engine/prisons.js");
+  let s = sandbox([{ team: 0, type: 0, cellX: 30, cellY: 30 }], [], {
+    bases: [
+      { team: 0, x: 0, y: 0, width: 4, height: 4 },
+      { team: 1, x: 60, y: 60, width: 4, height: 4 },
+    ],
+  });
+  s = joinAndSelect(s, 16, 0, 0);
+  s.operators[20] = { ...s.operators[20], state: 3, team: 1 };
+  s.prisons = [{ team: 0, cellX: 2, cellY: 2, pows: [{ id: 20, by: 16 }, { id: 21, by: -1 }], raidTicks: 0 }];
+  const before = s.operators[16].score;
+  for (let i = 0; i < HOLD_PAY_TICKS; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.operators[16].score, before + RECOG_POW_HOLD, "one minute, one payment");
 });

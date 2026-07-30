@@ -34,6 +34,7 @@ export function makeAsset(id, spec) {
     stationAmmo: spec.stationAmmo ?? (getUnitStats(spec.type ?? 0).station?.shots ?? 0),
     stationReload: spec.stationReload ?? 0,
     ejectTimer: spec.ejectTimer ?? 0, // Q41
+    prisoner: spec.prisoner ?? -1, captureTicks: spec.captureTicks ?? 0, // POW slice 2
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }

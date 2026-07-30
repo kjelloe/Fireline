@@ -3824,3 +3824,23 @@ pre-placement is human-sessions-only. Server env fix on the way in:
 the CLI main block always passes a preset object, so `options.rules
 ??` never fell through — POWS merges over the preset now (verified
 against /version). Suite 678/678 double-run, gate + smoke green.
+
+## slice-pow2: the scout's dark specialty (fixture v55)
+
+Q36 built whole: a crewed SCOUT holding over an adjacent downed enemy
+for 3 s takes them into CUSTODY (the body leaves the field — the
+victim's escape window is the hold itself, crawl or redeploy away;
+tested). Delivery beside the scout's OWN prison completes the
+capture: pows record {id, by} (the captor), the seat LOCKS
+(OP_CAPTIVE), +15 to the captor, and the Q35 hold-pay starts (+5 per
+held minute to the captor; the pre-placed have no captor and pay
+nobody). A scout wrecked in transit SPILLS the prisoner as ordinary
+downed — rescue or recapture. Capture is PASSIVE (presence, like the
+carrier scoop) and runs after boarding: rescue wins ties. AI custody
+homing: a scout with a prisoner heads straight for its prison. Events
+team-perspectived both locales ("Operator N was TAKEN PRISONER — hunt
+the scout"). Organic captures now occur in AI wars (captives
+fluctuate 0-1 without any pre-placement); tempo held at scale (30-war
+median 21.6 min, 0% undecided) though era horn has drifted to ~17%
+since walls+clause — next PC battery re-baselines. Suite 681/681
+double-run, gate + smoke green.

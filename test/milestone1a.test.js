@@ -48,6 +48,7 @@ function stateHash(s) {
     w.writeI32LE(a.cargoFuel ?? 0); w.writeI32LE(a.cargoAmmo ?? 0); // added 13A
     w.writeI32LE(a.stationOp ?? -1); w.writeI32LE(a.stationAmmo ?? 0); w.writeI32LE(a.stationReload ?? 0); // added prompt-100 stations
     w.writeI32LE(a.ejectTimer ?? 0); // added Q41 eject
+    w.writeI32LE(a.prisoner ?? -1); w.writeI32LE(a.captureTicks ?? 0); // added POW slice 2
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
@@ -109,7 +110,7 @@ function stateHash(s) {
   for (const p of (s.prisons ?? [])) { // added POW arc slice 1
     w.writeI32LE(p.team); w.writeI32LE(p.cellX); w.writeI32LE(p.cellY);
     w.writeI32LE(p.raidTicks); w.writeI32LE(p.pows.length);
-    for (const id of p.pows) w.writeI32LE(id);
+    for (const pow of p.pows) { w.writeI32LE(pow.id); w.writeI32LE(pow.by); } // {id,by} since slice 2
   }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);

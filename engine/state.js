@@ -99,6 +99,10 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     stationAmmo: getUnitStats(type).station?.shots ?? 0,
     stationReload: 0,
     ejectTimer: 0, // Q41: driver-eject countdown
+    // POW slice 2: the scout's custody — a prisoner aboard (operator
+    // id) and the 3s capture hold clock.
+    prisoner: -1,
+    captureTicks: 0,
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery

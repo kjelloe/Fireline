@@ -35,6 +35,7 @@ import {
 import { premiumPoints } from "./premium.js";
 import {
   RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
+  CAPTURE_HOLD_TICKS, RECOG_CAPTURE, RECOG_POW_HOLD, HOLD_PAY_TICKS, PRISON_CAPACITY,
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import {
@@ -320,7 +321,7 @@ function copyState(state) {
       { active: 0, need: 0, done: 0, ids: [] },
       { active: 0, need: 0, done: 0, ids: [] },
     ]).map((c) => ({ ...c, ids: [...c.ids] })), // nested ids: the aliasing lesson
-    prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: [...p.pows] })), // POW arc
+    prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: p.pows.map((pw) => ({ ...pw })) })), // POW arc
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
@@ -643,6 +644,17 @@ function disableAsset(next, target, scoringTeam, by = null) {
     next.downed.push(createDowned(seat, target));
     next.events.push({ type: "operator_downed", operatorId: seat.id });
     target.operatorId = -1;
+  }
+  // POW slice 2: a wrecked scout SPILLS its prisoner as ordinary
+  // downed at the wreck — rescue or recapture (Q36).
+  if (target.prisoner !== undefined && target.prisoner !== -1) {
+    const seat = next.operators[target.prisoner];
+    if (seat) {
+      seat.state = OP_DOWN;
+      next.downed.push(createDowned(seat, target));
+      next.events.push({ type: "operator_downed", operatorId: seat.id });
+    }
+    target.prisoner = -1;
   }
   // Prompt-100: the STATION crew bails out exactly like the driver.
   if (target.stationOp !== undefined && target.stationOp !== -1) {
@@ -1646,7 +1658,7 @@ function applyAdvanceTick(next) {
     prison.raidTicks += 1;
     if (prison.raidTicks < RAID_HOLD_TICKS) continue;
     const freed = prison.pows.length;
-    for (const powId of prison.pows) {
+    for (const { id: powId } of prison.pows) {
       const seat = next.operators[powId];
       if (!seat) continue;
       seat.state = OP_DOWN;
@@ -1660,6 +1672,64 @@ function applyAdvanceTick(next) {
     next.events.push({ type: "prison_raided", team: prison.team, freed, byAssetId: holder.id });
     prison.pows = [];
     prison.raidTicks = 0;
+  }
+
+  // POW CAPTURE pass (specs/12 Q36): a crewed scout holding over an
+  // adjacent DOWNED ENEMY for CAPTURE_HOLD_TICKS takes them into
+  // custody (the body leaves the field; the victim's escape window is
+  // the hold itself — crawl or redeploy away). Delivery beside the
+  // scout's OWN prison completes the capture: the seat LOCKS, the
+  // captor is paid, and the hold-pay clock starts. A scout wrecked in
+  // transit spills the prisoner as ordinary downed (rescue or
+  // recapture — Q36). Runs AFTER carrier boarding: rescue wins ties.
+  for (const scout of next.assets) {
+    if (scout.type !== 1) continue; // the scout's specialty (Q36)
+    if (scout.operatorId === -1 || scout.state === ASSET_DISABLED || scout.state === ASSET_SALVAGED) continue;
+    if (scout.prisoner !== -1) {
+      // In custody: deliver beside our OWN prison.
+      const prison = (next.prisons ?? []).find((p) => p.team === scout.team);
+      if (prison && prison.pows.length < PRISON_CAPACITY) {
+        const d = Math.max(
+          absI32(worldToCellFloor(scout.x) - prison.cellX),
+          absI32(worldToCellFloor(scout.y) - prison.cellY));
+        if (d <= PRISON_RAID_CELLS) {
+          prison.pows.push({ id: scout.prisoner, by: scout.operatorId });
+          const seat = next.operators[scout.prisoner];
+          if (seat) seat.state = OP_CAPTIVE;
+          awardOperator(next, scout.operatorId, RECOG_CAPTURE);
+          next.events.push({ type: "pow_delivered", operatorId: scout.prisoner, team: scout.team });
+          scout.prisoner = -1;
+        }
+      }
+      continue;
+    }
+    const sx = worldToCellFloor(scout.x);
+    const sy = worldToCellFloor(scout.y);
+    const target = next.downed.find((dwn) =>
+      dwn.team !== scout.team &&
+      Math.max(absI32(worldToCellFloor(dwn.x) - sx), absI32(worldToCellFloor(dwn.y) - sy)) <= 1);
+    if (!target) {
+      scout.captureTicks = 0;
+      continue;
+    }
+    scout.captureTicks += 1;
+    if (scout.captureTicks < CAPTURE_HOLD_TICKS) continue;
+    scout.captureTicks = 0;
+    scout.prisoner = target.operatorId;
+    next.downed = next.downed.filter((dwn) => dwn.operatorId !== target.operatorId);
+    next.events.push({
+      type: "operator_captured", operatorId: target.operatorId,
+      team: target.team, byAssetId: scout.id,
+    });
+  }
+  // Q35 hold-pay: each held minute pays the captor (pre-placed pows
+  // have no captor and pay nobody).
+  if (next.tick % HOLD_PAY_TICKS === 0) {
+    for (const prison of next.prisons ?? []) {
+      for (const pow of prison.pows) {
+        if (pow.by !== -1) awardOperator(next, pow.by, RECOG_POW_HOLD);
+      }
+    }
   }
 
   // Standard pass (8B): pickups, returns, then scoring — stable asset order.

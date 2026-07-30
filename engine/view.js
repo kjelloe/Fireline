@@ -22,7 +22,7 @@ function projectConvoy(state) {
 function projectPrisons(state) {
   return (state.prisons ?? []).map((p) => ({
     team: p.team, cellX: p.cellX, cellY: p.cellY,
-    pows: [...p.pows], raidTicks: p.raidTicks,
+    pows: p.pows.map((pw) => ({ ...pw })), raidTicks: p.raidTicks,
   }));
 }
 
