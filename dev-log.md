@@ -3716,3 +3716,23 @@ endgames — two teams scraping bottom — keep their photo finish at the
 normal rate. No repin (pure logic over hashed pools). Suite 663/663
 double-run, gate green. Horn at n=30 read 20% (probable noise, sigma
 ~7); the next PC battery round watches it.
+
+## slice-stations (engine): the second seat (fixture v51)
+
+Prompt-100 prototype, engine half: the carrier gains an MG RING
+(damage 4, range 768, reload 5, fires off the hull's ammo pool,
+suppresses) and the scout an AT LAUNCHER (TOW-II: damage 40, range
+1536, reload 60, FOUR missiles on its own hashed rack — balanced by
+reload + shot count per the ruling; rearms at base/depot, and a spent
+rack now counts as a resupply deficit so a full hull with an empty
+launcher still has a reason to come home). Three commands
+(board_station / leave_station / station_fire) with ws echoes; board
+mirrors select_asset semantics (garage-style — an active seatless
+operator takes any friendly operable vacant station); taking a driving
+seat auto-releases a station (one body, one post); station crews bail
+out through disableAsset exactly like drivers; station kills pay the
+TRIGGER seat (RECOG_KILL + deed). Hashed stationOp/stationAmmo/
+stationReload (v51). AI does not man stations v1 — humans-only feature,
+sims unchanged (gate outcomes identical). Rejections have text in both
+locales (8H sweep enforced it). Client UX half (vacant-seat indicator,
+JOIN AS GUNNER hover, driver's call ping, station HUD) is next.

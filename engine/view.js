@@ -90,6 +90,8 @@ export function buildView(state, team) {
       driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
       deployed: a.deployed, deployTimer: a.deployTimer, // 12B
       cargoFuel: a.cargoFuel, cargoAmmo: a.cargoAmmo, // 13A
+      stationOp: a.stationOp ?? -1, stationAmmo: a.stationAmmo ?? 0, // prompt-100
+      stationReload: a.stationReload ?? 0,
     }));
 
   const visible = computeVisible(state, team);

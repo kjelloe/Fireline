@@ -24,6 +24,7 @@ test("9A carrier stats are pinned per ruling Q1", () => {
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
     amphibious: false, // 12C
+    station: { kind: "mg", damage: 4, range: 768, reloadTicks: 5, shots: 0 }, // prompt-100
   });
 });
 

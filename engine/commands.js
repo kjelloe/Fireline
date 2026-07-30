@@ -22,6 +22,12 @@ export const CMD_UNBOARD        = "unboard";       // 11G
 export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
+// Crew stations (prompt-100 prototype): a SECOND seat on station-
+// bearing chassis — the carrier's MG ring, the scout's AT launcher.
+// Board mirrors select_asset semantics (garage-style, no adjacency).
+export const CMD_BOARD_STATION  = "board_station";
+export const CMD_LEAVE_STATION  = "leave_station";
+export const CMD_STATION_FIRE   = "station_fire";
 export const CMD_RESPAWN        = "respawn";
 export const CMD_SATCHEL        = "satchel"; // prompt-51: downed-crew AT charge
 
@@ -123,6 +129,20 @@ export function validate(cmd) {
 
     case CMD_UNBOARD:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_BOARD_STATION:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.assetId, 63))     return { ok: false, reason: "invalid assetId" };
+      return { ok: true };
+
+    case CMD_LEAVE_STATION:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_STATION_FIRE:
+      if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.targetAssetId, 63))  return { ok: false, reason: "invalid targetAssetId" };
       return { ok: true };
 
     case CMD_PING:

@@ -42,7 +42,14 @@
    "canCapture": true,
    "siege": false,
    "deployable": false,
-   "amphibious": false
+   "amphibious": false,
+   "station": {
+    "kind": "at",
+    "damage": 40,
+    "range": 1536,
+    "reloadTicks": 60,
+    "shots": 4
+   }
   },
   "2": {
    "id": 2,
@@ -108,7 +115,14 @@
    "canCapture": true,
    "siege": false,
    "deployable": false,
-   "amphibious": false
+   "amphibious": false,
+   "station": {
+    "kind": "mg",
+    "damage": 4,
+    "range": 768,
+    "reloadTicks": 5,
+    "shots": 0
+   }
   },
   "5": {
    "id": 5,

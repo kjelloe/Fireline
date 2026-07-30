@@ -177,3 +177,34 @@ test("integration: fire_order at a bridge crosses the wire and is enforced", asy
     a.ws.close();
   });
 });
+
+test("integration: station board + fire cross the wire (prompt-100)", async () => {
+  await withServer({ mapSeed: 2026 }, async (appServer, port) => {
+    const a = await connect(port);
+    a.ws.send(JSON.stringify({ type: "c_join", team: 0 }));
+    await settle(80);
+    const st = appServer.gameServer.state;
+    // Asset 0 becomes a carrier with an enemy scout parked in MG range;
+    // whole-map bases so only the STATION rules can refuse anything.
+    st.assets[0].type = 4;
+    st.assets[1].team = 1; st.assets[1].type = 1; st.assets[1].hp = 4;
+    st.assets[1].x = st.assets[0].x + 512; st.assets[1].y = st.assets[0].y;
+    st.bases = [
+      { team: 0, x: 0, y: 0, width: st.map.width, height: st.map.height },
+      { team: 1, x: 0, y: 0, width: st.map.width, height: st.map.height },
+    ];
+    // The joined operator is seatless (never selected) — board the ring.
+    a.ws.send(JSON.stringify({ type: "board_station", assetId: 0 }));
+    await settle(120);
+    appServer.gameServer.step();
+    const joinedOp = appServer.gameServer.state.operators.findIndex((o) => o.state === 1);
+    assert.equal(appServer.gameServer.state.assets[0].stationOp, joinedOp,
+      "board_station crossed the wire");
+    a.ws.send(JSON.stringify({ type: "station_fire", targetAssetId: 1 }));
+    await settle(120);
+    appServer.gameServer.step();
+    assert.equal(appServer.gameServer.state.assets[1].state, 2,
+      "the MG kill landed over the wire");
+    a.ws.close();
+  });
+});

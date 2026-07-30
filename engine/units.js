@@ -31,6 +31,10 @@ export const UNIT_STATS = Object.freeze({
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
     amphibious: false, // 12C
+    // Prompt-100 station prototype: the AT launcher (TOW-II feel) —
+    // heavy punch, LONG reload, four missiles (rearmed at base like
+    // ammo). Balanced by reload + shot count per the owner's ruling.
+    station: Object.freeze({ kind: "at", damage: 40, range: 1536, reloadTicks: 60, shots: 4 }),
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
@@ -65,6 +69,9 @@ export const UNIT_STATS = Object.freeze({
     canCapture: true, siege: false, // 11R
     deployable: false, // 12B
     amphibious: false, // 12C
+    // Prompt-100 station prototype: the MG ring — a second human seat.
+    // Rapid light fire off the CARRIER's ammo pool; suppression-capable.
+    station: Object.freeze({ kind: "mg", damage: 4, range: 768, reloadTicks: 5, shots: 0 })
   }),
   // 11R (prompt 22): the Scout Bike — a courier that outruns everything,
   // dies to anything, and can neither capture nor contest a relay. It

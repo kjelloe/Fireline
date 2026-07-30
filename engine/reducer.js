@@ -14,7 +14,8 @@ import {
   CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
-  CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL, validate,
+  CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
+  CMD_BOARD_STATION, CMD_LEAVE_STATION, CMD_STATION_FIRE, validate,
 } from "./commands.js";
 import {
   MINE_ARM_TICKS, MINE_DAMAGE, MINE_DETECT_RADIUS_CELLS,
@@ -129,6 +130,88 @@ function awardOperator(next, operatorId, points, deed = -1) {
   if (deed >= 0) seat.deeds[deed] += 1; // B4
 }
 
+// Prompt-100 CREW STATIONS: the second seat. Boarding mirrors
+// select_asset semantics (garage-style — an active, seatless operator
+// takes any friendly operable station with nobody in it). The station
+// fires its OWN weapon on its OWN clock; the MG draws from the hull's
+// ammo pool, the AT launcher carries its own missiles (rearmed at
+// base/depot with everything else). Station crews bail out through
+// the same disable path as drivers.
+function stationFor(next, operatorId) {
+  return next.assets.find((a) => a.stationOp === operatorId);
+}
+
+function applyBoardStation(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (!operator || operator.state !== OP_ACTIVE) {
+    return reject(next, command, "operator not active");
+  }
+  if (operator.assetId !== -1) return reject(next, command, "leave your asset first");
+  if (stationFor(next, operator.id)) return reject(next, command, "already manning a station");
+  const asset = next.assets[command.assetId];
+  if (!asset || asset.team !== operator.team) return reject(next, command, "no such asset");
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const st = getUnitStats(asset.type).station;
+  if (!st) return reject(next, command, "no station on that chassis");
+  if (asset.stationOp !== -1) return reject(next, command, "station taken");
+  asset.stationOp = operator.id;
+  next.events.push({ type: "station_boarded", operatorId: operator.id, assetId: asset.id, kind: st.kind });
+  return next;
+}
+
+function applyLeaveStation(next, command) {
+  const operator = next.operators[command.operatorId];
+  const asset = operator ? stationFor(next, operator.id) : null;
+  if (!asset) return reject(next, command, "not manning a station");
+  asset.stationOp = -1;
+  next.events.push({ type: "station_left", operatorId: operator.id, assetId: asset.id });
+  return next;
+}
+
+function applyStationFire(next, command) {
+  const operator = next.operators[command.operatorId];
+  const asset = operator ? stationFor(next, operator.id) : null;
+  if (!asset) return reject(next, command, "not manning a station");
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const st = getUnitStats(asset.type).station;
+  const target = next.assets[command.targetAssetId];
+  if (!target) return reject(next, command, "no such target");
+  if (target.team === asset.team) return reject(next, command, "friendly target");
+  if (target.state === ASSET_DISABLED || target.state === ASSET_SALVAGED) {
+    return reject(next, command, "target not operable");
+  }
+  if (asset.stationReload > 0) return reject(next, command, "reloading");
+  if (st.shots > 0 && asset.stationAmmo <= 0) return reject(next, command, "out of ammo");
+  if (st.shots === 0 && asset.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+  if (!inSupply(next, asset)) return reject(next, command, "out of supply");
+  const distWorld = Math.max(absI32(target.x - asset.x), absI32(target.y - asset.y));
+  if (distWorld > st.range) return reject(next, command, "target out of range");
+  if (!computeVisible(next, asset.team).has(target.id)) {
+    return reject(next, command, "target not spotted");
+  }
+  if (st.shots > 0) asset.stationAmmo -= 1;
+  else asset.ammo -= SUPPLY_FIRE_COST;
+  asset.stationReload = st.reloadTicks;
+  target.hp = Math.max(0, target.hp - st.damage);
+  if (st.kind === "mg" && target.hp > 0) target.suppressedTimer = SUPPRESSION_TICKS;
+  next.events.push({
+    type: "fire_resolved", attackerId: asset.id, targetId: target.id,
+    hpDelta: st.damage, targetHp: target.hp, station: 1,
+  });
+  if (target.hp === 0) {
+    disableAsset(next, target, asset.team, {
+      kind: "asset", byType: asset.type,
+      dir: compassOctant(asset.x - target.x, asset.y - target.y),
+    });
+    awardOperator(next, operator.id, RECOG_KILL, DEED_KILL); // the trigger seat
+  }
+  return next;
+}
+
 // Q26: the guards get paid when the thing they guarded succeeds — every
 // crewed, operable friendly within reach of the actor at the payoff
 // moment (a field rescue, the standard coming home), never the actor
@@ -217,6 +300,10 @@ function applySelectAsset(next, command) {
   const operator = next.operators[command.operatorId];
   if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
   if ((operator.respawnTicks ?? 0) > 0) return reject(next, command, "respawning");
+  // Prompt-100: taking a driving seat auto-releases any station seat —
+  // one body, one post.
+  const manned = next.assets.find((a) => a.stationOp === operator.id);
+  if (manned) manned.stationOp = -1;
   const asset = next.assets[command.assetId];
   if (!asset) return reject(next, command, "no such asset");
   if (asset.team !== operator.team) return reject(next, command, "asset belongs to other team");
@@ -509,6 +596,17 @@ function disableAsset(next, target, scoringTeam, by = null) {
     next.downed.push(createDowned(seat, target));
     next.events.push({ type: "operator_downed", operatorId: seat.id });
     target.operatorId = -1;
+  }
+  // Prompt-100: the STATION crew bails out exactly like the driver.
+  if (target.stationOp !== undefined && target.stationOp !== -1) {
+    const seat = next.operators[target.stationOp];
+    if (seat) {
+      seat.state = OP_DOWN;
+      seat.assetId = -1;
+      next.downed.push(createDowned(seat, target));
+      next.events.push({ type: "operator_downed", operatorId: seat.id });
+    }
+    target.stationOp = -1;
   }
   // Playtest-9 item 35: a disabled carrier RELEASES ITS PASSENGERS. They
   // bail out on foot exactly like the crew — which is both the rescue
@@ -1169,6 +1267,7 @@ function applyAdvanceTick(next) {
   for (const asset of marchOrder) {
     if (asset.suppressedTimer > 0) asset.suppressedTimer -= 1;
     if (asset.reloadTimer > 0) asset.reloadTimer -= 1; // 8E
+    if (asset.stationReload > 0) asset.stationReload -= 1; // prompt-100
     // 12B: hardpoint legs working — immobile; announce completion.
     if (asset.deployTimer > 0) {
       asset.deployTimer -= 1;
@@ -1697,6 +1796,8 @@ function applyAdvanceTick(next) {
     if (restored) {
       asset.ammo = restored.ammo;
       asset.fuel = restored.fuel;
+      // Prompt-100: the AT rack rearms with everything else.
+      if (restored.stationAmmo > 0) asset.stationAmmo = restored.stationAmmo;
       next.events.push({ type: "resupplied", assetId: asset.id });
     }
   }
@@ -1900,6 +2001,9 @@ export function apply(state, command) {
     case CMD_SET_OPTION: return applySetOption(next, command);
     case CMD_BOARD_CARRIER: return applyBoardCarrier(next, command);
     case CMD_UNBOARD: return applyUnboard(next, command);
+    case CMD_BOARD_STATION: return applyBoardStation(next, command);
+    case CMD_LEAVE_STATION: return applyLeaveStation(next, command);
+    case CMD_STATION_FIRE: return applyStationFire(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);

@@ -6,6 +6,7 @@
 import { ASSET_IDLE } from "./state.js";
 import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
 import { KIND_DEPOT, DEPOT_RESUPPLY_CELLS } from "./sites.js";
+import { getUnitStats } from "./units.js";
 
 export const AMMO_MAX = 12;
 // 1 fuel per moving tick; at BASE_SPEED 32/256 cell a full 128-cell crossing
@@ -71,8 +72,12 @@ export function resupplyAt(state, assetId) {
   if (!asset) return null;
   if (asset.state !== ASSET_IDLE) return null;
   if (!inOwnBase(state, asset) && !atOwnDepot(state, asset)) return null;
-  if (asset.ammo >= AMMO_MAX && asset.fuel >= FUEL_MAX) return null;
-  return { ammo: AMMO_MAX, fuel: FUEL_MAX };
+  // Prompt-100: a spent AT rack is a deficit too — a full hull with an
+  // empty launcher still has a reason to come home.
+  const rackShots = getUnitStats(asset.type).station?.shots ?? 0;
+  const rackFull = rackShots === 0 || (asset.stationAmmo ?? 0) >= rackShots;
+  if (asset.ammo >= AMMO_MAX && asset.fuel >= FUEL_MAX && rackFull) return null;
+  return { ammo: AMMO_MAX, fuel: FUEL_MAX, stationAmmo: rackShots };
 }
 
 function atOwnDepot(state, asset) {

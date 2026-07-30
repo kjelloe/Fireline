@@ -9,6 +9,7 @@ import { ASSET_IDLE } from "../engine/state.js";
 import { T_OPEN } from "../engine/mapgen.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { apply } from "../engine/reducer.js";
+import { getUnitStats } from "../engine/units.js";
 
 export function makeAsset(id, spec) {
   const x = spec.x ?? cellToWorld(spec.cellX ?? 0);
@@ -29,6 +30,9 @@ export function makeAsset(id, spec) {
     cargoFuel: spec.cargoFuel ?? 0, cargoAmmo: spec.cargoAmmo ?? 0, // 13A
     driveThrottle: spec.driveThrottle ?? 0, driveTurn: spec.driveTurn ?? 0, // 11L
     deployed: spec.deployed ?? 0, deployTimer: spec.deployTimer ?? 0, // 12B
+    stationOp: spec.stationOp ?? -1, // prompt-100 stations
+    stationAmmo: spec.stationAmmo ?? (getUnitStats(spec.type ?? 0).station?.shots ?? 0),
+    stationReload: spec.stationReload ?? 0,
     reloadTimer: spec.reloadTimer ?? 0,
   };
 }

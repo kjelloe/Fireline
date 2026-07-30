@@ -87,6 +87,11 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     x, y, targetX: x, targetY: y,
     heading: team === 1 ? 128 : 0, // brads: A faces east, B faces west (9F)
     aboard1: -1, aboard2: -1, // 9B: carrier bunks (operator ids)
+    // Prompt-100 stations: the second seat (operator id), its missile
+    // rack, and its own reload clock. Zeroes on station-less chassis.
+    stationOp: -1,
+    stationAmmo: getUnitStats(type).station?.shots ?? 0,
+    stationReload: 0,
     hp: getUnitStats(type).hp, operatorId: -1, moveProgress: 0, suppressedTimer: 0,
     ammo: AMMO_MAX, fuel: FUEL_MAX,
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery

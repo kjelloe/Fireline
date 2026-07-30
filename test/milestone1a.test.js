@@ -46,6 +46,7 @@ function stateHash(s) {
     w.writeU8(a.deployed ?? 0); w.writeU8(a.deployTimer ?? 0); // added 12B
     w.writeI32LE(a.abandonTimer ?? 0); // added 15
     w.writeI32LE(a.cargoFuel ?? 0); w.writeI32LE(a.cargoAmmo ?? 0); // added 13A
+    w.writeI32LE(a.stationOp ?? -1); w.writeI32LE(a.stationAmmo ?? 0); w.writeI32LE(a.stationReload ?? 0); // added prompt-100 stations
   }
   for (const site of s.sites) { // added 1I
     w.writeI32LE(site.id); w.writeI32LE(site.type); w.writeI32LE(site.owner);
