@@ -180,7 +180,13 @@ npm start                              # host machine
 - POW prisons: every base has a prison compound. Start the server with
   POWS=2 and each side holds two enemy crew — raid the enemy compound
   (hold beside it 10 s), then CARRY the freed crew home by carrier to
-  unlock their seats. Freed prisoners cannot redeploy on their own.
+  unlock their seats. Freed prisoners cannot redeploy on their own —
+  and if nobody comes for them within a minute, the compound takes
+  them back.
+- Scout capture: a scout holding over a downed ENEMY for 3 s takes
+  them prisoner — deliver to your prison to lock their seat. Shooting
+  the scout pauses the kidnapping; your team is pinged the moment
+  someone is taken. Eject (J, drivers) only works while parked.
 - Death recap (B7): when your vehicle is destroyed, the down banner
   names the killer — "DISABLED — artillery from the north-west", a mine
   under your tracks, the drone, or a satchel charge — so a new player

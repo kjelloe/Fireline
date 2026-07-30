@@ -23,27 +23,20 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, current baseline (**post-coordinate-fix, 1800 wars,
-2026-07-30** — the first numbers measured on cell-centred geometry;
-everything older is void):
+Healthy war, CURRENT baseline (**people-era re-baseline, 1,800 wars on
+d37e979, 2026-08-01** — walls + pathfinding + raider's clause +
+stations + POW captures; everything older is a different game):
 
-| profile | tickets | horn | std | undecided | avg ticks | tows |
-|---|---|---|---|---|---|---|
-| frontier | 74-80% | 11-13% | 9-12% | <1% | ~13300 | ~21 |
-| sawtooth | 96% | 3% | 1% | <1% | ~12400 | ~20 |
-| blackwood | 63%* | 33%* | 3% | 0%* | ~12600 | 2-4 |
+| profile (live config) | A-rate agg | median | horn | tickets | undecided |
+|---|---|---|---|---|---|
+| frontier | **48.5%** (48.8/48.1 both worlds — FAIR) | 21.7 min | 15% | 76% | 0% |
+| sawtooth | **56.7%** (HELD; premium stays, >55) | 18.6 min | — | — | — |
+| blackwood | **49.2%** (flips w/ mirror — fair; PROMOTED holds) | 23.5 min | — | — | — |
 
-*blackwood measured AFTER B3 mercy landed, which cured a 9.3% undecided
-rate and a 55% horn. Its low tow count is the map, not a fault: wrecks
-in dense woodland are hard to reach.
-
-FAIRNESS, current era (2026-07-31): the old ~57-62% Outlier lean
-DISSOLVED when the pacing rules landed (B1/B3/pool-315) — the skimtrail
-ladder measured 52.9% A "fair chaos" and no retune was made. Post-walls
-frontier reads 55.2% A (1.2σ from the fair read — watch, not act).
-SAWTOOTH is the live issue: 69% A at n=1200 live config, uniques-linked
-(uniques-OFF frontier reads ~45% A — the unique pair swings ~10 pts).
-Blackwood PROMOTED (fair + corridors); riverline fair but horn-bound.
+Era horn settled at ~15% on frontier — up from the pool-ladder 9%;
+the accumulated features bought new gameplay for ~6 points of horn.
+STABLE, not drifting: treat 15% as the era's number. Sawtooth's lean
+keeps shrinking as people-era dynamics land (69 → 58.5 → 56.7).
 
 STORY COLUMNS (prompt 88): every sweep row now also records leadChanges,
 majorityFlips, winnerMaxDeficit, winnerMargin, stdAttempts/stdScored,
