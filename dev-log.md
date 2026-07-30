@@ -3892,3 +3892,31 @@ trace with hp). Candidates after instrumenting: dive on a TIMER
 the dive rather than converge on a stationary stager), or raid parties
 of 3. The machinery is right; the trigger tuning needs eyes on the
 dive flag. Suite 681/681 double-run, gate 4/5 (era signature).
+
+## slice-pow3c: the instrumented session — three layers deep, findings complete
+
+Dive-flag telemetry on the AI instance (server.ai.raidDebug, unhashed
+memory) produced the whole story in three traces:
+
+LAYER 1 (fixed earlier): the raider was consumed as a carrier escort.
+LAYER 2 (fixed now): THE INSTRUMENT LIED — telemetry only wrote on
+successful designation, so a wrecked raider's last entry masqueraded
+as a live unit frozen at one cell for 12,000 ticks. Telemetry now
+records failure with a reason. Instrument-first doctrine applies to
+instruments too.
+LAYER 3 (the real shape, now measured honestly): the mission profile
+is a MEAT GRINDER. Nine raiders designated per war; each drives 90+
+cells SOLO into a defended base and dies at the wire (2,478 dive
+ticks, zero completed holds); escorts converge on a MOVING anchor and
+arrive piecemeal; the fuel-liveness gate (landed — raiders must be
+able to DRIVE there, dist*10+300) then correctly refuses drained
+hulls and the candidate pool dries up mid-war.
+
+CONCLUSION: no trigger tweak fixes this. The AI needs a GROUP
+MOVEMENT primitive — assemble the party near OWN lines FIRST, then
+move together with escorts leading (nothing in the doctrine moves as
+a formation today; everything converges on anchors). That is a
+designed slice, not a tweak — and it validates the DESIGN: a solo
+prison raid SHOULD fail; Q37 calls it "a full multi-vehicle
+coordinated operation", and the AI needs exactly what humans need.
+powPreplaced stays 0 (prompt-106). Suite 681/681 double-run.

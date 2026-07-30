@@ -506,10 +506,21 @@ export class AIRegency {
         if (st.canTow || st.canCarryStandard || st.indirect || st.deployable) continue;
         const dist = Math.abs(prison.cellX - worldToCellFloor(a.x)) +
                      Math.abs(prison.cellY - worldToCellFloor(a.y));
+        // FUEL LIVENESS (the t4000-t16000 finding): a fuel-dead hull 21
+        // cells out kept winning the designation by pure proximity and
+        // froze the mission for 12,000 ticks. A raider must be able to
+        // DRIVE there: ~10 fuel/cell covers the worst chassis, plus a
+        // fighting reserve.
+        if (a.fuel < dist * 10 + 300) continue;
         const score = dist + (a.type === 1 ? 0 : 200); // scouts outrank at any range
         if (score < bestScore) { bestScore = score; bestOp = operatorId; }
       }
-      if (bestOp === -1) continue;
+      if (bestOp === -1) {
+        // Telemetry must record FAILURE too — a stale success entry
+        // masqueraded as a frozen raider for a whole diagnosis round.
+        (this.raidDebug ??= {})[team] = { tick: state.tick, opId: -1, reason: "no eligible raider" };
+        continue;
+      }
       const raider = state.assets[state.operators[bestOp].assetId];
       const rcx = worldToCellFloor(raider.x);
       const rcy = worldToCellFloor(raider.y);
@@ -535,6 +546,13 @@ export class AIRegency {
       const dive = prison.raidTicks > 0 || escortsNear >= 2 || guards < 2;
       const stage = [prison.cellX + (prison.team === 0 ? 24 : -24), prison.cellY];
       prisonRaiderFor.set(team, { opId: bestOp, prison, dive, stage });
+      // Telemetry for doctrine work (AI memory, unhashed): the dive
+      // decision per plan, readable by probes via server.ai.raidDebug.
+      (this.raidDebug ??= {})[team] = {
+        tick: state.tick, opId: bestOp, assetId: raider.id,
+        dive, escortsNear, guards,
+        raiderCell: [rcx, rcy], hp: raider.hp,
+      };
     }
 
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when
