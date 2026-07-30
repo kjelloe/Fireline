@@ -4,7 +4,8 @@
 // all mutation.
 
 import { ASSET_IDLE } from "./state.js";
-import { worldToCellFloor } from "../shared/fixedmath.js";
+import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
+import { KIND_DEPOT, DEPOT_RESUPPLY_CELLS } from "./sites.js";
 
 export const AMMO_MAX = 12;
 // 1 fuel per moving tick; at BASE_SPEED 32/256 cell a full 128-cell crossing
@@ -63,11 +64,24 @@ export function inSupply(state, asset) {
 // Returns {ammo, fuel} to restore if the asset qualifies for resupply and has
 // a deficit, else null. Only idle assets resupply: transiting your base does
 // not top you up (keeps advance_tick event streams quiet). Never mutates.
+// B2 DEPOT: an owned depot site is a FORWARD resupply point — idling
+// beside one (Chebyshev <= DEPOT_RESUPPLY_CELLS) counts like home.
 export function resupplyAt(state, assetId) {
   const asset = state.assets[assetId];
   if (!asset) return null;
   if (asset.state !== ASSET_IDLE) return null;
-  if (!inOwnBase(state, asset)) return null;
+  if (!inOwnBase(state, asset) && !atOwnDepot(state, asset)) return null;
   if (asset.ammo >= AMMO_MAX && asset.fuel >= FUEL_MAX) return null;
   return { ammo: AMMO_MAX, fuel: FUEL_MAX };
+}
+
+function atOwnDepot(state, asset) {
+  const cx = worldToCellFloor(asset.x);
+  const cy = worldToCellFloor(asset.y);
+  return (state.sites ?? []).some((s) => {
+    if (s.owner !== asset.team || s.kind !== KIND_DEPOT || (s.hp ?? 1) <= 0) return false;
+    const dx = absI32(s.cellX - cx);
+    const dy = absI32(s.cellY - cy);
+    return (dx > dy ? dx : dy) <= DEPOT_RESUPPLY_CELLS;
+  });
 }

@@ -45,6 +45,7 @@ import { resolveShot, inFireRange, SUPPRESSION_TICKS } from "./combat.js";
 import {
   captureCheck, SITE_NEUTRALIZE_TICKS, SITE_CAPTURE_TICKS,
   SITE_HP_MAX, siteOperational,
+  teamHasKind, KIND_FACTORY, FACTORY_WAVE_DISCOUNT, // B2
 } from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
@@ -1580,9 +1581,14 @@ function applyAdvanceTick(next) {
     }
     // Salvage discount: banked recoveries shorten THIS wave's wait. The
     // points are consumed only when the wave actually launches below.
+    // B2 FACTORY: holding one shaves a flat slice off every wave. The
+    // combined discount floors at a third of the base cadence — waves
+    // must never become a faucet.
     const salvageBoost = Math.min(next.salvage?.[team] ?? 0, SALVAGE_BOOST_CAP);
-    const waveNeed = (next.rules?.mpgTicks ?? MPG_TICKS) -
-      salvageBoost * SALVAGE_TICKS_PER_POINT;
+    const factoryCut = teamHasKind(next, team, KIND_FACTORY) ? FACTORY_WAVE_DISCOUNT : 0;
+    const baseNeed = next.rules?.mpgTicks ?? MPG_TICKS;
+    const waveNeed = Math.max(floorDivI32(baseNeed, 3),
+      baseNeed - salvageBoost * SALVAGE_TICKS_PER_POINT - factoryCut);
     if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) next.manufacture[team] += 1;
     if (next.manufacture[team] < waveNeed) continue;
     // BF2-study ruling (prompt 51): rebuilds arrive as a FULL WAVE — every

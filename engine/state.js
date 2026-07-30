@@ -162,17 +162,23 @@ function createFieldAssets() {
 // it while A's mirror landed beside it, and B won the middle race in 5/5
 // sim seeds. Four relays in exact mirror pairs (32<->95, 58<->69) give
 // each side a natural mid anchor and put the fight at the seam.
+// B2 (Q30 ruling 2026-07-31): sites carry a KIND personality — RADAR
+// widens the owning team's sensors, DEPOT is a forward resupply point,
+// FACTORY speeds the rebuild wave. Every site still COUNTS as a relay
+// for capture/majority/bleed (ruling a: identity through effects, not
+// exclusion — the pool-315 pacing math is untouched). Kinds come in
+// MIRRORED PAIRS, like everything else on these maps.
 const RELAY_CELLS = [
-  { cellX: 32, cellY: 63 },
+  { cellX: 32, cellY: 63, kind: 2 /* DEPOT — the near-base road pair */ },
   { cellX: 58, cellY: 63 },
   { cellX: 69, cellY: 63 },
-  { cellX: 95, cellY: 63 },
+  { cellX: 95, cellY: 63, kind: 2 },
   // Prompt-51 ruling (BF2 study): LATERAL pairs on the trail loops — the
   // corridor gains flanking objectives so a losing team can back-cap and
   // the front thins enough for standard runs to find their windows.
   // Appended so road-relay site ids 0-3 stay pinned.
-  { cellX: 44, cellY: 40 },
-  { cellX: 83, cellY: 40 },
+  { cellX: 44, cellY: 40, kind: 1 /* RADAR — the north lateral pair */ },
+  { cellX: 83, cellY: 40, kind: 1 },
   { cellX: 44, cellY: 86 },
   { cellX: 83, cellY: 86 },
 ];
@@ -202,8 +208,11 @@ export const MAP_LAYOUTS = Object.freeze({
     relayCells: [
       { cellX: 36, cellY: 28 }, { cellX: 91, cellY: 28 },
       { cellX: 36, cellY: 99 }, { cellX: 91, cellY: 99 },
-      { cellX: 58, cellY: 45 }, { cellX: 69, cellY: 45 },
-      { cellX: 58, cellY: 82 }, { cellX: 69, cellY: 82 },
+      // B2: the deep-woods pairs get the personalities — RADAR in the
+      // north heart (fog is this map's soul), DEPOT in the south (fed
+      // by the 18G logging roads).
+      { cellX: 58, cellY: 45, kind: 1 }, { cellX: 69, cellY: 45, kind: 1 },
+      { cellX: 58, cellY: 82, kind: 2 }, { cellX: 69, cellY: 82, kind: 2 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),
@@ -230,6 +239,7 @@ function createSites(profileName = "frontier_corridor") {
   const cellsFor = MAP_LAYOUTS[profileName]?.relayCells ?? RELAY_CELLS;
   return cellsFor.map((pos, id) => ({
     id, type: 1 /* SITE_RELAY */, owner: -1 /* SITE_NEUTRAL */,
+    kind: pos.kind ?? 0, // B2: 0 relay, 1 RADAR, 2 DEPOT, 3 FACTORY
     captureProgress: 0, capturingTeam: -1, // 11B countdown
     hp: 60, // 11F: SITE_HP_MAX (import cycle keeps this a literal)
     cellX: pos.cellX, cellY: pos.cellY,

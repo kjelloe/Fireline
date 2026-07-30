@@ -43,6 +43,7 @@ export function sandbox(assetSpecs, siteSpecs = [], opts = {}) {
   state.assets = assetSpecs.map((spec, id) => makeAsset(id, spec));
   state.sites = siteSpecs.map((spec, id) => ({
     id, type: spec.type ?? SITE_RELAY, owner: spec.owner ?? SITE_NEUTRAL,
+    kind: spec.kind ?? 0, // B2
     cellX: spec.cellX, cellY: spec.cellY ?? 0,
     captureProgress: spec.captureProgress ?? 0, capturingTeam: spec.capturingTeam ?? -1, // 11B
     hp: spec.hp ?? 60, // 11F

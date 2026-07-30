@@ -3645,3 +3645,23 @@ battery decides whether these levers suffice or need a second turn
 (raid radius up, earn window down). The premium stays LIVE on
 sawtooth until a battery shows the band restored. Suite 654/654
 double-run (two new Q31 tests + the 3A mirror).
+
+## slice-b2: typed node classes (Q30 rulings a/b/c — fixture v50)
+
+Sites gain a hashed KIND beside their type: every site still counts as
+a relay for capture/majority/bleed (ruling a — the pool-315 pacing is
+untouched by construction), the personality is an effect while held:
+RADAR (+6 cells to every team sensor, applied AFTER the weather
+halving — radar matters most in the storm), DEPOT (idle within 4
+cells of an owned depot resupplies like home), FACTORY (180 ticks off
+every rebuild wave; combined salvage+factory discounts floor at
+mpgTicks/3 — waves must never become a faucet). Assignments (ruling
+b): frontier north-lateral pair RADAR + near-base road pair DEPOT;
+blackwood deep-woods north RADAR + south DEPOT (fed by the 18G
+corridors); riverline/sawtooth plain; FACTORY implemented + tested,
+unassigned until caldera. Kinds MUST come in mirror pairs —
+enumeration-tested across every layout. Sandbox trap hit again: a
+single-relay factory test ended by DOMINATION at tick 300 (the
+documented trap, counterweight site added). One unreproducible suite
+flake under load (657/658 once, then 3x green) — watching. Suite
+658/658, fixture v50.

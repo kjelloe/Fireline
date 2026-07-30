@@ -59,7 +59,7 @@ export function buildSpectatorView(state) {
     friendlyAssets,
     visibleEnemies: [],
     sites: state.sites.map((s) => ({
-      id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
+      id: s.id, type: s.type, kind: s.kind ?? 0, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
     })),
     bases: state.bases.map((b) => ({ ...b })),
     standards: state.standards.map((st) => ({ ...st })),
@@ -103,7 +103,7 @@ export function buildView(state, team) {
 
   // Relay infrastructure and base zones are public knowledge.
   const sites = state.sites.map((s) => ({
-    id: s.id, type: s.type, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
+    id: s.id, type: s.type, kind: s.kind ?? 0, owner: s.owner, cellX: s.cellX, cellY: s.cellY,
     captureProgress: s.captureProgress, capturingTeam: s.capturingTeam, // 11B
     hp: s.hp, // 11F: infrastructure state is public, like ownership
   }));

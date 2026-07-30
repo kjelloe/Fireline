@@ -52,6 +52,7 @@ function stateHash(s) {
     w.writeI32LE(site.cellX); w.writeI32LE(site.cellY);
   w.writeI32LE(site.captureProgress); w.writeI32LE(site.capturingTeam); // added 11B
   w.writeI32LE(site.hp ?? 60); // added 11F
+  w.writeI32LE(site.kind ?? 0); // added B2 (typed node classes)
   }
   for (const b of s.bases) { // added 1J
     w.writeI32LE(b.team); w.writeI32LE(b.x); w.writeI32LE(b.y);
