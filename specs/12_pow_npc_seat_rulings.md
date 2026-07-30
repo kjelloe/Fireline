@@ -58,6 +58,13 @@ N pre-placed POWs as a day-one objective (map config); capacity 4-6
 (prevents seat-economy collapse). Outside-base prisons (blackwood
 ranger station) banked for the map-special era.
 
+## Q40 amendment (owner ruling, prompt 106)
+
+powPreplaced stays DEFAULT 0 until the AI raid party (slices 2-3) can
+actually spring a defended prison — then adjust toward the designed
+2. POWS=2 on the server serves the day-one objective to human
+sessions meanwhile.
+
 ## Q41 — Seat UX: BOTH mechanisms; eject; SHARED recognition
 
 - Driver CAN eject station crew — with a 2-3 s hold + a visible

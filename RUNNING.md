@@ -170,6 +170,17 @@ npm start                              # host machine
 - End-screen honors: BEST RAIDER / RECOVERY / CAPTURER / ESCORT /
   HERO OF THE CONVOY / FIELD MECHANIC — category awards from what you
   actually did, beside the top-3 total.
+- Crew stations (prompt 100): the Command Carrier has an MG ring and
+  the scout an AT launcher — hover a friendly with a vacant seat and
+  press J to jump on; drivers can call for a gunner (comm wheel) and
+  eject crew (J, with a 2.5 s warning). Station kills split the credit.
+- Typed relays (B2): RADAR relays widen your team's sensors (even
+  through weather), DEPOT relays are forward resupply points — idle
+  beside one to rearm. Captures now answer "what do we need?".
+- POW prisons: every base has a prison compound. Start the server with
+  POWS=2 and each side holds two enemy crew — raid the enemy compound
+  (hold beside it 10 s), then CARRY the freed crew home by carrier to
+  unlock their seats. Freed prisoners cannot redeploy on their own.
 - Death recap (B7): when your vehicle is destroyed, the down banner
   names the killer — "DISABLED — artillery from the north-west", a mine
   under your tracks, the drone, or a satchel charge — so a new player

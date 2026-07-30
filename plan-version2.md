@@ -26,8 +26,8 @@ plus three experimental maps that have not earned promotion.
 | **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
 | Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
-| NPC infantry layer + POWs | ⬜ **12E/12F — the biggest unbuilt gameplay item.** POW mechanic RULED (raidable holding site); needs the NPC layer first |
-| Multi-crew "Landship" | ⏸ POST-V1 FLAGSHIP (designer eval #5) — needs a seat-model rework |
+| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — specs/12 rulings; slice 1 landed (prisons, OP_CAPTIVE, raid→rescue loop, powPreplaced rule default 0 per prompt-106); next: scout capture → AI raid party → alarm guards → vault |
+| Multi-crew "Landship" | 🔜 seat-model PROVEN (stations landed); Landship = neutral capturable per Q42 rulings, after the POW arc |
 
 ## Track B — Battlefield systems
 
@@ -46,7 +46,7 @@ plus three experimental maps that have not earned promotion.
 | **Bridge demolition (riverline)** | ✅ `slice-13e-bridges` — artillery breaches, span becomes water (Skimmer answer), either-team repair; AI doctrine landed (`slice-13e2`) |
 | Meaningful deaths (B1) | ✅ `slice-b1` — a wreck costs a ticket, refunded on recovery; 600-war verdict: horn 27%->13%, standard held at 8%, fairness untouched |
 | Mercy + overtime (B3) | ✅ `slice-b3` — mercy retargeted (ruled trigger was unreachable); horn 5-15%; cured blackwood's 9.3% undecided |
-| Typed node classes (B2) | ⬜ ruled — **designer brief OUT** (`reports/2026-07-31_designer_brief_node_classes.md`): needs majority-denominator, per-map assignment, magnitudes |
+| Typed node classes (B2) | ✅ `slice-b2` — RADAR/DEPOT/FACTORY effects, mirror-paired on frontier+blackwood (fixture v50) |
 | Field hull repair + AI doctrine | ✅ ruled + landed — capped at half hull; wrecks still need the bay |
 | Waypoints (item 34) | ✅ `slice-34` — shift-click/long-press queues up to 8 legs |
 | Story instrument (prompt 88) | ✅ — sweep records lead changes/comebacks/majority flips/std attempts; `analyze_story.py` |
@@ -55,18 +55,18 @@ plus three experimental maps that have not earned promotion.
 | Neutral supply drop (B6) | ✅ `slice-b6` — mirror-line placement, 10 s exclusive hold, +15 tickets |
 | **Grid pathfinding (item 39)** | ✅ `slice-18i` — A* around walls into the waypoint queue, humans+AI, mirror-equivariant |
 | **Base walls + gates (item 38)** | ✅ `slice-18i` — Fireball homage on all maps; destructible walls BANKED |
-| Underdog premium (58/68) | ✅ mechanism + generator — table EMPTY (dormant); **sawtooth convicts at 69% → activation is the ruled interim response** |
+| Underdog premium (58/68) | ✅ LIVE on sawtooth (team B +25%, disclosed in the briefing); generator re-runs per battery |
 | Fog ghosts / convoys | ⬜ V2.x |
 
 ## Track C — Maps
 
 | Profile | Status |
 |---|---|
-| `frontier_corridor` | ✅ DEFAULT — pool 315, band 55.2% A post-walls (at the 54/46 drift edge, 1.2σ from the pre-walls fair read — re-measure before acting) |
+| `frontier_corridor` | ✅ DEFAULT — pool 315; post-raider-clause band **46.3% A** (in band, slight B edge; the clause is the band knob) |
 | `riverline` | ⚠️ EXPERIMENTAL — fairness PASSES (flips with mirror), **pacing FAILS: 41% horn, 27-min median** — pacing slice queued (pre-corridor-blackwood disease) |
 | `blackwood` | ✅ **PROMOTED 2026-07-31** — batteries + 18G corridors + human playtest all green (specs/10 §4d) |
-| `sawtooth` | 🔴 HELD — **69% A lean at n=1200, uniques-linked** (identical pre/post-walls; uniques-OFF reads 45% A). Mechanism hunt slice next; premium activation is the ruled interim; human playtest pending |
-| `caldera` (circle map, item 40) | 📝 BANKED specs/10 §4e — ring road + centre trail + two mountains; doubles as the Convoy Escort mode map |
+| `sawtooth` | 🔴 HELD — conviction: unique-pair SEAT ECONOMICS (factionswap-proven). Q31 levers landed: 69→**58.5%** A; premium LIVE + disclosed; playtest pending |
+| `caldera` (circle map, item 40) | 🔴 BUILT, RED gate — raider's-clause-on-a-ring stomp factory (31.7% A, 9-min medians); fix-first (specs/10 §4g) |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ⬜ FILED (prompt 64) — server option, minimap thumbnails per candidate, or "next map" on the end screen |
 
