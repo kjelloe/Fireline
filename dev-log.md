@@ -3703,3 +3703,16 @@ acceptance green.
    two maps ~10 points each: THE lever of this era. Watch it in the
    next battery round; if frontier drifts past 46, the clause
    magnitude (not the trail speed) is the knob.
+
+## slice-q25: the rout condition (mercy prominence, measured down)
+
+Ruled: mercy (and the Last Convoy trigger it feeds) now ALSO requires
+a genuine rout — the leader holding >= 3x the loser's pool. The
+instrument drove the number: the old trigger fired in ~90% of wars
+(engagement was the endgame, not the exception); 2x barely helped
+(80% — most decided endgames ARE two-to-one); 3x reads "barely
+scratched versus nearly dead" and measured 73% at n=30. Close
+endgames — two teams scraping bottom — keep their photo finish at the
+normal rate. No repin (pure logic over hashed pools). Suite 663/663
+double-run, gate green. Horn at n=30 read 20% (probable noise, sigma
+~7); the next PC battery round watches it.

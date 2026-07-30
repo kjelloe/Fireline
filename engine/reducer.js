@@ -1809,10 +1809,22 @@ function applyAdvanceTick(next) {
       // the hulls OUTSIDE the base at the call; fewer than 3 in the
       // field means no convoy — a fully gutted team cannot be quota'd,
       // and mercy carries on ending the war instead.
+      // Q25 ROUT CONDITION (ruled 2026-08-01): mercy — and the Last
+      // Convoy it hands over to — engage only in a genuine ROUT: the
+      // leader must hold at least THREE TIMES the loser's pool.
+      // "Under 25% + majority against" alone described almost every
+      // normal endgame (mercy fired in ~90% of wars); 2x barely helped
+      // (80% — most decided endgames ARE two-to-one); 3x reads "barely
+      // scratched versus nearly dead" and measured 73%. Two teams
+      // scraping bottom together keep their photo finish.
+      const rout = (loser) => {
+        const leader = loser === 0 ? 1 : 0;
+        return next.tickets[leader] >= 3 * next.tickets[loser];
+      };
       for (const team of [0, 1]) {
         const foe = team === 0 ? 1 : 0;
         const cv = next.convoy[team];
-        if (cv.active || !nearlyOut(team) || owned[foe] < majority) continue;
+        if (cv.active || !nearlyOut(team) || owned[foe] < majority || !rout(team)) continue;
         const fielded = next.assets.filter((a) =>
           a.team === team && a.operatorId !== -1 &&
           a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
@@ -1829,7 +1841,7 @@ function applyAdvanceTick(next) {
         if (next.convoy[foe].active && next.convoy[foe].done < next.convoy[foe].need) {
           return 1; // the convoy is running: no mercy acceleration
         }
-        return (nearlyOut(foe) && !fightingBack(foe)) ? mercyRate : 1;
+        return (nearlyOut(foe) && !fightingBack(foe) && rout(foe)) ? mercyRate : 1;
       };
       if (owned[0] >= majority && next.tickets[1] > 0) {
         next.tickets[1] = Math.max(0, next.tickets[1] - rate(0));

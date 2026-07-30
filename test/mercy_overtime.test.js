@@ -100,3 +100,11 @@ test("B3: neither rule fires in an ordinary war", () => {
   assert.deepEqual(s.tickets, [300, 300], "a split map bleeds nobody");
   assert.equal(checkVictory(s), null, "and nobody wins");
 });
+
+test("Q25 rout condition: two teams scraping bottom get their photo finish", () => {
+  // Loser nearly out BUT the leader is poor too (no 2x ratio): normal rate.
+  let s = trap({ loserPool: 50 });
+  s.tickets = [90, 50]; // 90 < 100 = no rout
+  const lost = bleedOnce(s);
+  assert.equal(lost, 1, "a close endgame is never mercy-accelerated");
+});
