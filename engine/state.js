@@ -7,6 +7,7 @@
 import { generateFrontierCorridor, FRONTIER_CORRIDOR } from "./frontier_corridor.js";
 import { generateRiverline } from "./riverline.js";
 import { generateBlackwood } from "./blackwood.js";
+import { generateCaldera } from "./caldera.js";
 import { generateSawtooth } from "./sawtooth.js";
 import { createBridges } from "./bridges.js";
 import { createDrops } from "./drops.js";
@@ -38,6 +39,7 @@ export const MAP_PROFILES = {
   riverline: generateRiverline, // 11M
   blackwood: generateBlackwood, // 18A
   sawtooth: generateSawtooth,   // 18B
+  caldera: generateCaldera,     // item 40 (the circle map)
 };
 
 // Spawn layout. Asset numbering is compatibility-layered: ids 0-7 keep the
@@ -218,6 +220,17 @@ export const MAP_LAYOUTS = Object.freeze({
       // by the 18G logging roads).
       { cellX: 58, cellY: 45, kind: 1 }, { cellX: 69, cellY: 45, kind: 1 },
       { cellX: 58, cellY: 82, kind: 2 }, { cellX: 69, cellY: 82, kind: 2 },
+    ],
+    standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
+  }),
+  caldera: Object.freeze({
+    // Item 40 (the circle map): a relay pair on each ring road and one
+    // on the centre trail — 6 relays, majority 4. Every relay sits ON
+    // an artery (18C law: objectives live where traffic goes).
+    relayCells: [
+      { cellX: 58, cellY: 30 }, { cellX: 69, cellY: 30 },
+      { cellX: 58, cellY: 97 }, { cellX: 69, cellY: 97 },
+      { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),

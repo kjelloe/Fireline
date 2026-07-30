@@ -415,3 +415,27 @@ harsh map a fought-over capability rather than a background rule.
 Promotion gate per map (same as riverline's): suite green, 5-seed local
 gate, 300-war batch on the PC (A-rate 45-55, undecided <5%), mirror
 probe clean, THEN default rotation eligibility — until then MAP= opt-in.
+
+## 4g. `caldera` — BUILT (item 40, the owner's circle map), EXPERIMENTAL
+
+Landed 2026-08-01 from the §4e bank entry, faithful to the design: the
+main road leaves each base's SIDE GATES (the ring columns cross the
+base perimeter, and roads-are-never-walled makes the gates real by
+construction) and rings both ways to the other base; the centre holds
+a DIRT TRAIL only — the fast, exposed shortcut; two mirrored mountains
+shadow the northern bowl. 6 relays (ring pairs + centre pair),
+majority 4, all on arteries (18C law). Graph and patrols mirror-closed
+(lights ride the ring, heavies work the centre).
+
+LANDING GATE VERDICT (30+30 mirrored): **RED.** 31.7% A aggregate
+(flip rate 50% — team-linked B lean), median 9.1 MINUTES, 77%
+domination endings. The friendly 5-seed read (healthy 20-minute wars,
+comeback sweeps) was unrepresentative — the fuller sample says stomp
+factory. Working hypothesis: THE RAIDER'S CLAUSE ON A RING — the
+circle is one long rear area no one guards, so the Skimmer
+double-captures the ring endlessly (B lean + fast dominations); this
+map and Q31's clause interact more strongly than any corridor map
+could. Held EXPERIMENTAL with a FIX-FIRST flag: candidates are ring
+guard posts (relay kinds/garrisons), a clause exception at
+ring-distance, or accepting it as the Convoy-mode-only stage. Do NOT
+battery it before the fix hunt — the result is already known.

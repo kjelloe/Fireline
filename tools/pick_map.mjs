@@ -17,6 +17,7 @@ const BLURB = {
   riverline: "a river with three DROPPABLE bridges (experimental)",
   blackwood: "dense woodland, the fight leaves the road (experimental)",
   sawtooth: "canyon lanes behind impassable mesas (experimental)",
+  caldera: "the circle map — ring road both ways, dirt shortcut through the middle (experimental)",
 };
 
 const names = mapProfileNames();

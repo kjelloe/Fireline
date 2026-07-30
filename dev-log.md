@@ -3752,3 +3752,21 @@ slice). At a station: clicks fire the mount (never command vehicles),
 the banner shows the mount + missile count + dismount key, whereAmI
 anchors centre-on-me to the hull. Feed lines + rejections both
 locales. Suite 668/668 double-run, smoke + acceptance green.
+
+## slice-caldera: the circle map — built faithfully, RED at the gate
+
+Item 40 built exactly as designed: ring road out the SIDE GATES (the
+ring columns cross each base perimeter and roads-are-never-walled
+makes the gates real by construction — the design assembled itself),
+dirt-trail centre (the fast exposed shortcut), two mirrored mountains,
+6 relays on arteries, graph + patrols mirror-closed, picker/scripts/
+tests wired. THEN THE HONEST PART: the 5-seed gate looked great
+(20-min wars, comeback domination sweeps) but the 30+30 mirrored
+landing gate is RED — 31.7% A aggregate, 9.1-min median, 77%
+domination endings. A stomp factory. Working hypothesis: the
+RAIDER'S CLAUSE ON A RING — the circle is one long unguarded rear,
+so the Skimmer double-captures it endlessly; Q31's lever and this
+geometry interact more than any corridor could. EXPERIMENTAL with a
+FIX-FIRST flag (specs/10 §4g); battery deliberately NOT queued (the
+result is known). Never convict on 5 seeds — and never TRUST 5 seeds
+either. Suite 672/672 double-run.

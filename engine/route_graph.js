@@ -95,6 +95,26 @@ const GRAPHS = Object.freeze({
       [2, 20, "trail"], [20, 8, "trail"], [3, 21, "trail"], [21, 9, "trail"],
     ],
   }),
+  caldera: Object.freeze({
+    // Item 40: the ring is the ROAD, the centre is the TRAIL — the
+    // route-choice triangle. Gate joints sit where the ring columns
+    // meet each base's side gates; the centre chain runs exit-to-exit.
+    n: [
+      [24, 63], [103, 63],                       // 0-1 A/B front exits (trail)
+      [14, 54], [14, 73], [113, 54], [113, 73],  // 2-5 side-gate joints
+      [14, 30], [113, 30], [14, 97], [113, 97],  // 6-9 ring corners
+      [58, 30], [69, 30], [58, 97], [69, 97],    // 10-13 ring relays
+      [58, 63], [69, 63],                        // 14-15 centre relays
+    ],
+    e: [
+      [0, 14, "trail"], [14, 15, "trail"], [15, 1, "trail"],
+      [2, 6, "road"], [3, 8, "road"], [4, 7, "road"], [5, 9, "road"],
+      [6, 10, "road"], [10, 11, "road"], [11, 7, "road"],
+      [8, 12, "road"], [12, 13, "road"], [13, 9, "road"],
+      [2, 3, "road"], [4, 5, "road"], // the gate columns through each base flank
+      [0, 2, "open"], [0, 3, "open"], [1, 4, "open"], [1, 5, "open"],
+    ],
+  }),
   sawtooth: Object.freeze({
     // 18B: three lanes, four gaps, two edge corridors. The gaps are
     // tagged trail (they ARE T_PATH); the edge corridors are honest

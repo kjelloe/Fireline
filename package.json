@@ -14,6 +14,7 @@
     "start:riverline": "node server/index.js --map riverline",
     "start:blackwood": "node server/index.js --map blackwood",
     "start:sawtooth": "node server/index.js --map sawtooth",
+    "start:caldera": "node server/index.js --map caldera",
     "pick": "node tools/pick_map.mjs",
     "maps": "node server/index.js --list-maps",
     "sim1f": "node test/headless/sim1f.js",

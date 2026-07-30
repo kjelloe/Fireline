@@ -90,6 +90,14 @@ export const PATROLS = Object.freeze({
     light0: [[36, 28], [58, 28], [58, 99], [36, 99]],
     light1: [[91, 28], [69, 28], [69, 99], [91, 99]],
   }),
+  caldera: Object.freeze({
+    // Item 40: heavies work the centre trail between the middle relays
+    // and their near ring relay; lights RIDE THE RING. Exact mirrors.
+    0: [[40, 63], [58, 56], [58, 30], [58, 70]],
+    1: [[87, 63], [69, 56], [69, 30], [69, 70]],
+    light0: [[14, 40], [58, 30], [58, 97], [14, 87]],
+    light1: [[113, 40], [69, 30], [69, 97], [113, 87]],
+  }),
   sawtooth: Object.freeze({
     // 18B: heavies duel in the canyon between the gap mouths; lights
     // cycle their side's outer relays through the gaps. Exact mirrors.
