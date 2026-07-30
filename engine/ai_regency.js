@@ -521,11 +521,14 @@ export class AIRegency {
         if (Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
                      Math.abs(worldToCellFloor(a.y) - rcy)) <= ESCORT_CELLS) escortsNear++;
       }
+      // Guard count = the prison QUADRANT only (radius 5). Counting the
+      // whole base garrison (radius 12 covered it, plus MPG waves spawn
+      // there) meant the sneak window never opened — measured 1/5 raids.
       let guards = 0;
       for (const e of state.assets) {
         if (e.team !== prison.team || isWreck(e) || e.operatorId === -1) continue;
         if (Math.max(Math.abs(worldToCellFloor(e.x) - prison.cellX),
-                     Math.abs(worldToCellFloor(e.y) - prison.cellY)) <= SNEAK_SCAN_CELLS) guards++;
+                     Math.abs(worldToCellFloor(e.y) - prison.cellY)) <= 5) guards++;
       }
       // COMMIT once the clock runs — flapping at the wire wastes the
       // whole approach. Stage well clear of the enemy guns (24 cells).
@@ -564,6 +567,7 @@ export class AIRegency {
         const st = getUnitStats(a.type);
         if (st.canTow || st.canCarryStandard || st.indirect) continue;
         if (capturerOps.has(opId)) continue; // capturers keep capturing
+        if (prisonRaiderFor.get(team)?.opId === opId) continue; // the raider has a mission
         const d = Math.max(Math.abs(worldToCellFloor(a.x) - ccx),
                            Math.abs(worldToCellFloor(a.y) - ccy));
         candidates.push([d, opId]);
@@ -944,7 +948,7 @@ export class AIRegency {
       // has drifted >2 cells from its current destination re-targets NOW,
       // not on arrival at a stale rendezvous — lag is how the first
       // implementation got every raider killed alone.
-      if (escortFor.has(operatorId)) {
+      if (escortFor.has(operatorId) && prisonRaiderFor.get(asset.team)?.opId !== operatorId) {
         const c = state.assets[escortFor.get(operatorId)];
         if (c && !isWreck(c)) {
           const ecx = worldToCellFloor(c.x);

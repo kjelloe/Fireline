@@ -1654,7 +1654,14 @@ function applyAdvanceTick(next) {
         absI32(worldToCellFloor(a.y) - prison.cellY));
       if (d <= PRISON_RAID_CELLS) { holder = a; break; } // lowest id holds
     }
-    if (!holder) { prison.raidTicks = 0; continue; }
+    if (!holder) {
+      // The cut wire stays cut a while: the clock DECAYS instead of
+      // resetting, so successive raiders continue the work of the
+      // fallen (a hard reset measured 1/5 AI raids — wave two always
+      // started from zero).
+      if (prison.raidTicks > 0) prison.raidTicks = Math.max(0, prison.raidTicks - 2);
+      continue;
+    }
     prison.raidTicks += 1;
     if (prison.raidTicks < RAID_HOLD_TICKS) continue;
     const freed = prison.pows.length;

@@ -3870,3 +3870,25 @@ Dormant in default sims (no pows, no designation) but LIVE organically
 when slice-2 captures create prisoners. Suite 681/681 double-run,
 gate 4/5 (the era signature). One load-sensitive flake ("outruns real
 time" perf margin — passed clean twice).
+
+## slice-pow3b: three more levers, the bar still unmet — handing off with a map
+
+Iteration on the raid party: (1) guard window = the prison QUADRANT
+(radius 5, not 12 — the whole-garrison count kept the sneak window
+shut); (2) the raid clock DECAYS (-2/tick) instead of resetting — the
+cut wire stays cut, wave two continues wave one (pin updated); (3) the
+designated raider is EXEMPT from carrier-escort duty both ways — the
+trace showed the closest B unit peaked at 21 cells, exactly the
+staging ring: the raider was being consumed as a carrier escort every
+tick and never dove. Result: still 1/5 (the succeeding seed moved —
+the doctrine is different, not better). powPreplaced STAYS 0.
+
+FOR THE NEXT DOCTRINE SESSION, the diagnosis map: the raider now
+stages and is free to dive, so the remaining question is whether the
+dive condition fires (instrument prisonRaiderFor's dive flag per tick)
+and whether the dive SURVIVES the approach through the gate (a dive
+trace with hp). Candidates after instrumenting: dive on a TIMER
+(stage 30 s then go regardless), escorts-first ordering (escorts lead
+the dive rather than converge on a stationary stager), or raid parties
+of 3. The machinery is right; the trigger tuning needs eyes on the
+dive flag. Suite 681/681 double-run, gate 4/5 (era signature).

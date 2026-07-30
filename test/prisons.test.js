@@ -55,7 +55,7 @@ test("POW: a raid springs every prisoner into the rescue loop", () => {
   assert.equal(rd.events.at(-1).reason, "too weak from captivity");
 });
 
-test("POW: the raid clock needs a live enemy at the wire and resets without one", () => {
+test("POW: the raid clock needs a live enemy at the wire and DECAYS without one", () => {
   let s = sandbox([{ team: 1, type: 0, cellX: 40, cellY: 40 }], [], {
     bases: [
       { team: 0, x: 0, y: 0, width: 4, height: 4 },
@@ -66,7 +66,11 @@ test("POW: the raid clock needs a live enemy at the wire and resets without one"
   s.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [{ id: 30, by: -1 }], raidTicks: 50 }];
   s = joinAndSelect(s, 20, 1, 0); // crewed, but 30 cells away
   s = apply(s, { type: "advance_tick" });
-  assert.equal(s.prisons[0].raidTicks, 0, "no one at the wire, the clock resets");
+  // pow3 iteration: the cut wire stays cut a while — the clock DECAYS
+  // (-2/tick) instead of resetting, so wave two continues wave one.
+  assert.equal(s.prisons[0].raidTicks, 48, "the clock decays, not resets");
+  for (let i = 0; i < 30; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.prisons[0].raidTicks, 0, "and drains fully in time");
   assert.equal(s.operators[30].state, OP_CAPTIVE, "still captive");
 });
 

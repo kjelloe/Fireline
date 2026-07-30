@@ -103,6 +103,26 @@ slow — a mobile fortress that rewards coordination both ways.
   Both fit the existing deployable vocabulary (mines/hardpoint) and
   the wall/terrain machinery. PROPOSAL owed to the owner.
 
+## Figure kit (owner question, prompt 108 — PROPOSAL)
+
+What exists: ONE human figure — the prone downed-operator (box body +
+head sphere + faction panel, 9B art pass). Guards, POWs, freed POWs,
+and the prison compound have NO visual design yet.
+
+Proposal: a shared LOW-POLY FIGURE KIT from the same procedural
+factory (one builder, ~30 tris, faction-tinted), with POSE as the
+identity: DOWNED = prone (exists); POW IN CUSTODY/PRISON = kneeling,
+hands high (rotate torso upright, arms as two thin boxes raised —
+instantly readable); FREED POW WALKING = upright + walk bob (reuse the
+standard-carrier bob); GUARD = upright + slow head sweep (rotation
+oscillation — reads as scanning) + neutral grey tint (guards belong to
+the BASE, not a faction palette); SCIENTIST (later) = upright + white
+coat tint. PRISON COMPOUND = fence posts + crossbars from the props
+pipeline (14G pattern) around the prison cell, gate on the base-gate
+side, POW figures kneeling inside (count = pows.length — the headcount
+IS the render). One art slice covers all of it; pairs naturally with
+the alarm-guard slice so guards ship visible.
+
 ## NPC ambient bank (designer-ranked)
 
 Ship order: 1. FARMHANDS (flee combat, reveal movement to both teams —
