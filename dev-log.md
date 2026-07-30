@@ -3920,3 +3920,33 @@ designed slice, not a tweak — and it validates the DESIGN: a solo
 prison raid SHOULD fail; Q37 calls it "a full multi-vehicle
 coordinated operation", and the AI needs exactly what humans need.
 powPreplaced stays 0 (prompt-106). Suite 681/681 double-run.
+
+## slice-review2: the designer's People Update review — six deltas landed
+
+Full assessment in specs/12 (heeded / recorded / where our data says
+otherwise). Landed same day, all cheap and all correct:
+
+1. DAMAGE IS COUNTERPLAY — a suppressed scout's capture hold PAUSES
+   (shooting the kidnapper buys the victim time).
+2. THE CHASE BEGINS — capture auto-pings the victim's team at the
+   abduction site (the satchel-blast pattern, reused).
+3. THE ANTI-SPIRAL — a freed POW left within 3 cells of the enemy
+   prison for 60 s is RE-SECURED (hashed resecureTicks, v56); scout
+   recapture still covers the open field. Prison defence now means
+   something before guards exist.
+4. PARKED-ONLY EJECT — the anti-grief clean rule; "stop to eject crew".
+5. GLORY BOTH DIRECTIONS — a driver kill with a gunner aboard splits
+   60/40 (shooter keeps the deed and the larger share, Q41's own
+   principle applied symmetrically).
+6. POW TELEMETRY — powCaptures/powDeliveries/prisonRaids appended to
+   the sweep columns (the designer's metrics ask, instrument-first).
+
+Their sandbag/caltrop parameter tables, vault placement rules,
+landship monitoring list, guard visual law and figure-kit extensions
+are recorded in specs/12 for their slices. WHERE WE PUSHED BACK (with
+data): build order keeps the formation primitive before alarm guards
+— our measured bottleneck is movement, not detection (raiders die
+crossing solo; guards only make raids harder, so the no-guard test is
+the conservative case) — which matches their own Order A anyway.
+POW death: we are currently SAFER than their v1 ask (no death
+mechanism exists at all). Suite 683/683 double-run, gate + smoke green.

@@ -92,6 +92,8 @@ export function describeEvent(e, myTeam) {
         { id: e.operatorId });
     case "pow_delivered":
       return t(e.team === myTeam ? "ev.pow_delivered_them" : "ev.pow_delivered_us");
+    case "pow_resecured":
+      return t(e.team === myTeam ? "ev.pow_resecured_them" : "ev.pow_resecured_us");
     case "last_convoy_called":
       return t(e.team === myTeam ? "ev.convoy_called_us" : "ev.convoy_called_them", { n: e.need });
     case "last_convoy_complete":

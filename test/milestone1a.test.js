@@ -76,6 +76,7 @@ function stateHash(s) {
     w.writeI32LE(d.downTicks);
     w.writeI32LE(d.satchel ?? 0); // added prompt-51
     w.writeI32LE(d.freedPow ?? 0); // added POW arc
+    w.writeI32LE(d.resecureTicks ?? 0); // added review-2 re-secure
   }
   w.writeI32LE(s.rules?.mpgMinOperable ?? 6); w.writeI32LE(s.rules?.mpgTicks ?? 900); // added 13F
   w.writeI32LE(s.nextMineId ?? 0); // added 9E

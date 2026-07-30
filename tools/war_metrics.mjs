@@ -18,6 +18,9 @@ const COUNTED_EVENTS = Object.freeze([
   "asset_field_repaired",
   "bridge_breached",
   "bridge_repaired",
+  "operator_captured",     // People Update telemetry (designer review 2)
+  "pow_delivered",
+  "prison_raided",
 ]);
 
 export function createWarMetrics() {
@@ -100,6 +103,9 @@ export function createWarMetrics() {
         bridgeRepairs: m.counts.bridge_repaired,
         mercyBleeds: m.mercyBleeds,
         overtimeTicks: m.overtimeTicks,
+        powCaptures: m.counts.operator_captured,
+        powDeliveries: m.counts.pow_delivered,
+        prisonRaids: m.counts.prison_raided,
       };
     },
   };
@@ -111,4 +117,5 @@ export const METRIC_COLUMNS = Object.freeze([
   "leadChanges", "majorityFlips", "winnerMaxDeficit", "winnerMargin",
   "stdAttempts", "stdScored", "fieldRepairs",
   "bridgeBreaches", "bridgeRepairs", "mercyBleeds", "overtimeTicks",
+  "powCaptures", "powDeliveries", "prisonRaids", // appended (People Update)
 ]);

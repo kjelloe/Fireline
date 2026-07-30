@@ -36,6 +36,7 @@ import { premiumPoints } from "./premium.js";
 import {
   RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
   CAPTURE_HOLD_TICKS, RECOG_CAPTURE, RECOG_POW_HOLD, HOLD_PAY_TICKS, PRISON_CAPACITY,
+  RESECURE_TICKS,
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import {
@@ -249,6 +250,9 @@ function applyEjectStation(next, command) {
   if (!asset || asset.operatorId !== operator.id) return reject(next, command, "no asset selected");
   if (asset.stationOp === -1) return reject(next, command, "station is empty");
   if (asset.ejectTimer > 0) return reject(next, command, "eject already running");
+  // Review-2 delta (anti-grief clean rule): eject only while parked —
+  // no throwing crew off a moving vehicle mid-firefight.
+  if (asset.state === ASSET_MOVING) return reject(next, command, "stop to eject crew");
   asset.ejectTimer = EJECT_WARNING_TICKS;
   next.events.push({
     type: "station_eject_warning", assetId: asset.id,
@@ -574,7 +578,16 @@ function applyFireOrder(next, command) {
       kind: "asset", byType: attacker.type,
       dir: compassOctant(attacker.x - target.x, attacker.y - target.y),
     });
-    awardOperator(next, attacker.operatorId, RECOG_KILL, DEED_KILL); // 11K
+    // Review-2 delta: the platform team shares glory BOTH directions —
+    // a driver kill with a gunner aboard splits 60/40 (deed and the
+    // larger share to the shooter, Q41's own principle).
+    if ((attacker.stationOp ?? -1) !== -1) {
+      const share = floorDivI32(RECOG_KILL * 2, 5); // 40%
+      awardOperator(next, attacker.operatorId, RECOG_KILL - share, DEED_KILL);
+      awardOperator(next, attacker.stationOp, share);
+    } else {
+      awardOperator(next, attacker.operatorId, RECOG_KILL, DEED_KILL); // 11K
+    }
   }
   return next;
 }
@@ -1719,6 +1732,9 @@ function applyAdvanceTick(next) {
       scout.captureTicks = 0;
       continue;
     }
+    // Review-2 delta: DAMAGE IS COUNTERPLAY — a suppressed scout's
+    // hold PAUSES (shooting the kidnapper buys the victim time).
+    if (scout.suppressedTimer > 0) continue;
     scout.captureTicks += 1;
     if (scout.captureTicks < CAPTURE_HOLD_TICKS) continue;
     scout.captureTicks = 0;
@@ -1728,6 +1744,33 @@ function applyAdvanceTick(next) {
       type: "operator_captured", operatorId: target.operatorId,
       team: target.team, byAssetId: scout.id,
     });
+    // Review-2 delta: the CHASE begins — the victim's team gets an
+    // automatic ping at the abduction site (the satchel-blast pattern).
+    next.events.push({
+      type: "ping", kind: "need_rescue", team: target.team, toTeam: target.team,
+      cellX: worldToCellFloor(target.x), cellY: worldToCellFloor(target.y),
+    });
+  }
+  // Review-2 delta: the anti-spiral rule — a freed POW left within 3
+  // cells of the ENEMY prison for 60 s is RE-SECURED (the compound
+  // takes them back; nobody came). Clutter cannot accumulate at the
+  // wire, and prison defence means something even before guards.
+  for (const prison of next.prisons ?? []) {
+    if (prison.pows.length >= PRISON_CAPACITY) continue;
+    for (const body of [...next.downed]) {
+      if (body.freedPow !== 1 || body.team === prison.team) continue;
+      const d = Math.max(
+        absI32(worldToCellFloor(body.x) - prison.cellX),
+        absI32(worldToCellFloor(body.y) - prison.cellY));
+      if (d > 3) { body.resecureTicks = 0; continue; }
+      body.resecureTicks = (body.resecureTicks ?? 0) + 1;
+      if (body.resecureTicks < RESECURE_TICKS) continue;
+      const seat = next.operators[body.operatorId];
+      if (seat) seat.state = OP_CAPTIVE;
+      prison.pows.push({ id: body.operatorId, by: -1 });
+      next.downed = next.downed.filter((x) => x.operatorId !== body.operatorId);
+      next.events.push({ type: "pow_resecured", operatorId: body.operatorId, team: prison.team });
+    }
   }
   // Q35 hold-pay: each held minute pays the captor (pre-placed pows
   // have no captor and pay nobody).

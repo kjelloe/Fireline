@@ -180,3 +180,68 @@ test("POW slice 2: each held minute pays the captor, never the warden of the pre
   for (let i = 0; i < HOLD_PAY_TICKS; i++) s = apply(s, { type: "advance_tick" });
   assert.equal(s.operators[16].score, before + RECOG_POW_HOLD, "one minute, one payment");
 });
+
+test("review-2 deltas: suppressed holds pause, abandoned freed POWs are re-secured", async () => {
+  const { CAPTURE_HOLD_TICKS, RESECURE_TICKS } = await import("../engine/prisons.js");
+  // Suppression pauses the kidnapping — shooting the scout buys time.
+  let s = sandbox([{ team: 0, type: 1, cellX: 30, cellY: 30, suppressedTimer: 50 }], [], {
+    bases: [
+      { team: 0, x: 0, y: 0, width: 4, height: 4 },
+      { team: 1, x: 60, y: 60, width: 4, height: 4 },
+    ],
+  });
+  s.prisons = [];
+  s.operators[20] = { ...s.operators[20], state: OP_DOWN, team: 1 };
+  s.downed.push({
+    operatorId: 20, team: 1,
+    x: cellToWorld(31), y: cellToWorld(30),
+    targetX: cellToWorld(31), targetY: cellToWorld(30), downTicks: 0,
+  });
+  s = joinAndSelect(s, 16, 0, 0);
+  s.assets[0].suppressedTimer = CAPTURE_HOLD_TICKS + 10;
+  for (let i = 0; i < CAPTURE_HOLD_TICKS; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[0].prisoner, -1, "a suppressed scout takes nobody");
+
+  // Re-secure: a freed POW abandoned at the wire goes back in.
+  let r = sandbox([{ team: 0, type: 0, cellX: 40, cellY: 40 }], [], {
+    bases: [
+      { team: 0, x: 0, y: 0, width: 4, height: 4 },
+      { team: 1, x: 60, y: 60, width: 4, height: 4 },
+    ],
+  });
+  r = joinAndSelect(r, 16, 0, 0);
+  r.prisons = [{ team: 0, cellX: 10, cellY: 30, pows: [], raidTicks: 0 }];
+  r.operators[20] = { ...r.operators[20], state: OP_DOWN, team: 1 };
+  r.downed.push({
+    operatorId: 20, team: 1,
+    x: cellToWorld(11), y: cellToWorld(31),
+    targetX: cellToWorld(11), targetY: cellToWorld(31), downTicks: 0, freedPow: 1,
+  });
+  for (let i = 0; i < RESECURE_TICKS; i++) r = apply(r, { type: "advance_tick" });
+  assert.equal(r.operators[20].state, 3, "re-secured — nobody came");
+  assert.deepEqual(r.prisons[0].pows, [{ id: 20, by: -1 }]);
+  assert.ok(r.events.some((e) => e.type === "pow_resecured"));
+});
+
+test("review-2 deltas: parked-only eject, driver-kill glory shared with the gunner", async () => {
+  // Eject refused while moving.
+  let s = sandbox([{ team: 0, type: 4, cellX: 20, cellY: 20 }]);
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "join_operator", operatorId: 1, team: 0 });
+  s = apply(s, { type: "board_station", operatorId: 1, assetId: 0 });
+  s = apply(s, { type: "move_order", operatorId: 0, targetCellX: 40, targetCellY: 20 });
+  const moving = apply(s, { type: "eject_station", operatorId: 0 });
+  assert.equal(moving.events.at(-1).reason, "stop to eject crew");
+
+  // Driver kill with a gunner aboard: 60/40.
+  let k = sandbox([
+    { team: 0, type: 4, cellX: 20, cellY: 20, stationOp: 1 },
+    { team: 1, type: 1, cellX: 22, cellY: 20, hp: 5 },
+  ]);
+  k = apply(k, { type: "join_operator", operatorId: 1, team: 0 });
+  k = joinAndSelect(k, 0, 0, 0);
+  k = apply(k, { type: "fire_order", operatorId: 0, targetAssetId: 1 });
+  assert.equal(k.operators[0].score, 3, "the shooter keeps 60 and the deed");
+  assert.equal(k.operators[1].score, 2, "the platform team shares glory");
+  assert.equal(k.operators[0].deeds[0], 1);
+});

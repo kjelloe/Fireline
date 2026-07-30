@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 55,
+  "fixtureVersion": 56,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 55 (2026-07-30): POW slice 2: hashed scout prisoner/captureTicks + pows {id,by}; events verbatim; hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
+  "note": "fixtureVersion 56 (2026-07-30): review-2 deltas: hashed downed.resecureTicks; events verbatim; hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "efcc8e9e313b55a9",

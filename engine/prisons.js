@@ -26,6 +26,8 @@ export const CAPTURE_HOLD_TICKS = 30; // 3 s over the body — no drive-bys
 export const RECOG_CAPTURE = 15;      // Q35 table
 export const RECOG_POW_HOLD = 5;      // per held minute, to the captor
 export const HOLD_PAY_TICKS = 600;    // one minute
+// Review-2 anti-spiral: a freed POW abandoned at the wire goes back in.
+export const RESECURE_TICKS = 600;    // 60 s unattended = re-secured
 // Pre-placed captives: the LAST TWO AI regents of the enemy team
 // (A regents are ops 16-19 + 24-27, B regents 20-23 + 28-31) —
 // deterministic and exactly mirror-fair.

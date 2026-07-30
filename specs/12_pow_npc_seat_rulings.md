@@ -134,6 +134,43 @@ Also banked: refugee column (recognition morality), forward observer
 objective). **STRAY DOG: banked as the cosmetic Easter egg — "will be
 the most-remembered feature in every playtest."**
 
+## Designer review round 2 (prompt 110) — deltas adopted
+
+HEEDED (landed same day): capture hold PAUSES while the scout is
+suppressed (damage counterplay); automatic team ping at the capture
+site (the chase begins — the victim's team is told where); freed POWs
+left within 3 cells of the enemy prison for 60 s are RE-SECURED (the
+cleanest anti-spiral rule; scout recapture still works everywhere
+else); eject only while STATIONARY (the anti-grief clean rule);
+driver kills with a gunner aboard split 60/40 (the platform team
+shares glory both directions); POW telemetry columns in the sweep
+instrument (captures / deliveries / raids per war).
+
+RECORDED FOR THEIR SLICES: sandbag v1 parameter table (TRUCK builds,
+4-6 s, 2/truck, 6-8/team, decay 3-5 min, NEVER placeable on spawn
+exits/gates/prison points/convoy ends — "player walls may shape
+routes, never invalidate the map"); caltrop v1 table (scout/bike
+drops, 30-60 s slow zone 25-40%, no damage, truck clears, no
+stacking, own-team always visible / enemy close-or-scouted;
+DISTINCT from mines: delay pursuit, never punish); vault placement
+rules (side objective, 2+ approaches, small income, announced);
+landship monitoring list (snowball/spawn-pressure/choke-lock);
+figure-kit pose extensions (farmhand civilian tint fleeing, road
+worker repair pose, trader cart marker); guard VISUAL rule (no
+weapon silhouette, alarm icon when detecting — must not read as a
+killable soldier); POW-death v1 = COLLATERAL ONLY, no execute button
+(we are currently safer still: no death mechanism exists at all).
+
+WHERE OUR REASONING STANDS (with data): build order keeps the
+formation primitive before alarm guards — our measured bottleneck is
+MOVEMENT (raiders die crossing solo; 2,478 dive ticks, zero holds),
+not detection; guards only make raids harder, so testing without them
+is the conservative case and we still fail. This matches their own
+Order A ("AI raid minimal -> guards -> retune with guards"). Prison
+placement (base.y+15) keeps ~4+ cells from the spawn rows within an
+18x20 base — their spawn-separation concern is noted and becomes a
+hard constraint when bigger bases or outside-base prisons arrive.
+
 ## Build order (the People Update)
 
 1. ✅ Prison + seat-lock core — slice-pow1 (fixture v54; raid included).
