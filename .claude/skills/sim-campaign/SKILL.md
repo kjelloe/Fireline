@@ -121,3 +121,13 @@ that constructs GameServer directly now gets crewing ON by default —
 pass uniqueCrewing: false only for deliberate A/B. SAWTOOTH: 69% A
 at n=1200 live config (uniques-linked; identical pre/post walls) —
 HELD, mechanism hunt before any stat change.
+
+PEOPLE ERA (2026-08-01, fixture v55): the gate now runs walls +
+pathfinding + raider's clause + stations + POW captures. Expect: 3-5
+of 5 decided at TICKS=16000 (two wars just outrun the horizon — the
+30-war sweep at 18000 decides them; median ~21.6 min, 0% undecided),
+organic POW captures (captives fluctuate 0-2 without pre-placement),
+and ERA HORN DRIFT to ~15-20% (accumulated across walls/clause/
+captures — RE-BASELINE with a PC battery round before tuning anything
+against the pool-ladder-era numbers). powPreplaced defaults 0 (ruled)
+— POWS=2 only for human sessions until the AI raid party works.

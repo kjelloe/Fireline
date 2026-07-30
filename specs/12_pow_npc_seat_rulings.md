@@ -116,11 +116,12 @@ the most-remembered feature in every playtest."**
 
 ## Build order (the People Update)
 
-1. Prison + seat-lock core (state, main-base prison site, pre-placed
-   POWs, seat locking).
-2. Scout capture (cargo state, 3 s hold, delivery).
-3. Raid rescue (hold-beside-prison, freed-POW downed flow, carrier
-   delivery, recognition).
+1. ✅ Prison + seat-lock core — slice-pow1 (fixture v54; raid included).
+2. ✅ Scout capture — slice-pow2 (fixture v55; custody, delivery,
+   hold-pay, wreck spill, escape window).
+3. AI RAID PARTY — coordinated spring (escort assembly + sneak window)
+   so a prison raid can actually succeed; SUCCESS FLIPS powPreplaced
+   to the designed default (prompt-106 ruling).
 4. Alarm guards (fog reveal nodes).
 5. Vault (first map-special, on a map that earns it).
 6. Farmhands + road workers (ambience pass).
