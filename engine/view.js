@@ -83,6 +83,7 @@ export function buildSpectatorView(state) {
       armed: m.armTimer === 0, marked: m.marked === 1,
     })),
     caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
+    sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50: structures are public
     drones: state.drones.map((d) => ({
       id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
     })),
@@ -187,6 +188,7 @@ export function buildView(state, team) {
     downedOperators,
     mines,
     caltrops,
+    sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50: structures are public
     drones,
   };
 }

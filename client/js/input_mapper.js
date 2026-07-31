@@ -87,6 +87,16 @@ export function buildCommandForClick(view, cellX, cellY, opts = {}) {
     return { type: "fire_order", targetAssetId: target.id };
   }
 
+  // Q45/Q50: an ENEMY sandbag wall under the click is a fire target —
+  // any gun tears cover down.
+  const bag = (view?.sandbags ?? [])
+    .filter((s) => s.team !== view?.team)
+    .filter((s) => s.cellX === cellX && s.cellY === cellY)
+    .sort((a, b) => a.id - b.id)[0];
+  if (bag) {
+    return { type: "fire_order", targetSandbagId: bag.id };
+  }
+
   const wrecks = !canTow ? [] : (view?.friendlyAssets ?? [])
     .filter((a) => (a.state === DISABLED || a.state === SALVAGED))
     .filter((a) => a.towedBy === -1 && a.recoverTimer === 0)

@@ -15,6 +15,7 @@ import { createPrisons, PREPLACED_POWS } from "./prisons.js";
 import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
+import { SANDBAGS_PER_TRUCK } from "./sandbags.js";
 import { getUnitStats } from "./units.js";
 import { createStandards } from "./standards.js";
 import { createMission } from "./mission.js";
@@ -110,6 +111,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     reloadTimer: 0, // 8E fire cooldown
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
     caltropsLeft: getUnitStats(type).caltrops ?? 0, // Q45 chase-shaper rack
+    sandbagsLeft: getUnitStats(type).canClearMines ? SANDBAGS_PER_TRUCK : 0, // Q45/Q50
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
     materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
     cargoFuel: 0, cargoAmmo: 0, // 13A: field-resupply hold (trucks)
@@ -420,6 +422,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     nextMineId: 0,
     caltrops: [], // Q45: live chase-shaper patches
     nextCaltropId: 0,
+    sandbags: [], // Q45/Q50: player-built cover (walls with hp)
+    nextSandbagId: 0,
     drones: [], // 9G: anti-camping drones aloft
     nextDroneId: 0,
     // 13E: droppable crossings. EMPTY on every profile without them, so

@@ -149,6 +149,7 @@ const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
+const sandbagMeshes = new Map(); // sandbagId -> Mesh (Q45/Q50)
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let fogGhosts = []; // 13E: last-seen enemy contacts
 const ghostMeshes = new Map(); // enemyId -> Mesh (13E)
@@ -374,6 +375,19 @@ function init() {
       const meNow = interpolator.latest()?.friendlyAssets?.find(
         (a) => a.operatorId === joined?.operatorId);
       send({ type: (meNow?.caltropsLeft ?? 0) > 0 ? "deploy_caltrops" : "deploy_mine" });
+    }
+    // Q45/Q50: N builds a sandbag wall on the cell the truck faces.
+    if (k === "n") {
+      const meNow = interpolator.latest()?.friendlyAssets?.find(
+        (a) => a.operatorId === joined?.operatorId);
+      if (meNow && (meNow.sandbagsLeft ?? 0) > 0) {
+        const cx = Math.floor(meNow.x / CELL);
+        const cy = Math.floor(meNow.y / CELL);
+        const brads = meNow.heading ?? 0;
+        const dx = Math.round(Math.cos((brads / 256) * Math.PI * 2));
+        const dy = Math.round(Math.sin((brads / 256) * Math.PI * 2));
+        send({ type: "build_sandbag", targetCellX: cx + dx, targetCellY: cy + (dy || (dx === 0 ? 1 : 0)) });
+      }
     }
     // B5: hold Q for the comm wheel (release sends, centre = cancel).
     if (k === BINDS.comm && !e.repeat) showCommWheel();
@@ -1950,6 +1964,26 @@ function updateCaltropMeshes(view) {
   }
 }
 
+function updateSandbagMeshes(view) {
+  const live = new Set();
+  for (const sb of view.sandbags ?? []) {
+    live.add(sb.id);
+    let mesh = sandbagMeshes.get(sb.id);
+    if (!mesh) {
+      mesh = buildProcedural("mine"); // squat proxy silhouette (art pass later)
+      scene.add(mesh);
+      sandbagMeshes.set(sb.id, mesh);
+    }
+    const building = sb.buildTicks > 0;
+    mesh.scale.set(0.9, building ? 0.25 : 0.55, 0.9);
+    applyTeamColor(mesh, sb.team === joined?.team ? "#9a8f6a" : "#8a6f4a");
+    mesh.position.set(sb.cellX + 0.5, 0, sb.cellY + 0.5);
+  }
+  for (const [id, mesh] of sandbagMeshes) {
+    if (!live.has(id)) { scene.remove(mesh); sandbagMeshes.delete(id); }
+  }
+}
+
 function updateMineMeshes(view) {
   const live = new Set();
   for (const m of view.mines ?? []) {
@@ -2765,6 +2799,7 @@ function renderBattlefield() {
   updateDownedMeshes(view);
   updateMineMeshes(view);
   updateCaltropMeshes(view);
+  updateSandbagMeshes(view);
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
   updateDirectRing(view);

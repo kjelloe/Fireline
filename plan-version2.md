@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-01 (suite 697/697, fixture v56). HTML twin:
+*Updated 2026-08-01 late (suite 710/710, fixture v58). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -26,7 +26,7 @@ plus three experimental maps that have not earned promotion.
 | **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
 | Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
-| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — specs/12 rulings; prisons + scout capture + review-2 deltas landed; **AI raid party WORKS** (formation slice — both teams spring seats, winner tracks the rescue); powPreplaced flip = Q46 (behind the POWS battery); next: alarm guards + figure kit → vault |
+| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — prisons + capture + raid party + **ALARM GUARDS landed** (watchman ping + defender response; raids still complete 4/5); powPreplaced flip = Q46 (battery pending); next: vault + figure-kit art |
 | Multi-crew "Landship" | 🔜 seat-model PROVEN (stations landed); Landship = neutral capturable per Q42 rulings, after the POW arc |
 
 ## Track B — Battlefield systems
@@ -153,8 +153,8 @@ Q43-Q45 designer-ruled (stations, human-only, sandbag/caltrop tables).
 | Q46 | Flip `powPreplaced` default to 2 once the POWS=2 battery shows tempo + fairness hold? (raids WORK now — the prompt-106 condition is met, evidence pending) | user, after battery |
 | Q47 | Convoy Escort balance bar: what attacker win-rate band is "fair" for an asymmetric mode? Regents read 10-30% at n=10; deliveries are fast when they come. Also ratify the 15-min timer and the defender-MPG x2 counterweight | designer |
 | Q48 | Convoy's home map: keep frontier, or make the fixed caldera its home (ring road = natural convoy route with two lanes)? The designer's own order was framework → caldera → convoy | designer |
-| Q49 | How do mode wars enter the rotation? Today MODE=convoy is a server env (one server = one mode). Options: per-war rotation in the pump, map+mode vote (pairs with the filed map-vote design), or dedicated-server-only | user |
-| Q50 | Sandbags/caltrops: parameters are designer-ruled (Q45) — GO to build? Caltrops first per the designer (chase-shaper, truck clears) | user |
+| Q49 | RULED+BUILT: map+mode pair voting LANDED (slice-vote) — end-screen plurality vote, status-quo-first, dedicated servers keep their mode on silence | user |
+| Q50 | RULED+BUILT: caltrops LANDED (slice-caltrops); sandbags next with the owner's two-lane cap (max 4-cell run, never seals a gate/road) | user |
 | Q51 | Landship (neutral capturable multi-crew, Q42 rulings): enters the queue after alarm guards/vault, or jump it forward now that stations + formation exist? | user |
 | Q52 | Heist/Extraction as mode #2: it is mostly EXISTING machinery (standards + mode framework — a directed Standard war with radio pings). Cheap win — green-light after convoy tunes? | user |
 

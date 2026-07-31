@@ -21,6 +21,7 @@ export const CMD_BOARD_CARRIER  = "board_carrier"; // 11G
 export const CMD_UNBOARD        = "unboard";       // 11G
 export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
 export const CMD_DEPLOY_CALTROPS = "deploy_caltrops"; // Q45/Q50 chase-shapers
+export const CMD_BUILD_SANDBAG  = "build_sandbag";   // Q45/Q50 player cover
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
 // Crew stations (prompt-100 prototype): a SECOND seat on station-
@@ -72,6 +73,10 @@ export function validate(cmd) {
 
     case CMD_FIRE_ORDER:
       if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
+      if (cmd.targetSandbagId !== undefined) { // Q45/Q50: player cover
+        if (!isUint(cmd.targetSandbagId, 0xffff)) return { ok: false, reason: "invalid targetSandbagId" };
+        return { ok: true };
+      }
       if (cmd.targetSiteId !== undefined) { // 11F: infrastructure target
         if (!isUint(cmd.targetSiteId, 0xffff)) return { ok: false, reason: "invalid targetSiteId" };
         return { ok: true };
@@ -172,6 +177,13 @@ export function validate(cmd) {
 
     case CMD_DEPLOY_CALTROPS:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_BUILD_SANDBAG:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (!isUint(cmd.targetCellX, 1023) || !isUint(cmd.targetCellY, 1023)) {
+        return { ok: false, reason: "invalid target cell" };
+      }
       return { ok: true };
 
     case CMD_CLEAR_MINE:

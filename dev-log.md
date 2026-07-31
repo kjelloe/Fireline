@@ -4171,3 +4171,30 @@ first"). Suite 710/710 x2, gate green, fixture v58
 - Figure-kit ART (guard pose, alarm icon flash, POW figures in
   compounds) deferred to the art pass — the mechanic ships first;
   the ping marker carries v1.
+
+## slice-sandbags: player-built cover with the two-lane law (2026-08-01)
+
+The last ruled build from prompt 115 ("sandbags after, but keep them
+limited per building unit, so they cannot block more than two
+lanes"). Suite 714/714 x2, gate + smoke + acceptance green, fixture
+v59 (hashed state.sandbags + truck sandbagsLeft racks).
+- A TRUCK builds on an adjacent cell: 5 s channel (a friendly truck
+  must stay beside the work or it silently collapses), then the cell
+  becomes T_BLOCKING — the 18B wall rule handles refusal and slides,
+  the route planners route around it, zero new movement code. The
+  terrain-mutation trick is the BRIDGES precedent.
+- THE PLACEMENT LAW is the feature: roads/trails/water refused
+  outright (routes may be shaped by walls BESIDE them, never severed
+  — stricter than the ruled cap and provably map-safe); no bases,
+  sites, prisons, standard homes or mission gates; max contiguous
+  run 4 cells (the two-lane cap made checkable — orthogonal BFS);
+  racks of 2 per truck, team total 6.
+- Destruction: fire targetSandbagId — ANY gun (bags are cover, not
+  infrastructure; bridges need siege, bags need bullets); SANDBAG_HP
+  40; destruction restores the original ground. Click an enemy bag =
+  shoot it (input mapper, below wrecks in the ladder).
+- Client: N builds on the truck's facing cell; squat mesh (mine
+  proxy — art pass later); 14 rejection reasons with human text in
+  both locales (the 8H sweep demanded every one).
+- NO AI doctrine v1 (like stations: human tool first) — regents
+  neither build nor tear down; sweeps unaffected by construction.

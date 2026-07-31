@@ -34,6 +34,7 @@ export function hashState(state) {
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
     w.writeU8(a.minesLeft); // added 9E
     w.writeU8(a.caltropsLeft ?? 0); // added Q45
+    w.writeU8(a.sandbagsLeft ?? 0); // added Q45/Q50
     w.writeI32LE(a.campTicks); // added 9G
     w.writeU8(a.materiel ?? 0); // added 11F
     w.writeI32LE(a.driveThrottle ?? 0); w.writeI32LE(a.driveTurn ?? 0); // added 11L
@@ -78,6 +79,12 @@ export function hashState(state) {
     w.writeI32LE(m.id); w.writeI32LE(m.team);
     w.writeI32LE(m.cellX); w.writeI32LE(m.cellY);
     w.writeI32LE(m.armTimer); w.writeU8(m.marked);
+  }
+  w.writeI32LE(state.nextSandbagId ?? 0); // added Q45/Q50
+  for (const sb of (state.sandbags ?? [])) {
+    w.writeI32LE(sb.id); w.writeI32LE(sb.team);
+    w.writeI32LE(sb.cellX); w.writeI32LE(sb.cellY);
+    w.writeI32LE(sb.hp); w.writeI32LE(sb.buildTicks); w.writeI32LE(sb.prevTerrain);
   }
   w.writeI32LE(state.nextCaltropId ?? 0); // added Q45
   for (const c of (state.caltrops ?? [])) {

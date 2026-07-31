@@ -11,7 +11,7 @@ import {
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
-  CMD_DEPLOY_MINE, CMD_DEPLOY_CALTROPS, CMD_CLEAR_MINE, CMD_PING,
+  CMD_DEPLOY_MINE, CMD_DEPLOY_CALTROPS, CMD_BUILD_SANDBAG, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
@@ -44,6 +44,10 @@ import { MISSION_CONVOY, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./missi
 import {
   CALTROP_TICKS, CALTROP_SLOW_NUM, CALTROP_SLOW_DEN, caltropAt, enemyCaltropAt,
 } from "./caltrops.js";
+import {
+  SANDBAG_HP, SANDBAG_BUILD_TICKS, buildRejection,
+} from "./sandbags.js";
+import { T_BLOCKING } from "./mapgen.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -334,6 +338,7 @@ function copyState(state) {
     mission: state.mission ? { ...state.mission } : null, // mode framework (timer writes in place)
     mines: state.mines.map((m) => ({ ...m })),
     caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
+    sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
   };
@@ -525,6 +530,33 @@ function applyFireOrder(next, command) {
       // amphibious Skimmer crosses at speed (specs/11).
       applyBridgeTerrain(next.map, next.mapProfile, bridge.id, false);
       next.events.push({ type: "bridge_breached", bridgeId: bridge.id, byAssetId: attacker.id });
+    }
+    return next;
+  }
+  // Q45/Q50: shooting a sandbag wall. Any gun (they are cover, not
+  // infrastructure — bridges need siege, bags need bullets); normal
+  // ammo/reload/supply/range discipline. Destruction restores the
+  // original ground.
+  if (command.targetSandbagId !== undefined) {
+    const bag = (next.sandbags ?? []).find((s) => s.id === command.targetSandbagId);
+    if (!bag) return reject(next, command, "no such sandbag");
+    if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
+    if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+    if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
+    const pos = { x: cellToWorld(bag.cellX), y: cellToWorld(bag.cellY) };
+    if (!inFireRange(attacker, pos)) return reject(next, command, "target out of range");
+    attacker.ammo -= SUPPLY_FIRE_COST;
+    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    bag.hp = Math.max(0, bag.hp - getUnitStats(attacker.type).damage);
+    next.events.push({
+      type: "sandbag_shelled", sandbagId: bag.id, byAssetId: attacker.id, sandbagHp: bag.hp,
+    });
+    if (bag.hp === 0) {
+      if (bag.buildTicks <= 0) {
+        next.map.cells[bag.cellY * next.map.width + bag.cellX] = bag.prevTerrain;
+      }
+      next.sandbags = next.sandbags.filter((s) => s.id !== bag.id);
+      next.events.push({ type: "sandbag_destroyed", sandbagId: bag.id, byAssetId: attacker.id });
     }
     return next;
   }
@@ -975,6 +1007,44 @@ function applyDeployCaltrops(next, command) {
   next.events.push({
     type: "caltrops_deployed", assetId: asset.id, team: asset.team,
     caltropsLeft: asset.caltropsLeft,
+  });
+  return next;
+}
+
+// Q45/Q50: a truck builds a sandbag wall on an adjacent cell — a 5 s
+// channel (the truck must stay beside the work), then the cell turns
+// impassable (T_BLOCKING — the 18B wall rule does the rest). The
+// placement LAW lives in sandbags.js; the owner's two-lane cap is the
+// run-length check there.
+function applyBuildSandbag(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const truck = next.assets[operator.assetId];
+  if (!truck || truck.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (truck.state === ASSET_DISABLED || truck.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const tx = worldToCellFloor(truck.x);
+  const ty = worldToCellFloor(truck.y);
+  const d = Math.max(absI32(command.targetCellX - tx), absI32(command.targetCellY - ty));
+  if (d !== 1) return reject(next, command, "build beside the truck");
+  const why = buildRejection(next, truck, getUnitStats(truck.type),
+    command.targetCellX, command.targetCellY);
+  if (why) return reject(next, command, why);
+  truck.sandbagsLeft -= 1;
+  next.sandbags.push({
+    id: next.nextSandbagId, team: truck.team,
+    cellX: command.targetCellX, cellY: command.targetCellY,
+    hp: SANDBAG_HP, buildTicks: SANDBAG_BUILD_TICKS,
+    prevTerrain: next.map.cells[command.targetCellY * next.map.width + command.targetCellX],
+  });
+  next.nextSandbagId += 1;
+  next.events.push({
+    type: "sandbag_started", assetId: truck.id, team: truck.team,
+    cellX: command.targetCellX, cellY: command.targetCellY,
   });
   return next;
 }
@@ -1458,6 +1528,31 @@ function applyAdvanceTick(next) {
       enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
+  }
+  // Q45/Q50 sandbag builds: the channel needs the builder's TEAM to
+  // keep a truck beside the work; abandoned builds refund the rack of
+  // the nearest... no — abandoned builds simply collapse (silent).
+  // Completion turns the ground to T_BLOCKING; the wall rule and the
+  // route planners handle everything else.
+  if (next.sandbags?.length) {
+    const keep = [];
+    for (const sb of next.sandbags) {
+      if (sb.buildTicks <= 0) { keep.push(sb); continue; }
+      const tended = next.assets.some((a) =>
+        a.team === sb.team && a.operatorId !== -1 &&
+        a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+        getUnitStats(a.type).canClearMines &&
+        absI32(worldToCellFloor(a.x) - sb.cellX) <= 1 &&
+        absI32(worldToCellFloor(a.y) - sb.cellY) <= 1);
+      if (!tended) continue; // collapsed, silently — the truck walked away
+      sb.buildTicks -= 1;
+      if (sb.buildTicks === 0) {
+        next.map.cells[sb.cellY * next.map.width + sb.cellX] = T_BLOCKING;
+        next.events.push({ type: "sandbag_built", team: sb.team, cellX: sb.cellX, cellY: sb.cellY });
+      }
+      keep.push(sb);
+    }
+    if (keep.length !== next.sandbags.length) next.sandbags = keep;
   }
   // Q45 caltrops: silent decay (no per-tick events — repin discipline).
   if (next.caltrops?.length) {
@@ -2385,6 +2480,7 @@ export function apply(state, command) {
     case CMD_EJECT_STATION: return applyEjectStation(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_DEPLOY_CALTROPS: return applyDeployCaltrops(next, command);
+    case CMD_BUILD_SANDBAG: return applyBuildSandbag(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
     case CMD_RESPAWN: return applyRespawn(next, command); // 15: live since prompt-53
