@@ -76,3 +76,24 @@ after vault. Q52 heist = queued after convoy tuning.
 Vault (side objective, placement rules recorded) → figure-kit art
 pass (guards/POWs/downed poses) → Landship → heist mode → riverline
 pacing → caldera fix. Convoy tuning waits on your playtest + Q47.
+
+---
+
+## Addendum: the Q46 verdict (POWS pair collected)
+
+**Q46 answer: NOT flipped — the ruled condition fails on fairness.**
+POWS=2 at n=600 with HONEST mirrors: **27.3% A normal / 22.7% A
+mirrored** — team B keeps a massive edge in both worlds. Tempo passed
+(undecided 1-4%, raids firing 342/287 per 300), so the formation
+primitive did its job; the bias is elsewhere. Since the DEFAULT game
+is simultaneously fair (50.2/48.3), the mechanism lives specifically
+in the pre-placed-captive census: with 4 seats locked each team runs
+~6 regents, and the prime suspect is SEAT ECONOMICS under scarcity —
+the sawtooth conviction's mechanism, now on frontier, and B is the
+Skimmer side. The discriminator battery (POWS=2 + UNIQUES=0, both
+worlds) is queued; if it reads fair, the unique pair under a 12-crew
+census is convicted and the fix conversation is the same one sawtooth
+opened (premium, conditional variants, or seat-priority rules).
+`powPreplaced` stays 0; POWS=2 remains the human-session experience
+(where humans, not regents, hold the extra seats — the bias may not
+even apply to the designed use).
