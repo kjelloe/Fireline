@@ -4064,3 +4064,26 @@ CONVOY ESCORT v1
   wrecker, dash, army posture, defender-MPG counterweight. Human
   attackers will out-drive regents; judge after the battery + a
   playtest.
+
+## battery round: mirror-prison gap + lane fairness (2026-08-01, 2fd5444)
+
+Collected all six batteries. Three verdicts, two fixes, one number:
+- **Mirror sweeps were malformed since the POW arc landed**: the
+  MIRROR world-reflection in sim_sweep never mirrored `state.prisons`
+  (614 raids vs 128, captures 315 vs 34 between worlds). Fixed
+  (+ mission gate). Every mirror-battery POW read before 2fd5444 is
+  VOID; normal-world reads stand. Lesson appended to the greatest-hits
+  list: new positional state must be added to the mirror transform,
+  copyState, both hash functions, AND the view — four places.
+- **The team-keyed raid lanes were a measured team bias**: +10/+6 by
+  team handed team 1 (B) the short lane and the POW game — 28.3% A at
+  POWS=2 (n=300), ~5 pts of B edge in DEFAULT wars (organic captures
+  put parties in 207/300 of them). Replaced with ONE shared lane
+  (+8, both teams): fair by construction, and the old head-on
+  annihilation no longer reproduces under fights-on-the-move — raids
+  4/5 seeds, 8/10 prisons emptied, raider deaths ~0. Re-verification
+  batteries queued (sweep/mirror/pows pair on 2fd5444).
+- **Convoy Escort n=300**: attacker wins 27% (A attacking) / 19%
+  (B attacking), defenders ~77% overall. Tempo healthy (undecided
+  0-2%). Q47 filed for the designer: pick the asymmetric bar, then
+  tune timer/counterweights toward it.
