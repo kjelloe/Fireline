@@ -175,12 +175,13 @@ export const SNEAK_DIVE_CELLS = 12;
 // x≈64, t≈475, every war), a ±6 straddle (the compound-INTERIOR row
 // wall-jams: team 1 sprang its people 3/3 seeds, team 0 never), and
 // alternating time windows (parties die waiting at the rally — 2/5
-// seeds raided). What works: BOTH lanes south of the compound in the
-// same open band (prison row +6 / +10), four rows apart — passing
-// parties trade a shot or two instead of body-blocking. y-offsets
-// commute with the x-mirror; the +6/+10 split is the residual
-// asymmetry, and it is measured, not assumed (see dev-log).
-export const RAID_LANE_ROWS = [10, 6]; // by team
+// seeds raided). v4, the n=300 verdict on v3's +10/+6 team split: the
+// shorter lane handed team 1 the whole POW game (28.3% A at POWS=2,
+// ~5 pts of B edge in DEFAULT wars — organic captures put parties in
+// 2 of 3 of them). ONE shared lane, same for both teams, is fair by
+// construction; the old head-on-annihilation measurement predated
+// fights-on-the-move and no longer reproduces.
+export const RAID_LANE_ROWS = 8; // both teams — see fairness note above
 export const RAID_TURN_IN_CELLS = 12;
 function raidWindowOpen(state, carrier, visibleSet) {
   const cx = worldToCellFloor(carrier.x);
@@ -566,7 +567,7 @@ export class AIRegency {
       const homeBase = state.bases.find((b) => b.team === team);
       const bx = homeBase ? homeBase.x + ((homeBase.width / 2) | 0) : prison.cellX;
       const sx = prison.cellX > bx ? 1 : prison.cellX < bx ? -1 : 0;
-      const laneY = Math.min(state.map.height - 1, prison.cellY + RAID_LANE_ROWS[team]);
+      const laneY = Math.min(state.map.height - 1, prison.cellY + RAID_LANE_ROWS);
       const stage = [
         Math.abs(prison.cellX - bx) > 12 ? bx + sx * 12 : prison.cellX,
         laneY,

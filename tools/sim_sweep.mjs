@@ -104,6 +104,13 @@ for (let seed = 1; seed <= COUNT; seed++) {
     }
     for (const site of s.sites) site.cellX = W - 1 - site.cellX;
     for (const b of s.bases) b.x = W - b.x - b.width;
+    // PRISONS were forgotten here for four days: mirror worlds ran with
+    // every compound at its UNMIRRORED cell — inside the wrong base —
+    // and the mirror batteries measured a different game (614 raids vs
+    // 128; captures 315 vs 34). Any mirror-sweep POW read from before
+    // this line is void.
+    for (const p of s.prisons ?? []) p.cellX = W - 1 - p.cellX;
+    if (s.mission) s.mission.gateCellX = W - 1 - s.mission.gateCellX;
   }
   if (FACTIONSWAP) {
     // 12D: the faction-unique pair trades sides — asset 18 (Directorate

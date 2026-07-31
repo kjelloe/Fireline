@@ -15,12 +15,11 @@ import { sandbox, joinAndSelect } from "./helpers.js";
 
 const PRISON = { cellX: 10, cellY: 30 };
 // Rally near OWN lines: team-1 base centre (62,62) minus 12 toward the
-// prison, on team 1's approach LANE (prison row +6; team 0 rides +10 —
-// both south of the compound, four rows apart so parties pass instead
-// of body-blocking head-on).
-const STAGE = { cellX: 50, cellY: 36 };
+// prison, on the SHARED approach lane (prison row +8, both teams —
+// the team-keyed +10/+6 split was a measured 5-pt team bias).
+const STAGE = { cellX: 50, cellY: 38 };
 // The advance rides the lane until the final 12 cells, then turns in.
-const LANE = { cellX: 10, cellY: 36 };
+const LANE = { cellX: 10, cellY: 38 };
 
 // Team 1 raids a team-0 prison holding op 30. Party: one scout (the
 // specialist) + two tanks. A team-0 guard tank sits at the wire so the
