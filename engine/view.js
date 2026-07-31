@@ -49,7 +49,7 @@ export function buildSpectatorView(state) {
     ammo: a.ammo, fuel: a.fuel,
     towedBy: a.towedBy, recoverTimer: a.recoverTimer,
     reloadTimer: a.reloadTimer,
-    heading: a.heading, minesLeft: a.minesLeft,
+    heading: a.heading, minesLeft: a.minesLeft, caltropsLeft: a.caltropsLeft ?? 0,
     aboard1: a.aboard1, aboard2: a.aboard2,
   }));
   return {
@@ -82,6 +82,7 @@ export function buildSpectatorView(state) {
       id: m.id, team: m.team, cellX: m.cellX, cellY: m.cellY,
       armed: m.armTimer === 0, marked: m.marked === 1,
     })),
+    caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
     drones: state.drones.map((d) => ({
       id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
     })),
@@ -98,7 +99,7 @@ export function buildView(state, team) {
       ammo: a.ammo, fuel: a.fuel,
       towedBy: a.towedBy, recoverTimer: a.recoverTimer,
       reloadTimer: a.reloadTimer,
-      heading: a.heading, minesLeft: a.minesLeft,
+      heading: a.heading, minesLeft: a.minesLeft, caltropsLeft: a.caltropsLeft ?? 0,
       aboard1: a.aboard1, aboard2: a.aboard2, // 10B: takeover context
       materiel: a.materiel, // 11F
       driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
@@ -136,6 +137,16 @@ export function buildView(state, team) {
       id: m.id, team: m.team, cellX: m.cellX, cellY: m.cellY,
       armed: m.armTimer === 0, marked: m.marked === 1,
     }));
+  // Q45: own caltrops always; enemy patches are SURFACE litter — seen
+  // when any friendly stands within 4 cells (the ruled
+  // "close-or-scouted", without a new marking mechanic).
+  const caltrops = (state.caltrops ?? [])
+    .filter((c) => c.team === team || state.assets.some((a) =>
+      a.team === team && a.operatorId !== -1 &&
+      a.state !== 2 && a.state !== 3 &&
+      Math.max(Math.abs(((a.x / 256) | 0) - c.cellX),
+               Math.abs(((a.y / 256) | 0) - c.cellY)) <= 4))
+    .map((c) => ({ ...c }));
   // 9G: drones are loud, low, and public — both teams always see them.
   const drones = state.drones.map((d) => ({
     id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
@@ -175,6 +186,7 @@ export function buildView(state, team) {
     standards,
     downedOperators,
     mines,
+    caltrops,
     drones,
   };
 }

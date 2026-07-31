@@ -11,10 +11,11 @@ import {
 } from "./state.js";
 import {
   CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER, CMD_FIRE_ORDER,
-  CMD_TOW_ORDER, CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
+  CMD_TOW_ORDER, CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING, CMD_DEPLOY_CALTROPS,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY,
 } from "./commands.js";
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
+import { caltropAt } from "./caltrops.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
 import { CMD_TRANSFER_CARGO } from "./commands.js"; // 13B
 import { computeVisible } from "./los.js";
@@ -977,6 +978,25 @@ export class AIRegency {
       const fightsMoving = !!partyNow && (asset.prisoner ?? -1) === -1 &&
         (partyNow.opId === operatorId || partyNow.escorts.includes(operatorId));
 
+      // Q45 chase-shaper doctrine (BEFORE the fire doctrine — a mauled
+      // runner's escape kit outranks its peashooter): pursued at ≤ half
+      // hull with clean ground underfoot, strew the road. Delay the
+      // pursuit, never punish it; the drop works on the move.
+      {
+        const st0 = getUnitStats(asset.type);
+        if ((st0.caltrops ?? 0) > 0 && (asset.caltropsLeft ?? 0) > 0 &&
+            asset.hp * 2 <= st0.hp) {
+          const cx0 = worldToCellFloor(asset.x);
+          const cy0 = worldToCellFloor(asset.y);
+          if (!caltropAt(state, cx0, cy0) && state.assets.some((e) =>
+            e.team !== asset.team && e.operatorId !== -1 && !isWreck(e) &&
+            Math.max(Math.abs(worldToCellFloor(e.x) - cx0),
+                     Math.abs(worldToCellFloor(e.y) - cy0)) <= 5)) {
+            commands.push({ type: CMD_DEPLOY_CALTROPS, operatorId });
+            continue;
+          }
+        }
+      }
       // Fire doctrine: engage the nearest visible enemy in range when the
       // gun is loaded (8E). Easy regents observe a duty cycle: they only
       // engage during the first half of every double-reload window (6D).

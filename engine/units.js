@@ -35,6 +35,7 @@ export const UNIT_STATS = Object.freeze({
     // heavy punch, LONG reload, four missiles (rearmed at base like
     // ammo). Balanced by reload + shot count per the owner's ruling.
     station: Object.freeze({ kind: "at", damage: 40, range: 1536, reloadTicks: 60, shots: 4 }),
+    caltrops: 2, // Q45/Q50: light units carry chase-shapers (slow-only)
   }),
   [UNIT_ARTILLERY]: Object.freeze({
     id: UNIT_ARTILLERY, name: "artillery",
@@ -85,6 +86,7 @@ export const UNIT_STATS = Object.freeze({
     canCapture: false, siege: false,
     deployable: false, // 12B
     amphibious: false, // 12C
+    caltrops: 2, // Q45/Q50: the courier's escape kit
   }),
   // 12B (prompt 29): the Directorate Sentinel — Deploy Hardpoint. Mobile:
   // a crawling, lightly-armed hull. Deployed: an immobile hardpoint with

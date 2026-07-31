@@ -20,6 +20,7 @@ export const CMD_SET_OPTION     = "set_option";   // 11G
 export const CMD_BOARD_CARRIER  = "board_carrier"; // 11G
 export const CMD_UNBOARD        = "unboard";       // 11G
 export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
+export const CMD_DEPLOY_CALTROPS = "deploy_caltrops"; // Q45/Q50 chase-shapers
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
 // Crew stations (prompt-100 prototype): a SECOND seat on station-
@@ -166,6 +167,10 @@ export function validate(cmd) {
       return { ok: true };
 
     case CMD_DEPLOY_MINE:
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_DEPLOY_CALTROPS:
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
       return { ok: true };
 

@@ -40,6 +40,7 @@ function stateHash(s) {
     w.writeU8(a.heading); // added 9F
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
     w.writeU8(a.minesLeft); // added 9E
+    w.writeU8(a.caltropsLeft ?? 0); // added Q45
     w.writeI32LE(a.campTicks); // added 9G
     w.writeU8(a.materiel ?? 0); // added 11F
     w.writeI32LE(a.driveThrottle ?? 0); w.writeI32LE(a.driveTurn ?? 0); // added 11L
@@ -84,6 +85,12 @@ function stateHash(s) {
     w.writeI32LE(m.id); w.writeI32LE(m.team);
     w.writeI32LE(m.cellX); w.writeI32LE(m.cellY);
     w.writeI32LE(m.armTimer); w.writeU8(m.marked);
+  }
+  w.writeI32LE(s.nextCaltropId ?? 0); // added Q45
+  for (const c of (s.caltrops ?? [])) {
+    w.writeI32LE(c.id); w.writeI32LE(c.team);
+    w.writeI32LE(c.cellX); w.writeI32LE(c.cellY);
+    w.writeI32LE(c.ticksLeft);
   }
   w.writeI32LE(s.nextDroneId ?? 0); // added 9G
   for (const d of (s.drones ?? [])) {

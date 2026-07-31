@@ -11,7 +11,7 @@ import {
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
-  CMD_DEPLOY_MINE, CMD_CLEAR_MINE, CMD_PING,
+  CMD_DEPLOY_MINE, CMD_DEPLOY_CALTROPS, CMD_CLEAR_MINE, CMD_PING,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
@@ -19,6 +19,7 @@ import {
 } from "./commands.js";
 import {
   MINE_ARM_TICKS, MINE_DAMAGE, MINE_DETECT_RADIUS_CELLS,
+  MINE_CLEAR_RADIUS_CELLS,
   deployRejection, clearRejection, isArmed,
 } from "./mines.js";
 import {
@@ -40,6 +41,9 @@ import {
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import { MISSION_CONVOY, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
+import {
+  CALTROP_TICKS, CALTROP_SLOW_NUM, CALTROP_SLOW_DEN, caltropAt, enemyCaltropAt,
+} from "./caltrops.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -329,6 +333,7 @@ function copyState(state) {
     prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: p.pows.map((pw) => ({ ...pw })) })), // POW arc
     mission: state.mission ? { ...state.mission } : null, // mode framework (timer writes in place)
     mines: state.mines.map((m) => ({ ...m })),
+    caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
   };
@@ -939,6 +944,41 @@ function applyDeployMine(next, command) {
   return next;
 }
 
+// Q45/Q50: caltrops — the chase-shaper. A LIGHT chassis drops a patch
+// on its own cell; enemies crossing it run 30% slower for 45 s. No
+// damage, no arming, no stacking; any truck's clear-mine sweep also
+// rakes them up, and they expire on their own.
+function applyDeployCaltrops(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  if (!(getUnitStats(asset.type).caltrops > 0)) {
+    return reject(next, command, "this chassis carries no caltrops");
+  }
+  if ((asset.caltropsLeft ?? 0) <= 0) return reject(next, command, "caltrop rack empty");
+  const cellX = worldToCellFloor(asset.x);
+  const cellY = worldToCellFloor(asset.y);
+  if (caltropAt(next, cellX, cellY)) return reject(next, command, "already strewn here");
+  asset.caltropsLeft -= 1;
+  next.caltrops.push({
+    id: next.nextCaltropId, team: asset.team, cellX, cellY,
+    ticksLeft: CALTROP_TICKS,
+  });
+  next.nextCaltropId += 1;
+  next.events.push({
+    type: "caltrops_deployed", assetId: asset.id, team: asset.team,
+    caltropsLeft: asset.caltropsLeft,
+  });
+  return next;
+}
+
 // 9E: a truck defuses an adjacent mine it legitimately knows about.
 function applyClearMine(next, command) {
   const operator = next.operators[command.operatorId];
@@ -958,6 +998,16 @@ function applyClearMine(next, command) {
   if (why) return reject(next, command, why);
   next.mines = next.mines.filter((m) => m.id !== mine.id);
   next.events.push({ type: "mine_cleared", mineId: mine.id, assetId: asset.id });
+  // Q45: the same sweep rakes up enemy caltrops around the truck.
+  const tx = worldToCellFloor(asset.x);
+  const ty = worldToCellFloor(asset.y);
+  const raked = (next.caltrops ?? []).filter((c) =>
+    c.team !== asset.team &&
+    Math.max(absI32(c.cellX - tx), absI32(c.cellY - ty)) <= MINE_CLEAR_RADIUS_CELLS);
+  if (raked.length) {
+    next.caltrops = next.caltrops.filter((c) => !raked.includes(c));
+    next.events.push({ type: "caltrops_cleared", assetId: asset.id, count: raked.length });
+  }
   return next;
 }
 
@@ -1225,7 +1275,7 @@ function slideAlongWall(map, asset, sdx, sdy, stats) {
 // 11L: tank-style direct drive. A/D pivot at the chassis turnRate; W
 // drives along the heading at chassis speed, S reverses at half; every
 // speed multiplier stepAsset honors applies here too. Map edges clamp.
-function driveStep(asset, map, supplied, carrying, towing, others) {
+function driveStep(asset, map, supplied, carrying, towing, others, slowed = false) {
   const stats = getUnitStats(asset.type);
   if (asset.driveTurn !== 0) {
     asset.heading = (asset.heading + asset.driveTurn * stats.turnRate) & 255;
@@ -1237,6 +1287,7 @@ function driveStep(asset, map, supplied, carrying, towing, others) {
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
   const terrain = map.cells[cellY * map.width + cellX];
   let step = floorDivI32(stats.speed * speedMultiplier(terrain, stats), 256);
+  if (slowed) step = floorDivI32(step * CALTROP_SLOW_NUM, CALTROP_SLOW_DEN); // Q45
   if (!supplied) step = floorDivI32(step, 2);
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN);
   if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN);
@@ -1265,7 +1316,7 @@ function driveStep(asset, map, supplied, carrying, towing, others) {
   asset.targetY = asset.y;
 }
 
-function stepAsset(asset, map, supplied, carrying, towing, others) {
+function stepAsset(asset, map, supplied, carrying, towing, others, slowed = false) {
   const cellX = worldToCellFloor(asset.x);
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
@@ -1273,6 +1324,7 @@ function stepAsset(asset, map, supplied, carrying, towing, others) {
   const stats = getUnitStats(asset.type);
   const terrain = map.cells[cellY * map.width + cellX];
   let step = floorDivI32(stats.speed * speedMultiplier(terrain, stats), 256);
+  if (slowed) step = floorDivI32(step * CALTROP_SLOW_NUM, CALTROP_SLOW_DEN); // Q45 chase-shaper
   if (!supplied) step = floorDivI32(step, 2); // out of supply: half speed (3B)
   if (carrying) step = floorDivI32(step * CARRIER_SPEED_NUM, CARRIER_SPEED_DEN); // 8B
   if (towing) step = floorDivI32(step * TOW_SPEED_NUM, TOW_SPEED_DEN); // 8D
@@ -1388,7 +1440,8 @@ function applyAdvanceTick(next) {
         asset, next.map, inSupply(next, asset),
         assetCarries(next, asset.id) !== null,
         towedWreck(next, asset.id) !== null,
-        next.assets
+        next.assets,
+        enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
       );
       if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
       continue;
@@ -1401,9 +1454,15 @@ function applyAdvanceTick(next) {
       asset, next.map, inSupply(next, asset),
       assetCarries(next, asset.id) !== null,
       towedWreck(next, asset.id) !== null,
-      next.assets
+      next.assets,
+      enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
+  }
+  // Q45 caltrops: silent decay (no per-tick events — repin discipline).
+  if (next.caltrops?.length) {
+    for (const c of next.caltrops) c.ticksLeft -= 1;
+    next.caltrops = next.caltrops.filter((c) => c.ticksLeft > 0);
   }
   // 9E mines: arm, then scout detection, then detonation on enemy entry.
   for (const mine of next.mines) {
@@ -2300,6 +2359,7 @@ export function apply(state, command) {
     case CMD_STATION_FIRE: return applyStationFire(next, command);
     case CMD_EJECT_STATION: return applyEjectStation(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
+    case CMD_DEPLOY_CALTROPS: return applyDeployCaltrops(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
     case CMD_RESPAWN: return applyRespawn(next, command); // 15: live since prompt-53

@@ -185,3 +185,12 @@ hard constraint when bigger bases or outside-base prisons arrive.
 7. Scientist/lab + trader convoy (escortable NPC era).
 
 > Build-order update (2026-08-01): formation/group-movement primitive LANDED (slice-formation); the AI raid party rides it — raids complete for BOTH teams (5-seed probe). powPreplaced default flip awaits a 300-war POWS=2 battery.
+
+> Owner rulings 2026-08-01 (prompt 115): CALTROPS BUILT (slice-
+> caltrops — table above, middles chosen: 30% slow, 45 s, rack 2).
+> SANDBAGS next, with a cap: limited per building unit and a build
+> may never block more than TWO LANES — implementation reading: max
+> contiguous sandbag run 4 cells, placement refused if it would seal
+> a gate cell or a road's full width (extends the "shape routes,
+> never invalidate the map" law). Landship AFTER alarm guards/vault.
+> Heist/Extraction mode GO after convoy tunes.

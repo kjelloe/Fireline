@@ -109,6 +109,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     towedBy: -1, recoverTimer: 0, // 8D tow-back recovery
     reloadTimer: 0, // 8E fire cooldown
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
+    caltropsLeft: getUnitStats(type).caltrops ?? 0, // Q45 chase-shaper rack
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
     materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
     cargoFuel: 0, cargoAmmo: 0, // 13A: field-resupply hold (trucks)
@@ -417,6 +418,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     ],
     mines: [], // 9E: deployed mines
     nextMineId: 0,
+    caltrops: [], // Q45: live chase-shaper patches
+    nextCaltropId: 0,
     drones: [], // 9G: anti-camping drones aloft
     nextDroneId: 0,
     // 13E: droppable crossings. EMPTY on every profile without them, so

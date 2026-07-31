@@ -148,6 +148,7 @@ const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
+const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let fogGhosts = []; // 13E: last-seen enemy contacts
 const ghostMeshes = new Map(); // enemyId -> Mesh (13E)
@@ -366,7 +367,14 @@ function init() {
     if (e.key === "Escape") pendingTakeover = -1;
     // 9E: M lays a mine under the tank; C clears the nearest adjacent
     // known mine with a truck.
-    if (k === BINDS.mine) send({ type: "deploy_mine" });
+    if (k === BINDS.mine) {
+      // Q45: the same key strews caltrops from a light chassis (bike/
+      // scout carry chase-shapers, never mines) and lays a mine from a
+      // tank — the server owns the contract either way.
+      const meNow = interpolator.latest()?.friendlyAssets?.find(
+        (a) => a.operatorId === joined?.operatorId);
+      send({ type: (meNow?.caltropsLeft ?? 0) > 0 ? "deploy_caltrops" : "deploy_mine" });
+    }
     // B5: hold Q for the comm wheel (release sends, centre = cancel).
     if (k === BINDS.comm && !e.repeat) showCommWheel();
     // Prompt-100: J joins the hovered vacant station, or leaves mine.
@@ -1896,6 +1904,25 @@ function nearestAdjacentMine(view) {
   return best;
 }
 
+function updateCaltropMeshes(view) {
+  const live = new Set();
+  for (const c of view.caltrops ?? []) {
+    live.add(c.id);
+    let mesh = caltropMeshes.get(c.id);
+    if (!mesh) {
+      mesh = buildProcedural("mine");
+      mesh.scale.set(0.45, 0.45, 0.45); // smaller than ordnance — litter, not a bomb
+      scene.add(mesh);
+      caltropMeshes.set(c.id, mesh);
+    }
+    applyTeamColor(mesh, c.team === joined?.team ? "#b8b06a" : "#d8a03a");
+    mesh.position.set(c.cellX + 0.5, 0, c.cellY + 0.5);
+  }
+  for (const [id, mesh] of caltropMeshes) {
+    if (!live.has(id)) { scene.remove(mesh); caltropMeshes.delete(id); }
+  }
+}
+
 function updateMineMeshes(view) {
   const live = new Set();
   for (const m of view.mines ?? []) {
@@ -2710,6 +2737,7 @@ function renderBattlefield() {
   for (const st of view.standards ?? []) upsertStandardMesh(st);
   updateDownedMeshes(view);
   updateMineMeshes(view);
+  updateCaltropMeshes(view);
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
   updateDirectRing(view);

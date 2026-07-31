@@ -4087,3 +4087,29 @@ Collected all six batteries. Three verdicts, two fixes, one number:
   (B attacking), defenders ~77% overall. Tempo healthy (undecided
   0-2%). Q47 filed for the designer: pick the asymmetric bar, then
   tune timer/counterweights toward it.
+
+## slice-caltrops: Q45/Q50 chase-shapers (2026-08-01)
+
+Owner GO ("do caltrops"). Designer table verbatim from specs/12:
+light units only (scout + bike, rack of 2), slow-only 30% for 45 s
+(middles of the ruled 25-40% / 30-60 s bands), no damage ever, no
+stacking, any truck's mine sweep rakes enemy patches, self-expiry.
+DISTINCT from mines by construction: delay pursuit, never punish.
+- `engine/caltrops.js` + hashed `state.caltrops`/`nextCaltropId` +
+  `asset.caltropsLeft` (repin v57). Slow applies in BOTH movement
+  paths (stepAsset + driveStep), enemy-team patches only.
+- Command `deploy_caltrops` (M key dispatches by chassis: light =
+  caltrops, tank = mine); own patches always visible, enemy patches
+  are surface litter — seen when any friendly is within 4 cells.
+- AI doctrine: a PURSUED light runner at ≤ half hull strews its
+  current cell — placed BEFORE the fire doctrine (the escape kit
+  outranks the peashooter; the first version fired at its pursuer
+  instead, caught by test).
+- Suite catches that earned their keep: data/units.json mirror
+  (regen script now in debugging/regen_units_json.mjs) and the
+  every-rejection-has-human-text sweep (3 new reasons, both locales).
+- 704/704 x2, 5-seed gate, client smoke green. Sandbags come next
+  per the ruling, with the owner's TWO-LANE cap (a build may never
+  block more than two lanes; interpreted as: max contiguous sandbag
+  run of 4 cells and never sealing a gate or full road width —
+  recorded in specs/12).
