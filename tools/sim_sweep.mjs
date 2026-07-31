@@ -38,6 +38,8 @@ const MODEATTACKER = process.env.MODEATTACKER === "1" ? 1 : 0;
 // prison-party doctrine; POWARC=0 disables scout captures entirely.
 const RAIDPARTY = process.env.RAIDPARTY !== "0";
 const POWARC = process.env.POWARC !== "0";
+const ALARMRESPONSE = process.env.ALARMRESPONSE !== "0";
+const VAULTS = process.env.VAULTS !== "0"; // 0 strips kind-4 sites pre-war
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -53,6 +55,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
+    alarmResponse: ALARMRESPONSE,
     rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
@@ -69,6 +72,10 @@ for (let seed = 1; seed <= COUNT; seed++) {
   }
   if (MODE !== null && seed === 1) {
     console.error(`mode: convoy attacker=${MODEATTACKER} mission=${JSON.stringify(server.state.mission)}`);
+  }
+  if (!VAULTS) {
+    // Bisection rung: the vault pair never existed (sites 10 -> 8).
+    server.state.sites = server.state.sites.filter((st) => st.kind !== 4);
   }
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every

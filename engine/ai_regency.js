@@ -321,6 +321,7 @@ export class AIRegency {
     // A/B kill-switch (bisection only, never a shipped config): skip
     // the prison raid-party doctrine entirely.
     this.raidPartyEnabled = options.raidParty !== false;
+    this.alarmResponseEnabled = options.alarmResponse !== false; // A/B only
     // Q31 SEAT-SWAP DOCTRINE (ruled 2026-07-31): "the punishment for a
     // bad unique is surviving in it" — the sawtooth conviction showed a
     // regent imprisoned all war in a Skimmer that earned nothing. A
@@ -723,6 +724,7 @@ export class AIRegency {
     // response the alarm exists to trigger.
     const prisonDefenderFor = new Map(); // team -> opId
     for (const prison of state.prisons ?? []) {
+      if (this.alarmResponseEnabled === false) break; // A/B kill-switch
       if (prison.pows.length === 0) continue; // an empty compound guards itself
       const threatened = state.assets.some((a) =>
         a.team !== prison.team && a.operatorId !== -1 && !isWreck(a) &&
