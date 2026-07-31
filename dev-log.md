@@ -4477,3 +4477,18 @@ route_graph's leg/waypoint selection (13C's own tie-breaks or
 nextWaypoint), not in any caller. Next session: instrument
 routeWaypoints for that exact trip pair ((58,63)→wreck vs mirrored),
 diff the node expansions, apply the origin-side law where it hides.
+
+## rung 4 correction (same evening): route_graph EXONERATED
+
+The pure repro (routeWaypoints for the exact t=902 trip pair) returns
+EMPTY both ways — short trips bypass the graph entirely, so the
+divergent (60,59)/(69,59) targets are the output of a DESIGNATION
+scan (the truck's needy-resupply or tow ladder), not a route leg.
+Rung 4's true home: a scan whose tie or score differs between exact
+mirror states — with all floors law-compliant, the suspects are
+score formulas mixing distance with need, or an id-tie that is not
+actually a tie. The t=902 harness (dbg_t902 pattern: same seed, dump
+op-25's decision inputs in both worlds) reproduces it in ~90 s;
+next session instruments the resupply scan's candidate list
+directly. Ladder: 2 → 107 → 903 held; the remaining divergence is
+DOCTRINE-layer, the engine floors are clean.
