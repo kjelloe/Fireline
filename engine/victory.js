@@ -2,12 +2,17 @@
 // Pure verdict function; the reducer owns state transitions. Reasons are
 // integer codes so they live in hashed state.
 
+import { MISSION_CONVOY, CONVOY_DELIVER_CELLS } from "./mission.js";
+import { worldToCellFloor } from "../shared/fixedmath.js";
+
 export const WIN_NONE = 0;
 export const WIN_ELIMINATION = 1;
 export const WIN_DOMINATION = 2;
 export const WIN_TIME_LIMIT = 3;
 export const WIN_STANDARD = 4; // 8C: the primary victory — flag captured
 export const WIN_TICKETS = 5;  // 13H: the enemy pool bled dry (prompt-51 hybrid)
+export const WIN_CONVOY_DELIVERED = 6; // mode: the convoy reached the gate
+export const WIN_CONVOY_STOPPED = 7;   // mode: timer expired or hull salvaged
 
 export const PHASE_RUNNING = 0;
 export const PHASE_OVER = 1;
@@ -29,6 +34,33 @@ function teamEliminated(state, team) {
 // Command Standard capture is checked FIRST — it is the primary condition;
 // elimination, domination and the clock are secondary/fallback paths.
 export function checkVictory(state) {
+  // Asymmetric mode framework: a live mission REPLACES the standard
+  // win paths (standards never spawn; tickets/domination cannot end a
+  // mode war — its clock and objective are the whole story).
+  // Elimination stays as the backstop for a genuinely dead war.
+  if (state.mission?.kind === MISSION_CONVOY) {
+    const m = state.mission;
+    const convoy = state.assets[m.convoyId];
+    const salvaged = !convoy || convoy.state === 3 /* ASSET_SALVAGED */;
+    if (salvaged) return { winner: m.attacker === 0 ? 1 : 0, reason: WIN_CONVOY_STOPPED };
+    if (convoy.state !== 2 /* ASSET_DISABLED */) {
+      const cx = worldToCellFloor(convoy.x);
+      const cy = worldToCellFloor(convoy.y);
+      if (Math.max(Math.abs(cx - m.gateCellX), Math.abs(cy - m.gateCellY)) <= CONVOY_DELIVER_CELLS) {
+        return { winner: m.attacker, reason: WIN_CONVOY_DELIVERED };
+      }
+    }
+    if (m.timerTicks <= 0) {
+      return { winner: m.attacker === 0 ? 1 : 0, reason: WIN_CONVOY_STOPPED };
+    }
+    const aDead = teamEliminated(state, 0);
+    const bDead = teamEliminated(state, 1);
+    if (aDead && bDead) return { winner: -1, reason: WIN_ELIMINATION };
+    if (aDead) return { winner: 1, reason: WIN_ELIMINATION };
+    if (bDead) return { winner: 0, reason: WIN_ELIMINATION };
+    return null;
+  }
+
   const scored = state.standards.find((st) => st.status === 3 /* STD_SCORED */);
   if (scored) {
     return { winner: scored.team === 0 ? 1 : 0, reason: WIN_STANDARD };

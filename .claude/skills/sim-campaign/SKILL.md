@@ -135,3 +135,10 @@ doctrine in DEFAULT wars too: expect occasional pow_delivered /
 prison_raided in gate seeds, and judge raid health by
 server.ai.raidDebug (phase/escorts/guards per plan), not by staring
 at unit orders.
+MODE WARS (slice-convoy): MODE=convoy is a DIFFERENT game — no
+standards, no ticket bleed, verdict by reasons 6/7 only. Never mix
+mode rows into standard-war baselines. Probe with
+debugging/dbg_convoy.mjs (both attacker sides); battery via
+`batch_send.sh convoy <attacker> 300`. Asymmetric bar per the
+designer: judge attacker rate + phase depth + recovery events, not
+the symmetric 45-55 band.

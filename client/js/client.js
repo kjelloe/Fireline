@@ -1675,7 +1675,8 @@ function showBriefing() {
   const el = document.getElementById("briefing-overlay");
   document.getElementById("briefing-text").innerText =
     briefingText(joined?.team, joined ? factionFor(joined.team) : null,
-      interpolator.latest()?.mapProfile ?? null); // 12A/15B; premium disclosure
+      interpolator.latest()?.mapProfile ?? null,
+      interpolator.latest()?.mission ?? null); // 12A/15B; premium + mode disclosure
   el.style.display = "flex";
   const close = () => { el.style.display = "none"; window.removeEventListener("keydown", onKey); };
   const onKey = (e) => { if (e.key === "Enter" || e.key === "Escape") close(); };

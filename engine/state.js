@@ -17,6 +17,7 @@ import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
 import { getUnitStats } from "./units.js";
 import { createStandards } from "./standards.js";
+import { createMission } from "./mission.js";
 
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
@@ -369,6 +370,14 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     throw new RangeError("mapArg must be a profile name or map object");
   }
 
+  // Asymmetric mode framework (Q32): the mission object is null in
+  // every standard war and hashed only when live, so the 1A fixture
+  // never notices (the bridges pattern). Convoy wars spawn NO
+  // standards — a scored flag that cannot end the war is a lie on the
+  // map.
+  const mission = createMission(rules, assets, bases, (t) => getUnitStats(t));
+  if (mission) standards = [];
+
   // POW arc: pre-placed captives start OP_CAPTIVE with their team set
   // (they have never joined — the lock must know whose seat it holds).
   const operators = createOperators();
@@ -420,6 +429,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     // POW arc slice 1: one prison per base, pre-loaded symmetrically
     // (the pre-placed enemy regents start OP_CAPTIVE — see below).
     prisons: createPrisons(bases, powN),
+    // Asymmetric mode framework: null = standard war (never hashed).
+    mission,
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

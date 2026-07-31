@@ -42,6 +42,16 @@ export function relayTally(view, myTeam) {
 // opts.canCarry: whether the player's current chassis can take the enemy
 // standard (9A: Command Carriers only).
 export function currentHint(view, myTeam, opts = {}) {
+  // Convoy Escort mode: one mission, one hint per side, with the clock.
+  if (view?.mission?.kind === 1) {
+    const m = view.mission;
+    const mins = Math.max(0, Math.floor(m.timerTicks / 600));
+    const secs = Math.max(0, Math.floor((m.timerTicks % 600) / 10));
+    const clock = `${mins}:${String(secs).padStart(2, "0")}`;
+    return myTeam === m.attacker
+      ? t("hint.convoy_attack", { clock })
+      : t("hint.convoy_defend", { clock });
+  }
   const own = (view?.standards ?? []).find((s) => s.team === myTeam);
   const enemy = (view?.standards ?? []).find((s) => s.team !== myTeam);
   if (enemy?.status === STD_CARRIED) {
@@ -65,7 +75,7 @@ export function currentHint(view, myTeam, opts = {}) {
 // The join briefing, shown once per war (playtest: nobody reads a hint bar).
 // The underdog premium (prompt-68) must be DISCLOSED — a hidden
 // handicap system reads as favouritism the day someone finds it.
-export function briefingText(myTeam, faction = null, mapProfile = null) {
+export function briefingText(myTeam, faction = null, mapProfile = null, mission = null) {
   const teamName = faction
     ? `${faction.name.toUpperCase()} — ${faction.tacticalIdentity}`
     : myTeam === 0 ? "GREEN (west)" : "RED (east)";
@@ -73,7 +83,9 @@ export function briefingText(myTeam, faction = null, mapProfile = null) {
   return [
     t("brief.fight_for", { name: teamName }),
     ...(faction ? [faction.line] : []),
-    t("brief.win"),
+    ...(mission?.kind === 1
+      ? [mission.attacker === myTeam ? t("brief.convoy_attack") : t("brief.convoy_defend")]
+      : [t("brief.win")]),
     t("brief.relays"),
     t("brief.fog"),
     t("brief.clicks"),

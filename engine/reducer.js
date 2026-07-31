@@ -39,6 +39,7 @@ import {
   RESECURE_TICKS,
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
+import { MISSION_CONVOY, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -326,6 +327,7 @@ function copyState(state) {
       { active: 0, need: 0, done: 0, ids: [] },
     ]).map((c) => ({ ...c, ids: [...c.ids] })), // nested ids: the aliasing lesson
     prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: p.pows.map((pw) => ({ ...pw })) })), // POW arc
+    mission: state.mission ? { ...state.mission } : null, // mode framework (timer writes in place)
     mines: state.mines.map((m) => ({ ...m })),
     drones: state.drones.map((d) => ({ ...d })),
     events: [],
@@ -1781,6 +1783,53 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "pow_resecured", operatorId: body.operatorId, team: prison.team });
     }
   }
+  // CONVOY ESCORT mission clock + radio intel: the timer runs every
+  // tick; the defenders hear where the convoy is on a fixed cadence
+  // (deterministic, fog-independent — the designer's "sporadic radio
+  // pings" that make the hunt possible without wallhacks).
+  if (next.mission?.kind === MISSION_CONVOY) {
+    next.mission.timerTicks -= 1;
+    // RESTART law (mode-scoped): a friendly truck beside the convoy
+    // WRECK for CONVOY_RESTART_TICKS puts it back on the road at half
+    // hull — in place. Every other wreck still rides home on the hook.
+    const convoy = next.assets[next.mission.convoyId];
+    if (convoy && convoy.state === ASSET_DISABLED && convoy.towedBy === -1) {
+      const ccx = worldToCellFloor(convoy.x);
+      const ccy = worldToCellFloor(convoy.y);
+      const mechanic = next.assets.find((a) =>
+        a.team === convoy.team && a.id !== convoy.id && a.operatorId !== -1 &&
+        a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+        getUnitStats(a.type).canTow &&
+        Math.max(absI32(worldToCellFloor(a.x) - ccx),
+                 absI32(worldToCellFloor(a.y) - ccy)) <= 1);
+      if (mechanic) {
+        next.mission.restartTicks += 1;
+        if (next.mission.restartTicks >= CONVOY_RESTART_TICKS) {
+          convoy.state = ASSET_IDLE;
+          convoy.hp = restoredHp(convoy.type);
+          next.mission.restartTicks = 0;
+          awardOperator(next, mechanic.operatorId, RECOG_FIELD_REPAIR, DEED_FIELD_REPAIR);
+          next.events.push({
+            type: "convoy_restarted", assetId: convoy.id, byAssetId: mechanic.id,
+          });
+        }
+      } else if (next.mission.restartTicks > 0) {
+        next.mission.restartTicks = Math.max(0, next.mission.restartTicks - 2);
+      }
+    } else if (next.mission.restartTicks !== 0) {
+      next.mission.restartTicks = 0;
+    }
+    if (next.tick % CONVOY_PING_TICKS === 0) {
+      const c = next.assets[next.mission.convoyId];
+      if (c) {
+        next.events.push({
+          type: "convoy_ping", toTeam: next.mission.attacker === 0 ? 1 : 0,
+          cellX: worldToCellFloor(c.x), cellY: worldToCellFloor(c.y),
+          timerTicks: next.mission.timerTicks,
+        });
+      }
+    }
+  }
   // Q35 hold-pay: each held minute pays the captor (pre-placed pows
   // have no captor and pay nobody).
   if (next.tick % HOLD_PAY_TICKS === 0) {
@@ -1921,10 +1970,16 @@ function applyAdvanceTick(next) {
     // must never become a faucet.
     const salvageBoost = Math.min(next.salvage?.[team] ?? 0, SALVAGE_BOOST_CAP);
     const factoryCut = teamHasKind(next, team, KIND_FACTORY) ? FACTORY_WAVE_DISCOUNT : 0;
-    const baseNeed = next.rules?.mpgTicks ?? MPG_TICKS;
+    // CONVOY mode structural counterweight: MPG rebuilds each side AT
+    // ITS OWN BASE — dead defenders respawn inside the kill-box, dead
+    // attackers respawn a full map away. The defender factory runs at
+    // half rate so a committed attack can grind the fortress down.
+    const defenderPenalty =
+      next.mission?.kind === MISSION_CONVOY && next.mission.attacker !== team ? 2 : 1;
+    const baseNeed = (next.rules?.mpgTicks ?? MPG_TICKS) * defenderPenalty;
     const waveNeed = Math.max(floorDivI32(baseNeed, 3),
       baseNeed - salvageBoost * SALVAGE_TICKS_PER_POINT - factoryCut);
-    if (next.manufacture[team] < (next.rules?.mpgTicks ?? MPG_TICKS)) next.manufacture[team] += 1;
+    if (next.manufacture[team] < baseNeed) next.manufacture[team] += 1;
     if (next.manufacture[team] < waveNeed) continue;
     // BF2-study ruling (prompt 51): rebuilds arrive as a FULL WAVE — every
     // eligible wreck at once, so a gutted team counter-pushes as a
@@ -2108,7 +2163,10 @@ function applyAdvanceTick(next) {
   // 13H ticket bleed (hybrid, prompt-51): a relay MAJORITY drains the
   // enemy pool one ticket per cadence. Silent (no per-tick events — the
   // repin discipline); the pools are hashed and ride the view for UI.
-  if (next.tickets) {
+  // MODE WARS DO NOT BLEED: tickets cannot end a mission war, and a
+  // bleeding pool would still trigger MERCY → the Last Convoy endgame
+  // — two convoy systems fighting over the same hulls mid-mission.
+  if (next.tickets && !next.mission) {
     const bleedTicks = next.rules?.ticketBleedTicks ?? 20;
     // The session law's majority is capped at this MAP's own majority —
     // 5-of-8 on frontier, 4-of-6 on riverline; a smaller map must not

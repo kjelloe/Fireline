@@ -4005,3 +4005,62 @@ but gets its own slice behind a 300-war POWS=2 PC battery — tempo
 and fairness at n=5 is not evidence, and the flip repins the fixture
 and voids the morning's re-baseline. Formation primitive itself is
 DONE; Convoy Escort inherits the same party law.
+
+## slice-convoy: mode framework + Convoy Escort v1 (2026-08-01)
+
+Q32 GO ("go ahead with convoy"). The asymmetric arc's first mode,
+riding last slice's formation law. Suite 697/697 (one transient ws
+flake in 1 of 5 runs, not reproducible), standard 5-seed gate
+IDENTICAL to pre-slice (mode code inert without rules.mode), UI
+acceptance + client smoke green, MODE=convoy smoke green. NO fixture
+repin: `state.mission` is null in standard wars and hashed only when
+live (the bridges pattern).
+
+FRAMEWORK
+- `engine/mission.js` (new): missions come in through session rules
+  (`rules.mode`, `rules.modeAttacker`, `rules.convoyTimer`) — no new
+  commands, no ws surface. `state.mission` hashed when non-null
+  (snapshot + milestone1a pair). Mode wars spawn NO standards, and
+  TICKETS NEITHER BLEED NOR END mode wars — a bleeding pool would
+  trigger mercy → the Last Convoy endgame mid-mission (two convoy
+  systems fighting over the same hulls; guarded at the bleed pass).
+  checkVictory: mission verdict + elimination backstop only. Reasons
+  6 (WIN_CONVOY_DELIVERED) / 7 (WIN_CONVOY_STOPPED).
+- MODE=convoy MODEATTACKER=0|1 env on the server; both locales
+  briefing/hint/win strings; mission public in both views (position
+  stays fog + pings).
+
+CONVOY ESCORT v1
+- One high-value logistics truck (attacker's lowest-id canTow hull),
+  extraction gate at the DEFENDER compound's NEAR edge (base centre
+  asked the convoy to park inside the enemy spawn — probes stalled
+  9-24 cells out, every war), 15-min clock (9000), radio ping to the
+  defenders every 300 ticks (event convoy_ping, toTeam-scoped).
+- RESTART law (the spec's verb): friendly truck beside the convoy
+  WRECK for 8 s restarts it at half hull, in place. Mode-scoped; B1's
+  tow-home economy untouched elsewhere. The convoy wreck is NEVER
+  towed (a tow drags the mission backward — excluded from tow
+  doctrine).
+- AI doctrine: driver rolls only with armour alongside (pre-gate stop
+  law + post-gate relaunch, DASH override inside 12 cells of the
+  gate); escorts via the standard tight-follow (chase-the-leader
+  converges here — the leader is SLOW); hard-designated WRECKER
+  (beats resupply errands — soft designation measured restarts=0);
+  defender interceptors hunt the ping; MODE POSTURE: free attacker
+  combat hulls mass on the convoy, free defenders hold their gate
+  (relays cannot win a mode war).
+- Tuning journal (all n=10, 5 seeds x both sides): base 1/10
+  attacker; +restart law alone REGRESSED to 0/10 (wreck lay
+  unattended — the soft wrecker never came); +hard wrecker 2/10 with
+  restarts 2-8/war (the loop IS the drama); gate-to-edge 3/10;
+  timer 7500→9000 changed NOTHING (equilibrium, not time); defender
+  MPG x2 alone read as noise; +army posture reshuffled stalls;
+  posture+MPG 1-2/10. VERDICT: deliveries when they come are FAST
+  (2072-3791 ticks); failed first pushes grind out at the wall.
+  Attacker rate reads low at n=10 but the doctrine bar says NEVER
+  tune on 5 seeds — the real number comes from the PC battery
+  (`batch_send.sh convoy <attacker> 300`, new job kind, config
+  self-check on war 1). Levers shipped: edge gate, restart law, hard
+  wrecker, dash, army posture, defender-MPG counterweight. Human
+  attackers will out-drive regents; judge after the battery + a
+  playtest.

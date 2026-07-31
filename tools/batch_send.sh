@@ -25,6 +25,7 @@ case "${1:-}" in
   pool)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pool\",\"ticketPool\":${2:?usage: batch_send.sh pool <ticketPool> [count] [map]},\"count\":${3:-300},\"map\":\"${4:-frontier_corridor}\"}" ;;
   skimtrail) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"skimtrail\",\"speed\":${2:?usage: batch_send.sh skimtrail <speed> [count] [mirror]},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   pows)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pows\",\"n\":${2:-2},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
+  convoy) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"convoy\",\"attacker\":${2:-0},\"count\":${3:-300}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
   resync) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"resync\"}" ;;
@@ -32,5 +33,5 @@ case "${1:-}" in
   perf)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"perf\"}" ;;
   collect) $AM inbox --as dev --tag done --ack; python3 tools/batch_collect.py ;;
   board)  $AM status; $AM queue list ;;
-  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|pool|skimtrail|perf|update|resync|sendresults|collect|board [args]"; exit 1 ;;
+  *) echo "usage: batch_send.sh sweep|mirror|matrix|factionswap|riverline|map|uniques|pool|skimtrail|pows|convoy|perf|update|resync|sendresults|collect|board [args]"; exit 1 ;;
 esac

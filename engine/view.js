@@ -63,6 +63,9 @@ export function buildSpectatorView(state) {
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H: public pacing info
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     convoy: projectConvoy(state), // Last Convoy: a public emergency
+    // Mode framework: the mission brief is public (what, who, where,
+    // how long). The convoy's LIVE position stays fog + radio pings.
+    mission: state.mission ? { ...state.mission } : null,
     drops: projectDrops(state), // B6: announced to everyone, no fog
     prisons: projectPrisons(state), // POW arc: compounds are public knowledge
     events: state.events,
@@ -157,6 +160,9 @@ export function buildView(state, team) {
     tickets: state.tickets ? [...state.tickets] : [0, 0], // 13H
     salvage: state.salvage ? [...state.salvage] : [0, 0], // public, like tickets
     convoy: projectConvoy(state), // Last Convoy: a public emergency
+    // Mode framework: the mission brief is public (what, who, where,
+    // how long). The convoy's LIVE position stays fog + radio pings.
+    mission: state.mission ? { ...state.mission } : null,
     drops: projectDrops(state), // B6: announced to everyone, no fog
     prisons: projectPrisons(state), // POW arc: compounds are public knowledge
     // 10C: events carrying toTeam are that team's business only (pings).

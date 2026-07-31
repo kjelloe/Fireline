@@ -251,6 +251,14 @@ handle_job() { # $1 = JSON body
       POWS=$pw UNIQUES=1 run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
         "$pw_mirror" 1 "pows_${pw}$([ "$pw_mirror" = 1 ] && echo _mirror)" ;;
+    convoy)
+      # Convoy Escort battery: {"kind":"convoy","attacker":0,"count":300}.
+      # Mode wars, live config, frontier. Run both attacker sides.
+      local cva
+      cva=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('attacker',0))" "$body")
+      MODE=convoy MODEATTACKER=$cva UNIQUES=1 run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
+        0 1 "convoy_att${cva}" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -353,7 +361,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/pows/matrix/perf/sendresults/update/resync." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/pows/convoy/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.

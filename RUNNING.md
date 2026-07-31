@@ -280,3 +280,11 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
 # The server echoes the master's verdict ("master says: listed" or the
 # port-forwarding reason). The join screen lists reachable servers.
 ```
+
+- Convoy Escort mode (asymmetric): start the server with MODE=convoy
+  (MODEATTACKER=1 flips sides). The attacking team escorts one convoy
+  truck to the enemy compound gate before the 15-minute clock dies —
+  it only rolls with armour alongside, and a friendly truck parked
+  beside its wreck restarts it. Defenders get its position by radio
+  ping every 30 s. No standards, no ticket bleed: the mission is the
+  whole war.

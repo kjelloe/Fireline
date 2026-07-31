@@ -31,6 +31,9 @@ const TICKETPOOL = process.env.TICKETPOOL ? Number(process.env.TICKETPOOL) : nul
 // Q46 battery: POWS=2 pre-places captives (the designed POW experience)
 // so the flip of the powPreplaced default can be judged at n=300.
 const POWS = process.env.POWS ? Number(process.env.POWS) : null;
+// Convoy Escort battery: MODE=convoy, MODEATTACKER=0|1 picks the side.
+const MODE = process.env.MODE === "convoy" ? 1 : null;
+const MODEATTACKER = process.env.MODEATTACKER === "1" ? 1 : 0;
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -46,9 +49,10 @@ for (let seed = 1; seed <= COUNT; seed++) {
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES,
-    rules: TICKETPOOL || POWS !== null
+    rules: TICKETPOOL || POWS !== null || MODE !== null
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
-          ...(POWS !== null ? { powPreplaced: POWS } : {}) }
+          ...(POWS !== null ? { powPreplaced: POWS } : {}),
+          ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}) }
       : null,
   });
   // Config-plumbing self-check (the crewing-bug lesson): say what the
@@ -57,6 +61,9 @@ for (let seed = 1; seed <= COUNT; seed++) {
   if (POWS !== null && seed === 1) {
     const captive = server.state.operators.filter((o) => o.state === 3).length;
     console.error(`pows: powPreplaced=${POWS} -> ${captive} captive seats at tick 0`);
+  }
+  if (MODE !== null && seed === 1) {
+    console.error(`mode: convoy attacker=${MODEATTACKER} mission=${JSON.stringify(server.state.mission)}`);
   }
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every

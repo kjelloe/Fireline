@@ -106,6 +106,11 @@ export function hashState(state) {
     w.writeI32LE(p.raidTicks); w.writeI32LE(p.pows.length);
     for (const pow of p.pows) { w.writeI32LE(pow.id); w.writeI32LE(pow.by); } // {id,by} since slice 2
   }
+  if (state.mission) { // mode framework: hashed ONLY when a mission is live
+    const m = state.mission;
+    w.writeI32LE(m.kind); w.writeI32LE(m.attacker); w.writeI32LE(m.convoyId);
+    w.writeI32LE(m.gateCellX); w.writeI32LE(m.gateCellY); w.writeI32LE(m.timerTicks); w.writeI32LE(m.restartTicks);
+  }
   const { hashHi, hashLo } = computeFnv1a64(w.toBytes());
   return hashToHex64(hashHi, hashLo);
 }

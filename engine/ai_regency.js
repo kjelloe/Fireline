@@ -25,6 +25,7 @@ import { getUnitStats } from "./units.js";
 import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
 import { CMD_REDEPLOY, CMD_CRAWL_ORDER } from "./commands.js";
 import { downedFor, REDEPLOY_TICKS, CRAWL_RADIUS_CELLS } from "./downed.js";
+import { MISSION_CONVOY, CONVOY_PING_TICKS } from "./mission.js";
 import { towRejection, towedWreck } from "./recovery.js";
 import { OP_DOWN } from "./state.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
@@ -612,6 +613,90 @@ export class AIRegency {
       for (const [, opId] of candidates.slice(0, 2)) escortFor.set(opId, raiderId);
     }
 
+    // CONVOY ESCORT mission doctrine. Attackers: the two nearest free
+    // combat seats ride herd on the convoy truck through the SAME
+    // tight-follow law the standard raid uses (escortFor — the truck
+    // is slow, so chase-the-leader converges here where it never could
+    // on a scout). Defenders: two interceptors converge on the last
+    // radio ping (AI memory refreshed on the reducer's own cadence —
+    // the same intel the mode grants everyone, no fog cheating in
+    // between).
+    const interceptorOps = new Set();
+    let wreckerOp = -1;
+    if (state.mission?.kind === MISSION_CONVOY) {
+      const m = state.mission;
+      const truck = state.assets[m.convoyId];
+      if (truck && !isWreck(truck)) {
+        const tcx = worldToCellFloor(truck.x);
+        const tcy = worldToCellFloor(truck.y);
+        const cands = [];
+        for (const [opId] of controlled) {
+          if (escortFor.has(opId) || prisonRaiderFor.get(m.attacker)?.opId === opId) continue;
+          const op = state.operators[opId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== m.attacker || a.operatorId !== opId || isWreck(a)) continue;
+          const st = getUnitStats(a.type);
+          if (st.canTow || st.canCarryStandard || st.indirect) continue;
+          const d = Math.max(Math.abs(worldToCellFloor(a.x) - tcx),
+                             Math.abs(worldToCellFloor(a.y) - tcy)) +
+                    (capturerOps.has(opId) ? 100 : 0); // capturers last-resort
+          cands.push([d, opId]);
+        }
+        cands.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+        // THE LAST KILOMETRE: near the gate the war concentrates — the
+        // defence is densest at its own base, and a 2-tank detail
+        // reached an equilibrium 13-40 cells short in every stopped
+        // war (timer 7500 AND 9000 — more time changed nothing). Close
+        // to the gate, the whole free line rides with the convoy.
+        const distToGate = Math.max(Math.abs(tcx - m.gateCellX),
+                                    Math.abs(tcy - m.gateCellY));
+        const escortN = distToGate <= 30 ? 4 : 2;
+        for (const [, opId] of cands.slice(0, escortN)) escortFor.set(opId, m.convoyId);
+        if (state.tick % CONVOY_PING_TICKS === 0 || !this.convoyIntel) {
+          this.convoyIntel = [tcx, tcy];
+        }
+        // Defender interceptors: two nearest combat seats hunt the ping.
+        const defender = m.attacker === 0 ? 1 : 0;
+        const hunters = [];
+        for (const [opId] of controlled) {
+          if (escortFor.has(opId) || prisonRaiderFor.get(defender)?.opId === opId) continue;
+          const op = state.operators[opId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== defender || a.operatorId !== opId || isWreck(a)) continue;
+          const st = getUnitStats(a.type);
+          if (st.canTow || st.canCarryStandard || st.indirect) continue;
+          if (capturerOps.has(opId)) continue; // defence holds its ground game
+          const d = Math.max(Math.abs(worldToCellFloor(a.x) - this.convoyIntel[0]),
+                             Math.abs(worldToCellFloor(a.y) - this.convoyIntel[1]));
+          hunters.push([d, opId]);
+        }
+        hunters.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+        for (const [, opId] of hunters.slice(0, 2)) interceptorOps.add(opId);
+      }
+      // WRECKER designation: the convoy is DOWN — the nearest other
+      // attacker truck drops everything (resupply included) and rides
+      // to the wreck. Standing beside it runs the restart clock.
+      if (truck && truck.state === 2 /* ASSET_DISABLED */ && truck.towedBy === -1) {
+        const wx = worldToCellFloor(truck.x);
+        const wy = worldToCellFloor(truck.y);
+        let best = -1;
+        let bestD = Infinity;
+        for (const [opId] of controlled) {
+          const op = state.operators[opId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== m.attacker || a.operatorId !== opId || isWreck(a)) continue;
+          if (a.id === m.convoyId || !getUnitStats(a.type).canTow) continue;
+          const d = Math.max(Math.abs(worldToCellFloor(a.x) - wx),
+                             Math.abs(worldToCellFloor(a.y) - wy));
+          if (d < bestD) { bestD = d; best = opId; }
+        }
+        wreckerOp = best;
+      }
+    }
+
     // FORMATION (the group-movement primitive, v1 consumer: the prison
     // raid party). Two nearest free combat seats join the raider's
     // PARTY (ops already escorting the carrier keep that duty; the
@@ -1157,6 +1242,59 @@ export class AIRegency {
           }
         }
       }
+      // The designated WRECKER (pre-gate): beats every errand — the
+      // mission clock is burning while the convoy lies on its side.
+      if (operatorId === wreckerOp) {
+        const cv = state.assets[state.mission.convoyId];
+        if (cv) {
+          const wx = worldToCellFloor(cv.x);
+          const wy = worldToCellFloor(cv.y);
+          const myCx = worldToCellFloor(asset.x);
+          const myCy = worldToCellFloor(asset.y);
+          if (Math.max(Math.abs(myCx - wx), Math.abs(myCy - wy)) > 1) {
+            const stale = Math.max(
+              Math.abs(worldToCellFloor(asset.targetX) - wx),
+              Math.abs(worldToCellFloor(asset.targetY) - wy)) > 2;
+            if (asset.state === ASSET_IDLE || stale) {
+              commands.push({
+                type: CMD_MOVE_ORDER, operatorId, targetCellX: wx, targetCellY: wy,
+              });
+            }
+          } else if (asset.state === ASSET_MOVING) {
+            commands.push({
+              type: CMD_MOVE_ORDER, operatorId,
+              targetCellX: worldToCellFloor(asset.x), targetCellY: worldToCellFloor(asset.y),
+            });
+          }
+          continue;
+        }
+      }
+      // CONVOY driver law (pre-gate — the truck is usually MOVING when
+      // this matters): it rolls only with armour alongside; unescorted
+      // it STOPS and waits (the designer's "moves only when allies are
+      // nearby"). Escorts converging is what restarts it.
+      if (state.mission?.kind === MISSION_CONVOY &&
+          state.mission.convoyId === asset.id && asset.state === ASSET_MOVING) {
+        const cx0 = worldToCellFloor(asset.x);
+        const cy0 = worldToCellFloor(asset.y);
+        // THE DASH: inside the last dozen cells the convoy charges the
+        // gate, escorts or none — probes stalled at 9-13 cells forever
+        // because the terminal wall-fight kept killing the escorts and
+        // the hold law kept parking the truck.
+        const dash = Math.max(Math.abs(cx0 - state.mission.gateCellX),
+                              Math.abs(cy0 - state.mission.gateCellY)) <= 12;
+        const guarded = dash || state.assets.some((e) =>
+          e.team === asset.team && e.id !== asset.id && e.operatorId !== -1 &&
+          !isWreck(e) && !getUnitStats(e.type).canTow &&
+          Math.max(Math.abs(worldToCellFloor(e.x) - cx0),
+                   Math.abs(worldToCellFloor(e.y) - cy0)) <= ESCORT_CELLS);
+        if (!guarded) {
+          commands.push({
+            type: CMD_MOVE_ORDER, operatorId, targetCellX: cx0, targetCellY: cy0,
+          });
+          continue;
+        }
+      }
       if (asset.state !== ASSET_IDLE) continue;
       let target = null;
       if (state.standards.length === 2) {
@@ -1192,7 +1330,10 @@ export class AIRegency {
       // 13B resupply runner (prompt 31): a truck with cargo tops up the
       // thirstiest nearby teammate — adjacent: transfer; else: drive to
       // them. Tubes first (artillery/mortar burn ammo fastest).
-      if (stats.canTow && (asset.cargoFuel > 0 || asset.cargoAmmo > 0)) {
+      // The CONVOY truck has one job: no resupply runs, no tow errands
+      // — the mission clock does not wait for logistics side-quests.
+      const isConvoyTruck = state.mission?.convoyId === asset.id;
+      if (stats.canTow && !isConvoyTruck && (asset.cargoFuel > 0 || asset.cargoAmmo > 0)) {
         let needy = null;
         let bestScore = 0;
         for (const a of state.assets) {
@@ -1291,6 +1432,57 @@ export class AIRegency {
       // wreck, haul it home (the repair bay takes it from there). Carriers:
       // ferry aboard passengers home; otherwise fetch a walking downed
       // teammate nearby — unless this carrier is the team's raider on duty.
+      // CONVOY mission targets — the gate IS the driver's job and the
+      // ping IS the hunter's job; both outrank tow/ferry errands.
+      if (!target && state.mission?.kind === MISSION_CONVOY &&
+          state.mission.convoyId === asset.id) {
+        // Same DASH as the pre-gate law: a parked truck a dozen cells
+        // out relaunches escorts-or-none — the terminal stall was the
+        // IDLE truck waiting here for escorts the wall-fight kept
+        // eating.
+        const dash = Math.max(Math.abs(cellX0 - state.mission.gateCellX),
+                              Math.abs(cellY0 - state.mission.gateCellY)) <= 12;
+        const guarded = dash || state.assets.some((e) =>
+          e.team === asset.team && e.id !== asset.id && e.operatorId !== -1 &&
+          !isWreck(e) && !getUnitStats(e.type).canTow &&
+          Math.max(Math.abs(worldToCellFloor(e.x) - cellX0),
+                   Math.abs(worldToCellFloor(e.y) - cellY0)) <= ESCORT_CELLS);
+        if (guarded) {
+          target = [state.mission.gateCellX, state.mission.gateCellY];
+        } else {
+          continue; // parked, waiting for the escorts to close up
+        }
+      }
+      if (!target && interceptorOps.has(operatorId) && this.convoyIntel) {
+        const d = Math.max(Math.abs(cellX0 - this.convoyIntel[0]),
+                           Math.abs(cellY0 - this.convoyIntel[1]));
+        if (d > 2) target = this.convoyIntel;
+      }
+      // (Wrecker movement lives in the pre-gate block above — a hard
+      // designation, so resupply side-quests can never preempt it.)
+      // MODE WAR POSTURE: relays cannot win a convoy war, so the rest
+      // of both lines fights where the mission is. Free attacker
+      // combat hulls mass on the convoy (the rolling front); free
+      // defender combat hulls hold their gate (the fortress). Escorts,
+      // interceptors and the wrecker keep their special laws above.
+      if (!target && state.mission?.kind === MISSION_CONVOY &&
+          !stats.canTow && !stats.canCarryStandard && !stats.indirect) {
+        const m2 = state.mission;
+        if (asset.team === m2.attacker) {
+          const cv = state.assets[m2.convoyId];
+          if (cv) {
+            const wx = worldToCellFloor(cv.x);
+            const wy = worldToCellFloor(cv.y);
+            if (Math.max(Math.abs(cellX0 - wx), Math.abs(cellY0 - wy)) > 4) {
+              target = [wx, wy];
+            }
+          }
+        } else {
+          const d = Math.max(Math.abs(cellX0 - m2.gateCellX),
+                             Math.abs(cellY0 - m2.gateCellY));
+          if (d > 8) target = [m2.gateCellX, m2.gateCellY];
+        }
+      }
       if (!target && stats.canTow) {
         const inTow = towedWreck(state, asset.id);
         if (inTow) {
@@ -1301,6 +1493,9 @@ export class AIRegency {
           for (const w of state.assets) {
             if (w.team !== asset.team || !isWreck(w)) continue;
             if (w.towedBy !== -1 || w.recoverTimer > 0) continue;
+            // The convoy wreck is NEVER towed home — the restart law
+            // owns it (a tow would drag the mission backward).
+            if (state.mission?.convoyId === w.id) continue;
             const d = Math.max(Math.abs(worldToCellFloor(w.x) - cellX0),
                                Math.abs(worldToCellFloor(w.y) - cellY0));
             if (d < bestDist) { bestDist = d; wreck = w; }

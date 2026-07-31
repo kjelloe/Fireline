@@ -87,6 +87,11 @@ export function createAppServer(options = {}) {
     rules: {
       ...(options.rules ?? {}),
       ...(process.env.POWS ? { powPreplaced: Number(process.env.POWS) } : {}),
+      // Asymmetric modes: MODE=convoy serves Convoy Escort;
+      // MODEATTACKER=1 flips which team escorts (default team 0).
+      ...(process.env.MODE === "convoy"
+        ? { mode: 1, modeAttacker: process.env.MODEATTACKER === "1" ? 1 : 0 }
+        : {}),
     },
   });
   const transport = new NetworkTransport(gameServer, wss);
