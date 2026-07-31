@@ -115,3 +115,30 @@ mechanism is found: powPreplaced stays 0 (unchanged default), and
 POWS=2 remains the human-session experience — note the bias was
 measured on ALL-REGENT wars; four humans holding those seats is a
 different game.
+
+---
+
+## Round 2 addendum (prompt 117): figures, the vault story, verification
+
+- **Figure kit round 1 LANDED** (`slice-figures`): every compound now
+  has its watchman (alarm lamp pulses red for 5 s after his shout)
+  and kneeling POW figures per held prisoner; freed POWs walk in a
+  pale coat. Pose is identity; the guard has no weapon geometry to
+  misread — the visual law is structural.
+- **The vault lived for one battery.** Its verification read 36%/29%
+  A — a ~15-pt team edge in both honest worlds from a perfectly
+  mirror-paired site duo. The ab ladder convicted in one round
+  (no-vault: 51.3% fair; no-alarm-response: unchanged — exonerated).
+  Placement PULLED per the rearguard precedent; the machinery
+  (kind, income, cap, mode exclusion, labels, tests) stays for a map
+  that measures fair. Post-pull verification: **51.2%/49.2% A —
+  frontier is fair again, n=600.** Lesson reinforced twice in one
+  day: 5 seeds cannot see a 15-point lean, and "mirror-symmetric on
+  paper" is a hypothesis until a battery agrees.
+- **Q55 (designer):** WHY do north-trail objectives excite a
+  team-linked mode? Same open family as the POWS=2 bias — two
+  mechanism hunts, likely one latent chirality. Tools are ready
+  (ab job kind, kill-switches).
+- Landship is next but touches the TEAM MODEL itself (neutral hull,
+  cross-team selection, either-team towing) — it opens the next
+  session with fresh context rather than closing this one.
