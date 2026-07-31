@@ -16,6 +16,12 @@
 #
 # Delivery is at-least-once: every job is idempotent (same commit + same
 # seeds = same wars), so seeing a job twice costs time, not correctness.
+#
+# 2026-08-01: run_sweep's UNIQUES default flipped 0 -> 1 (live config).
+# The legacy 0 meant plain sweep/mirror jobs measured uniques-UNCREWED
+# wars while every other job kind pinned UNIQUES=1 - a 6-10 pt phantom
+# "regression" was chased for a day before the ab ladder exposed it.
+# When a sweep and a battery disagree: CONFIG PLUMBING FIRST.
 
 set -u
 cd "$(dirname "$0")/.."
@@ -90,7 +96,7 @@ run_sweep() { # $1=count  $2=mirror(0/1)  $3=difficulty  $4=label
   $AM status --as $ME "running $label ($count wars, $shards shards) on $TAG" >/dev/null
   local pids=()
   for i in $(seq 0 $((shards - 1))); do
-    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-0} MAP=${MAP:-frontier_corridor} TICKETPOOL=${TICKETPOOL:-} SKIMTRAIL=${SKIMTRAIL:-} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
+    FACTIONSWAP=${FACTIONSWAP:-0} UNIQUES=${UNIQUES:-1} MAP=${MAP:-frontier_corridor} TICKETPOOL=${TICKETPOOL:-} SKIMTRAIL=${SKIMTRAIL:-} MIRROR=$mirror DIFFICULTY=$diff SHARDS=$shards SHARD=$i \
       node tools/sim_sweep.mjs "$count" > "$OUT/${label}_$i.csv" &
     pids+=($!)
   done
