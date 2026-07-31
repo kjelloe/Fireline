@@ -4198,3 +4198,21 @@ v59 (hashed state.sandbags + truck sandbagsLeft racks).
   both locales (the 8H sweep demanded every one).
 - NO AI doctrine v1 (like stations: human tool first) — regents
   neither build nor tear down; sweeps unaffected by construction.
+
+## slice-rotation: Q54 configurable vote pool (2026-08-01)
+
+Owner ruling (prompt 116): all completed maps vote-able by default;
+pool configurable at server start; a runtime command; modes per
+server configurable, default all on. Suite 715/715 x2, smoke green.
+- `engine/vote.js` (new, pure): COMPLETED_MAPS + ALL_MODES,
+  normalizePool (filters against valid profiles, falls back sanely),
+  voteCandidates (status quo FIRST always; rotation offered only
+  with 2+ maps; convoy flip only when the pool allows it; a running
+  convoy server always gets the way back to standard).
+- Server: VOTE_MAPS/VOTE_MODES env (or options) at start;
+  GET /rotation shows the live pool; POST /rotation changes it —
+  LOOPBACK-ONLY (rotation is the operator's lever, not the players').
+- Review round in the same turn: CLAUDE.md command list + mode/vote/
+  alarm/known-open blocks, RUNNING.md operator + player bullets,
+  sim-campaign skill CONFIG-DRIFT LAW, techstack gotcha #1 extended,
+  plans Q54 closed, memory synced.

@@ -135,6 +135,13 @@ doctrine in DEFAULT wars too: expect occasional pow_delivered /
 prison_raided in gate seeds, and judge raid health by
 server.ai.raidDebug (phase/escorts/guards per plan), not by staring
 at unit orders.
+CONFIG-DRIFT LAW (2026-08-01, the phantom regression): before
+believing ANY battery verdict, confirm the JOB KIND's env — the
+plain sweep/mirror kinds ran legacy UNIQUES=0 for a day and a
+6-10 pt phantom "regression" was chased through two doctrine
+hypotheses. run_sweep now defaults UNIQUES=1; the `ab` job kind
+(raidparty/powarc/uniques/pows/mirror fields) is the bisection
+lane — one rung per suspect, n=300, ~3 min each on the PC.
 MODE WARS (slice-convoy): MODE=convoy is a DIFFERENT game — no
 standards, no ticket bleed, verdict by reasons 6/7 only. Never mix
 mode rows into standard-war baselines. Probe with

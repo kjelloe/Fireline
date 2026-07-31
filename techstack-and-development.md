@@ -195,7 +195,9 @@ WSL Playwright is SwiftShader-only and useless for FPS numbers
 ## 7. Greatest-hits gotcha list (quick reference)
 
 1. Probe vs sweep disagree → **config plumbing first** (the crewing
-   bug).
+   bug; then again as batch-job env drift — the phantom regression).
+   The `ab` batch job kind exists so suspects get bisected at n=300
+   instead of theorized about.
 2. New positional state → mirror transform, copyState, BOTH hash
    functions, view projection — four places, every time.
 3. Never a new event inside the 1A fixture's 14 steps; prefer silent

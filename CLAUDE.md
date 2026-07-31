@@ -130,9 +130,29 @@ outcome. Renderer presents fog-filtered views only.
 - Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
   fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
-  charge)/deploy_mine/clear_mine/ping/board_carrier/unboard/drive/
+  charge)/deploy_mine/clear_mine/deploy_caltrops (Q45: light units,
+  slow-only 30%/45s patches, hashed racks+list, truck rake)/
+  build_sandbag (Q50: trucks, 5s channel → T_BLOCKING via the bridges
+  terrain-mutation precedent; placement law in engine/sandbags.js
+  incl. the two-lane run cap 4; destruction restores ground)/ping/
+  board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
-  fire(...) also takes `targetBridgeId` (13E, siege chassis only).
+  fire(...) also takes `targetBridgeId` (13E, siege chassis only)
+  and `targetSandbagId` (ANY gun — bags are cover, not
+  infrastructure). ALARM GUARDS (Q38): prison.alarmTicks hashed; the
+  watchman is NOT an entity — toTeam ping kind prison_alarm on a 30s
+  cooldown + defender response doctrine in ai_regency. VOTING
+  (Q49/Q54): transport-level c_vote/s_vote_open (nothing hashed);
+  the pump applies the plurality pick via
+  resetWar(seed, {mapProfile, modeRules}); the pool lives in
+  engine/vote.js — VOTE_MAPS/VOTE_MODES env at start, GET/POST
+  /rotation at runtime (POST loopback-only). MODE FRAMEWORK: see the
+  2026-08-01 block above; convoy battery `batch_send.sh convoy`;
+  bisection kill-switches RAIDPARTY=0/POWARC=0 + the `ab` job kind.
+  KNOWN OPEN: POWS=2 all-regent wars read 23-27% A in both honest
+  worlds — geometry/uniques/census all exonerated; the mechanism is
+  dynamic doctrine (hunt tools: dbg_pows_census, dbg_pow_team_split,
+  ab job). powPreplaced stays 0.
   Faction uniques crew BY DEFAULT (16B — TRUE ONLY SINCE 2026-07-31:
   a `=== true` coercion in GameServer + server/index had the SERVED
   game and every 5-seed gate running uncrewed since 16B, while sweeps

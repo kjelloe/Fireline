@@ -15,6 +15,8 @@ import { NetworkTransport } from "../engine/transport.js";
 import { PHASE_OVER } from "../engine/victory.js";
 import { mix32 } from "../shared/prng.js";
 import { createReplayStore } from "./replay_store.js";
+import { normalizePool, voteCandidates } from "../engine/vote.js";
+import { MAP_PROFILES } from "../engine/state.js";
 import { createMetrics } from "./metrics.js";
 
 const ROOT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -123,25 +125,15 @@ export function createAppServer(options = {}) {
   const metrics = createMetrics(); // 8I balance instrumentation
   let gameOverTick = -1;
   let warsStarted = 1;
-  // Q49 (ruled): map+mode PAIR voting on the end screen. Candidates:
-  // run it back, rotate to the other promoted map, or a Convoy Escort
-  // war here (attacker side alternates by war count so nobody owns
-  // the fun seat). Silence = status quo (index 0).
-  const PROMOTED_MAPS = ["frontier_corridor", "blackwood"];
-  function voteCandidates() {
-    const cur = gameServer.state.mapProfile;
-    const other = PROMOTED_MAPS.find((p) => p !== cur) ?? cur;
-    const curMode = gameServer.state.rules?.mode ?? 0;
-    return [
-      // Status quo FIRST — silence must never strip a dedicated
-      // MODE=convoy server of its mode (or force one on a standard).
-      { map: cur, mode: curMode, modeAttacker: gameServer.state.rules?.modeAttacker ?? 0 },
-      { map: other, mode: 0 },
-      curMode === 1
-        ? { map: cur, mode: 0 }
-        : { map: cur, mode: 1, modeAttacker: warsStarted & 1 },
-    ];
-  }
+  // Q49/Q54 (ruled): map+mode PAIR voting; the POOL is configurable —
+  // VOTE_MAPS / VOTE_MODES env at start, /rotation at runtime. Default:
+  // every completed map, every mode.
+  let votePool = normalizePool({
+    maps: (options.voteMaps ?? process.env.VOTE_MAPS)?.split?.(",").map((s) => s.trim())
+      ?? options.voteMaps,
+    modes: (options.voteModes ?? process.env.VOTE_MODES)?.split?.(",").map((s) => s.trim())
+      ?? options.voteModes,
+  }, Object.keys(MAP_PROFILES));
   function pump(snapshot) {
     transport.broadcastSnapshots(snapshot);
     metrics.consumeEvents(snapshot.views[0]?.events, snapshot.tick);
@@ -150,7 +142,7 @@ export function createAppServer(options = {}) {
       if (gameOverTick === -1) {
         gameOverTick = gameServer.state.tick;
         metrics.warCompleted(gameOverTick);
-        transport.openVote(voteCandidates());
+        transport.openVote(voteCandidates(gameServer.state, warsStarted, votePool));
       }
       if (gameServer.state.tick - gameOverTick >= postgameTicks) {
         const nextSeed = mix32(gameServer.state.mapSeed);
@@ -171,6 +163,28 @@ export function createAppServer(options = {}) {
     return snapshot;
   }
   app.get("/metrics", (req, res) => res.json(metrics.snapshot()));
+
+  // Q54: read and (from the server's own machine) change the vote
+  // rotation live. POST is loopback-only — rotation is the operator's
+  // lever, not the players'.
+  app.get("/rotation", (req, res) => res.json(votePool));
+  app.post("/rotation", (req, res) => {
+    const addr = req.socket.remoteAddress ?? "";
+    if (!/^(::1|127\.|::ffff:127\.)/.test(addr)) {
+      res.status(403).json({ error: "rotation is set from the server console" });
+      return;
+    }
+    let body = "";
+    req.on("data", (c) => { body += c; });
+    req.on("end", () => {
+      try {
+        votePool = normalizePool(JSON.parse(body || "{}"), Object.keys(MAP_PROFILES));
+        res.json(votePool);
+      } catch {
+        res.status(400).json({ error: "body must be JSON {maps:[...], modes:[...]}" });
+      }
+    });
+  });
 
   app.get("/replays", (req, res) => res.json({ replays: replayStore.list() }));
   app.get("/replay/:id", (req, res) => {

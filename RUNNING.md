@@ -288,3 +288,18 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   beside its wreck restarts it. Defenders get its position by radio
   ping every 30 s. No standards, no ticket bleed: the mission is the
   whole war.
+
+- Vote rotation (server operators): VOTE_MAPS="frontier_corridor,blackwood"
+  and VOTE_MODES="standard,convoy" at start pick what the end-screen
+  vote can offer (default: every completed map, every mode). At
+  runtime: GET /rotation shows the pool; POST /rotation from the
+  server's own machine changes it live —
+  curl -X POST localhost:8080/rotation -d '{"maps":["blackwood"],"modes":["standard"]}'
+- Caltrops (scout/bike, M key): strew the road behind you — enemies
+  crossing run 30% slower for 45 s. No damage; trucks rake them up.
+- Sandbags (truck, N key): park beside a spot and build — 5 s later
+  it is a wall any gun can tear down. Roads can never be walled, and
+  a wall run stops at 4 cells: routes get shaped, never sealed.
+- Prison compounds have a watchman: enemies near the wire trip an
+  alarm ping for the owners. He cannot be killed — he is a shout,
+  not a soldier.

@@ -97,3 +97,39 @@ test("Q49: silence keeps the status quo; spectators cannot vote", async () => {
     wss.close();
   }
 });
+
+// ── Q54: the configurable rotation pool ──────────────────────────────
+test("Q54: pool defaults, filtering, and candidate law", async () => {
+  const { normalizePool, voteCandidates, COMPLETED_MAPS } = await import("../engine/vote.js");
+  // Defaults: every completed map, every mode.
+  assert.deepEqual(normalizePool({}), { maps: COMPLETED_MAPS, modes: ["standard", "convoy"] });
+  // Unknown maps filtered against the valid list; empty result falls back.
+  assert.deepEqual(
+    normalizePool({ maps: ["blackwood", "atlantis"] }, ["frontier_corridor", "blackwood"]).maps,
+    ["blackwood"]);
+  assert.deepEqual(normalizePool({ maps: ["atlantis"] }, ["blackwood"]).maps, COMPLETED_MAPS);
+  // Modes: unknown entries dropped; empty = standard only.
+  assert.deepEqual(normalizePool({ modes: ["convoy", "heist"] }).modes, ["convoy"]);
+  assert.deepEqual(normalizePool({ modes: ["heist"] }).modes, ["standard"]);
+
+  const state = { mapProfile: "frontier_corridor", rules: {} };
+  // Full pool: status quo, rotation, convoy flip.
+  const full = voteCandidates(state, 3, normalizePool({}));
+  assert.equal(full.length, 3);
+  assert.deepEqual(full[0], { map: "frontier_corridor", mode: 0, modeAttacker: 0 });
+  assert.equal(full[1].map, "blackwood");
+  assert.deepEqual(full[2], { map: "frontier_corridor", mode: 1, modeAttacker: 1 });
+  // Convoy disabled: no mode flip offered.
+  const noConvoy = voteCandidates(state, 3, normalizePool({ modes: ["standard"] }));
+  assert.equal(noConvoy.length, 2);
+  assert.ok(noConvoy.every((c) => c.mode === 0));
+  // One-map pool: no rotation candidate.
+  const oneMap = voteCandidates(state, 3,
+    normalizePool({ maps: ["frontier_corridor"] }, ["frontier_corridor"]));
+  assert.ok(oneMap.every((c) => c.map === "frontier_corridor"));
+  // A running convoy server always gets the way BACK to standard.
+  const convoyState = { mapProfile: "blackwood", rules: { mode: 1, modeAttacker: 1 } };
+  const back = voteCandidates(convoyState, 4, normalizePool({ modes: ["standard"] }));
+  assert.deepEqual(back[0], { map: "blackwood", mode: 1, modeAttacker: 1 }, "status quo first");
+  assert.ok(back.some((c) => c.map === "blackwood" && c.mode === 0), "the exit exists");
+});
