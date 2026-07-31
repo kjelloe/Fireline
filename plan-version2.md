@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-01 late (suite 710/710, fixture v58). HTML twin:
+*Updated 2026-08-02 (suite 728/728, fixture v63). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -34,7 +34,8 @@ plus three experimental maps that have not earned promotion.
 | Feature | Status |
 |---|---|
 | **Formation primitive (group movement)** | ✅ `slice-formation` — rally near own lines → advance together, escorts lead, cohesion hold, fights-on-the-move; raid party rides it; convoy escorts reuse the follow law |
-| **Mode framework + Convoy Escort v1** | 🔶 `slice-convoy` LANDED, TUNING — rules-driven missions (no repin), restart law, wrecker, whole-army posture; regent attackers 1-3/10 at n=10; real verdict = the 300-war battery pair + a human playtest (Q47) |
+| **Mode framework + Convoy Escort v1** | 🔶 LANDED, TUNING — n=300 verdict: attacker 27% (A) / 19% (B), tempo clean; awaiting YOUR playtest + the designer's asymmetric bar (Q47) before touching timer/counterweights |
+| Vault machinery (Q39) | 🔶 ENGINE-COMPLETE, live placement PULLED — the frontier pair measured a ~15-pt team edge (likely the residue: re-test via the VAULTS=2 ab rung after the ladder closes) |
 | Mines / anti-camping drone / MPG | ✅ `9e` / `9g` / `9d` (+ MPG full waves, base-derived spawns) |
 | Damaged sites + materiel repair | ✅ `slice-11f` — artillery-only siege |
 | Path terrain + per-chassis speeds | ✅ `slice-11n` |
@@ -143,22 +144,22 @@ their rows into standard baselines.
 
 ## Open design questions (the clarify-and-design queue)
 
-Answered this era (for the record): Q25 rout condition landed, Q28
-double-pay kept unless it tips games, Q29 convoy N unchanged pending
-data, Q30 B2 landed, Q31 levers landed (premium stays), Q32 GO →
-convoy shipped, Q33 item 41 was nothing, Q34 POW arc went first,
-Q43-Q45 designer-ruled (stations, human-only, sandbag/caltrop tables).
+Closed since the last pass: Q24 (in use = ratified), Q48 (vote pool
+serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 
-| # | Question | Owner |
-|---|---|---|
-| Q24 | Ratify pool 315? (landed on ladder data; implicit yes by use) | user |
-| Q46 | powPreplaced flip: BLOCKED on the directional residue (POWS reads 33/35% A post prison-fix; chain in dev-log) | after the residue fix |
-| Q47 | Convoy Escort balance bar: what attacker win-rate band is "fair" for an asymmetric mode? Regents read 10-30% at n=10; deliveries are fast when they come. Also ratify the 15-min timer and the defender-MPG x2 counterweight | designer |
-| Q48 | Convoy's home map: keep frontier, or make the fixed caldera its home (ring road = natural convoy route with two lanes)? The designer's own order was framework → caldera → convoy | designer |
-| Q49 | RULED+BUILT: map+mode pair voting LANDED (slice-vote) — end-screen plurality vote, status-quo-first, dedicated servers keep their mode on silence | user |
-| Q50 | RULED+BUILT: caltrops LANDED (slice-caltrops); sandbags next with the owner's two-lane cap (max 4-cell run, never seals a gate/road) | user |
-| Q51 | Landship (neutral capturable multi-crew, Q42 rulings): enters the queue after alarm guards/vault, or jump it forward now that stations + formation exist? | user |
-| Q52 | Heist/Extraction as mode #2: it is mostly EXISTING machinery (standards + mode framework — a directed Standard war with radio pings). Cheap win — green-light after convoy tunes? | user |
+| # | Question | Owner | Blocked by |
+|---|---|---|---|
+| Q46 | powPreplaced flip | — | the residue ladder (auto-resolves: battery re-runs after rung 4) |
+| Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
+| Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
+| Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |
+| Q57 | Sequencing after rung 4: (a) riverline pacing slice, (b) caldera fix (unlocks convoy's natural home + Q39 specials), (c) heist mode, (d) figure-kit round 2 / ambient NPCs (farmhands→road workers→trader). Preference order? | you | — |
+| Q58 | Q39 specials ladder: after the vault re-test, the designer's order is cache → alloys → lab (lab needs the escortable-NPC primitive, which Convoy Escort's party law mostly provides). Green-light the cache design brief? | you | vault re-test |
+
+**Playtest asks (when you have time):** sawtooth (crewing is ON now),
+Convoy Escort (`MODE=convoy`), the Landship (mid-map, click to claim,
+J for the station), a POWS=2 session (`POWS=2` — the human experience
+is unaffected by the regent-side bias), and the end-screen vote.
 
 ## Version 3 (parking lot)
 
