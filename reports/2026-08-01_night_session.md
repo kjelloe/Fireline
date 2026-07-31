@@ -108,7 +108,9 @@ for the next session's hunt: prison array-order effects (team 1's
 raid designation is computed first every pass), designation loops
 iterating ascending op-id (team A first) in ways tick-parity does
 not cover, and rescue/redeploy interactions with locked seats. The
-mirror half of the discriminator lands after this report. Until the
+mirror half confirms at n=600: **22.0% A mirrored** (aggregate 23.3%
+A, uniques OFF, both worlds) — the exoneration is complete and
+consistent. Until the
 mechanism is found: powPreplaced stays 0 (unchanged default), and
 POWS=2 remains the human-session experience — note the bias was
 measured on ALL-REGENT wars; four humans holding those seats is a
