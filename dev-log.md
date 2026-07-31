@@ -4356,3 +4356,34 @@ next-session opener is an escort-fate tracer (per-escort: killed by
 whom/where, vs re-designated away, vs never replaced). The lane, the
 carrier-escort poaching guard, and mid-route kill positions are the
 three things it must separate.
+
+## POWS hunt round 3: the residue has a body count (2026-08-01)
+
+The escort-fate tracer closed the loop from doctrine to engine:
+- A loses 33 hulls in the party corridor (rows 73-81) vs B's 16, and
+  A's phase-1 parties run escort-STARVED 1021 ticks vs B's 80.
+- The kill zone is DIRECTION-LINKED AT THE SAME CELLS: x≈60-69 kills
+  22 of A's eastbound hulls vs 8 of B's westbound — 3x hotter for
+  one direction over mirror-symmetric terrain.
+- The 16d divergence probe DIVERGES ON HEAD (tick 122) — and at 16d
+  itself (tick 94, SEED=2026): this is the "mirror probe shows
+  directional residue" KNOWN-OPEN from night 2, predating every
+  suspect this session touched (a git bisect walked noise into a
+  doc-only commit before the endpoint check exposed the bad bounds —
+  VERIFY BISECT ENDPOINTS FIRST, lesson relearned). The drift is
+  CUMULATIVE (x and y both off by 12 units at first detection), not
+  a single tie — the turnToward 180° tie-break in place looks
+  correct; the odd operation is upstream in the step arithmetic.
+- CHAIN OF EVIDENCE: engine directional residue → eastbound corridor
+  ~3x deadlier → A's escorts die crossing → 0.5 vs 2.0 escorts at
+  the wire → many-hands clock never doubles for A → raids 2 v 7 →
+  seats 4 v 14 → POWS=2 reads 33/35% A. The prison-mirror fix
+  (banked, +8 pts) was real but secondary.
+- NEXT-SESSION OPENER (the dedicated hunt): instrument the FIRST
+  diverging step — dump both worlds' stepAsset inputs/outputs (dir,
+  DIR_COS/SIN values, slide fallbacks, collision verdicts) at the
+  first mismatched tick and pin the non-antisymmetric operation.
+  Fix candidates from the era notes: DIR table antisymmetry at
+  16-dir resolution, slideAlongWall ordering, FRIEND_SOFT half-step
+  truncation parity. Verification ladder: probe clean to 16k ticks
+  x 5 seeds → pows battery pair → default pair.
