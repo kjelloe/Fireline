@@ -25,9 +25,12 @@ outcome. Renderer presents fog-filtered views only.
   (shared/fixedmath; east half rounds down; the centre is self-mirror).
   Plain worldToCellFloor stays for y/UI/cell-latticed values. The A*
   carries the ORIGIN-SIDE tie law (pop + parent selection). Residue
-  ladder: divergence 2 → 107 → 903; remaining = ~40
-  worldToCellFloor(*.x) decision sites in reducer+ai_regency, then
-  probe-clean 16k×5, then FULL RE-BASELINE (path shapes changed).
+  ladder: divergence 2 → 107 → 903; RUNG 3 DONE (78 x-floor decision
+  sites law-compliant across 8 engine files, ENFORCED by
+  test/boundary_law.test.js source lint — new sites fail the suite).
+  RUNG 4: a truck designation scan (needy-resupply/tow tie or score)
+  diverges on exact mirror states at t=902 — harness in dev-log.
+  Then probe-clean 16k×5 → FULL RE-BASELINE (path shapes changed).
   Deterministic PRNG
   (`shared/prng.js` — algorithms pinned by fixtures 0C/0D), stable iteration
   order, canonical little-endian serialization (`shared/canonical.js`).

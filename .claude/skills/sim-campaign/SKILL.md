@@ -138,7 +138,8 @@ at unit orders.
 THE DIRECTIONAL RESIDUE (2026-08-01, two laws landed): the A*
 origin-side tie law + the boundary-parity sampling law (specs/08 §7)
 moved frontier first-divergence 2 → 107 → 903. CURRENT BASELINE:
-probe red ≈ t900 (AI-layer floored scans — the enumerated sweep).
+probe red ≈ t902 (ONE truck designation scan — rung 4; floors are
+all law-compliant and lint-enforced by test/boundary_law.test.js).
 Do NOT panic-bisect a fresh divergence report; check against this
 baseline first (a bisect on bad endpoints once walked into a
 doc-only commit). Post-laws default game verified fair

@@ -125,11 +125,11 @@ their rows into standard baselines.
 
 ## What is actually blocking progress
 
-1. **THE DIRECTIONAL RESIDUE** — the engine's mirror drift (red
-   divergence probe since before 16d), now with a measured body count
-   (the POWS corridor kill-zone). First-divergence step-input dump is
-   the opener; fix → probe clean 16k×5 → pows + default batteries.
-   Q46 and the vault's return both wait on it.
+1. **THE DIRECTIONAL RESIDUE — one rung left.** Three rungs climbed
+   (A* origin-side law, boundary-parity law, the 78-site sweep, all
+   lint-enforced); rung 4 = one truck designation scan diverging at
+   t=902 (harness ready). Then probe-clean 16k×5 → pows + default
+   re-baseline. Q46 and the vault's return wait on it.
 2. **Riverline pacing slice** — 41% horn; same playbook as blackwood
    18G (instrument first, then the smallest terrain/graph change).
 3. **Caldera fix** — raider's-clause-on-a-ring; then it can host

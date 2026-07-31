@@ -4,6 +4,7 @@
 // that scores the war. Pure helpers only; the reducer owns all mutation.
 
 import { ASSET_DISABLED, ASSET_SALVAGED } from "./state.js";
+import { sampleCellX } from "../shared/fixedmath.js";
 import { getUnitStats } from "./units.js";
 import { worldToCellFloor, cellToWorld } from "../shared/fixedmath.js";
 
@@ -56,7 +57,7 @@ export function assetCarries(state, assetId) {
 export function standardTakeableBy(state, asset) {
   if (isWreck(asset)) return null;
   if (!getUnitStats(asset.type).canCarryStandard) return null;
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.standards.find(
     (s) => s.team !== asset.team &&
@@ -68,7 +69,7 @@ export function standardTakeableBy(state, asset) {
 // The team's OWN dropped standard on the asset's cell (touch returns it home).
 export function standardReturnableBy(state, asset) {
   if (isWreck(asset)) return null;
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.standards.find(
     (s) => s.team === asset.team && s.status === STD_DROPPED &&
@@ -80,7 +81,7 @@ export function standardReturnableBy(state, asset) {
 export function canScore(state, carrierAsset) {
   const own = state.standards.find((s) => s.team === carrierAsset.team);
   if (!own || own.status !== STD_AT_BASE) return false;
-  const cellX = worldToCellFloor(carrierAsset.x);
+  const cellX = sampleCellX(carrierAsset.x);
   const cellY = worldToCellFloor(carrierAsset.y);
   return state.bases.some(
     (b) => b.team === carrierAsset.team &&
