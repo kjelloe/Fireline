@@ -28,8 +28,13 @@ outcome. Renderer presents fog-filtered views only.
   ladder: divergence 2 → 107 → 903; RUNG 3 DONE (78 x-floor decision
   sites law-compliant across 8 engine files, ENFORCED by
   test/boundary_law.test.js source lint — new sites fail the suite).
-  RUNG 4: a truck designation scan (needy-resupply/tow tie or score)
-  diverges on exact mirror states at t=902 — harness in dev-log.
+  RUNG 4 CLOSED: the PARK-EAST chirality (field-repair/bridge parking
+  hardcoded absolute directions — the mirror of park-east is
+  park-west); doctrine now parks APPROACH-SIDE with axis-side ties.
+  Bug class named: absolute-direction constants in doctrine (audited
+  clean 2026-08-02 — only the axis-side law itself matches the grep).
+  RUNG 5 open: t=953 mid-flight re-target of a moving scout, one
+  world only (escort tight-follow vs patrol handoff; DUMP harness).
   Then probe-clean 16k×5 → FULL RE-BASELINE (path shapes changed).
   Deterministic PRNG
   (`shared/prng.js` — algorithms pinned by fixtures 0C/0D), stable iteration

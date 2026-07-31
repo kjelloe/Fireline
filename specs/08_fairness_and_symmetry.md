@@ -186,3 +186,17 @@ shape a path. This is route_graph's rankBetter law extended to A*.
 Status: frontier first-divergence moved 2 → 107 → 903. The remaining
 class is the same parity in the AI layer's floored-position scans;
 the sweep plan and the re-baseline ladder live in dev-log 2026-08-01.
+
+### §7b — The approach-side family (rung 4, 2026-08-02)
+
+A third law joins the first two: **no absolute-direction constants in
+doctrine.** "Park beside the patient at x+1" always parks EAST, and
+the mirror of park-east is park-west — one hardcoded offset broke
+equivariance for every repair errand. The pattern: any target or
+stance derived from another entity's position must take its side
+from the APPROACH (which side the actor is on), with same-column
+ties broken by the axis-side rule (west of the axis prefers west).
+The family so far: trip-origin side (A*/route ties), approach side
+(parking, stances), axis side (same-column and on-axis ties).
+Audited clean across doctrine 2026-08-02; new offsets are reviewed
+against this section.

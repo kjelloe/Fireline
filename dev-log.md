@@ -4513,3 +4513,15 @@ CLASS is now known: absolute-direction CONSTANTS in doctrine
 offset in ai_regency the way the boundary lint audits floors; a
 source lint for `\.cellX [+-] 1` style offsets may be worth writing
 before hand-hunting rung 5.
+
+## review round (prompt 128): the tie-law family, audited (2026-08-02)
+
+The promised direction-constant audit ran CLEAN — the only grep hits
+are the axis-side law's own implementation (a lint here would be all
+false positives; the recorded audit + specs section is the honest
+tool). specs/08 gained §7b: the APPROACH-SIDE FAMILY — the three tie
+laws named in one place (trip-origin side for route ties, approach
+side for parking/stances, axis side for same-column ties); new
+literal offsets get reviewed against it. Ladder state synced across
+CLAUDE/skill/plans: four rungs closed, baseline probe-red t≈953,
+rung 5 harness ready. Suite 728/728.

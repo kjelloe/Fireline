@@ -126,11 +126,12 @@ their rows into standard baselines.
 
 ## What is actually blocking progress
 
-1. **THE DIRECTIONAL RESIDUE — one rung left.** Three rungs climbed
-   (A* origin-side law, boundary-parity law, the 78-site sweep, all
-   lint-enforced); rung 4 = one truck designation scan diverging at
-   t=902 (harness ready). Then probe-clean 16k×5 → pows + default
-   re-baseline. Q46 and the vault's return wait on it.
+1. **THE DIRECTIONAL RESIDUE — rung 5.** Four rungs closed (A*
+   origin-side, boundary-parity + 78-site sweep + lint, park-east
+   chirality). Rung 5 = t=953 mid-flight re-target (harness ready).
+   Then probe-clean 16k×5 → pows + default re-baseline → Q46 + the
+   vault's return. After the ladder: YOUR Q57 queue (caldera → heist
+   → figures r2/ambients → riverline) + the Q58 cache brief.
 2. **Riverline pacing slice** — 41% horn; same playbook as blackwood
    18G (instrument first, then the smallest terrain/graph change).
 3. **Caldera fix** — raider's-clause-on-a-ring; then it can host
