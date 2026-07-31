@@ -201,6 +201,16 @@ const RELAY_CELLS = [
   { cellX: 83, cellY: 40, kind: 1 },
   { cellX: 44, cellY: 86 },
   { cellX: 83, cellY: 86 },
+  // Q39 (prompt 116 era): the VAULT pair — the map's first per-map
+  // special. Side objective on the NORTH trail between the laterals
+  // (row-40 traffic satisfies the 18C capture-seek law; two approaches
+  // per the placement rules), mirror-paired 58<->69. Appended so every
+  // existing site id stays pinned. Majority math: 10 sites -> map
+  // majority 6, but the session law (5) still caps the bleed test —
+  // the corridor's rhythm is untouched; domination now needs the
+  // vaults too (harder, as it should be).
+  { cellX: 58, cellY: 40, kind: 4 },
+  { cellX: 69, cellY: 40, kind: 4 },
 ];
 
 // 11M: per-profile layout — what differs between maps. Spawns and bases

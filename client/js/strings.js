@@ -240,7 +240,7 @@ export const CATALOGS = {
     "callout.contact_dir": "CONTACT — {chassis} to the {dir}",
     // B6 supply drop
     "task.secure_drop": "SECURE THE SUPPLY DROP",
-    "site.kind.1": "RADAR RELAY", "site.kind.2": "DEPOT RELAY", "site.kind.3": "FACTORY RELAY",
+    "site.kind.1": "RADAR RELAY", "site.kind.2": "DEPOT RELAY", "site.kind.3": "FACTORY RELAY", "site.kind.4": "THE VAULT",
     // Underdog premium disclosure (prompt-68: measured lean, disclosed)
     "brief.premium_underdog": "UNDERDOG PREMIUM — this map measurably favours the enemy. Your recognition earns +25% here.",
     "splash.tagline": "Join the battle. Turn the front.",
@@ -605,7 +605,7 @@ export const CATALOGS = {
     "callout.contact_dir": "KONTAKT — {chassis} i {dir}",
     // B6 supply drop
     "task.secure_drop": "SIKRE FORSYNINGSSLIPPET",
-    "site.kind.1": "RADARRELÉ", "site.kind.2": "DEPOTRELÉ", "site.kind.3": "FABRIKKRELÉ",
+    "site.kind.1": "RADARRELÉ", "site.kind.2": "DEPOTRELÉ", "site.kind.3": "FABRIKKRELÉ", "site.kind.4": "HVELVET",
     // Underdog premium disclosure (prompt-68)
     "brief.premium_underdog": "UNDERDOG-PREMIE — dette kartet favoriserer målbart fienden. Din anerkjennelse gir +25% her.",
     "splash.tagline": "Bli med i slaget. Snu fronten.",

@@ -4216,3 +4216,19 @@ server configurable, default all on. Suite 715/715 x2, smoke green.
   alarm/known-open blocks, RUNNING.md operator + player bullets,
   sim-campaign skill CONFIG-DRIFT LAW, techstack gotcha #1 extended,
   plans Q54 closed, memory synced.
+
+## slice-vault: the first per-map special (2026-08-01)
+
+Q39 ("vault first — zero new systems"): a mirror-paired typed-site
+duo (kind 4) on frontier's NORTH TRAIL (58<->69 @ row 40 — the 18C
+law satisfied by the lateral-loop traffic; two approaches per the
+placement rules). A held vault pays its controller +1 ticket per 150
+ticks — a ~13% counter-bleed lifeline, capped at the session pool,
+silent, excluded from mode wars with the rest of the ticket
+machinery. Suite 718/718 x2, fixture v60 (site census 8→10; map
+majority 6 but the session law still caps the bleed test at 5 — the
+corridor's rhythm untouched; domination now needs the vaults too).
+GATE IMPROVED: 5/5 decided, mixed winners (baseline 3/5) — two more
+contested objectives on the flank is tempo, not drag. Labels both
+locales ("THE VAULT"/"HVELVET"). Blackwood/other maps get vaults
+when their layouts earn one (Q39 order: cache → alloys → lab next).

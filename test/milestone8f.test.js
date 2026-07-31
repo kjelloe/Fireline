@@ -27,7 +27,7 @@ test("8F command zones, relays, and both standards always present", () => {
   s.sites[1].owner = 1;
   const model = buildMinimapModel(buildView(s, 0), 128);
   assert.equal(model.zones.length, 2);
-  assert.equal(model.relays.length, 8); // 11C road pairs + prompt-51 lateral pairs
+  assert.equal(model.relays.length, 10); // road pairs + laterals + the Q39 vault pair
   assert.equal(model.relays[1].owner, 1);
   assert.equal(model.standards.length, 2, "standard awareness is the point");
   assert.deepEqual(model.standards.map((st) => st.status), [0, 0]);

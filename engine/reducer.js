@@ -61,6 +61,7 @@ import {
   captureCheck, SITE_NEUTRALIZE_TICKS, SITE_CAPTURE_TICKS,
   SITE_HP_MAX, siteOperational,
   teamHasKind, KIND_FACTORY, FACTORY_WAVE_DISCOUNT, // B2
+  KIND_VAULT, VAULT_INCOME_TICKS, // Q39
 } from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
@@ -1528,6 +1529,18 @@ function applyAdvanceTick(next) {
       enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
+  }
+  // Q39 VAULT income: a held vault pays its controller +1 ticket on a
+  // slow cadence (silent — the pools are hashed and ride the view).
+  // Capped at the session pool; mode wars excluded with the rest of
+  // the ticket machinery.
+  if (next.tickets && !next.mission && next.tick % VAULT_INCOME_TICKS === 0) {
+    const cap = next.rules?.ticketPool ?? 315;
+    for (const site of next.sites) {
+      if (site.kind === KIND_VAULT && (site.owner === 0 || site.owner === 1)) {
+        next.tickets[site.owner] = Math.min(cap, next.tickets[site.owner] + 1);
+      }
+    }
   }
   // Q45/Q50 sandbag builds: the channel needs the builder's TEAM to
   // keep a truck beside the work; abandoned builds refund the rack of

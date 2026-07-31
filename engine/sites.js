@@ -16,6 +16,12 @@ export const KIND_RELAY = 0;
 export const KIND_RADAR = 1;   // owning team's sensors reach further
 export const KIND_DEPOT = 2;   // forward resupply point (idle beside it)
 export const KIND_FACTORY = 3; // rebuild waves arrive sooner
+export const KIND_VAULT = 4;   // Q39: slow ticket income to the controller
+// Q39 vault income: +1 ticket on this cadence while held. Small by
+// design — bleed drains 1/20 ticks on majority, so a held vault
+// counter-bleeds ~13%: a lifeline, never an engine. Capped at the
+// session pool (income never inflates past the starting reserve).
+export const VAULT_INCOME_TICKS = 150;
 export const RADAR_BONUS_CELLS = 6;
 export const DEPOT_RESUPPLY_CELLS = 4;
 export const FACTORY_WAVE_DISCOUNT = 180; // 20% off a 900-tick wave
