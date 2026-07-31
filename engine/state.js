@@ -16,6 +16,7 @@ import { cellToWorld } from "../shared/fixedmath.js";
 import { AMMO_MAX, FUEL_MAX } from "./supply.js";
 import { MINES_PER_TANK } from "./mines.js";
 import { SANDBAGS_PER_TRUCK } from "./sandbags.js";
+import { speedMultiplier } from "./terrain.js";
 import { getUnitStats } from "./units.js";
 import { createStandards } from "./standards.js";
 import { createMission } from "./mission.js";
@@ -75,6 +76,27 @@ const TEAM_A_SPAWN_X = 7;
 const TEAM_B_SPAWN_X = 120;
 const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
 const TEAM_A_RESERVE_COLS = [8, 9];
+// Q42: landship rotation points — centre column (width>>1, the B6 drop
+// precedent), north/south of the road so respawns move the fight.
+export const LANDSHIP_SPAWNS = [[64, 52], [64, 75]];
+// The berth must be STANDABLE (sawtooth's mesas cover the nominal
+// points): walk the centre column outward (y±1, y±2 …) to the first
+// cell the landship can occupy. x never changes, so the x-mirror
+// stays exact; the down-first tie-break is y-only and mirror-inert.
+export function landshipBerth(map, idx) {
+  const [bx, by] = LANDSHIP_SPAWNS[idx];
+  const stats = getUnitStats(9);
+  const standable = (y) => {
+    if (y < 0 || y >= map.height) return false;
+    return speedMultiplier(map.cells[y * map.width + bx], stats) > 0;
+  };
+  if (standable(by)) return [bx, by];
+  for (let d = 1; d < map.height; d++) {
+    if (standable(by + d)) return [bx, by + d];
+    if (standable(by - d)) return [bx, by - d];
+  }
+  return [bx, by]; // a fully-walled column: nominal (never happens on real maps)
+}
 const TEAM_B_RESERVE_COLS = [119, 118]; // mirror of A's [8, 9]
 
 function createOperators() {
@@ -173,6 +195,13 @@ function createFieldAssets() {
       }
     }
   }
+  // Q42: THE LANDSHIP — one neutral hull (id 32, team -1), spawned at
+  // a rotation point on the CENTRE COLUMN (x untouched by rotation, so
+  // the x-mirror is exact; north/south alternation rides the hashed
+  // landship law in the reducer). Nobody owns it until someone climbs
+  // in.
+  assets.push(makeFieldAsset(32, 9 /* UNIT_LANDSHIP */, -1,
+    LANDSHIP_SPAWNS[0][0], LANDSHIP_SPAWNS[0][1]));
   return assets;
 }
 
@@ -388,6 +417,18 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
   const mission = createMission(rules, assets, bases, (t) => getUnitStats(t));
   if (mission) standards = [];
 
+  // Q42: the landship's FIRST berth alternates by seed parity (wars
+  // rotate seeds deterministically, so servers alternate fairly); the
+  // hashed law's spawnIdx points at the NEXT berth.
+  const landshipHull = assets.find((a) => a.id === 32);
+  if (landshipHull) {
+    const first = landshipBerth(map, mapSeed & 1);
+    landshipHull.x = cellToWorld(first[0]);
+    landshipHull.y = cellToWorld(first[1]);
+    landshipHull.targetX = landshipHull.x;
+    landshipHull.targetY = landshipHull.y;
+  }
+
   // POW arc: pre-placed captives start OP_CAPTIVE with their team set
   // (they have never joined — the lock must know whose seat it holds).
   const operators = createOperators();
@@ -445,6 +486,9 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     prisons: createPrisons(bases, powN),
     // Asymmetric mode framework: null = standard war (never hashed).
     mission,
+    // Q42: the landship respawn law — {respawnTicks (0 = alive),
+    // spawnIdx (which rotation point the NEXT spawn uses)}. Hashed.
+    landship: { respawnTicks: 0, spawnIdx: (mapSeed & 1) ^ 1 },
     // 3E: victory bookkeeping (all hashed).
     phase: 0, // PHASE_RUNNING
     winner: -1,

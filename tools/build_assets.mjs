@@ -72,6 +72,12 @@ const ICONS = {
     `<circle cx="32" cy="32" r="20" fill="none" stroke="${C.hullShadow}" stroke-width="6"/>` +
     `<path d="M32 32 L32 14 A18 18 0 0 1 48 26 Z" fill="${C.selection}"/>`
   ),
+  "icon_landship.svg": svg( // Q42: the slab fortress — long hull + ring turret
+    `<rect x="8" y="26" width="48" height="16" rx="3" fill="${C.hullPaint}"/>` +
+    `<rect x="20" y="18" width="24" height="10" rx="2" fill="${C.hullShadow}"/>` +
+    `<circle cx="32" cy="23" r="5" fill="none" stroke="${C.barrel}" stroke-width="3"/>` +
+    `<rect x="8" y="44" width="48" height="5" fill="${C.hullShadow}"/>`
+  ),
   "icon_skimmer.svg": svg( // 12C: the airboat — hull wedge + fan circle
     `<path d="M12 36 L44 30 L52 36 L44 42 Z" fill="${C.hullPaint}"/>` +
     `<circle cx="16" cy="36" r="9" fill="none" stroke="${C.barrel}" stroke-width="3"/>` +
@@ -141,6 +147,7 @@ const SPRITES = {
   "unit_mortar.svg": ICONS["icon_mortar.svg"], // 11S
   "unit_sentinel.svg": ICONS["icon_sentinel.svg"], // 12B
   "unit_skimmer.svg": ICONS["icon_skimmer.svg"], // 12C
+  "unit_landship.svg": ICONS["icon_landship.svg"], // Q42
   "wreck.svg": ICONS["icon_wreck.svg"],
   "standard.svg": ICONS["icon_standard.svg"],
   "relay.svg": ICONS["icon_relay.svg"],

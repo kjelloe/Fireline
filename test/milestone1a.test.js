@@ -87,6 +87,7 @@ function stateHash(s) {
     w.writeI32LE(m.cellX); w.writeI32LE(m.cellY);
     w.writeI32LE(m.armTimer); w.writeU8(m.marked);
   }
+  w.writeI32LE(s.landship?.respawnTicks ?? 0); w.writeI32LE(s.landship?.spawnIdx ?? 0); // added Q42
   w.writeI32LE(s.nextSandbagId ?? 0); // added Q45/Q50
   for (const sb of (s.sandbags ?? [])) {
     w.writeI32LE(sb.id); w.writeI32LE(sb.team);

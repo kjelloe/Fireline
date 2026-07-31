@@ -53,7 +53,7 @@ test("11M riverline states build with their own relays and remember the profile"
     [[44, 32], [83, 32], [44, 95], [83, 95], [58, 63], [69, 63]],
     "four flank relays + the bridge pair (prompt 25 ruling b)"
   );
-  assert.equal(s.assets.length, 32, "same roster on every map");
+  assert.equal(s.assets.length, 33, "same roster on every map (+the neutral landship, Q42)");
 
   const f = createInitialState(42, "frontier_corridor");
   assert.equal(f.mapProfile, "frontier_corridor");

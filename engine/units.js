@@ -12,6 +12,7 @@ export const UNIT_BIKE = 5;    // 11R: scout bike
 export const UNIT_MORTAR = 6;  // 11S: mortar carrier
 export const UNIT_SENTINEL = 7; // 12B: Directorate unique
 export const UNIT_SKIMMER = 8;  // 12C: Outlier unique
+export const UNIT_LANDSHIP = 9; // Q42: the neutral capturable fortress
 
 export const UNIT_STATS = Object.freeze({
   [UNIT_TANK]: Object.freeze({
@@ -121,6 +122,24 @@ export const UNIT_STATS = Object.freeze({
     // on every map, and the condition dies the moment a fight starts,
     // so it cannot compound the way raw capture speed would.
     raider: true,
+  }),
+  // Q42 (specs/12): the LANDSHIP — one neutral hull per war, crewed by
+  // whoever reaches it. Driver alone moves it (capturable solo, no
+  // spawn camping); the STATION is where the teeth are — crewing up
+  // is the incentive. High hull, slow tracks, a mobile fortress that
+  // rewards coordination both ways. Never in a garage; its own
+  // rotating-respawn law lives in the reducer, NOT the MPG.
+  [UNIT_LANDSHIP]: Object.freeze({
+    id: UNIT_LANDSHIP, name: "landship",
+    speed: 10, range: 1024, minRange: 0, hp: 220, damage: 10, indirect: false, reloadTicks: 18,
+    canTow: false, canCarryStandard: false, capacity: 0, turnRate: 3,
+    canMine: false, canClearMines: false,
+    heavy: true,
+    canCapture: false, siege: false, // a fortress, not a flag runner
+    deployable: false,
+    amphibious: false,
+    // The heavy station: sustained fire that outguns any driver seat.
+    station: Object.freeze({ kind: "hmg", damage: 12, range: 1280, reloadTicks: 10, shots: 0 }),
   }),
   // 11S (prompt 22): the Mortar Carrier — artillery's little brother that
   // keeps up with a push. Indirect fire on the move-and-stop rhythm:

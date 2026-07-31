@@ -156,7 +156,7 @@ export const CATALOGS = {
     "dir.4": "south", "dir.5": "south-west", "dir.6": "west", "dir.7": "north-west",
     "chassis.0": "an assault tank", "chassis.1": "a scout", "chassis.2": "artillery",
     "chassis.3": "a logistics truck", "chassis.4": "a command carrier", "chassis.5": "a scout bike",
-    "chassis.6": "a mortar carrier", "chassis.7": "a Sentinel", "chassis.8": "a Skimmer",
+    "chassis.6": "a mortar carrier", "chassis.7": "a Sentinel", "chassis.8": "a Skimmer", "chassis.9": "the Landship",
     // B4 category honors
     "honor.raider": "BEST RAIDER — {who}, {n} kills",
     "honor.recovery": "BEST RECOVERY — {who}, {n} recoveries",
@@ -524,7 +524,7 @@ export const CATALOGS = {
     "dir.4": "sør", "dir.5": "sørvest", "dir.6": "vest", "dir.7": "nordvest",
     "chassis.0": "en stridsvogn", "chassis.1": "en speider", "chassis.2": "artilleri",
     "chassis.3": "en lastebil", "chassis.4": "en kommandovogn", "chassis.5": "en speidersykkel",
-    "chassis.6": "en bombekastervogn", "chassis.7": "en Sentinel", "chassis.8": "en Skimmer",
+    "chassis.6": "en bombekastervogn", "chassis.7": "en Sentinel", "chassis.8": "en Skimmer", "chassis.9": "Landskipet",
     // B4 category honors
     "honor.raider": "BESTE JEGER — {who}, {n} nedkjempinger",
     "honor.recovery": "BESTE BERGING — {who}, {n} berginger",

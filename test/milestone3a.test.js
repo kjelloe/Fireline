@@ -34,7 +34,7 @@ test("3A stat table is pinned", () => {
 
 test("3A frontier spawn mix cycles tank/tank/scout/artillery per team", () => {
   const s = createInitialState(42, "frontier_corridor");
-  assert.equal(s.assets.length, 32, "v1 scale: 32 field assets");
+  assert.equal(s.assets.length, 33, "v1 scale: 32 team assets + the neutral landship (Q42)");
   assert.deepEqual(s.assets.slice(0, 8).map((a) => a.type), [0, 0, 1, 2, 0, 0, 1, 2],
     "original eight unchanged");
   for (const team of [0, 1]) {

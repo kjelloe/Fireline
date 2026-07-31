@@ -217,6 +217,35 @@
       "deployable": false,
       "amphibious": true,
       "raider": true
+    },
+    "9": {
+      "id": 9,
+      "name": "landship",
+      "speed": 10,
+      "range": 1024,
+      "minRange": 0,
+      "hp": 220,
+      "damage": 10,
+      "indirect": false,
+      "reloadTicks": 18,
+      "canTow": false,
+      "canCarryStandard": false,
+      "capacity": 0,
+      "turnRate": 3,
+      "canMine": false,
+      "canClearMines": false,
+      "heavy": true,
+      "canCapture": false,
+      "siege": false,
+      "deployable": false,
+      "amphibious": false,
+      "station": {
+        "kind": "hmg",
+        "damage": 12,
+        "range": 1280,
+        "reloadTicks": 10,
+        "shots": 0
+      }
     }
   }
 }

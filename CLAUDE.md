@@ -119,9 +119,14 @@ outcome. Renderer presents fog-filtered views only.
   crosses what a tank must ford. Empty on every other profile, which is
   why it needed no fixture repin. AI doctrine (13E-2) drops a span only
   when LOSING that crossing, one besieger per span.
-- Roster (9 chassis, ids 0-8): tank/scout/artillery/logistics/carrier/
-  bike/mortar/sentinel/skimmer. Per team: 4/3/2/3/2/1/1 + the faction
-  unique in garage slot idx 10. Contract flags are EXPLICIT on every
+- Roster (10 chassis, ids 0-9): tank/scout/artillery/logistics/carrier/
+  bike/mortar/sentinel/skimmer/LANDSHIP. Per team: 4/3/2/3/2/1/1 + the
+  faction unique in garage slot idx 10. The LANDSHIP (Q42) is the 33rd
+  asset (id 32, team -1, NEUTRAL): select IS the capture (either team,
+  uncrewed only), either-team tow, own hashed respawn law
+  {respawnTicks, spawnIdx} — 100 s clock, centre-column berths via
+  landshipBerth (terrain-aware column walk, x fixed = mirror-exact),
+  MPG excluded, AI neither claims nor shoots team -1. Contract flags are EXPLICIT on every
   chassis: canTow, canCarryStandard, capacity, canMine, canClearMines,
   heavy (11N paths), canCapture (11R — bikes neither capture nor
   contest), siege (11R — only artillery breaches sites), deployable

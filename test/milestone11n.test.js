@@ -15,8 +15,8 @@ import { sandbox, joinAndSelect } from "./helpers.js";
 test("11N only the tank is heavy; paths pay out per chassis", () => {
   for (const type of Object.keys(UNIT_STATS).map(Number)) {
     const stats = getUnitStats(type);
-    assert.equal(stats.heavy, type === 0 || type === 7,
-      `chassis ${type} heavy flag (tank + sentinel)`);
+    assert.equal(stats.heavy, type === 0 || type === 7 || type === 9,
+      `chassis ${type} heavy flag (tank + sentinel + landship)`);
     // Prompt-54: amphibious hulls RACE trails (Riverline Drive affinity).
     const expected = stats.amphibious ? PATH_SPEED_AMPHIBIOUS
       : stats.heavy ? PATH_SPEED_HEAVY : TERRAIN_SPEED[T_PATH];

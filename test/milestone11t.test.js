@@ -397,7 +397,7 @@ test("14K the encyclopedia covers every chassis and every mechanics page has tex
   const { codexAll, MECHANICS_PAGES } = await import("../client/js/codex.js");
   const { CATALOGS } = await import("../client/js/strings.js");
   const all = codexAll();
-  assert.equal(all.length, 9, "nine chassis, nine entries");
+  assert.equal(all.length, 10, "ten chassis, ten entries (Q42 landship)");
   for (const c of all) assert.ok(c.role.length > 10, `${c.name} has a role blurb`);
   for (const key of MECHANICS_PAGES) {
     assert.ok((CATALOGS.en[key] ?? "").length > 40, `${key} en`);

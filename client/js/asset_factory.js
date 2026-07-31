@@ -282,6 +282,22 @@ function buildPowFigure() {
   return g;
 }
 
+// Q42: the LANDSHIP — a slab fortress with the station ring amidships.
+// Neutral paint until claimed (applyTeamColor handles the panel).
+function buildLandship() {
+  const g = new THREE.Group();
+  const C = colors();
+  const hull = box(0.95, 0.3, 0.6, C.hullPaint); hull.position.set(0, 0.2, 0);
+  const casemate = box(0.6, 0.22, 0.42, C.hullShadow); casemate.position.set(0, 0.45, 0);
+  const ring = cyl(0.16, 0.2, 0.14, 8, C.hullShadow); ring.position.set(0, 0.62, 0);
+  const barrel = box(0.4, 0.06, 0.06, C.barrel ?? C.hullShadow); barrel.position.set(0.32, 0.62, 0);
+  const skirtL = box(0.95, 0.12, 0.08, C.tread ?? C.hullShadow); skirtL.position.set(0, 0.08, 0.3);
+  const skirtR = box(0.95, 0.12, 0.08, C.tread ?? C.hullShadow); skirtR.position.set(0, 0.08, -0.3);
+  const panel = teamPanel(0.2, 0.06, 0.2); panel.position.set(-0.3, 0.58, 0);
+  g.add(hull, casemate, ring, barrel, skirtL, skirtR, panel);
+  return g;
+}
+
 function buildStandard(dropped) {
   const g = new THREE.Group();
   const C = colors();
@@ -473,6 +489,8 @@ const BUILDERS = {
   operator_down: buildOperatorDown,
   guard: buildGuardFigure,        // figure kit (specs/12)
   pow_figure: buildPowFigure,     // figure kit
+  landship: buildLandship,                              // Q42
+  wreck_landship: () => buildWreck("wreck_landship"),   // Q42
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),
   relay: buildRelay,

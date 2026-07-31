@@ -21,6 +21,7 @@ export function scenePointToCell(sceneX, sceneZ) {
 export function enemyAtCell(view, cellX, cellY, radiusCells = 0) {
   const hits = (view?.visibleEnemies ?? [])
     .filter((e) => e.state !== DISABLED && e.state !== SALVAGED)
+    .filter((e) => e.team !== -1) // Q42: the neutral landship is a prize, not a target
     .filter((e) => {
       const ex = Math.floor(e.x / CELL_WORLD_UNITS);
       const ey = Math.floor(e.y / CELL_WORLD_UNITS);
@@ -70,6 +71,17 @@ export function buildCommandForClick(view, cellX, cellY, opts = {}) {
     .sort((a, b) => a.id - b.id);
   if (selectable.length > 0) {
     return { type: "select_asset", assetId: selectable[0].id };
+  }
+
+  // Q42: the NEUTRAL landship under the click is a PRIZE, not a
+  // target — walk up and claim it (the select is the capture).
+  const neutral = (view?.visibleEnemies ?? [])
+    .filter((a) => a.team === -1 && a.state !== DISABLED && a.state !== SALVAGED)
+    .filter((a) => a.operatorId === -1)
+    .filter((a) => atCell(a, cellX, cellY))
+    .sort((a, b) => a.id - b.id)[0];
+  if (neutral) {
+    return { type: "select_asset", assetId: neutral.id, confirm: true };
   }
 
   // 9G: drones hover above everything — an enemy drone under the click is

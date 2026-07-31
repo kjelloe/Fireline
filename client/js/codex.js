@@ -16,6 +16,7 @@ const ROLES = {
   mortar: "Mobile indirect fire that keeps up with a push. No siege, no anti-air.",
   sentinel: "Directorate hardpoint: deploy to trade mobility for artillery-class direct reach.",
   skimmer: "Outlier airboat: Riverline Drive — crosses water at trail speed.",
+  landship: "The neutral fortress: climb in to claim it for your team. Driver alone moves it; the heavy station is why you bring a friend. Respawns at a rotating centre berth.",
 };
 
 // 14K: every chassis, for the encyclopedia browser.

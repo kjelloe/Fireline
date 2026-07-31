@@ -39,7 +39,9 @@ export function towRejection(state, tower, wreck) {
   if (!getUnitStats(tower.type).canTow) return "needs a logistics truck";
   if (!wreck) return "no such wreck";
   if (!isWreck(wreck)) return "not a wreck";
-  if (wreck.team !== tower.team) return "enemy wreck";
+  // Q42: the landship wreck is EVERYONE'S prize — salvage it home or
+  // deny it. Every other wreck stays own-team-only.
+  if (wreck.team !== tower.team && getUnitStats(wreck.type).id !== 9) return "enemy wreck";
   if (wreck.towedBy !== -1) return "already under tow";
   if (wreck.recoverTimer > 0) return "already recovering";
   if (towedWreck(state, tower.id)) return "already towing";

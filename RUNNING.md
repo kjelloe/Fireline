@@ -303,3 +303,10 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
 - Prison compounds have a watchman: enemies near the wire trip an
   alarm ping for the owners. He cannot be killed — he is a shout,
   not a soldier.
+
+- The LANDSHIP: one neutral fortress spawns mid-map every war. Walk
+  up and click it — the select is the capture, for either team. The
+  driver alone moves it; the heavy MG station (J to board) is why you
+  bring a friend. Wreck it and ANY team can tow the hulk home for
+  salvage — but a respawn clock is running, and when it fires the
+  wreck vanishes and a fresh neutral hull appears at the other berth.

@@ -87,7 +87,7 @@ test("18B sawtooth states build with their own relays and remember the profile",
     [[58, 63], [69, 63], [44, 34], [83, 34], [44, 93], [83, 93]],
     "canyon heart + one pair per outer lane, at the gap exits (18C)"
   );
-  assert.equal(s.assets.length, 32, "same roster on every map");
+  assert.equal(s.assets.length, 33, "same roster on every map (+the neutral landship, Q42)");
 });
 
 test("18B the wall rule: a unit ordered into a mesa stalls at its face", () => {

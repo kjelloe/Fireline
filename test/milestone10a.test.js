@@ -78,7 +78,7 @@ test("10A ws spectators receive full snapshots and cannot act", async () => {
     const snap = booth.messages.filter((m) => m.type === "s_snapshot").at(-1);
     assert.ok(snap, "spectator gets per-tick snapshots");
     assert.equal(snap.view.spectator, true);
-    assert.equal(snap.view.friendlyAssets.length, 32, "all 32 assets, both teams");
+    assert.equal(snap.view.friendlyAssets.length, 33, "all 33 assets (32 team + the landship), both teams");
 
     // Read-only: any command bounces without touching the war.
     booth.ws.send(JSON.stringify({ type: "move_order", targetCellX: 1, targetCellY: 1, seq: 9 }));

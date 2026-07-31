@@ -19,7 +19,9 @@ test("11R the bike contract: fastest thing on wheels, no flag hands", () => {
   for (const [type, stats] of Object.entries(UNIT_STATS)) {
     if (Number(type) === UNIT_BIKE) continue;
     assert.ok(bike.speed > stats.speed, `outruns chassis ${type}`);
-    assert.equal(stats.canCapture, true, `chassis ${type} still captures`);
+    // Q42: the landship is the OTHER non-capturer — a fortress, not a
+    // flag runner (and never a courier).
+    assert.equal(stats.canCapture, Number(type) !== 9, `chassis ${type} capture contract`);
   }
   assert.equal(
     Object.values(UNIT_STATS).filter((s) => s.siege).length, 1,

@@ -70,7 +70,7 @@ test("18A blackwood states build with their own relays and remember the profile"
      [58, 45], [69, 45], [58, 82], [69, 82]],
     "ring corners + the deep-woods pairs (specs/10 §3)"
   );
-  assert.equal(s.assets.length, 32, "same roster on every map");
+  assert.equal(s.assets.length, 33, "same roster on every map (+the neutral landship, Q42)");
   assert.notEqual(hashState(s), hashState(createInitialState(42, "frontier_corridor")));
 });
 

@@ -265,6 +265,10 @@ function pickFireTarget(state, asset, visibleSet) {
   let bestCarries = false;
   for (const enemy of state.assets) {
     if (enemy.team === asset.team || isWreck(enemy)) continue;
+    // Q42: the NEUTRAL landship threatens nobody — shooting an empty
+    // fortress is wasted ammo and a wasted prize. Crewed, its team is
+    // 0/1 and it's a target like any other.
+    if (enemy.team === -1) continue;
     if (!visibleSet.has(enemy.id)) continue;
     if (!inFireRange(asset, enemy)) continue;
     const carries = carryingIds.has(enemy.id);

@@ -48,6 +48,8 @@ import {
   SANDBAG_HP, SANDBAG_BUILD_TICKS, buildRejection,
 } from "./sandbags.js";
 import { T_BLOCKING } from "./mapgen.js";
+import { landshipBerth } from "./state.js";
+const LANDSHIP_RESPAWN_TICKS = 1000; // Q42: 100 s — inside the ruled 90-120 s band
 import {
   createDowned, downedFor, crawlRejection, boardableBy,
   OPERATOR_SPEED, REDEPLOY_TICKS, OPERATOR_AUTO_RETURN_TICKS,
@@ -337,6 +339,7 @@ function copyState(state) {
     ]).map((c) => ({ ...c, ids: [...c.ids] })), // nested ids: the aliasing lesson
     prisons: (state.prisons ?? []).map((p) => ({ ...p, pows: p.pows.map((pw) => ({ ...pw })) })), // POW arc
     mission: state.mission ? { ...state.mission } : null, // mode framework (timer writes in place)
+    landship: state.landship ? { ...state.landship } : state.landship, // Q42
     mines: state.mines.map((m) => ({ ...m })),
     caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
     sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50
@@ -371,7 +374,17 @@ function applySelectAsset(next, command) {
   if (manned) manned.stationOp = -1;
   const asset = next.assets[command.assetId];
   if (!asset) return reject(next, command, "no such asset");
-  if (asset.team !== operator.team) return reject(next, command, "asset belongs to other team");
+  // Q42: the NEUTRAL landship is claimed by whoever climbs in — the
+  // select IS the capture. Only while uncrewed and operable; a crewed
+  // landship is exactly as protected as any other hull.
+  if (asset.team !== operator.team) {
+    const claimable = getUnitStats(asset.type).id === 9 /* UNIT_LANDSHIP */ &&
+      asset.operatorId === -1 &&
+      asset.state !== ASSET_DISABLED && asset.state !== ASSET_SALVAGED;
+    if (!claimable) return reject(next, command, "asset belongs to other team");
+    asset.team = operator.team;
+    next.events.push({ type: "landship_captured", assetId: asset.id, team: operator.team });
+  }
   if (asset.operatorId !== -1 && asset.operatorId !== operator.id) {
     return reject(next, command, "asset already operated");
   }
@@ -1975,6 +1988,55 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "pow_resecured", operatorId: body.operatorId, team: prison.team });
     }
   }
+  // Q42 LANDSHIP respawn law: destruction starts a hashed clock;
+  // while it runs, the wreck is a towable prize (either team). When
+  // it fires, the wreck CLEARS — the hull is reborn neutral at the
+  // NEXT rotation berth, whatever was happening to the old body
+  // (mid-tow included: the salvage race has a deadline by design).
+  if (next.landship) {
+    const hull = next.assets[32];
+    if (hull) {
+      const wrecked = hull.state === ASSET_DISABLED || hull.state === ASSET_SALVAGED;
+      if (wrecked && next.landship.respawnTicks === 0) {
+        next.landship.respawnTicks = LANDSHIP_RESPAWN_TICKS;
+      }
+      if (next.landship.respawnTicks > 0) {
+        next.landship.respawnTicks -= 1;
+        if (next.landship.respawnTicks === 0) {
+          if (wrecked) {
+            const berth = landshipBerth(next.map, next.landship.spawnIdx);
+            next.landship.spawnIdx = next.landship.spawnIdx === 0 ? 1 : 0;
+            if (hull.towedBy !== -1) {
+              const tower = next.assets[hull.towedBy];
+              if (tower) { /* the hook comes back empty */ }
+              hull.towedBy = -1;
+            }
+            hull.state = ASSET_IDLE;
+            hull.team = -1;
+            hull.operatorId = -1;
+            hull.stationOp = -1;
+            hull.hp = getUnitStats(hull.type).hp;
+            hull.ammo = AMMO_MAX;
+            hull.fuel = FUEL_MAX;
+            hull.recoverTimer = 0;
+            hull.suppressedTimer = 0;
+            hull.x = cellToWorld(berth[0]);
+            hull.y = cellToWorld(berth[1]);
+            hull.targetX = hull.x;
+            hull.targetY = hull.y;
+            hull.heading = 0;
+            next.events.push({ type: "landship_respawned", cellX: berth[0], cellY: berth[1] });
+          }
+          // If it was recovered/repaired before the clock fired, the
+          // hull lives on for its holder — the clock simply lapses.
+        }
+      }
+      // A REPAIRED landship (towed home, restored) cancels the clock.
+      if (!wrecked && next.landship.respawnTicks > 0 && hull.hp > 0) {
+        next.landship.respawnTicks = 0;
+      }
+    }
+  }
   // CONVOY ESCORT mission clock + radio intel: the timer runs every
   // tick; the defenders hear where the convoy is on a fixed cadence
   // (deterministic, fog-independent — the designer's "sporadic radio
@@ -2177,7 +2239,7 @@ function applyAdvanceTick(next) {
     // eligible wreck at once, so a gutted team counter-pushes as a
     // formation instead of feeding hulls in one at a time.
     const wrecks = next.assets.filter(
-      (a) => a.team === team &&
+      (a) => a.team === team && a.id !== 32 && // Q42: the landship has its own respawn law
         (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) &&
         a.towedBy === -1 && a.recoverTimer === 0
     );

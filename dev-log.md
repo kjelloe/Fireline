@@ -4266,3 +4266,40 @@ fairness cost is no deal, and 5 seeds cannot see a 15-point lean.
 Mechanism hunt (why north-trail objectives are team-asymmetric)
 joins the POWS hunt in the open-questions ledger — likely the same
 latent chirality family. Verification battery queued post-pull.
+
+## slice-landship: the neutral capturable fortress (2026-08-01)
+
+Q42, the People-arc's big hull. Suite 723/723 x2, gate 3/5 mixed,
+smoke + acceptance green, fixture v62, strip 30 tiles.
+- CHASSIS 10 (`UNIT_LANDSHIP`, id 9): hp 220, speed 10, modest driver
+  gun, HEAVY station (hmg: dmg 12 / range 1280 / reload 10 / hull
+  ammo) — the station outguns the driver seat by design; crewing up
+  is the incentive. canCapture false: a fortress, not a flag runner.
+- ONE NEUTRAL HULL per war: asset id 32, team -1. The 33rd asset —
+  census pins updated across seven contract tests (the sweeps caught
+  every one, as built).
+- THE SELECT IS THE CAPTURE: an uncrewed operable landship accepts
+  select_asset from EITHER team (asset.team follows the claimant;
+  event landship_captured). Crewed, it is protected like any hull;
+  abandoned, it keeps its paint but the enemy may walk up and take it.
+- RESPAWN LAW (hashed {respawnTicks, spawnIdx}): destruction starts a
+  100 s clock (inside the ruled 90-120 band); when it fires the wreck
+  CLEARS — mid-tow included, the salvage race has a deadline — and
+  the hull is reborn neutral at the NEXT centre-column berth
+  ([64,52]/[64,75], first berth by seed parity). Berths are
+  terrain-aware (landshipBerth walks the column outward — sawtooth's
+  mesas covered the nominal points and the map test caught it);
+  x never changes, so the x-mirror stays exact. Repaired-before-the-
+  deadline cancels the clock: the holder keeps their prize.
+- EITHER-TEAM TOW: the landship wreck is everyone's prize (tow
+  validation exception); the MPG never rebuilds it (id-32 exclusion —
+  its own law only, and that law rebirths NEUTRAL).
+- NEUTRAL-HULL GUARDS: AI fire doctrine skips team -1 (shooting an
+  empty fortress is wasted ammo and a wasted prize); a human CLICK on
+  the neutral hull claims it instead of shelling it (input-mapper
+  ladder, above enemy fire).
+- AI never claims it (v1, like stations — human tool first): AI wars
+  are balance-inert by construction; verification battery queued
+  anyway (the 33rd asset touches every iteration).
+- Client: procedural slab-fortress model + icon + manifest/anchors,
+  codex entry, chassis strings both locales.

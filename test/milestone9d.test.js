@@ -79,6 +79,7 @@ test("9D with no eligible hull the timer holds and fires when one appears", () =
 test("9D fieldSpawnFor matches the fielded layout for every asset id", () => {
   const s = createInitialState(42, "frontier_corridor");
   for (const a of s.assets) {
+    if (a.id === 32) continue; // Q42: the landship rides its own respawn law, never the MPG
     const spawn = fieldSpawnFor(a.id);
     assert.equal(spawn.team, a.team, `asset ${a.id} team`);
     assert.equal(spawn.type, a.type, `asset ${a.id} type`);

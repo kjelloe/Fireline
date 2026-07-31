@@ -63,6 +63,13 @@
       "fallbackSprite": "assets/sprites/fallback/unit_skimmer.svg",
       "minimapIcon": "assets/icons/svg/icon_skimmer.svg",
       "triBudget": 2000
+    },
+    "unit_landship": {
+      "webglModel": "assets/models/units/unit_landship.glb",
+      "procedural": "landship",
+      "fallbackSprite": "assets/sprites/fallback/unit_landship.svg",
+      "minimapIcon": "assets/icons/svg/icon_landship.svg",
+      "triBudget": 2000
     }
   },
   "wrecks": {
@@ -125,6 +132,13 @@
     "wreck_skimmer": {
       "webglModel": "assets/models/wrecks/wreck_skimmer.glb",
       "procedural": "wreck_skimmer",
+      "fallbackSprite": "assets/sprites/fallback/wreck.svg",
+      "minimapIcon": "assets/icons/svg/icon_wreck.svg",
+      "triBudget": 2000
+    },
+    "wreck_landship": {
+      "webglModel": "assets/models/wrecks/wreck_skimmer.glb",
+      "procedural": "wreck_landship",
       "fallbackSprite": "assets/sprites/fallback/wreck.svg",
       "minimapIcon": "assets/icons/svg/icon_wreck.svg",
       "triBudget": 2000
