@@ -12,10 +12,15 @@
 //   open — matches the slide rule's honesty about walls).
 // - TIE-BREAKS COMMUTE WITH THE MIRROR (specs/08; the route-graph
 //   lesson): equal-f candidates rank by |2x-(W-1)| then |2y-(H-1)| —
-//   both invariant under reflection — before any raw index. Exact
-//   ties after that are mirror partners; the final index tie-break
-//   only fires for units sitting ON the axis, the same accepted
-//   caveat rankBetter() documents.
+//   both invariant under reflection — then by y (untouched by the
+//   x-mirror), then by x in TRIP-ORIGIN-SIDE order (west origins
+//   prefer west, east origins prefer east — the route graph's
+//   origin-side law). The old raw-index tail claimed it "only fires
+//   on the axis"; it actually fired for EVERY equal-cost mirror-
+//   partner detour (any wall gives you one) and was the engine's
+//   directional residue — the divergence probe went red the moment a
+//   map had walls. Parent selection re-parents on equal g under the
+//   same order, so expansion order can never leak into path shape.
 // - Terrain is obstacle-blind beyond walls: A* avoids 0-speed cells
 //   only. Slow ground is the route graph's business (13C/13D), not
 //   this last-mile planner's.
@@ -69,16 +74,25 @@ export function findCellPath(map, fromX, fromY, toX, toY, stats, maxExpand = PAT
     const dy = absI32(((idx / W) | 0) - toY);
     return dx > dy ? 256 * (dx - dy) + 362 * dy : 256 * (dy - dx) + 362 * dx;
   };
-  // Sorted-array frontier: pop the best by (f, mirror-rank, index).
-  // n is small (worst case a few thousand); clarity beats a heap here.
+  // Sorted-array frontier: pop the best by (f, mirror-rank, y,
+  // origin-side x). n is small; clarity beats a heap here.
+  const flip = 2 * fromX > W - 1; // trip-origin side: east origins mirror the x-order
+  const nodeBetter = (ia, ib) => {
+    const ra = tieRank(map, ia);
+    const rb = tieRank(map, ib);
+    if (ra[0] !== rb[0]) return ra[0] > rb[0];
+    if (ra[1] !== rb[1]) return ra[1] > rb[1];
+    const ya = (ia / W) | 0;
+    const yb = (ib / W) | 0;
+    if (ya !== yb) return ya < yb;
+    const xa = ia % W;
+    const xb = ib % W;
+    return flip ? xa > xb : xa < xb;
+  };
   const open = [[h(start), start]];
   const better = (a, b) => {
     if (a[0] !== b[0]) return a[0] < b[0];
-    const ra = tieRank(map, a[1]);
-    const rb = tieRank(map, b[1]);
-    if (ra[0] !== rb[0]) return ra[0] > rb[0];
-    if (ra[1] !== rb[1]) return ra[1] > rb[1];
-    return a[1] < b[1];
+    return nodeBetter(a[1], b[1]);
   };
   let expanded = 0;
   while (open.length) {
@@ -108,10 +122,16 @@ export function findCellPath(map, fromX, fromY, toX, toY, stats, maxExpand = PAT
         const nIdx = ny * W + nx;
         if (closed.has(nIdx)) continue;
         const cost = (g.get(cur) ?? 0) + (ox !== 0 && oy !== 0 ? 362 : 256);
-        if (cost < (g.get(nIdx) ?? Infinity)) {
+        const prev = g.get(nIdx) ?? Infinity;
+        if (cost < prev) {
           g.set(nIdx, cost);
           came.set(nIdx, cur);
           open.push([cost + h(nIdx), nIdx]);
+        } else if (cost === prev && nodeBetter(cur, came.get(nIdx))) {
+          // Equal-cost parent: keep the CANONICAL one (mirror-
+          // equivariant order), so neighbor-iteration order can never
+          // decide the path's shape.
+          came.set(nIdx, cur);
         }
       }
     }

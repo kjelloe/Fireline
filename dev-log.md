@@ -4387,3 +4387,45 @@ The escort-fate tracer closed the loop from doctrine to engine:
   16-dir resolution, slideAlongWall ordering, FRIEND_SOFT half-step
   truncation parity. Verification ladder: probe clean to 16k ticks
   x 5 seeds → pows battery pair → default pair.
+
+## THE RESIDUE, PINNED: two engine laws (2026-08-01)
+
+The pinpoint hunt found not one root but a CLASS, and fixed its two
+loudest members (suite 725/725 untouched — no fixture repin needed;
+the 14-step fixture never crosses a boundary):
+
+1. **The A* origin-side law** (`engine/pathfind.js`): the final
+   index tie-break — documented as "only fires on the axis" —
+   actually fired for EVERY equal-cost mirror-partner detour (any
+   wall gives you one), always preferring west. Both the frontier
+   pop AND the equal-g parent selection now use (mirror-rank, y,
+   trip-origin-side x): west origins prefer west, east origins
+   prefer east — the route graph's own law, applied to A*. Frontier
+   divergence: tick 2 → 107.
+
+2. **The boundary-parity law** (`engine/reducer.js sampleCellX`): a
+   MOVING entity can land exactly on a cell boundary (x%256 === 0).
+   The mirror maps boundary points to boundary points, and plain
+   floor assigns both to the RIGHT-hand cell — so the worlds sample
+   different terrain (forest vs open under the same mirrored scout —
+   the t=107 smoking gun, hand-computed: 27/27 vs 39/39 step). The
+   mirror-safe tie: ON a boundary, the east half rounds down; the
+   exact centre is a self-mirror point. Applied to step-speed
+   sampling (both movement paths) + terrainWalled (which slides
+   inherit). Divergence: 107 → 903.
+
+REMAINING (the whack-a-mole map for the next session): every OTHER
+decision that floors a CONTINUOUS position — caltrop under-tracks
+checks at the two step call sites, mine-entry detonation, capture/
+raid/rescue adjacency (chebyshev on floored cells), deploy cells
+(a caltrop dropped ON a boundary births an unmirrored patch), supply
+radius if cell-based, and the AI designation layer's own floors.
+Each fix has multiplied the horizon (2 → 107 → 903); the ladder
+ends when the probe is clean to 16k on 5 seeds, then the pows and
+default batteries re-baseline everything. NOTE: path shapes changed
+— every balance number needs the post-fix battery before trusting.
+
+The probe itself grew: DUMP=1 pre-divergence context, and it now
+compares caltrops/mines/downed/tickets (it was blind to them — the
+t=107 "asset drift" was really an earlier invisible divergence
+class; instrument-first applies to instruments, part three).

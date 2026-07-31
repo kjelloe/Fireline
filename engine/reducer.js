@@ -1326,13 +1326,29 @@ function turnToward(heading, desiredBrads, turnRate, worldX = null, mapWidth = 1
   return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
 }
 
+// THE BOUNDARY-PARITY LAW (2026-08-01, the directional residue's
+// root): a moving entity can land EXACTLY on a cell boundary
+// (x % 256 === 0). The mirror maps boundary points to boundary
+// points, and plain floor assigns BOTH to the right-hand cell — so
+// the normal world samples cell c while the mirror samples W-c
+// instead of the true mirror W-1-c. One such sample (forest vs open
+// under a scout at t=107) was the first visible drift; everything
+// the sweeps called "directional residue" cascades from here. The
+// mirror-safe tie: ON a boundary, the EAST half rounds down. (The
+// exact map centre is a self-mirror point — same cell both worlds —
+// and y needs nothing: the mirror is x-only.)
+function sampleCellX(worldX, mapWidth) {
+  const c = worldX >> 8;
+  return (worldX & 255) === 0 && 2 * worldX > mapWidth * 256 ? c - 1 : c;
+}
+
 // 18B: impassable terrain is a WALL, not a speed. Speed is sampled at
 // the CURRENT cell, so a fast chassis could leap into a 0-speed cell
 // and be trapped there forever (speed 0 = no step out). Refuse the
 // move instead — units stall at the mesa face. Pure position check:
 // commutes with the mirror because the terrain does.
 function terrainWalled(map, worldX, worldY, stats) {
-  const cx = worldToCellFloor(worldX);
+  const cx = sampleCellX(worldX, map.width);
   const cy = worldToCellFloor(worldY);
   if (cx < 0 || cx >= map.width || cy < 0 || cy >= map.height) return true;
   return speedMultiplier(map.cells[cy * map.width + cx], stats) === 0;
@@ -1366,7 +1382,7 @@ function driveStep(asset, map, supplied, carrying, towing, others, slowed = fals
   }
   if (asset.driveThrottle === 0) return;
 
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x, map.width); // boundary-parity law
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
   const terrain = map.cells[cellY * map.width + cellX];
@@ -1401,7 +1417,7 @@ function driveStep(asset, map, supplied, carrying, towing, others, slowed = fals
 }
 
 function stepAsset(asset, map, supplied, carrying, towing, others, slowed = false) {
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x, map.width); // boundary-parity law
   const cellY = worldToCellFloor(asset.y);
   if (cellX < 0 || cellX >= map.width || cellY < 0 || cellY >= map.height) return;
 

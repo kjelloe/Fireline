@@ -71,6 +71,29 @@ function firstDivergence(n, m) {
     if (b.ammo !== a.ammo) return `asset ${i} ammo: ${a.ammo} vs ${b.ammo}`;
     if (b.reloadTimer !== a.reloadTimer) return `asset ${i} reload: ${a.reloadTimer} vs ${b.reloadTimer}`;
   }
+  const mc = (x) => W - 1 - x;
+  for (let i = 0; i < (n.caltrops ?? []).length || i < (m.caltrops ?? []).length; i++) {
+    const a = (n.caltrops ?? [])[i], b = (m.caltrops ?? [])[i];
+    if (!a || !b) return `caltrop count: ${n.caltrops?.length} vs ${m.caltrops?.length}`;
+    if (b.cellX !== mc(a.cellX) || b.cellY !== a.cellY || b.team !== a.team || b.ticksLeft !== a.ticksLeft) {
+      return `caltrop ${i}: n(${a.cellX},${a.cellY},t${a.team},${a.ticksLeft}) vs m(${b.cellX},${b.cellY},t${b.team},${b.ticksLeft}) expect x=${mc(a.cellX)}`;
+    }
+  }
+  for (let i = 0; i < n.mines.length || i < m.mines.length; i++) {
+    const a = n.mines[i], b = m.mines[i];
+    if (!a || !b) return `mine count: ${n.mines.length} vs ${m.mines.length}`;
+    if (b.cellX !== mc(a.cellX) || b.cellY !== a.cellY || b.armTimer !== a.armTimer || b.marked !== a.marked) {
+      return `mine ${i}: (${a.cellX},${a.cellY}) vs (${b.cellX},${b.cellY}) expect x=${mc(a.cellX)}`;
+    }
+  }
+  for (let i = 0; i < n.downed.length || i < m.downed.length; i++) {
+    const a = n.downed[i], b = m.downed[i];
+    if (!a || !b) return `downed count: ${n.downed.length} vs ${m.downed.length}`;
+    if (b.x !== mx(a.x) || b.y !== a.y) return `downed ${i} pos: (${a.x},${a.y}) vs (${b.x},${b.y})`;
+  }
+  if ((n.tickets?.[0] ?? 0) !== (m.tickets?.[0] ?? 0) || (n.tickets?.[1] ?? 0) !== (m.tickets?.[1] ?? 0)) {
+    return `tickets: [${n.tickets}] vs [${m.tickets}]`;
+  }
   for (let i = 0; i < n.sites.length; i++) {
     const a = n.sites[i], b = m.sites[i];
     if (b.owner !== a.owner) return `site ${i} owner: ${a.owner} vs ${b.owner}`;
@@ -82,7 +105,13 @@ function firstDivergence(n, m) {
   return null;
 }
 
+let prevSnap = null;
 for (let t = 0; t < HORIZON; t++) {
+  if (process.env.DUMP) {
+    prevSnap = [normal.state, mirrored.state].map((s) => JSON.parse(JSON.stringify(
+      s.assets.map((a) => ({ id: a.id, x: a.x, y: a.y, h: a.heading, st: a.state,
+        tx: a.targetX, ty: a.targetY, sup: a.suppressedTimer, wp: a.waypoints?.length ?? 0 })))));
+  }
   normal.step();
   mirrored.step();
   const d = firstDivergence(normal.state, mirrored.state);
@@ -93,6 +122,19 @@ for (let t = 0; t < HORIZON; t++) {
       const a = normal.state.assets[id], b = mirrored.state.assets[id];
       console.log("normal :", JSON.stringify({ x: a.x, y: a.y, h: a.heading, st: a.state, tx: a.targetX, ty: a.targetY, op: a.operatorId }));
       console.log("mirror :", JSON.stringify({ x: b.x, y: b.y, h: b.heading, st: b.state, tx: b.targetX, ty: b.targetY, op: b.operatorId }));
+      if (prevSnap) {
+        console.log("PRE-TICK (t-1), diverging asset + all within 4 cells:");
+        const pa = prevSnap[0][id], pb = prevSnap[1][id];
+        console.log("  n[self]:", JSON.stringify(pa));
+        console.log("  m[self]:", JSON.stringify(pb));
+        for (const s of prevSnap[0]) {
+          if (s.id !== id && Math.abs(s.x - pa.x) <= 1024 && Math.abs(s.y - pa.y) <= 1024) {
+            console.log("  n[near]:", JSON.stringify(s));
+            const ms = prevSnap[1][s.id];
+            console.log("  m[near]:", JSON.stringify(ms), "mx(exp):", mx(s.x));
+          }
+        }
+      }
     }
     process.exit(0);
   }
