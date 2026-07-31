@@ -74,6 +74,14 @@ its deep copy on day one now.
   (fixed with truncating division); so did clockwise heading-snap
   ties (fixed with an even-index tie-break). Mirror equivariance is a
   property of *every arithmetic choice*, not just the map.
+- The deepest one: **plain floor doesn't commute with the mirror at
+  exact cell boundaries** — moving entities land on them, and the two
+  worlds sample different cells (`sampleCellX` is the law); and
+  **equal-cost A* ties are mirror partners** — any fixed preference
+  breaks equivariance (origin-side ties are the law). Both in
+  specs/08 §7; found by widening a divergence probe that was itself
+  blind three times (positions but not targets, assets but not
+  caltrops). Instrument-first applies to instruments, always.
 
 ---
 

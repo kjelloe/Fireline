@@ -157,3 +157,32 @@ Three rules, formalised after the mirror-harness bug:
 
 If a rule reads left-to-right, ask what it does right-to-left; if you
 cannot make it commute, alternate it, flag it, or document it here.
+
+
+## §7 — The boundary-parity and origin-side laws (2026-08-01)
+
+Two engine laws closed most of the long-standing "directional
+residue" (the divergence probe's redness since before 16d):
+
+**Boundary-parity.** Entities at rest live on cell centres and mirror
+exactly — but MOVING entities land on exact cell boundaries
+(x % 256 === 0), the mirror maps boundary points to boundary points,
+and plain floor assigns both to the right-hand cell. The two worlds
+then sample DIFFERENT cells (terrain speed, walls, any adjacency)
+and drift. Law: every decision keyed to a continuous x-position
+samples through `sampleCellX(x, mapWidth)` — on a boundary the EAST
+half rounds down; the exact centre is a self-mirror point (same cell
+both worlds, consistent by construction); y needs nothing (the
+mirror is x-only). Pinned by test/mirror_laws.test.js.
+
+**Origin-side ties.** Equal-cost A* candidates can be exact mirror
+partners (every wall detour makes a pair). Any fixed preference
+(index order, west-first neighbour iteration) breaks equivariance.
+Law: after the mirror-invariant ranks, ties resolve by TRIP-ORIGIN
+SIDE (west origins prefer west, east prefer east) — in the frontier
+pop AND in equal-g parent selection, so expansion order can never
+shape a path. This is route_graph's rankBetter law extended to A*.
+
+Status: frontier first-divergence moved 2 → 107 → 903. The remaining
+class is the same parity in the AI layer's floored-position scans;
+the sweep plan and the re-baseline ladder live in dev-log 2026-08-01.

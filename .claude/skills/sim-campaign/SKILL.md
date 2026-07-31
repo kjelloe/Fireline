@@ -135,11 +135,14 @@ doctrine in DEFAULT wars too: expect occasional pow_delivered /
 prison_raided in gate seeds, and judge raid health by
 server.ai.raidDebug (phase/escorts/guards per plan), not by staring
 at unit orders.
-THE DIRECTIONAL RESIDUE (2026-08-01, KNOWN BASELINE until fixed):
-dbg_mirror_diverge runs RED (~t 94-122) on every commit back to 16d
-— do NOT panic-bisect a fresh divergence report; check it against
-this baseline first (a bisect on bad endpoints once walked into a
-doc-only commit). Both mirror tools (sim_sweep MIRROR + the probe)
+THE DIRECTIONAL RESIDUE (2026-08-01, two laws landed): the A*
+origin-side tie law + the boundary-parity sampling law (specs/08 §7)
+moved frontier first-divergence 2 → 107 → 903. CURRENT BASELINE:
+probe red ≈ t900 (AI-layer floored scans — the enumerated sweep).
+Do NOT panic-bisect a fresh divergence report; check against this
+baseline first (a bisect on bad endpoints once walked into a
+doc-only commit). Post-laws default game verified fair
+(49.3/48.0% A, n=600). Both mirror tools (sim_sweep MIRROR + the probe)
 now mirror prisons/mission. POWS=2 batteries read 33/35% A post
 prison-fix; the residue's corridor kill-zone is the live mechanism
 (chain in dev-log). Fairness verdicts on DEFAULT wars stand (the

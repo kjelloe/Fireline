@@ -19,6 +19,15 @@ outcome. Renderer presents fog-filtered views only.
   artifact. Centres reflect exactly about the map's centre line
   (`x' = W*256 - x`). Never pin a world coordinate as a literal in a
   test — write `cellToWorld(c)` or the convention change churns it.
+  BOUNDARY-PARITY LAW (2026-08-01): plain floor does NOT commute with
+  the mirror at exact boundaries (x%256===0) — DECISIONS keyed to a
+  continuous x-position use `sampleCellX(x, mapWidth)`
+  (shared/fixedmath; east half rounds down; the centre is self-mirror).
+  Plain worldToCellFloor stays for y/UI/cell-latticed values. The A*
+  carries the ORIGIN-SIDE tie law (pop + parent selection). Residue
+  ladder: divergence 2 → 107 → 903; remaining = ~40
+  worldToCellFloor(*.x) decision sites in reducer+ai_regency, then
+  probe-clean 16k×5, then FULL RE-BASELINE (path shapes changed).
   Deterministic PRNG
   (`shared/prng.js` — algorithms pinned by fixtures 0C/0D), stable iteration
   order, canonical little-endian serialization (`shared/canonical.js`).

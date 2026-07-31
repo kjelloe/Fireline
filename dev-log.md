@@ -4444,3 +4444,15 @@ fixed: position-mirrored worlds were hiding order-level divergence).
 Ladder state: 2 → 107 → 903; ends at probe-clean 16k×5, then pows +
 default batteries re-baseline (PATH SHAPES CHANGED — no pre-fix
 number survives).
+
+## review round (prompt 123): the laws become doctrine (2026-08-01)
+
+sampleCellX promoted to shared/fixedmath (the rung-3 sweep imports
+from one place now); test/mirror_laws.test.js pins both laws as unit
+contracts — the boundary sweep found its own footnote immediately
+(the exact centre is a SELF-mirror point: same cell both worlds is
+consistency, not bias — no cell can be both 63 and 64). specs/08
+gained §7 (the laws' design of record); CLAUDE.md carries the law in
+the Determinism section proper; the skill's residue baseline moved
+to t≈900; techstack records the deepest-gotcha pair. Post-laws
+default battery: 49.3/48.0% A — fair. Suite 727/727 x2.

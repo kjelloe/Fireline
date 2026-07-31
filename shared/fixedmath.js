@@ -40,6 +40,21 @@ export function cellToWorld(cell) {
   return ((cell * CELL_SIZE) + (CELL_SIZE >> 1)) | 0;
 }
 
+// THE BOUNDARY-PARITY LAW (2026-08-01, the directional residue's
+// root): plain floor does NOT commute with the x-mirror at exact
+// cell boundaries (world % 256 === 0) — the mirror maps boundary
+// points to boundary points and floor assigns both to the RIGHT-hand
+// cell, so mirrored worlds sample different cells. For any DECISION
+// keyed to a continuous x-position, use this instead: on a boundary,
+// the EAST half rounds down (the exact map centre is a self-mirror
+// point and stays consistent). y needs nothing — the mirror is
+// x-only. Plain worldToCellFloor stays correct for y, for UI, and
+// for anything already cell-latticed.
+export function sampleCellX(world, mapWidth) {
+  const c = world >> 8;
+  return (world & 255) === 0 && 2 * world > mapWidth * 256 ? c - 1 : c;
+}
+
 export function worldToCellFloor(world) {
   return floorDivI32(world, CELL_SIZE);
 }

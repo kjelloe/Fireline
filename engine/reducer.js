@@ -287,7 +287,7 @@ function awardEscorts(next, actor) {
   }
 }
 import { speedMultiplier } from "./terrain.js";
-import { cellToWorld, worldToCellFloor, absI32, floorDivI32, truncDivI32 } from "../shared/fixedmath.js";
+import { cellToWorld, worldToCellFloor, sampleCellX, absI32, floorDivI32, truncDivI32 } from "../shared/fixedmath.js";
 
 export { createInitialState } from "./state.js";
 import { fieldSpawnFor } from "./state.js";
@@ -1326,22 +1326,8 @@ function turnToward(heading, desiredBrads, turnRate, worldX = null, mapWidth = 1
   return (heading + (diff > 0 ? turnRate : -turnRate)) & 255;
 }
 
-// THE BOUNDARY-PARITY LAW (2026-08-01, the directional residue's
-// root): a moving entity can land EXACTLY on a cell boundary
-// (x % 256 === 0). The mirror maps boundary points to boundary
-// points, and plain floor assigns BOTH to the right-hand cell — so
-// the normal world samples cell c while the mirror samples W-c
-// instead of the true mirror W-1-c. One such sample (forest vs open
-// under a scout at t=107) was the first visible drift; everything
-// the sweeps called "directional residue" cascades from here. The
-// mirror-safe tie: ON a boundary, the EAST half rounds down. (The
-// exact map centre is a self-mirror point — same cell both worlds —
-// and y needs nothing: the mirror is x-only.)
-function sampleCellX(worldX, mapWidth) {
-  const c = worldX >> 8;
-  return (worldX & 255) === 0 && 2 * worldX > mapWidth * 256 ? c - 1 : c;
-}
-
+// Boundary-parity law: sampleCellX lives in shared/fixedmath (the
+// full story is documented there and in specs/08).
 // 18B: impassable terrain is a WALL, not a speed. Speed is sampled at
 // the CURRENT cell, so a fast chassis could leap into a 0-speed cell
 // and be trapped there forever (speed 0 = no step out). Refuse the
