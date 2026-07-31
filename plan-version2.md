@@ -26,7 +26,7 @@ plus three experimental maps that have not earned promotion.
 | **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
 | Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
-| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — prisons + capture + raid party + **ALARM GUARDS landed** (watchman ping + defender response; raids still complete 4/5); powPreplaced flip = Q46 (battery pending); next: vault + figure-kit art |
+| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — prisons + capture + raid party + **ALARM GUARDS landed** (watchman ping + defender response; raids still complete 4/5); powPreplaced flip = Q46 (battery pending); next: figure-kit art (vault LANDED — slice-vault, gate improved 5/5) |
 | Multi-crew "Landship" | 🔜 seat-model PROVEN (stations landed); Landship = neutral capturable per Q42 rulings, after the POW arc |
 
 ## Track B — Battlefield systems
