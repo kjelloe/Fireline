@@ -4,6 +4,7 @@
 // all mutation.
 
 import { ASSET_IDLE } from "./state.js";
+import { sampleCellX } from "../shared/fixedmath.js";
 import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
 import { KIND_DEPOT, DEPOT_RESUPPLY_CELLS } from "./sites.js";
 import { getUnitStats } from "./units.js";
@@ -24,7 +25,7 @@ export const CARGO_AMMO_MAX = 12;
 export const SUPPLY_MOVE_COST = 1;
 
 export function inOwnBase(state, asset) {
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.bases.some(
     (b) => b.team === asset.team &&
@@ -48,7 +49,7 @@ function chebyshevToRect(cellX, cellY, rect) {
 }
 
 export function inSupply(state, asset) {
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   const baseCovered = state.bases.some(
     (b) => b.team === asset.team && chebyshevToRect(cellX, cellY, b) <= SUPPLY_RADIUS_CELLS
@@ -81,7 +82,7 @@ export function resupplyAt(state, assetId) {
 }
 
 function atOwnDepot(state, asset) {
-  const cx = worldToCellFloor(asset.x);
+  const cx = sampleCellX(asset.x);
   const cy = worldToCellFloor(asset.y);
   return (state.sites ?? []).some((s) => {
     if (s.owner !== asset.team || s.kind !== KIND_DEPOT || (s.hp ?? 1) <= 0) return false;

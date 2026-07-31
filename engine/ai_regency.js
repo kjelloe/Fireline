@@ -17,6 +17,12 @@ import {
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { caltropAt } from "./caltrops.js";
 import { GUARD_SENSE_CELLS } from "./prisons.js";
+import { sampleCellX } from "../shared/fixedmath.js";
+
+// Boundary-parity law (specs/08 §7): every x-position DECISION floors
+// through sampleCellX. Module-scoped width, refreshed at plan() entry
+// — helpers below plan() run only inside a plan pass.
+let AI_W = 128;
 import { PING_COOLDOWN_TICKS } from "./pings.js";
 import { CMD_TRANSFER_CARGO } from "./commands.js"; // 13B
 import { computeVisible } from "./los.js";
@@ -186,7 +192,7 @@ export const SNEAK_DIVE_CELLS = 12;
 export const RAID_LANE_ROWS = 8; // both teams — see fairness note above
 export const RAID_TURN_IN_CELLS = 12;
 function raidWindowOpen(state, carrier, visibleSet) {
-  const cx = worldToCellFloor(carrier.x);
+  const cx = sampleCellX(carrier.x, AI_W);
   const cy = worldToCellFloor(carrier.y);
   let escorts = 0;
   for (const a of state.assets) {
@@ -199,14 +205,14 @@ function raidWindowOpen(state, carrier, visibleSet) {
     if (escorts >= 2) return true;
   }
   const std = state.standards[carrier.team === 0 ? 1 : 0];
-  const sx = worldToCellFloor(std.x);
+  const sx = sampleCellX(std.x, AI_W);
   const sy = worldToCellFloor(std.y);
   const mx = (cx + sx) >> 1;
   const my = (cy + sy) >> 1;
   let defenders = 0;
   for (const e of state.assets) {
     if (e.team === carrier.team || isWreck(e)) continue;
-    const ex = worldToCellFloor(e.x);
+    const ex = sampleCellX(e.x, AI_W);
     const ey = worldToCellFloor(e.y);
     const nearMid = Math.max(Math.abs(ex - mx), Math.abs(ey - my)) <= SNEAK_SCAN_CELLS;
     const nearStd = Math.max(Math.abs(ex - sx), Math.abs(ey - sy)) <= SNEAK_SCAN_CELLS;
@@ -217,7 +223,7 @@ function raidWindowOpen(state, carrier, visibleSet) {
 }
 
 function nearestUnownedRelay(state, asset) {
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x, AI_W);
   const cellY = worldToCellFloor(asset.y);
   let best = null;
   let bestDist = Infinity;
@@ -362,7 +368,7 @@ export class AIRegency {
     if (!stats.siege) return -1;
     const spans = bridgeSpans(state.mapProfile);
     if (!spans.length) return -1;
-    const cellX = worldToCellFloor(asset.x);
+    const cellX = sampleCellX(asset.x, AI_W);
     const foe = asset.team === 0 ? 1 : 0;
     // Are we behind on the far bank? Count relays by side of the river.
     const mid = 63;
@@ -402,6 +408,7 @@ export class AIRegency {
   }
 
   plan(state) {
+    AI_W = state.map.width; // boundary-parity law (specs/08 §7)
     const commands = [];
     const visibleByTeam = [computeVisible(state, 0), computeVisible(state, 1)];
 
@@ -469,7 +476,7 @@ export class AIRegency {
           const st16 = getUnitStats(a.type);
           if (!st16.canCapture) continue; // 11R: bikes can't be capturers
           if (st16.deployable) continue;  // 16B: the Sentinel defends, never squats
-          const dist = Math.abs(site.cellX - worldToCellFloor(a.x)) +
+          const dist = Math.abs(site.cellX - sampleCellX(a.x, AI_W)) +
                        Math.abs(site.cellY - worldToCellFloor(a.y));
           if (dist < bestDist) {
             bestDist = dist;
@@ -500,7 +507,7 @@ export class AIRegency {
           if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
           const st = getUnitStats(a.type);
           if (!st.canCapture || st.deployable) continue; // same bench as flags
-          const dist = Math.abs(dropX - worldToCellFloor(a.x)) +
+          const dist = Math.abs(dropX - sampleCellX(a.x, AI_W)) +
                        Math.abs(drop.cellY - worldToCellFloor(a.y));
           if (dist < bestDist) {
             bestDist = dist;
@@ -542,7 +549,7 @@ export class AIRegency {
         if (!a || a.team !== team || a.operatorId !== operatorId || isWreck(a)) continue;
         const st = getUnitStats(a.type);
         if (st.canTow || st.canCarryStandard || st.indirect || st.deployable) continue;
-        const dist = Math.abs(prison.cellX - worldToCellFloor(a.x)) +
+        const dist = Math.abs(prison.cellX - sampleCellX(a.x, AI_W)) +
                      Math.abs(prison.cellY - worldToCellFloor(a.y));
         // FUEL LIVENESS (the t4000-t16000 finding): a fuel-dead hull 21
         // cells out kept winning the designation by pure proximity and
@@ -565,7 +572,7 @@ export class AIRegency {
       let guards = 0;
       for (const e of state.assets) {
         if (e.team !== prison.team || isWreck(e) || e.operatorId === -1) continue;
-        if (Math.max(Math.abs(worldToCellFloor(e.x) - prison.cellX),
+        if (Math.max(Math.abs(sampleCellX(e.x, AI_W) - prison.cellX),
                      Math.abs(worldToCellFloor(e.y) - prison.cellY)) <= 5) guards++;
       }
       // The rally cell sits near OWN lines — 12 cells out from the home
@@ -605,7 +612,7 @@ export class AIRegency {
       const wantRaid = eStd.status === STD_AT_BASE || eStd.status === STD_DROPPED;
       const raiding = eStd.status === STD_CARRIED && eStd.carrierAssetId === raiderId;
       if (!wantRaid && !raiding) continue;
-      const ccx = worldToCellFloor(carrier.x);
+      const ccx = sampleCellX(carrier.x, AI_W);
       const ccy = worldToCellFloor(carrier.y);
       const candidates = [];
       for (const [opId] of controlled) {
@@ -617,7 +624,7 @@ export class AIRegency {
         if (st.canTow || st.canCarryStandard || st.indirect) continue;
         if (capturerOps.has(opId)) continue; // capturers keep capturing
         if (prisonRaiderFor.get(team)?.opId === opId) continue; // the raider has a mission
-        const d = Math.max(Math.abs(worldToCellFloor(a.x) - ccx),
+        const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - ccx),
                            Math.abs(worldToCellFloor(a.y) - ccy));
         candidates.push([d, opId]);
       }
@@ -639,7 +646,7 @@ export class AIRegency {
       const m = state.mission;
       const truck = state.assets[m.convoyId];
       if (truck && !isWreck(truck)) {
-        const tcx = worldToCellFloor(truck.x);
+        const tcx = sampleCellX(truck.x, AI_W);
         const tcy = worldToCellFloor(truck.y);
         const cands = [];
         for (const [opId] of controlled) {
@@ -650,7 +657,7 @@ export class AIRegency {
           if (!a || a.team !== m.attacker || a.operatorId !== opId || isWreck(a)) continue;
           const st = getUnitStats(a.type);
           if (st.canTow || st.canCarryStandard || st.indirect) continue;
-          const d = Math.max(Math.abs(worldToCellFloor(a.x) - tcx),
+          const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - tcx),
                              Math.abs(worldToCellFloor(a.y) - tcy)) +
                     (capturerOps.has(opId) ? 100 : 0); // capturers last-resort
           cands.push([d, opId]);
@@ -680,7 +687,7 @@ export class AIRegency {
           const st = getUnitStats(a.type);
           if (st.canTow || st.canCarryStandard || st.indirect) continue;
           if (capturerOps.has(opId)) continue; // defence holds its ground game
-          const d = Math.max(Math.abs(worldToCellFloor(a.x) - this.convoyIntel[0]),
+          const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - this.convoyIntel[0]),
                              Math.abs(worldToCellFloor(a.y) - this.convoyIntel[1]));
           hunters.push([d, opId]);
         }
@@ -691,7 +698,7 @@ export class AIRegency {
       // attacker truck drops everything (resupply included) and rides
       // to the wreck. Standing beside it runs the restart clock.
       if (truck && truck.state === 2 /* ASSET_DISABLED */ && truck.towedBy === -1) {
-        const wx = worldToCellFloor(truck.x);
+        const wx = sampleCellX(truck.x, AI_W);
         const wy = worldToCellFloor(truck.y);
         let best = -1;
         let bestD = Infinity;
@@ -701,7 +708,7 @@ export class AIRegency {
           const a = state.assets[op.assetId];
           if (!a || a.team !== m.attacker || a.operatorId !== opId || isWreck(a)) continue;
           if (a.id === m.convoyId || !getUnitStats(a.type).canTow) continue;
-          const d = Math.max(Math.abs(worldToCellFloor(a.x) - wx),
+          const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - wx),
                              Math.abs(worldToCellFloor(a.y) - wy));
           if (d < bestD) { bestD = d; best = opId; }
         }
@@ -732,7 +739,7 @@ export class AIRegency {
       if (prison.pows.length === 0) continue; // an empty compound guards itself
       const threatened = state.assets.some((a) =>
         a.team !== prison.team && a.operatorId !== -1 && !isWreck(a) &&
-        Math.max(Math.abs(worldToCellFloor(a.x) - prison.cellX),
+        Math.max(Math.abs(sampleCellX(a.x, AI_W) - prison.cellX),
                  Math.abs(worldToCellFloor(a.y) - prison.cellY)) <= GUARD_SENSE_CELLS + 4);
       if (!threatened) continue;
       let best = -1;
@@ -747,7 +754,7 @@ export class AIRegency {
         if (!a || a.team !== prison.team || a.operatorId !== opId || isWreck(a)) continue;
         const st = getUnitStats(a.type);
         if (st.canTow || st.canCarryStandard || st.indirect) continue;
-        const d = Math.max(Math.abs(worldToCellFloor(a.x) - prison.cellX),
+        const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - prison.cellX),
                            Math.abs(worldToCellFloor(a.y) - prison.cellY));
         if (d < bestD) { bestD = d; best = opId; }
       }
@@ -756,7 +763,7 @@ export class AIRegency {
     for (const [team, rp] of prisonRaiderFor) {
       const raiderAsset = state.assets[state.operators[rp.opId]?.assetId];
       if (!raiderAsset || isWreck(raiderAsset)) { prisonRaiderFor.delete(team); continue; }
-      const rcx = worldToCellFloor(raiderAsset.x);
+      const rcx = sampleCellX(raiderAsset.x, AI_W);
       const rcy = worldToCellFloor(raiderAsset.y);
       // Seat scarcity is the real starvation (measured: esc=0 in
       // 11,905 of 12,000 plan passes): with POWS locking 4 seats a
@@ -778,7 +785,7 @@ export class AIRegency {
         if (!a || a.team !== team || a.operatorId !== opId || isWreck(a)) continue;
         const st = getUnitStats(a.type);
         if (st.canTow || st.canCarryStandard || st.indirect) continue;
-        const d = Math.max(Math.abs(worldToCellFloor(a.x) - rcx),
+        const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - rcx),
                            Math.abs(worldToCellFloor(a.y) - rcy)) +
                   (escortFor.has(opId) ? 50 : 0) +
                   (capturerOps.has(opId) ? 100 : 0);
@@ -854,13 +861,13 @@ export class AIRegency {
             // axis then the other, re-issued as each leg completes.
             const hx = home.x + ((home.width / 2) | 0);
             const hy = home.y + ((home.height / 2) | 0);
-            const cx = worldToCellFloor(down.x);
+            const cx = sampleCellX(down.x, AI_W);
             const cy = worldToCellFloor(down.y);
             const dx = Math.max(-CRAWL_RADIUS_CELLS, Math.min(CRAWL_RADIUS_CELLS, hx - cx));
             const legX = cx + dx;
             const legY = cy + Math.max(-(CRAWL_RADIUS_CELLS - Math.abs(dx)),
               Math.min(CRAWL_RADIUS_CELLS - Math.abs(dx), hy - cy));
-            const tx = worldToCellFloor(down.targetX);
+            const tx = sampleCellX(down.targetX, AI_W);
             const ty = worldToCellFloor(down.targetY);
             if ((legX !== cx || legY !== cy) && (tx !== legX || ty !== legY)) {
               commands.push({ type: CMD_CRAWL_ORDER, operatorId, targetCellX: legX, targetCellY: legY });
@@ -1027,11 +1034,11 @@ export class AIRegency {
         const st0 = getUnitStats(asset.type);
         if ((st0.caltrops ?? 0) > 0 && (asset.caltropsLeft ?? 0) > 0 &&
             asset.hp * 2 <= st0.hp) {
-          const cx0 = worldToCellFloor(asset.x);
+          const cx0 = sampleCellX(asset.x, AI_W);
           const cy0 = worldToCellFloor(asset.y);
           if (!caltropAt(state, cx0, cy0) && state.assets.some((e) =>
             e.team !== asset.team && e.operatorId !== -1 && !isWreck(e) &&
-            Math.max(Math.abs(worldToCellFloor(e.x) - cx0),
+            Math.max(Math.abs(sampleCellX(e.x, AI_W) - cx0),
                      Math.abs(worldToCellFloor(e.y) - cy0)) <= 5)) {
             commands.push({ type: CMD_DEPLOY_CALTROPS, operatorId });
             continue;
@@ -1075,7 +1082,7 @@ export class AIRegency {
 
       // 11D alive-world doctrine (Q11/Q16) — the world acts even with one
       // human present. All state-driven and deterministic.
-      const cellX0 = worldToCellFloor(asset.x);
+      const cellX0 = sampleCellX(asset.x, AI_W);
       const cellY0 = worldToCellFloor(asset.y);
       const stats = getUnitStats(asset.type);
       // Trucks defuse marked enemy mines they stand next to.
@@ -1197,7 +1204,7 @@ export class AIRegency {
             !raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
           // Escorts still inbound (within 2x escort range): HOLD position
           // and let them close — full retreat thrashed the raid to death.
-          const cx0 = worldToCellFloor(asset.x);
+          const cx0 = sampleCellX(asset.x, AI_W);
           const cy0 = worldToCellFloor(asset.y);
           let inbound = 0;
           for (const a of state.assets) {
@@ -1205,7 +1212,7 @@ export class AIRegency {
             if (a.operatorId === -1) continue;
             const st = getUnitStats(a.type);
             if (st.canTow || st.canCarryStandard) continue;
-            const d = Math.max(Math.abs(worldToCellFloor(a.x) - cx0),
+            const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - cx0),
                                Math.abs(worldToCellFloor(a.y) - cy0));
             if (d <= ESCORT_CELLS * 2) inbound++;
           }
@@ -1235,7 +1242,7 @@ export class AIRegency {
           ? (rp.opId === operatorId ? 1 : rp.escorts.includes(operatorId) ? 2 : 0)
           : 0;
         if (partyRole !== 0) {
-          const myCx = worldToCellFloor(asset.x);
+          const myCx = sampleCellX(asset.x, AI_W);
           const myCy = worldToCellFloor(asset.y);
           // In-lane until the final stretch, then turn onto the wire.
           const goal = Math.abs(myCx - rp.prison.cellX) <= RAID_TURN_IN_CELLS
@@ -1252,7 +1259,7 @@ export class AIRegency {
             let nd = Infinity;
             for (const opId of rp.escorts) {
               const e = state.assets[state.operators[opId].assetId];
-              const d = Math.max(Math.abs(worldToCellFloor(e.x) - myCx),
+              const d = Math.max(Math.abs(sampleCellX(e.x, AI_W) - myCx),
                                  Math.abs(worldToCellFloor(e.y) - myCy));
               if (d < nd) { nd = d; nearest = e; }
             }
@@ -1268,7 +1275,7 @@ export class AIRegency {
           // zero arrivals, zero deaths). The lane row IS the road here.
           if (desired && (myCx !== desired[0] || myCy !== desired[1])) {
             const stale = Math.max(
-              Math.abs(worldToCellFloor(asset.targetX) - desired[0]),
+              Math.abs(sampleCellX(asset.targetX, AI_W) - desired[0]),
               Math.abs(worldToCellFloor(asset.targetY) - desired[1])) > 2;
             if (asset.state === ASSET_IDLE || stale) {
               commands.push({
@@ -1288,13 +1295,13 @@ export class AIRegency {
       if (escortFor.has(operatorId) && prisonRaiderFor.get(asset.team)?.opId !== operatorId) {
         const c = state.assets[escortFor.get(operatorId)];
         if (c && !isWreck(c)) {
-          const ecx = worldToCellFloor(c.x);
+          const ecx = sampleCellX(c.x, AI_W);
           const ecy = worldToCellFloor(c.y);
-          const myCx = worldToCellFloor(asset.x);
+          const myCx = sampleCellX(asset.x, AI_W);
           const myCy = worldToCellFloor(asset.y);
           const gap = Math.max(Math.abs(myCx - ecx), Math.abs(myCy - ecy));
           const destStale = Math.max(
-            Math.abs(worldToCellFloor(asset.targetX) - ecx),
+            Math.abs(sampleCellX(asset.targetX, AI_W) - ecx),
             Math.abs(worldToCellFloor(asset.targetY) - ecy)) > 2;
           if (gap > 3 && (asset.state === ASSET_IDLE || destStale)) {
             commands.push({
@@ -1309,13 +1316,13 @@ export class AIRegency {
       if (operatorId === wreckerOp) {
         const cv = state.assets[state.mission.convoyId];
         if (cv) {
-          const wx = worldToCellFloor(cv.x);
+          const wx = sampleCellX(cv.x, AI_W);
           const wy = worldToCellFloor(cv.y);
-          const myCx = worldToCellFloor(asset.x);
+          const myCx = sampleCellX(asset.x, AI_W);
           const myCy = worldToCellFloor(asset.y);
           if (Math.max(Math.abs(myCx - wx), Math.abs(myCy - wy)) > 1) {
             const stale = Math.max(
-              Math.abs(worldToCellFloor(asset.targetX) - wx),
+              Math.abs(sampleCellX(asset.targetX, AI_W) - wx),
               Math.abs(worldToCellFloor(asset.targetY) - wy)) > 2;
             if (asset.state === ASSET_IDLE || stale) {
               commands.push({
@@ -1337,7 +1344,7 @@ export class AIRegency {
       // nearby"). Escorts converging is what restarts it.
       if (state.mission?.kind === MISSION_CONVOY &&
           state.mission.convoyId === asset.id && asset.state === ASSET_MOVING) {
-        const cx0 = worldToCellFloor(asset.x);
+        const cx0 = sampleCellX(asset.x, AI_W);
         const cy0 = worldToCellFloor(asset.y);
         // THE DASH: inside the last dozen cells the convoy charges the
         // gate, escorts or none — probes stalled at 9-13 cells forever
@@ -1348,7 +1355,7 @@ export class AIRegency {
         const guarded = dash || state.assets.some((e) =>
           e.team === asset.team && e.id !== asset.id && e.operatorId !== -1 &&
           !isWreck(e) && !getUnitStats(e.type).canTow &&
-          Math.max(Math.abs(worldToCellFloor(e.x) - cx0),
+          Math.max(Math.abs(sampleCellX(e.x, AI_W) - cx0),
                    Math.abs(worldToCellFloor(e.y) - cy0)) <= ESCORT_CELLS);
         if (!guarded) {
           commands.push({
@@ -1383,7 +1390,7 @@ export class AIRegency {
       if (!target && escortFor.has(operatorId)) {
         const c = state.assets[escortFor.get(operatorId)];
         if (c && !isWreck(c)) {
-          const ecx = worldToCellFloor(c.x);
+          const ecx = sampleCellX(c.x, AI_W);
           const ecy = worldToCellFloor(c.y);
           const d = Math.max(Math.abs(cellX0 - ecx), Math.abs(cellY0 - ecy));
           if (d > 3) target = [ecx, ecy];
@@ -1403,7 +1410,7 @@ export class AIRegency {
           const wantAmmo = 12 - a.ammo;
           const wantFuel = Math.max(0, 2400 - a.fuel);
           if (a.ammo > 6 && a.fuel > 1200) continue; // not needy
-          const dist = Math.max(Math.abs(worldToCellFloor(a.x) - cellX0),
+          const dist = Math.max(Math.abs(sampleCellX(a.x, AI_W) - cellX0),
                                 Math.abs(worldToCellFloor(a.y) - cellY0));
           if (dist > RESCUE_SEEK_CELLS) continue;
           const tube = getUnitStats(a.type).indirect ? 2 : 1;
@@ -1411,7 +1418,7 @@ export class AIRegency {
           if (score > bestScore) { bestScore = score; needy = a; }
         }
         if (needy) {
-          const dist = Math.max(Math.abs(worldToCellFloor(needy.x) - cellX0),
+          const dist = Math.max(Math.abs(sampleCellX(needy.x, AI_W) - cellX0),
                                 Math.abs(worldToCellFloor(needy.y) - cellY0));
           if (dist <= 1) {
             commands.push({ type: CMD_TRANSFER_CARGO, operatorId, targetAssetId: needy.id });
@@ -1474,7 +1481,7 @@ export class AIRegency {
             if (isWreck(other) || other.operatorId === -1) continue;
             if (other.hp * 2 >= getUnitStats(other.type).hp) continue;
             const d = Math.max(
-              Math.abs(worldToCellFloor(other.x) - cellX0),
+              Math.abs(sampleCellX(other.x, AI_W) - cellX0),
               Math.abs(worldToCellFloor(other.y) - cellY0)
             );
             // Ties by asset id keep the choice deterministic; distance is
@@ -1507,7 +1514,7 @@ export class AIRegency {
         const guarded = dash || state.assets.some((e) =>
           e.team === asset.team && e.id !== asset.id && e.operatorId !== -1 &&
           !isWreck(e) && !getUnitStats(e.type).canTow &&
-          Math.max(Math.abs(worldToCellFloor(e.x) - cellX0),
+          Math.max(Math.abs(sampleCellX(e.x, AI_W) - cellX0),
                    Math.abs(worldToCellFloor(e.y) - cellY0)) <= ESCORT_CELLS);
         if (guarded) {
           target = [state.mission.gateCellX, state.mission.gateCellY];
@@ -1541,7 +1548,7 @@ export class AIRegency {
         if (asset.team === m2.attacker) {
           const cv = state.assets[m2.convoyId];
           if (cv) {
-            const wx = worldToCellFloor(cv.x);
+            const wx = sampleCellX(cv.x, AI_W);
             const wy = worldToCellFloor(cv.y);
             if (Math.max(Math.abs(cellX0 - wx), Math.abs(cellY0 - wy)) > 4) {
               target = [wx, wy];
@@ -1566,7 +1573,7 @@ export class AIRegency {
             // The convoy wreck is NEVER towed home — the restart law
             // owns it (a tow would drag the mission backward).
             if (state.mission?.convoyId === w.id) continue;
-            const d = Math.max(Math.abs(worldToCellFloor(w.x) - cellX0),
+            const d = Math.max(Math.abs(sampleCellX(w.x, AI_W) - cellX0),
                                Math.abs(worldToCellFloor(w.y) - cellY0));
             if (d < bestDist) { bestDist = d; wreck = w; }
           }
@@ -1587,7 +1594,7 @@ export class AIRegency {
           let bestDist = Infinity;
           for (const d of state.downed) {
             if (d.team !== asset.team) continue;
-            const dist = Math.max(Math.abs(worldToCellFloor(d.x) - cellX0),
+            const dist = Math.max(Math.abs(sampleCellX(d.x, AI_W) - cellX0),
                                   Math.abs(worldToCellFloor(d.y) - cellY0));
             if (dist < bestDist) { bestDist = dist; body = d; }
           }
@@ -1653,7 +1660,7 @@ export class AIRegency {
         else if (agent) target = patrolTarget(agent, state.tick, state.mapProfile, this.mirrored, lightRunner);
       }
       if (!target) continue;
-      const currentCellX = worldToCellFloor(asset.x);
+      const currentCellX = sampleCellX(asset.x, AI_W);
       const currentCellY = worldToCellFloor(asset.y);
       if (currentCellX !== target[0] || currentCellY !== target[1]) {
         // 13C: long hauls ride the route graph — waypoint chains along

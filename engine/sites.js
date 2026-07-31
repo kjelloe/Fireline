@@ -3,6 +3,7 @@
 // relay extends its team's fog coverage (see engine/los.js).
 
 import { ASSET_DISABLED, ASSET_SALVAGED } from "./state.js";
+import { sampleCellX } from "../shared/fixedmath.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
 
 export const SITE_RELAY = 1;
@@ -54,7 +55,7 @@ export function captureCheck(state, assetId) {
   const asset = state.assets[assetId];
   if (!asset) return null;
   if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) return null;
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.sites.find((s) => s.cellX === cellX && s.cellY === cellY) ?? null;
 }

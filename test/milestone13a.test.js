@@ -3,6 +3,7 @@
 // transfer to adjacent friendlies; the AI runs resupply errands.
 
 import { test } from "node:test";
+import { cellToWorld } from "../shared/fixedmath.js";
 import assert from "node:assert/strict";
 import { apply } from "../engine/reducer.js";
 import { hashState } from "../engine/snapshot.js";
@@ -92,7 +93,8 @@ test("13B the AI truck runs a resupply errand to the thirsty tube", () => {
   assert.deepEqual({ x: move?.targetCellX, y: move?.targetCellY }, { x: 40, y: 30 },
     "drives to the dry artillery");
 
-  s.assets[0].x = 39 * 256; // now adjacent
+  s.assets[0].x = cellToWorld(39); // now adjacent (centre — boundary
+  // points are parity-tied by specs/08 §7; raw N*256 is the old sin)
   const xfer = ai.plan(s).find((c) => c.type === "transfer_cargo");
   assert.equal(xfer?.targetAssetId, 1, "adjacent: transfer instead of drive");
   s = apply(s, xfer);

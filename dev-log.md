@@ -4456,3 +4456,24 @@ gained §7 (the laws' design of record); CLAUDE.md carries the law in
 the Determinism section proper; the skill's residue baseline moved
 to t≈900; techstack records the deepest-gotcha pair. Post-laws
 default battery: 49.3/48.0% A — fair. Suite 727/727 x2.
+
+## rung 3 executed: the boundary-parity sweep (2026-08-01)
+
+All floored x-position DECISION sites now sample through the law:
+18 in the reducer, 47 in ai_regency (module-scoped AI_W refreshed at
+plan() entry), 10 across sites/downed/recovery/supply/los
+(sampleCellX default width 128 — every real profile; helpers without
+map access use the default). One test needed honesty, not mercy:
+13B placed a truck at `39*256` — an exact boundary, the literal sin
+CLAUDE.md already banned — now `cellToWorld(39)`. 47 more raw-`*256`
+literals remain in old tests; green today, convert on contact.
+Suite 727/727, gate 5 seeds green.
+
+RUNG 4 IDENTIFIED (t=902, surgical): with every floor law-compliant,
+both worlds' states/wrecks/downed mirror EXACTLY, yet the two trucks'
+route LEGS toward the same mirrored wreck differ — (60,59) vs
+(69,59), mirror-correct would be (67,59). The divergence is inside
+route_graph's leg/waypoint selection (13C's own tie-breaks or
+nextWaypoint), not in any caller. Next session: instrument
+routeWaypoints for that exact trip pair ((58,63)→wreck vs mirrored),
+diff the node expansions, apply the origin-side law where it hides.

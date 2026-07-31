@@ -943,12 +943,12 @@ function applyPing(next, command) {
   let cellY = command.targetCellY;
   if (operator.state === OP_DOWN) {
     const body = downedFor(next, operator.id);
-    cellX = worldToCellFloor(body.x);
+    cellX = sampleCellX(body.x, next.map.width);
     cellY = worldToCellFloor(body.y);
   } else if (cellX === undefined || cellY === undefined) {
     const asset = operator.assetId === -1 ? null : next.assets[operator.assetId];
     if (!asset) return reject(next, command, "ping needs a target cell");
-    cellX = worldToCellFloor(asset.x);
+    cellX = sampleCellX(asset.x, next.map.width);
     cellY = worldToCellFloor(asset.y);
   }
   operator.lastPingTick = next.tick;
@@ -971,7 +971,7 @@ function applyDeployMine(next, command) {
   if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
   }
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x, next.map.width);
   const cellY = worldToCellFloor(asset.y);
   const why = deployRejection(next, asset, getUnitStats(asset.type), cellX, cellY);
   if (why) return reject(next, command, why);
@@ -1009,7 +1009,7 @@ function applyDeployCaltrops(next, command) {
     return reject(next, command, "this chassis carries no caltrops");
   }
   if ((asset.caltropsLeft ?? 0) <= 0) return reject(next, command, "caltrop rack empty");
-  const cellX = worldToCellFloor(asset.x);
+  const cellX = sampleCellX(asset.x, next.map.width);
   const cellY = worldToCellFloor(asset.y);
   if (caltropAt(next, cellX, cellY)) return reject(next, command, "already strewn here");
   asset.caltropsLeft -= 1;
@@ -1041,7 +1041,7 @@ function applyBuildSandbag(next, command) {
   if (truck.state === ASSET_DISABLED || truck.state === ASSET_SALVAGED) {
     return reject(next, command, "asset not operable");
   }
-  const tx = worldToCellFloor(truck.x);
+  const tx = sampleCellX(truck.x, next.map.width);
   const ty = worldToCellFloor(truck.y);
   const d = Math.max(absI32(command.targetCellX - tx), absI32(command.targetCellY - ty));
   if (d !== 1) return reject(next, command, "build beside the truck");
@@ -1083,7 +1083,7 @@ function applyClearMine(next, command) {
   next.mines = next.mines.filter((m) => m.id !== mine.id);
   next.events.push({ type: "mine_cleared", mineId: mine.id, assetId: asset.id });
   // Q45: the same sweep rakes up enemy caltrops around the truck.
-  const tx = worldToCellFloor(asset.x);
+  const tx = sampleCellX(asset.x, next.map.width);
   const ty = worldToCellFloor(asset.y);
   const raked = (next.caltrops ?? []).filter((c) =>
     c.team !== asset.team &&
@@ -1319,7 +1319,7 @@ function turnToward(heading, desiredBrads, turnRate, worldX = null, mapWidth = 1
   let diff = (desiredBrads - heading) & 255;
   if (diff > 128) diff -= 256; // shortest arc in [-128, 127]
   if (absI32(diff) === 128 && worldX !== null) {
-    const westOfAxis = 2 * worldToCellFloor(worldX) < mapWidth - 1;
+    const westOfAxis = 2 * sampleCellX(worldX, mapWidth) < mapWidth - 1;
     diff = westOfAxis ? 128 : -128;
   }
   if (absI32(diff) <= turnRate) return desiredBrads;
@@ -1570,7 +1570,7 @@ function applyAdvanceTick(next) {
         a.team === sb.team && a.operatorId !== -1 &&
         a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
         getUnitStats(a.type).canClearMines &&
-        absI32(worldToCellFloor(a.x) - sb.cellX) <= 1 &&
+        absI32(sampleCellX(a.x, next.map.width) - sb.cellX) <= 1 &&
         absI32(worldToCellFloor(a.y) - sb.cellY) <= 1);
       if (!tended) continue; // collapsed, silently — the truck walked away
       sb.buildTicks -= 1;
@@ -1763,7 +1763,7 @@ function applyAdvanceTick(next) {
             if (e.team === team) continue;
             if (e.state === ASSET_DISABLED || e.state === ASSET_SALVAGED) continue;
             const d = Math.max(
-              absI32(worldToCellFloor(e.x) - site.cellX),
+              absI32(sampleCellX(e.x, next.map.width) - site.cellX),
               absI32(worldToCellFloor(e.y) - site.cellY));
             if (d <= RAID_RADIUS_CELLS) { guarded = true; break; }
           }
@@ -1846,7 +1846,7 @@ function applyAdvanceTick(next) {
     const intruder = next.assets.find((a) =>
       a.team !== prison.team && a.operatorId !== -1 &&
       a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
-      absI32(worldToCellFloor(a.x) - prison.cellX) <= GUARD_SENSE_CELLS &&
+      absI32(sampleCellX(a.x, next.map.width) - prison.cellX) <= GUARD_SENSE_CELLS &&
       absI32(worldToCellFloor(a.y) - prison.cellY) <= GUARD_SENSE_CELLS);
     if (intruder) {
       prison.alarmTicks = ALARM_COOLDOWN_TICKS;
@@ -1871,7 +1871,7 @@ function applyAdvanceTick(next) {
       if (a.team === prison.team || a.operatorId === -1) continue;
       if (a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
       const d = Math.max(
-        absI32(worldToCellFloor(a.x) - prison.cellX),
+        absI32(sampleCellX(a.x, next.map.width) - prison.cellX),
         absI32(worldToCellFloor(a.y) - prison.cellY));
       if (d <= PRISON_RAID_CELLS) {
         hands += 1;
@@ -1928,7 +1928,7 @@ function applyAdvanceTick(next) {
       const prison = (next.prisons ?? []).find((p) => p.team === scout.team);
       if (prison && prison.pows.length < PRISON_CAPACITY) {
         const d = Math.max(
-          absI32(worldToCellFloor(scout.x) - prison.cellX),
+          absI32(sampleCellX(scout.x, next.map.width) - prison.cellX),
           absI32(worldToCellFloor(scout.y) - prison.cellY));
         if (d <= PRISON_RAID_CELLS) {
           prison.pows.push({ id: scout.prisoner, by: scout.operatorId });
@@ -1941,7 +1941,7 @@ function applyAdvanceTick(next) {
       }
       continue;
     }
-    const sx = worldToCellFloor(scout.x);
+    const sx = sampleCellX(scout.x, next.map.width);
     const sy = worldToCellFloor(scout.y);
     const target = next.downed.find((dwn) =>
       dwn.team !== scout.team &&
@@ -1978,7 +1978,7 @@ function applyAdvanceTick(next) {
     for (const body of [...next.downed]) {
       if (body.freedPow !== 1 || body.team === prison.team) continue;
       const d = Math.max(
-        absI32(worldToCellFloor(body.x) - prison.cellX),
+        absI32(sampleCellX(body.x, next.map.width) - prison.cellX),
         absI32(worldToCellFloor(body.y) - prison.cellY));
       if (d > 3) { body.resecureTicks = 0; continue; }
       body.resecureTicks = (body.resecureTicks ?? 0) + 1;
@@ -2050,13 +2050,13 @@ function applyAdvanceTick(next) {
     // hull — in place. Every other wreck still rides home on the hook.
     const convoy = next.assets[next.mission.convoyId];
     if (convoy && convoy.state === ASSET_DISABLED && convoy.towedBy === -1) {
-      const ccx = worldToCellFloor(convoy.x);
+      const ccx = sampleCellX(convoy.x, next.map.width);
       const ccy = worldToCellFloor(convoy.y);
       const mechanic = next.assets.find((a) =>
         a.team === convoy.team && a.id !== convoy.id && a.operatorId !== -1 &&
         a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
         getUnitStats(a.type).canTow &&
-        Math.max(absI32(worldToCellFloor(a.x) - ccx),
+        Math.max(absI32(sampleCellX(a.x, next.map.width) - ccx),
                  absI32(worldToCellFloor(a.y) - ccy)) <= 1);
       if (mechanic) {
         next.mission.restartTicks += 1;
@@ -2282,7 +2282,7 @@ function applyAdvanceTick(next) {
       }
     }
     if (asset.materiel !== 1) continue;
-    const cx = worldToCellFloor(asset.x);
+    const cx = sampleCellX(asset.x, next.map.width);
     const cy = worldToCellFloor(asset.y);
     const site = next.sites.find((s) =>
       !siteOperational(s) && s.owner !== (asset.team === 0 ? 1 : 0) &&
@@ -2321,7 +2321,7 @@ function applyAdvanceTick(next) {
       if (other.state === ASSET_DISABLED || other.state === ASSET_SALVAGED) return false;
       if (other.hp >= restoredHp(other.type)) return false;
       return Math.max(
-        Math.abs(worldToCellFloor(other.x) - cx),
+        Math.abs(sampleCellX(other.x, next.map.width) - cx),
         Math.abs(worldToCellFloor(other.y) - cy)
       ) <= 1;
     });

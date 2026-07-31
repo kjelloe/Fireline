@@ -50,7 +50,7 @@ export function cellToWorld(cell) {
 // point and stays consistent). y needs nothing — the mirror is
 // x-only. Plain worldToCellFloor stays correct for y, for UI, and
 // for anything already cell-latticed.
-export function sampleCellX(world, mapWidth) {
+export function sampleCellX(world, mapWidth = 128) {
   const c = world >> 8;
   return (world & 255) === 0 && 2 * world > mapWidth * 256 ? c - 1 : c;
 }

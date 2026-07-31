@@ -4,6 +4,7 @@
 // battlefield features and stay visible regardless of fog.
 
 import { ASSET_DISABLED, ASSET_SALVAGED, isSuppressed } from "./state.js";
+import { sampleCellX } from "../shared/fixedmath.js";
 import { RELAY_FOG_CELLS, KIND_RADAR, RADAR_BONUS_CELLS } from "./sites.js";
 import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
 
@@ -36,7 +37,7 @@ export function weatherActive(state) {
 }
 
 export function chebyshevCells(a, b) {
-  const dx = absI32(worldToCellFloor(a.x) - worldToCellFloor(b.x));
+  const dx = absI32(sampleCellX(a.x) - sampleCellX(b.x));
   const dy = absI32(worldToCellFloor(a.y) - worldToCellFloor(b.y));
   return dx > dy ? dx : dy;
 }
@@ -57,7 +58,7 @@ export function computeVisible(state, team) {
       visible.add(asset.id);
       continue;
     }
-    const assetCellX = worldToCellFloor(asset.x);
+    const assetCellX = sampleCellX(asset.x);
     const assetCellY = worldToCellFloor(asset.y);
     const storm = weatherActive(state); // 16G: the front halves every sensor
     // B2 RADAR: an owned radar site widens every unit sensor on the

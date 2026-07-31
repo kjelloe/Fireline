@@ -4,6 +4,7 @@
 // asset returns to service at half hull. Pure helpers; reducer mutates.
 
 import { ASSET_DISABLED, ASSET_SALVAGED } from "./state.js";
+import { sampleCellX } from "../shared/fixedmath.js";
 import { getUnitStats } from "./units.js";
 import { worldToCellFloor, absI32, floorDivI32 } from "../shared/fixedmath.js";
 
@@ -29,7 +30,7 @@ export function towedWreck(state, towerId) {
 }
 
 function adjacentCells(a, b) {
-  const dx = absI32(worldToCellFloor(a.x) - worldToCellFloor(b.x));
+  const dx = absI32(sampleCellX(a.x) - sampleCellX(b.x));
   const dy = absI32(worldToCellFloor(a.y) - worldToCellFloor(b.y));
   return (dx > dy ? dx : dy) <= 1;
 }
