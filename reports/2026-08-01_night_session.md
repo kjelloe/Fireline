@@ -97,3 +97,19 @@ opened (premium, conditional variants, or seat-priority rules).
 `powPreplaced` stays 0; POWS=2 remains the human-session experience
 (where humans, not regents, hold the extra seats — the bias may not
 even apply to the designed use).
+
+**Discriminator result (first half, n=300):** POWS=2 with UNIQUES=0
+reads **24.7% A — the unique pair is EXONERATED.** The census probe
+shows both teams crew identical rosters under POWS=2
+(tank/tank/scout/artillery/carrier/truck). Exoneration chain so far:
+geometry ✗ (survives honest mirror), unique pair ✗, census ✗. The
+bias is DYNAMIC — doctrine or pass-order, POWS-specific. Suspects
+for the next session's hunt: prison array-order effects (team 1's
+raid designation is computed first every pass), designation loops
+iterating ascending op-id (team A first) in ways tick-parity does
+not cover, and rescue/redeploy interactions with locked seats. The
+mirror half of the discriminator lands after this report. Until the
+mechanism is found: powPreplaced stays 0 (unchanged default), and
+POWS=2 remains the human-session experience — note the bias was
+measured on ALL-REGENT wars; four humans holding those seats is a
+different game.
