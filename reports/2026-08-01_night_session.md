@@ -172,3 +172,31 @@ hull and the first change to the team model itself:
 
 Try it: walk anything up to mid-map and click the big hull. J boards
 the station. Suite 723/723, fixture v62.
+
+---
+
+## Round 4 addendum (prompt 120): the hunt went all the way down
+
+Chasing the POWS=2 bias produced the session's biggest find:
+
+1. **Prison mirror bug — fixed, banked +8 pts** (`4d07574`): the
+   compounds sat 7 cells off mirror (B's at its FRONT gate). POWS
+   moved 24-27% → 33-35% A. Real, not sufficient.
+2. **The remainder walked back to the engine**: equal wire time, zero
+   wire defenders, but A holds with 0.5 escorts vs B's 2.0 — because
+   the mid-map corridor kills EASTBOUND hulls 3x more than westbound
+   at the SAME symmetric cells.
+3. **Root: the night-2 "directional residue"** — the 16d divergence
+   probe runs RED even at 16d itself (cumulative step drift, x and y
+   both off within ~100 ticks). Every recent slice exonerated
+   (landship, guards, lanes, prisons); this predates them all. The
+   POWS census is simply the first configuration where the residue
+   grew a body count.
+4. Next session opens with the pinpoint instrument (first-divergence
+   step-input dump) — fix candidates are enumerated in the dev-log.
+   Until then: powPreplaced stays 0; POWS=2 human sessions are
+   unaffected by regent-corridor pathing.
+
+Also this round: prompt-119's review caught the landship/self-recall
+trap (fixed + tested) before it could eat anyone's captured fortress.
+Playtest away — the served game is on the latest push.
