@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-07-31 late (suite 652/652, fixture v49). HTML twin:
+*Updated 2026-08-01 (suite 697/697, fixture v56). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -26,13 +26,15 @@ plus three experimental maps that have not earned promotion.
 | **Skimmer** (Outlier unique) | ✅ `slice-12c` — amphibious + Riverline Drive trail affinity |
 | Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
-| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — specs/12 rulings; slice 1 landed (prisons, OP_CAPTIVE, raid→rescue loop, powPreplaced rule default 0 per prompt-106); next: scout capture → AI raid party → alarm guards → vault |
+| NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — specs/12 rulings; prisons + scout capture + review-2 deltas landed; **AI raid party WORKS** (formation slice — both teams spring seats, winner tracks the rescue); powPreplaced flip = Q46 (behind the POWS battery); next: alarm guards + figure kit → vault |
 | Multi-crew "Landship" | 🔜 seat-model PROVEN (stations landed); Landship = neutral capturable per Q42 rulings, after the POW arc |
 
 ## Track B — Battlefield systems
 
 | Feature | Status |
 |---|---|
+| **Formation primitive (group movement)** | ✅ `slice-formation` — rally near own lines → advance together, escorts lead, cohesion hold, fights-on-the-move; raid party rides it; convoy escorts reuse the follow law |
+| **Mode framework + Convoy Escort v1** | 🔶 `slice-convoy` LANDED, TUNING — rules-driven missions (no repin), restart law, wrecker, whole-army posture; regent attackers 1-3/10 at n=10; real verdict = the 300-war battery pair + a human playtest (Q47) |
 | Mines / anti-camping drone / MPG | ✅ `9e` / `9g` / `9d` (+ MPG full waves, base-derived spawns) |
 | Damaged sites + materiel repair | ✅ `slice-11f` — artillery-only siege |
 | Path terrain + per-chassis speeds | ✅ `slice-11n` |
@@ -62,11 +64,11 @@ plus three experimental maps that have not earned promotion.
 
 | Profile | Status |
 |---|---|
-| `frontier_corridor` | ✅ DEFAULT — pool 315; post-raider-clause band **46.3% A** (in band, slight B edge; the clause is the band knob) |
+| `frontier_corridor` | ✅ DEFAULT — pool 315; people-era re-baseline **48.5% A both worlds (FAIR)**, horn settled 15%, median 21.7 min |
 | `riverline` | ⚠️ EXPERIMENTAL — fairness PASSES (flips with mirror), **pacing FAILS: 41% horn, 27-min median** — pacing slice queued (pre-corridor-blackwood disease) |
 | `blackwood` | ✅ **PROMOTED 2026-07-31** — batteries + 18G corridors + human playtest all green (specs/10 §4d) |
-| `sawtooth` | 🔴 HELD — conviction: unique-pair SEAT ECONOMICS (factionswap-proven). Q31 levers landed: 69→**58.5%** A; premium LIVE + disclosed; playtest pending |
-| `caldera` (circle map, item 40) | 🔴 BUILT, RED gate — raider's-clause-on-a-ring stomp factory (31.7% A, 9-min medians); fix-first (specs/10 §4g) |
+| `sawtooth` | 🔴 HELD — seat-economics conviction; Q31 levers keep gaining: 69→58.5→**56.7% A**; premium LIVE + disclosed; playtest pending |
+| `caldera` (circle map, item 40) | 🔴 BUILT, RED gate — raider's-clause-on-a-ring stomp factory; fix-first (specs/10 §4g); CANDIDATE home for Convoy Escort once fixed (Q48 — the ring road IS a convoy route) |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ⬜ FILED (prompt 64) — server option, minimap thumbnails per candidate, or "next map" on the end screen |
 
@@ -116,36 +118,45 @@ landed 2026-07-31 on a full n=300 ladder. **The 16B crewing bug**
 (fixed 2026-07-31) means: sweeps/batteries always measured crewing-ON;
 the SERVED game and all 5-seed gates ran crewing-OFF until the fix.
 Battery numbers stand; gate history and playtest feel predate the fix.
+**People-era re-baseline (2026-08-01, 1,800 wars)** is the current
+table: frontier 48.5% A/fair, horn 15% (stable), sawtooth 56.7%,
+blackwood 49.2%. MODE WARS (convoy) are a different game — never mix
+their rows into standard baselines.
 
 ## What is actually blocking progress
 
-1. **Sawtooth 69% A lean** — mechanism hunt slice (instrument anchor
-   time / contest freezes / per-unique ticket flow with crewing ON),
-   then a rectification ruling. Interim: activate the underdog premium
-   for team B on sawtooth (ruled, prompt-68) and keep it HELD.
+1. **Battery verdicts pending on the PC** (queued, collect next round):
+   convoy att0/att1 300 (tunes the mode), POWS=2 pair (decides Q46),
+   sweep+mirror 300 (formation doctrine in default wars).
 2. **Riverline pacing slice** — 41% horn; same playbook as blackwood
    18G (instrument first, then the smallest terrain/graph change).
-3. **B2 node classes** — awaiting the designer's answers to the brief.
-4. **Ratifications owed** (small, unblock by answering): Q24 pool 315,
-   Q25 mercy prominence, salvage tow double-pay, convoy N formula.
-5. **Asymmetric arc** (both designer docs read; recommendation filed):
-   mode framework slice → `caldera` map → Convoy Escort prototype.
-6. **User-side**: sawtooth playtest (now meaningful — crewing is ON),
-   uncapped perf run, and playtest-10 item 41 (message was cut off).
+3. **Caldera fix** — raider's-clause-on-a-ring; then it can host
+   Convoy Escort (Q48).
+4. **Alarm guards + figure kit** — next POW-arc slice; rulings all in
+   specs/12 (visual law: no weapon silhouette, alarm-only).
+5. **Sandbags/caltrops** — parameter tables recorded (Q45); awaiting
+   the build GO (Q50).
+6. **User-side**: sawtooth playtest (crewing is ON now), convoy mode
+   playtest (MODE=convoy), uncapped perf run.
 
 ## Open design questions (the clarify-and-design queue)
 
+Answered this era (for the record): Q25 rout condition landed, Q28
+double-pay kept unless it tips games, Q29 convoy N unchanged pending
+data, Q30 B2 landed, Q31 levers landed (premium stays), Q32 GO →
+convoy shipped, Q33 item 41 was nothing, Q34 POW arc went first,
+Q43-Q45 designer-ruled (stations, human-only, sandbag/caltrop tables).
+
 | # | Question | Owner |
 |---|---|---|
-| Q24 | Ratify pool 315? (landed on ladder data) | user |
-| Q25 | Mercy engages in ~90% of wars — bless or tighten? | designer |
-| Q28 | Salvage: a tow pays twice (ticket refund + salvage point) — confirm or cap? | designer |
-| Q29 | Last Convoy N = ceil(fielded/3) clamp 3..5 — ratify? | user |
-| Q30 | B2: do typed sites count in the bleed majority? Which maps get which types? Magnitudes? | designer (brief out) |
-| Q31 | Sawtooth rectification: premium-only, Skimmer conditional variant (banked), Sentinel stat nerf (saturates), or terrain (water pocket)? Await mechanism hunt before choosing | designer |
-| Q32 | Asymmetric modes: green-light the mode-framework slice + Convoy Escort on caldera? Scavenge as the cheap symmetric first mode? | user |
-| Q33 | Playtest-10 item 41 — the message was cut off | user |
-| Q34 | 12E NPC layer — biggest unbuilt gameplay item; when does it enter the queue relative to the asymmetric arc? | user |
+| Q24 | Ratify pool 315? (landed on ladder data; implicit yes by use) | user |
+| Q46 | Flip `powPreplaced` default to 2 once the POWS=2 battery shows tempo + fairness hold? (raids WORK now — the prompt-106 condition is met, evidence pending) | user, after battery |
+| Q47 | Convoy Escort balance bar: what attacker win-rate band is "fair" for an asymmetric mode? Regents read 10-30% at n=10; deliveries are fast when they come. Also ratify the 15-min timer and the defender-MPG x2 counterweight | designer |
+| Q48 | Convoy's home map: keep frontier, or make the fixed caldera its home (ring road = natural convoy route with two lanes)? The designer's own order was framework → caldera → convoy | designer |
+| Q49 | How do mode wars enter the rotation? Today MODE=convoy is a server env (one server = one mode). Options: per-war rotation in the pump, map+mode vote (pairs with the filed map-vote design), or dedicated-server-only | user |
+| Q50 | Sandbags/caltrops: parameters are designer-ruled (Q45) — GO to build? Caltrops first per the designer (chase-shaper, truck clears) | user |
+| Q51 | Landship (neutral capturable multi-crew, Q42 rulings): enters the queue after alarm guards/vault, or jump it forward now that stations + formation exist? | user |
+| Q52 | Heist/Extraction as mode #2: it is mostly EXISTING machinery (standards + mode framework — a directed Standard war with radio pings). Cheap win — green-light after convoy tunes? | user |
 
 ## Version 3 (parking lot)
 
