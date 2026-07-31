@@ -47,6 +47,8 @@ function makeServer(mirror) {
     }
     for (const site of s.sites) site.cellX = W - 1 - site.cellX;
     for (const b of s.bases) b.x = W - b.x - b.width;
+    for (const p of s.prisons ?? []) p.cellX = W - 1 - p.cellX; // same gap sim_sweep had
+    if (s.mission) s.mission.gateCellX = W - 1 - s.mission.gateCellX;
   }
   return server;
 }
