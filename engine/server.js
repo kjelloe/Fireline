@@ -93,7 +93,15 @@ export class GameServer {
 
   // 8C: begin a fresh war in place. Networking, sessions, and archives are
   // the app layer's concern; regency pairings re-claim on the next step.
-  resetWar(mapSeed) {
+  resetWar(mapSeed, opts = {}) {
+    // Q49 voting: the next war may change map and/or mode. modeRules is
+    // three-valued — undefined keeps the current law, null strips any
+    // mode (back to a standard war), an object merges in the mode keys.
+    if (opts.mapProfile) this.mapProfile = opts.mapProfile;
+    if (opts.modeRules !== undefined) {
+      const { mode, modeAttacker, ...rest } = this.rules ?? {};
+      this.rules = opts.modeRules ? { ...rest, ...opts.modeRules } : rest;
+    }
     this.state = createInitialState(mapSeed >>> 0, this.mapProfile, this.rules); // 11M/13F
     this.queue = [];
     this.commandLog = [];

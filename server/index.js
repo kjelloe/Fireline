@@ -123,6 +123,25 @@ export function createAppServer(options = {}) {
   const metrics = createMetrics(); // 8I balance instrumentation
   let gameOverTick = -1;
   let warsStarted = 1;
+  // Q49 (ruled): map+mode PAIR voting on the end screen. Candidates:
+  // run it back, rotate to the other promoted map, or a Convoy Escort
+  // war here (attacker side alternates by war count so nobody owns
+  // the fun seat). Silence = status quo (index 0).
+  const PROMOTED_MAPS = ["frontier_corridor", "blackwood"];
+  function voteCandidates() {
+    const cur = gameServer.state.mapProfile;
+    const other = PROMOTED_MAPS.find((p) => p !== cur) ?? cur;
+    const curMode = gameServer.state.rules?.mode ?? 0;
+    return [
+      // Status quo FIRST — silence must never strip a dedicated
+      // MODE=convoy server of its mode (or force one on a standard).
+      { map: cur, mode: curMode, modeAttacker: gameServer.state.rules?.modeAttacker ?? 0 },
+      { map: other, mode: 0 },
+      curMode === 1
+        ? { map: cur, mode: 0 }
+        : { map: cur, mode: 1, modeAttacker: warsStarted & 1 },
+    ];
+  }
   function pump(snapshot) {
     transport.broadcastSnapshots(snapshot);
     metrics.consumeEvents(snapshot.views[0]?.events, snapshot.tick);
@@ -131,10 +150,18 @@ export function createAppServer(options = {}) {
       if (gameOverTick === -1) {
         gameOverTick = gameServer.state.tick;
         metrics.warCompleted(gameOverTick);
+        transport.openVote(voteCandidates());
       }
       if (gameServer.state.tick - gameOverTick >= postgameTicks) {
         const nextSeed = mix32(gameServer.state.mapSeed);
-        gameServer.resetWar(nextSeed);
+        const verdict = transport.tallyVote();
+        const pick = verdict?.pick;
+        gameServer.resetWar(nextSeed, pick ? {
+          mapProfile: pick.map,
+          modeRules: pick.mode === 1
+            ? { mode: 1, modeAttacker: pick.modeAttacker ?? 0 }
+            : null,
+        } : {});
         archived = false;
         gameOverTick = -1;
         warsStarted += 1;

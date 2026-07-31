@@ -123,6 +123,18 @@ export class NetworkTransport {
                 return;
             }
 
+            // Q49: map+mode pair voting — a postgame TRANSPORT concern,
+            // never reducer state (votes are opinions, not gameplay).
+            if (msg.type === "c_vote") {
+                if (!session || !session.authenticated || session.spectator) return;
+                if (!this.voteCandidates) return; // no vote open
+                const choice = msg.choice;
+                if (!Number.isInteger(choice) || choice < 0 || choice >= this.voteCandidates.length) return;
+                session.vote = choice;
+                session.send("s_vote_ack", { choice });
+                return;
+            }
+
             // 10A: spectator handshake — no operator slot, no team, no voice.
             if (msg.type === "c_spectate") {
                 if (session) return; // already seated
@@ -188,6 +200,31 @@ export class NetworkTransport {
             if (session.authenticated) this.server.assumeRegency(session.operatorId);
         }
         this.sessions.delete(ws);
+    }
+
+    // Q49: open the postgame vote — three (map, mode) pairs, one human
+    // one vote, plurality wins, silence keeps the status quo (index 0).
+    openVote(candidates) {
+        this.voteCandidates = candidates;
+        for (const session of this.sessions.values()) {
+            session.vote = undefined;
+            if (session.authenticated) session.send("s_vote_open", { candidates });
+        }
+    }
+
+    tallyVote() {
+        if (!this.voteCandidates) return null;
+        const counts = this.voteCandidates.map(() => 0);
+        for (const session of this.sessions.values()) {
+            if (!session.authenticated || session.spectator) continue;
+            if (Number.isInteger(session.vote)) counts[session.vote] += 1;
+        }
+        let winner = 0;
+        for (let i = 1; i < counts.length; i++) if (counts[i] > counts[winner]) winner = i;
+        const pick = this.voteCandidates[winner];
+        this.voteCandidates = null;
+        for (const session of this.sessions.values()) session.vote = undefined;
+        return { pick, counts, winner };
     }
 
     // 8C: a new war began. Connected players stay connected: re-join their

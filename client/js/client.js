@@ -625,8 +625,16 @@ function connect() {
         .then((v) => { if (cachedMap) cachedMap.seed = v.mapSeed >>> 0; })
         .catch(() => { /* cosmetic only — storm tint just stays off */ });
       if (terrainMesh) { scene.remove(terrainMesh); terrainMesh = null; } // new war terrain
+    } else if (msg.type === "s_vote_open") {
+      // Q49: map+mode pair vote on the end screen.
+      showVote(msg.candidates ?? []);
+    } else if (msg.type === "s_vote_ack") {
+      const el = document.getElementById("vote-title");
+      if (el) el.textContent = t("vote.locked");
     } else if (msg.type === "s_war_reset") {
       hideEndScreen();
+      const vb = document.getElementById("vote-box");
+      if (vb) vb.style.display = "none";
       mySelectedAssetId = null;
       autoSelectSent = false; // re-crew automatically in the new war
       pushEvent(t("ui.new_war"));
@@ -1239,6 +1247,25 @@ function showEndScreen() {
       endCountdown = null;
     }
   }, 1000);
+}
+
+// Q49: render the postgame vote — one button per (map, mode) pair.
+function showVote(candidates) {
+  const box = document.getElementById("vote-box");
+  const buttons = document.getElementById("vote-buttons");
+  const title = document.getElementById("vote-title");
+  if (!box || !buttons || !title) return;
+  title.textContent = t("vote.title");
+  buttons.innerHTML = "";
+  candidates.forEach((c, i) => {
+    const b = document.createElement("button");
+    b.className = "btn";
+    const mapName = t(`map.${c.map}`) !== `map.${c.map}` ? t(`map.${c.map}`) : c.map;
+    b.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName }) : mapName;
+    b.onclick = () => send({ type: "c_vote", choice: i });
+    buttons.appendChild(b);
+  });
+  box.style.display = "block";
 }
 
 function hideEndScreen() {

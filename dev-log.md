@@ -4113,3 +4113,38 @@ DISTINCT from mines by construction: delay pursuit, never punish.
   block more than two lanes; interpreted as: max contiguous sandbag
   run of 4 cells and never sealing a gate or full road width —
   recorded in specs/12).
+
+## slice-vote: Q49 map+mode pair voting (2026-08-01)
+
+Ruled GO ("map+mode pair voting yes"). Suite 706/706 x2, smoke +
+acceptance green. Zero reducer surface: votes are a TRANSPORT concern
+(opinions, not gameplay — nothing hashed, replays untouched).
+- `c_vote`/`s_vote_open`/`s_vote_ack` on the wire; players only
+  (spectators watch); one vote per session, revisable until tally.
+- The pump opens the vote at game-over and applies the plurality pick
+  at reset via `resetWar(seed, {mapProfile, modeRules})` — modeRules
+  is three-valued (undefined keep / null strip / object merge), so a
+  dedicated MODE=convoy server keeps its mode on silence and a voted
+  standard pair strips it cleanly.
+- Candidates: status quo FIRST (silence = no change), the other
+  promoted map, and a mode flip on the current map (Convoy Escort
+  attacker side alternates by war count so nobody owns the fun seat).
+  PROMOTED_MAPS = frontier + blackwood for now — sawtooth/riverline
+  join when they earn promotion (Q48: "maps have to support").
+- End-screen buttons (both locales); vote box clears on war reset.
+- ws-test gotcha for the file: `wss.close()` alone leaves client
+  sockets holding the event loop — terminate clients in finally or
+  node --test hangs forever.
+
+## the phantom regression: config drift, not doctrine (2026-08-01)
+
+The 40-44% A "default-war regression" chased across two battery
+rounds was CONFIG DRIFT: the plain sweep/mirror job kinds ran the
+worker's legacy UNIQUES=0 default (uniques-uncrewed wars — the
+16B-era ~45% A game) while every other battery kind and the local
+baseline pinned UNIQUES=1. The ab ladder exposed it: ab_baseline
+(UNIQUES=1, HEAD) read 150/149 — DEAD FAIR. Worker default flipped
+to 1; honest era-baseline batteries queued. The crewing-bug lesson
+now applies one layer up: when a sweep and a battery disagree, check
+the JOB KIND's env before touching doctrine. (The shared raid lane
+stays — fair by construction beats fair by measurement.)
