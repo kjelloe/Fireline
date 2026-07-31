@@ -4232,3 +4232,20 @@ GATE IMPROVED: 5/5 decided, mixed winners (baseline 3/5) — two more
 contested objectives on the flank is tempo, not drag. Labels both
 locales ("THE VAULT"/"HVELVET"). Blackwood/other maps get vaults
 when their layouts earn one (Q39 order: cache → alloys → lab next).
+
+## slice-figures: the figure kit, round 1 (2026-08-01)
+
+Designer-approved kit (specs/12: pose = identity), first consumers.
+Client-only — zero engine surface, zero balance impact. Suite
+718/718 x2, smoke + acceptance green, strip repinned 28 tiles.
+- `buildGuardFigure`: standing watchman at every compound — legs,
+  grey coat, head, ALARM LAMP. The visual law is structural again:
+  no weapon geometry exists to misread. The lamp burns red-pulsing
+  for 5 s after the compound's prison_alarm ping.
+- `buildPowFigure`: kneeling drab figure — one per held POW (cap 6
+  shown), arranged in compound rows. Prisons now have their first
+  visible population, straight from public view data.
+- Freed POWs on the field render with a pale coat instead of team
+  paint (barely walking; the carrier ride is the rescue).
+- (The v1-acceptance "outruns real time" test red-herringed once
+  under parallel suite load — passes alone and in the fresh run.)

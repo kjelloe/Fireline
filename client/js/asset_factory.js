@@ -250,6 +250,38 @@ function buildOperatorDown() {
   return g;
 }
 
+// FIGURE KIT (specs/12, designer-approved): pose = identity. Low-poly
+// people whose SILHOUETTE says what they are — the guard's visual law
+// is structural: no weapon geometry exists to misread.
+function buildGuardFigure() {
+  const g = new THREE.Group();
+  const C = colors();
+  // Standing: legs, grey coat, head sweeping — and the alarm lamp,
+  // the one part the client pulses when the compound shouts.
+  const legs = box(0.1, 0.16, 0.08, C.hullShadow); legs.position.set(0, 0.08, 0);
+  const coat = box(0.14, 0.2, 0.1, "#8a8f94"); coat.position.set(0, 0.26, 0);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 5), mat("#c9b899"));
+  head.position.set(0, 0.42, 0);
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.035, 5, 4), mat("#3a2f2a"));
+  lamp.name = "alarm_lamp";
+  lamp.position.set(0, 0.52, 0);
+  g.add(legs, coat, head, lamp);
+  return g;
+}
+
+function buildPowFigure() {
+  const g = new THREE.Group();
+  const C = colors();
+  // Kneeling: low mass, hands-in-lap silhouette, drab tint — reads as
+  // "held", never as a combatant.
+  const shins = box(0.12, 0.06, 0.14, C.hullShadow); shins.position.set(0, 0.03, 0.02);
+  const torso = box(0.12, 0.16, 0.09, "#7d7463"); torso.position.set(0, 0.14, -0.02);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.055, 6, 5), mat("#c9b899"));
+  head.position.set(0, 0.28, -0.02);
+  g.add(shins, torso, head);
+  return g;
+}
+
 function buildStandard(dropped) {
   const g = new THREE.Group();
   const C = colors();
@@ -439,6 +471,8 @@ const BUILDERS = {
   skimmer: buildSkimmer,                            // 12C
   wreck_skimmer: () => buildWreck("wreck_skimmer"), // 12C
   operator_down: buildOperatorDown,
+  guard: buildGuardFigure,        // figure kit (specs/12)
+  pow_figure: buildPowFigure,     // figure kit
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),
   relay: buildRelay,

@@ -150,6 +150,8 @@ const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
 const sandbagMeshes = new Map(); // sandbagId -> Mesh (Q45/Q50)
+const prisonFigures = new Map(); // "g0"/"p0-2" -> Mesh (figure kit)
+let alarmFlashUntil = 0;         // wall-clock ms; cosmetic only
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let fogGhosts = []; // 13E: last-seen enemy contacts
 const ghostMeshes = new Map(); // enemyId -> Mesh (13E)
@@ -1211,7 +1213,11 @@ function handleEvents(events) {
     if (e.type === "rejected" && e.reason === "takeover needs confirmation") {
       pendingTakeover = lastSelectAttempt;
     }
-    if (e.type === "ping") teamPings.push(e); // 10C (view is already team-scoped)
+    if (e.type === "ping") {
+      teamPings.push(e); // 10C (view is already team-scoped)
+      // Figure kit: the watchman's lamp burns for 5 s after his shout.
+      if (e.kind === "prison_alarm") alarmFlashUntil = Date.now() + 5000;
+    }
     // Q41: the eject warning lands CENTRE-SCREEN for the affected crew.
     if (e.type === "station_eject_warning" && e.operatorId === joined?.operatorId) {
       flashNotice(t("ev.station_eject_warning"), 2600, "#ff6b52");
@@ -2642,6 +2648,45 @@ function updateGhostMeshes(nowMs) {
   }
 }
 
+// FIGURE KIT: the compounds get people — one watchman per prison
+// (alarm lamp pulses after a prison_alarm ping) and a kneeling figure
+// per held POW. Pure presentation from public view data.
+function updatePrisonFigures(view) {
+  const live = new Set();
+  for (const p of view.prisons ?? []) {
+    const gKey = `g${p.team}`;
+    live.add(gKey);
+    let guard = prisonFigures.get(gKey);
+    if (!guard) {
+      guard = buildProcedural("guard");
+      scene.add(guard);
+      prisonFigures.set(gKey, guard);
+    }
+    guard.position.set(p.cellX + 0.9, 0, p.cellY + 0.5);
+    const lamp = guard.getObjectByName("alarm_lamp");
+    if (lamp) {
+      const flashing = Date.now() < alarmFlashUntil;
+      lamp.material.color.set(flashing && (Date.now() % 500) < 250 ? "#ff4a3a" : "#3a2f2a");
+    }
+    const n = p.pows ?? p.powCount ?? 0;
+    const count = Array.isArray(n) ? n.length : n;
+    for (let i = 0; i < count && i < 6; i++) {
+      const key = `p${p.team}-${i}`;
+      live.add(key);
+      let fig = prisonFigures.get(key);
+      if (!fig) {
+        fig = buildProcedural("pow_figure");
+        scene.add(fig);
+        prisonFigures.set(key, fig);
+      }
+      fig.position.set(p.cellX + 0.25 + (i % 3) * 0.28, 0, p.cellY + 0.25 + ((i / 3) | 0) * 0.4);
+    }
+  }
+  for (const [key, mesh] of prisonFigures) {
+    if (!live.has(key)) { scene.remove(mesh); prisonFigures.delete(key); }
+  }
+}
+
 function updateDownedMeshes(view) {
   const live = new Set();
   for (const d of view.downedOperators ?? []) {
@@ -2654,6 +2699,12 @@ function updateDownedMeshes(view) {
       downedMeshes.set(d.operatorId, mesh);
     }
     mesh.position.set(d.x / CELL + 0.5, 0.05, d.y / CELL + 0.5);
+    // Figure kit: a FREED POW reads distinct — pale coat, not team paint
+    // (they are barely walking; the carrier ride is the rescue).
+    if (d.freedPow === 1 && !mesh.userData.freedTint) {
+      applyTeamColor(mesh, "#cfc7a8");
+      mesh.userData.freedTint = true;
+    }
     const mine = d.operatorId === joined?.operatorId;
     const canBoard = mine && adjacentBoardableCarrier(view);
     upsertWorldLabel(`down${d.operatorId}`,
@@ -2800,6 +2851,7 @@ function renderBattlefield() {
   updateMineMeshes(view);
   updateCaltropMeshes(view);
   updateSandbagMeshes(view);
+  updatePrisonFigures(view);
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
   updateDirectRing(view);
