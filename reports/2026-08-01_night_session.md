@@ -142,3 +142,33 @@ different game.
 - Landship is next but touches the TEAM MODEL itself (neutral hull,
   cross-team selection, either-team towing) — it opens the next
   session with fresh context rather than closing this one.
+
+---
+
+## Round 3 addendum (prompt 118): THE LANDSHIP
+
+**Q42 is built** (`slice-landship`, `fd2d1d4`) — the People-arc's big
+hull and the first change to the team model itself:
+
+- One neutral fortress (chassis 10, asset 33, team -1) berths on the
+  centre column each war (seed-parity picks the first berth; berths
+  are terrain-aware — sawtooth's mesas taught that immediately).
+- **The select is the capture**: either team claims it by climbing
+  in; crewed it's protected, abandoned it can be stolen. The driver
+  alone moves it; the heavy MG station outguns the driver seat by
+  design — crewing up is the incentive.
+- Destruction starts a 100 s clock: the wreck is EVERYONE'S tow prize
+  until the clock fires, then it clears (mid-tow included) and a
+  fresh neutral hull appears at the other berth. Repair it in time
+  and your team keeps it. The MPG never touches it.
+- Guards so nobody embarrasses themselves: AI fire doctrine ignores
+  the empty neutral hull, and a human click on it CLAIMS instead of
+  shells.
+- AI never crews it (v1, the stations precedent — human tool first),
+  so AI wars are balance-inert by construction — and the battery
+  agrees: **53.4%/48.6% A, flips with the mirror, fair at n=600.**
+- Seven census contract tests caught the 33rd asset exactly as they
+  were built to; codex/strings/model/icon all shipped.
+
+Try it: walk anything up to mid-map and click the big hull. J boards
+the station. Suite 723/723, fixture v62.
