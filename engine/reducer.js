@@ -2367,6 +2367,11 @@ function applyAdvanceTick(next) {
   // which clears the timer at selection) spares them.
   for (const asset of next.assets) {
     if ((asset.abandonTimer ?? 0) <= 0) continue;
+    // Q42: the LANDSHIP never self-recalls — an abandoned fortress
+    // keeps its paint and waits to be stolen (that drama IS the
+    // design), and B1 must not charge a team for a hull the war
+    // itself owns. Its own respawn law is the only exit.
+    if (asset.id === 32) { asset.abandonTimer = 0; continue; }
     if (asset.operatorId !== -1 ||
         asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
       asset.abandonTimer = 0;

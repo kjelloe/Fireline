@@ -112,3 +112,27 @@ test("landship: the MPG never rebuilds it — its own law only", () => {
     assert.equal(worldToCellFloor(hull.x), 64, "at a centre-column berth, not a team base");
   }
 });
+
+test("landship: exempt from abandoned-hull self-recall; the station is boardable", () => {
+  let s = createInitialState(42, "frontier_corridor");
+  s = apply(s, { type: "join_operator", operatorId: 0, team: 0 });
+  s = apply(s, { type: "select_asset", operatorId: 0, assetId: LS, confirm: true });
+  // Forced respawn abandons it: the recall clock must NOT wreck the
+  // fortress (nor charge B1 for a hull the war itself owns).
+  s.assets[LS].operatorId = -1;
+  s.operators[0].assetId = -1;
+  s.assets[LS].abandonTimer = 1;
+  const tickets0 = [...s.tickets];
+  for (let i = 0; i < 700; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[LS].state, ASSET_IDLE, "still standing, still stealable");
+  assert.deepEqual(s.tickets.map((t, i) => tickets0[i] - t <= 700 / 20 + 1), [true, true],
+    "no recall ticket charged (only ordinary bleed moves the pools)");
+  assert.equal(s.assets[LS].team, 0, "keeps its paint while abandoned");
+  // Station intersection (prompt-100 machinery on the new hull):
+  let s2 = createInitialState(42, "frontier_corridor");
+  s2 = apply(s2, { type: "join_operator", operatorId: 0, team: 0 });
+  s2 = apply(s2, { type: "select_asset", operatorId: 0, assetId: LS, confirm: true });
+  s2 = apply(s2, { type: "join_operator", operatorId: 1, team: 0 });
+  s2 = apply(s2, { type: "board_station", operatorId: 1, assetId: LS });
+  assert.equal(s2.assets[LS].stationOp, 1, "the heavy station takes a gunner");
+});

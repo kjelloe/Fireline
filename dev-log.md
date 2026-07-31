@@ -4303,3 +4303,16 @@ smoke + acceptance green, fixture v62, strip 30 tiles.
   anyway (the 33rd asset touches every iteration).
 - Client: procedural slab-fortress model + icon + manifest/anchors,
   codex entry, chassis strings both locales.
+
+## review round (prompt 119): the landship's dangerous intersection (2026-08-01)
+
+The review-round heuristic ("what does the new system TOUCH?") earned
+its keep again: the 15G abandoned-hull self-recall would have WRECKED
+a claimed-then-force-respawned landship after 60 s AND charged the
+claimant a B1 ticket for a hull the war itself owns — killing the
+designed steal-it-back drama. Exempted (id 32; its own respawn law is
+the only exit) + regression test. Also added the landship×station
+intersection test (the heavy hmg takes a gunner through the standard
+board_station machinery). Plans (Landship row ✅), sim-campaign skill
+(LANDSHIP ERA block: 33 assets, team -1 semantics, vault-pulled note)
+synced. Suite 724/724 x2.

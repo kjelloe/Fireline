@@ -27,7 +27,7 @@ plus three experimental maps that have not earned promotion.
 | Unique crewing + band tuning | ✅ 16B — **CREWING BUG fixed 2026-07-31**: the served game (and every gate) ran crewing OFF since 16B; only sweeps measured the intended game. Default-ON restored. Band at 416/pool-315: 52.9% pre-walls, 55.2% post-walls (1.2σ apart — watch) |
 | AT satchel (downed crew) | ✅ `slice-16f` |
 | NPC infantry layer + POWs | 🔜 **ARC IN FLIGHT** — prisons + capture + raid party + **ALARM GUARDS landed** (watchman ping + defender response; raids still complete 4/5); powPreplaced flip = Q46 (battery pending); next: Landship (figure kit LANDED; vault machinery landed but live placement PULLED by battery conviction — ships on a map that measures fair) |
-| Multi-crew "Landship" | 🔜 seat-model PROVEN (stations landed); Landship = neutral capturable per Q42 rulings, after the POW arc |
+| Multi-crew "Landship" | ✅ `slice-landship` — neutral capturable fortress (select-is-capture, heavy station, either-team tow, rotating berths); battery FAIR 53.4/48.6 n=600; AI crewing doctrine = future slice, wants playtest feel first |
 
 ## Track B — Battlefield systems
 

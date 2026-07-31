@@ -135,6 +135,13 @@ doctrine in DEFAULT wars too: expect occasional pow_delivered /
 prison_raided in gate seeds, and judge raid health by
 server.ai.raidDebug (phase/escorts/guards per plan), not by staring
 at unit orders.
+LANDSHIP ERA (2026-08-01): asset id 32 is the NEUTRAL fortress
+(team -1). AI wars are balance-inert by construction — regents
+neither claim nor shoot team -1 — and the era battery read
+53.4/48.6% A (fair, flips with mirror). Probes iterating "all
+assets" must expect 33; anything filtering by team must decide
+what team -1 means to it. The vault machinery exists but NO live
+map carries one (pulled by conviction — dev-log 2026-08-01).
 CONFIG-DRIFT LAW (2026-08-01, the phantom regression): before
 believing ANY battery verdict, confirm the JOB KIND's env — the
 plain sweep/mirror kinds ran legacy UNIQUES=0 for a day and a
