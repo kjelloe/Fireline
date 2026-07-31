@@ -4337,3 +4337,22 @@ pair re-queued — expect the 23-27% A reads to move toward band.
 ALSO queued: the north-trail/vault chirality may share this root
 (organic-capture traffic orbits prisons; B's sat 7 cells more
 central) — the vault gets an ab rung re-test AFTER the pows verdict.
+
+## POWS hunt round 2: the vanishing escorts (2026-08-01)
+
+The prison-mirror fix moved the battery 24-27% → 33% A — real, not
+sufficient. The instrumented census on the FIXED build (dbg_pows_hunt
+with wire/approach/defense layers) then narrowed the remainder to ONE
+number: at-wire time is EQUAL (216 v 214 plan-ticks, ZERO defenders
+present for either side), but **A's raider holds the wire with a mean
+0.5 escorts; B's with 2.0**. The many-hands clock (2x with a pair)
+and wire survivability both key on escorts — that ratio IS the raid
+gap (2 v 7). B's pipeline is byte-identical pre/post prison fix
+(deterministic confirmation the fix only touched what A raids).
+Exonerated so far: geometry (honest mirror), uniques, census, prison
+placement, wire defense, approach distance. LIVE SUSPECT: why A's
+party escorts die or get re-designated en route while B's survive —
+next-session opener is an escort-fate tracer (per-escort: killed by
+whom/where, vs re-designated away, vs never replaced). The lane, the
+carrier-escort poaching guard, and mid-route kill positions are the
+three things it must separate.

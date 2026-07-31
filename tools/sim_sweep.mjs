@@ -77,6 +77,15 @@ for (let seed = 1; seed <= COUNT; seed++) {
     // Bisection rung: the vault pair never existed (sites 10 -> 8).
     server.state.sites = server.state.sites.filter((st) => st.kind !== 4);
   }
+  if (process.env.VAULTS === "2") {
+    // Reinstate rung: the PULLED frontier vault pair returns for this
+    // run only — measured against fixed prisons to test whether the
+    // north-trail chirality shared the unmirrored-prison root.
+    const nextId = server.state.sites.length;
+    server.state.sites.push(
+      { id: nextId, type: 1, owner: -1, kind: 4, cellX: 58, cellY: 40, captureProgress: 0, capturingTeam: -1, hp: 60 },
+      { id: nextId + 1, type: 1, owner: -1, kind: 4, cellX: 69, cellY: 40, captureProgress: 0, capturingTeam: -1, hp: 60 });
+  }
   if (MIRROR) {
     // TRUE world reflection (question 18): mirror the terrain and every
     // entity across x' = W-1-x, headings across the vertical axis, and
