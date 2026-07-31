@@ -4316,3 +4316,24 @@ intersection test (the heavy hmg takes a gunner through the standard
 board_station machinery). Plans (Landship row ✅), sim-campaign skill
 (LANDSHIP ERA block: 33 assets, team -1 semantics, vault-pulled note)
 synced. Suite 724/724 x2.
+
+## THE POWS MECHANISM: the unmirrored prison (2026-08-01)
+
+The hunt that Q46 left open closed in one instrumented round. The
+per-team pipeline census (dbg_pows_hunt, 10 seeds) showed A's parties
+form and dive MORE yet complete FEWER raids (4 v 7), while B
+out-captures 8 v 2 and re-seats 14 v 6 — a positional signature, not
+a doctrine one. The position: `createPrisons` measured its +5 offset
+from the WEST edge of BOTH bases. A's compound landed in the intended
+rear corner (x=11); B's landed by its FRONT gate (x=109 — mirror-fair
+is 116, seven cells off). One offset, three consequences: B's capture
+deliveries were a short detour from the battle line while A hauled
+prisoners to a rear corner (spills); A's raiders died in B's home
+traffic while B raided A's quiet rear in peace; and every POWS war
+tilted ~25 points to B in both honest mirror worlds. FIX: rear-edge
+geometry (`away from map centre`), prisons now 11<->116 = exact
+mirrors. Fixture v63, suite 724/724, gate green. The pows battery
+pair re-queued — expect the 23-27% A reads to move toward band.
+ALSO queued: the north-trail/vault chirality may share this root
+(organic-capture traffic orbits prisons; B's sat 7 cells more
+central) — the vault gets an ab rung re-test AFTER the pows verdict.

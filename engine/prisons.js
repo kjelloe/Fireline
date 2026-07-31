@@ -38,12 +38,22 @@ export const PREPLACED_POWS = Object.freeze({
 
 // One prison per base, at a deterministic offset inside the walls
 // (south-west of the spawns, clear of the approach road).
-export function createPrisons(bases, powN = 0) {
+export function createPrisons(bases, powN = 0, mapWidth = 128) {
   return bases
     .filter((b) => b.team === 0 || b.team === 1)
     .map((b) => ({
       team: b.team,
-      cellX: b.x + 5,
+      // Q40: "inside the perimeter, BEHIND the gate" — the compound
+      // sits 5 cells in from the REAR edge (the edge away from map
+      // centre). The original `b.x + 5` measured from the WEST edge of
+      // BOTH bases: A got the intended rear corner, B got a compound
+      // by its FRONT gate, 7 cells off mirror (11 vs 109; fair = 116).
+      // That single offset was the POWS=2 bias: B's short capture
+      // deliveries, A's raiders dying in B's home traffic, B raiding
+      // A's quiet rear in peace (per-team census, dev-log 2026-08-01).
+      cellX: (b.x + ((b.width / 2) | 0)) < (mapWidth >> 1)
+        ? b.x + 5
+        : b.x + b.width - 6,
       cellY: b.y + 15,
       // pows are {id, by}: by = the capturing operator (-1 for the
       // pre-placed), so the Q35 hold-pay knows whom to credit.

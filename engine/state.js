@@ -483,7 +483,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     drops: createDrops(mapSeed >>> 0),
     // POW arc slice 1: one prison per base, pre-loaded symmetrically
     // (the pre-placed enemy regents start OP_CAPTIVE — see below).
-    prisons: createPrisons(bases, powN),
+    prisons: createPrisons(bases, powN, map.width),
     // Asymmetric mode framework: null = standard war (never hashed).
     mission,
     // Q42: the landship respawn law — {respawnTicks (0 = alive),
