@@ -4148,3 +4148,26 @@ to 1; honest era-baseline batteries queued. The crewing-bug lesson
 now applies one layer up: when a sweep and a battery disagree, check
 the JOB KIND's env before touching doctrine. (The shared raid lane
 stays — fair by construction beats fair by measurement.)
+
+## slice-alarm-guards: the watchman at the wire (2026-08-01)
+
+Next POW-arc slice per the queue (specs/12 Q38: "alarm-only guards
+first"). Suite 710/710 x2, gate green, fixture v58
+(hashed prison.alarmTicks).
+- The guard is NOT an entity — indestructible and unarmed BY
+  CONSTRUCTION (nothing exists to shoot; the designer's visual law
+  made structural). His whole power is the shout: an enemy crewed
+  hull within GUARD_SENSE_CELLS (3) of a compound trips a toTeam
+  ping (kind prison_alarm, the satchel-blast pattern — zero new
+  client machinery), once per 30 s cooldown.
+- ALARM RESPONSE doctrine: an intruder near a STOCKED compound pulls
+  the nearest free defender combat seat back to the wire (raid-party
+  members, escorts and interceptors exempt; an empty compound guards
+  itself).
+- Raid probe WITH guards live: raids complete in 4/5 seeds, 3 seeds
+  emptied both prisons — the alarm makes raids contested, not
+  impossible. The formation-before-guards build order stands
+  validated: raids survive detection because parties travel together.
+- Figure-kit ART (guard pose, alarm icon flash, POW figures in
+  compounds) deferred to the art pass — the mechanic ships first;
+  the ping marker carries v1.

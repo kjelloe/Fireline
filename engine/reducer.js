@@ -37,7 +37,7 @@ import { premiumPoints } from "./premium.js";
 import {
   RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
   CAPTURE_HOLD_TICKS, RECOG_CAPTURE, RECOG_POW_HOLD, HOLD_PAY_TICKS, PRISON_CAPACITY,
-  RESECURE_TICKS,
+  RESECURE_TICKS, GUARD_SENSE_CELLS, ALARM_COOLDOWN_TICKS,
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import { MISSION_CONVOY, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
@@ -1710,6 +1710,29 @@ function applyAdvanceTick(next) {
         awardOperator(next, a.operatorId, RECOG_DROP);
       }
       next.events.push({ type: "supply_drop_secured", dropId: drop.id, byTeam: holder });
+    }
+  }
+  // ALARM GUARD pass (specs/12 Q38, "alarm-only guards first"): each
+  // compound's watchman shouts when an enemy crewed hull comes within
+  // GUARD_SENSE_CELLS — a toTeam ping for the defenders, once per
+  // cooldown. He is not an entity: indestructible, unarmed, pure
+  // detection (the designer's visual law made flesh — nothing here
+  // can read as killable because nothing here can be shot).
+  for (const prison of next.prisons ?? []) {
+    if (prison.alarmTicks > 0) { prison.alarmTicks -= 1; continue; }
+    const intruder = next.assets.find((a) =>
+      a.team !== prison.team && a.operatorId !== -1 &&
+      a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+      absI32(worldToCellFloor(a.x) - prison.cellX) <= GUARD_SENSE_CELLS &&
+      absI32(worldToCellFloor(a.y) - prison.cellY) <= GUARD_SENSE_CELLS);
+    if (intruder) {
+      prison.alarmTicks = ALARM_COOLDOWN_TICKS;
+      // The satchel-blast ping pattern: renders as a team marker with
+      // zero new client machinery.
+      next.events.push({
+        type: "ping", kind: "prison_alarm", team: prison.team, toTeam: prison.team,
+        cellX: prison.cellX, cellY: prison.cellY,
+      });
     }
   }
   // POW RAID pass (specs/12 Q37): an enemy-of-the-jailer unit holding

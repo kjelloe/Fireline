@@ -16,6 +16,7 @@ import {
 } from "./commands.js";
 import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { caltropAt } from "./caltrops.js";
+import { GUARD_SENSE_CELLS } from "./prisons.js";
 import { PING_COOLDOWN_TICKS } from "./pings.js";
 import { CMD_TRANSFER_CARGO } from "./commands.js"; // 13B
 import { computeVisible } from "./los.js";
@@ -715,6 +716,36 @@ export class AIRegency {
     // old `guards < 2` window is the documented meat grinder.
     for (const team of [0, 1]) {
       if (!prisonRaiderFor.has(team) && this.raidParty?.[team]) delete this.raidParty[team];
+    }
+    // ALARM RESPONSE (specs/12 Q38): the watchman's shout means
+    // someone comes home. An enemy hull near OUR stocked compound
+    // pulls the nearest free combat seat back to the wire — the
+    // response the alarm exists to trigger.
+    const prisonDefenderFor = new Map(); // team -> opId
+    for (const prison of state.prisons ?? []) {
+      if (prison.pows.length === 0) continue; // an empty compound guards itself
+      const threatened = state.assets.some((a) =>
+        a.team !== prison.team && a.operatorId !== -1 && !isWreck(a) &&
+        Math.max(Math.abs(worldToCellFloor(a.x) - prison.cellX),
+                 Math.abs(worldToCellFloor(a.y) - prison.cellY)) <= GUARD_SENSE_CELLS + 4);
+      if (!threatened) continue;
+      let best = -1;
+      let bestD = Infinity;
+      for (const [opId] of controlled) {
+        if (prisonRaiderFor.get(prison.team)?.opId === opId ||
+            prisonRaiderFor.get(prison.team)?.escorts?.includes(opId)) continue;
+        if (escortFor.has(opId) || interceptorOps.has(opId)) continue;
+        const op = state.operators[opId];
+        if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+        const a = state.assets[op.assetId];
+        if (!a || a.team !== prison.team || a.operatorId !== opId || isWreck(a)) continue;
+        const st = getUnitStats(a.type);
+        if (st.canTow || st.canCarryStandard || st.indirect) continue;
+        const d = Math.max(Math.abs(worldToCellFloor(a.x) - prison.cellX),
+                           Math.abs(worldToCellFloor(a.y) - prison.cellY));
+        if (d < bestD) { bestD = d; best = opId; }
+      }
+      if (best !== -1) prisonDefenderFor.set(prison.team, best);
     }
     for (const [team, rp] of prisonRaiderFor) {
       const raiderAsset = state.assets[state.operators[rp.opId]?.assetId];
@@ -1476,6 +1507,14 @@ export class AIRegency {
           target = [state.mission.gateCellX, state.mission.gateCellY];
         } else {
           continue; // parked, waiting for the escorts to close up
+        }
+      }
+      // Alarm response beats relay errands: the compound holds seats.
+      if (!target && prisonDefenderFor.get(asset.team) === operatorId) {
+        const own = (state.prisons ?? []).find((p) => p.team === asset.team);
+        if (own) {
+          const d = Math.max(Math.abs(cellX0 - own.cellX), Math.abs(cellY0 - own.cellY));
+          if (d > 2) target = [own.cellX, own.cellY];
         }
       }
       if (!target && interceptorOps.has(operatorId) && this.convoyIntel) {

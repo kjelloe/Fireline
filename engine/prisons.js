@@ -49,9 +49,17 @@ export function createPrisons(bases, powN = 0) {
       // pre-placed), so the Q35 hold-pay knows whom to credit.
       pows: [...(PREPLACED_POWS[b.team] ?? [])].slice(0, powN | 0).map((id) => ({ id, by: -1 })),
       raidTicks: 0,
+      // Alarm guard (specs/12 Q38, "alarm-only"): an indestructible
+      // watchman at the wire. He carries no weapon and cannot die —
+      // his whole power is the shout. Cooldown is hashed state.
+      alarmTicks: 0,
     }));
 }
 
 export function prisonFor(state, team) {
   return (state.prisons ?? []).find((p) => p.team === team);
 }
+
+// Alarm guard law: the shout radius and how long one shout lasts.
+export const GUARD_SENSE_CELLS = 3;
+export const ALARM_COOLDOWN_TICKS = 300; // one shout per 30 s per compound

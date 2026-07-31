@@ -117,7 +117,7 @@ function stateHash(s) {
   }
   for (const p of (s.prisons ?? [])) { // added POW arc slice 1
     w.writeI32LE(p.team); w.writeI32LE(p.cellX); w.writeI32LE(p.cellY);
-    w.writeI32LE(p.raidTicks); w.writeI32LE(p.pows.length);
+    w.writeI32LE(p.raidTicks); w.writeI32LE(p.alarmTicks ?? 0); w.writeI32LE(p.pows.length);
     for (const pow of p.pows) { w.writeI32LE(pow.id); w.writeI32LE(pow.by); } // {id,by} since slice 2
   }
   if (s.mission) { // mode framework: hashed ONLY when a mission is live
