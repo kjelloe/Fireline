@@ -206,6 +206,9 @@ WSL Playwright is SwiftShader-only and useless for FPS numbers
    two failing tests behind a green-looking pipeline.
 5. Don't trust a 5-seed gate for balance; don't trust n=10 for
    tuning; batteries decide.
+5b. VERIFY BISECT ENDPOINTS before trusting `git bisect run` — a
+   probe that is red at the "good" endpoint walks the bisection into
+   noise (ours landed on a doc-only commit).
 6. Telemetry must record failure, not just success.
 7. A probe's event-field names must be checked against the reducer
    before its zeros mean anything.

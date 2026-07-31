@@ -154,10 +154,17 @@ outcome. Renderer presents fog-filtered views only.
   /rotation at runtime (POST loopback-only). MODE FRAMEWORK: see the
   2026-08-01 block above; convoy battery `batch_send.sh convoy`;
   bisection kill-switches RAIDPARTY=0/POWARC=0 + the `ab` job kind.
-  KNOWN OPEN: POWS=2 all-regent wars read 23-27% A in both honest
-  worlds — geometry/uniques/census all exonerated; the mechanism is
-  dynamic doctrine (hunt tools: dbg_pows_census, dbg_pow_team_split,
-  ab job). powPreplaced stays 0.
+  KNOWN OPEN — THE DIRECTIONAL RESIDUE (top of the queue): the 16d
+  divergence probe (dbg_mirror_diverge) runs RED even at 16d itself
+  (SEED=2026, t≈94; cumulative step drift, x AND y). Its measured
+  body count: the POWS corridor kill-zone (eastbound dies 3x at
+  symmetric cells → A's raid escorts die → 0.5 vs 2.0 at the wire →
+  POWS=2 reads 33/35% A even after the prison-mirror fix banked
+  +8 pts). Next opener: first-divergence step-input dump; candidates
+  and the verification ladder are in dev-log 2026-08-01. The vault
+  chirality (pulled) may share this root. powPreplaced stays 0.
+  PRISONS: rear-edge geometry (5 in from the edge AWAY from map
+  centre — mirror-pinned by test across all profiles).
   Faction uniques crew BY DEFAULT (16B — TRUE ONLY SINCE 2026-07-31:
   a `=== true` coercion in GameServer + server/index had the SERVED
   game and every 5-seed gate running uncrewed since 16B, while sweeps

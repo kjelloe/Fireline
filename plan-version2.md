@@ -125,9 +125,11 @@ their rows into standard baselines.
 
 ## What is actually blocking progress
 
-1. **Battery verdicts pending on the PC** (queued, collect next round):
-   convoy att0/att1 300 (tunes the mode), POWS=2 pair (decides Q46),
-   sweep+mirror 300 (formation doctrine in default wars).
+1. **THE DIRECTIONAL RESIDUE** — the engine's mirror drift (red
+   divergence probe since before 16d), now with a measured body count
+   (the POWS corridor kill-zone). First-divergence step-input dump is
+   the opener; fix → probe clean 16k×5 → pows + default batteries.
+   Q46 and the vault's return both wait on it.
 2. **Riverline pacing slice** — 41% horn; same playbook as blackwood
    18G (instrument first, then the smallest terrain/graph change).
 3. **Caldera fix** — raider's-clause-on-a-ring; then it can host
@@ -150,7 +152,7 @@ Q43-Q45 designer-ruled (stations, human-only, sandbag/caltrop tables).
 | # | Question | Owner |
 |---|---|---|
 | Q24 | Ratify pool 315? (landed on ladder data; implicit yes by use) | user |
-| Q46 | Flip `powPreplaced` default to 2 once the POWS=2 battery shows tempo + fairness hold? (raids WORK now — the prompt-106 condition is met, evidence pending) | user, after battery |
+| Q46 | powPreplaced flip: BLOCKED on the directional residue (POWS reads 33/35% A post prison-fix; chain in dev-log) | after the residue fix |
 | Q47 | Convoy Escort balance bar: what attacker win-rate band is "fair" for an asymmetric mode? Regents read 10-30% at n=10; deliveries are fast when they come. Also ratify the 15-min timer and the defender-MPG x2 counterweight | designer |
 | Q48 | Convoy's home map: keep frontier, or make the fixed caldera its home (ring road = natural convoy route with two lanes)? The designer's own order was framework → caldera → convoy | designer |
 | Q49 | RULED+BUILT: map+mode pair voting LANDED (slice-vote) — end-screen plurality vote, status-quo-first, dedicated servers keep their mode on silence | user |

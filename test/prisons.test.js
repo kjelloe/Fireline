@@ -245,3 +245,16 @@ test("review-2 deltas: parked-only eject, driver-kill glory shared with the gunn
   assert.equal(k.operators[1].score, 2, "the platform team shares glory");
   assert.equal(k.operators[0].deeds[0], 1);
 });
+
+test("POW: prison compounds are EXACT mirrors on every profile (the 7-cell bug class)", () => {
+  // The unmirrored-prison bug (dev-log 2026-08-01): +5 from the WEST
+  // edge of both bases put B's compound at its front gate and tilted
+  // every POWS war ~25 pts. This sweep pins the mirror for good.
+  for (const profile of ["frontier_corridor", "blackwood", "sawtooth", "riverline", "caldera"]) {
+    const s = createInitialState(42, profile);
+    const [pa, pb] = s.prisons;
+    assert.equal(pa.cellX + pb.cellX, s.map.width - 1,
+      `${profile}: prison pair mirrors about the centre line`);
+    assert.equal(pa.cellY, pb.cellY, `${profile}: same row`);
+  }
+});
