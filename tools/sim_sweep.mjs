@@ -34,6 +34,10 @@ const POWS = process.env.POWS ? Number(process.env.POWS) : null;
 // Convoy Escort battery: MODE=convoy, MODEATTACKER=0|1 picks the side.
 const MODE = process.env.MODE === "convoy" ? 1 : null;
 const MODEATTACKER = process.env.MODEATTACKER === "1" ? 1 : 0;
+// Bisection kill-switches (A/B only): RAIDPARTY=0 disables the AI
+// prison-party doctrine; POWARC=0 disables scout captures entirely.
+const RAIDPARTY = process.env.RAIDPARTY !== "0";
+const POWARC = process.env.POWARC !== "0";
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -48,11 +52,12 @@ for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
-    mapProfile: MAP, uniqueCrewing: UNIQUES,
-    rules: TICKETPOOL || POWS !== null || MODE !== null
+    mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
-          ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}) }
+          ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
+          ...(!POWARC ? { powArc: false } : {}) }
       : null,
   });
   // Config-plumbing self-check (the crewing-bug lesson): say what the

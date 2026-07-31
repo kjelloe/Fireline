@@ -26,6 +26,7 @@ case "${1:-}" in
   skimtrail) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"skimtrail\",\"speed\":${2:?usage: batch_send.sh skimtrail <speed> [count] [mirror]},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   pows)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pows\",\"n\":${2:-2},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   convoy) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"convoy\",\"attacker\":${2:-0},\"count\":${3:-300}}" ;;
+  ab)     $AM queue add --for batch-pc --as dev --body "{\"kind\":\"ab\",\"raidparty\":${2:-1},\"powarc\":${3:-1},\"count\":${4:-300},\"label\":\"${5:-ab}\"}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;
   update) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"update\"}" ;;
   resync) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"resync\"}" ;;

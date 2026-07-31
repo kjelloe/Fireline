@@ -259,6 +259,16 @@ handle_job() { # $1 = JSON body
       MODE=convoy MODEATTACKER=$cva UNIQUES=1 run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
         0 1 "convoy_att${cva}" ;;
+    ab)
+      # Bisection rung: {"kind":"ab","raidparty":0,"powarc":1,
+      # "count":300,"label":"ab_raidparty0"}. Whitelisted env only.
+      local ab_rp ab_pa ab_label
+      ab_rp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('raidparty',1))" "$body")
+      ab_pa=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('powarc',1))" "$body")
+      ab_label=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('label','ab'))" "$body")
+      RAIDPARTY=$ab_rp POWARC=$ab_pa UNIQUES=1 run_sweep \
+        "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
+        0 1 "$ab_label" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
@@ -361,7 +371,7 @@ handle_job() { # $1 = JSON body
       fi ;;
     *)
       $AM send --from $ME --to dev --tag done \
-        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/pows/convoy/matrix/perf/sendresults/update/resync." ;;
+        "job refused (unknown kind): $body — this checkout runs sweep/mirror/factionswap/riverline/map/uniques/pool/skimtrail/pows/convoy/ab/matrix/perf/sendresults/update/resync." ;;
   esac
   # prompt-73: anything new in reports/ goes home automatically - a perf
   # run started by hand on this machine no longer needs a follow-up job.

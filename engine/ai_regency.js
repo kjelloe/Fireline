@@ -317,6 +317,9 @@ export class AIRegency {
     // gate -> no-squat Sentinel -> trail affinity). UNIQUES=0 disables
     // for A/B sweeps.
     this.uniqueCrewing = options.uniqueCrewing !== false;
+    // A/B kill-switch (bisection only, never a shipped config): skip
+    // the prison raid-party doctrine entirely.
+    this.raidPartyEnabled = options.raidParty !== false;
     // Q31 SEAT-SWAP DOCTRINE (ruled 2026-07-31): "the punishment for a
     // bad unique is surviving in it" — the sawtooth conviction showed a
     // regent imprisoned all war in a Skimmer that earned nothing. A
@@ -516,6 +519,7 @@ export class AIRegency {
     // are how the mission actually completes.
     const prisonRaiderFor = new Map(); // team -> {opId, prison, dive, stage}
     for (const prison of state.prisons ?? []) {
+      if (this.raidPartyEnabled === false) break; // A/B kill-switch
       if (prison.pows.length === 0) continue;
       const team = prison.team === 0 ? 1 : 0; // the prisoners' own team raids
       // Scouts preferred (the specialist), but Q37's raid is "any

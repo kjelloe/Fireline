@@ -1772,7 +1772,9 @@ function applyAdvanceTick(next) {
   // captor is paid, and the hold-pay clock starts. A scout wrecked in
   // transit spills the prisoner as ordinary downed (rescue or
   // recapture — Q36). Runs AFTER carrier boarding: rescue wins ties.
-  for (const scout of next.assets) {
+  // rules.powArc === false is the A/B kill-switch (bisection only,
+  // never a shipped config): no captures = the whole arc stays inert.
+  for (const scout of (next.rules?.powArc === false ? [] : next.assets)) {
     if (scout.type !== 1) continue; // the scout's specialty (Q36)
     if (scout.operatorId === -1 || scout.state === ASSET_DISABLED || scout.state === ASSET_SALVAGED) continue;
     if (scout.prisoner !== -1) {
