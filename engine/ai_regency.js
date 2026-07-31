@@ -1459,9 +1459,16 @@ export class AIRegency {
           }
           if (span && spanDist <= RESCUE_SEEK_CELLS &&
               !adjacentToBridge(state.mapProfile, 0, cellX0, cellY0)) {
-            // Park just outside the span's western edge; adjacency does
-            // the rest. Deterministic and side-neutral.
-            target = [span.geom.cols[0] - 1, span.by];
+            // Park just outside the span's edge ON THE APPROACH SIDE
+            // (the old western-edge constant claimed "side-neutral" —
+            // rung 4's other face: a fixed west is a chirality). Ties
+            // at the span's own column break by the axis-side law.
+            const west = cellX0 !== span.bx
+              ? cellX0 < span.bx
+              : 2 * cellX0 < AI_W - 1;
+            target = west
+              ? [span.geom.cols[0] - 1, span.by]
+              : [span.geom.cols[1] + 1, span.by];
           }
         }
         // FIELD REPAIR (ruled 2026-07-30): patch a badly mauled teammate.
@@ -1492,7 +1499,16 @@ export class AIRegency {
             }
           }
           if (patient && patientDist > 1 && patientDist <= RESCUE_SEEK_CELLS) {
-            target = [worldToCellFloor(patient.x) + 1, worldToCellFloor(patient.y)];
+            // Park on the APPROACH side (rung 4 of the residue ladder:
+            // the old hardcoded +1 always parked EAST — mirror of
+            // park-east is park-west, so this one constant broke
+            // equivariance for every repair errand). Same-column ties
+            // break by the axis-side law.
+            const px = sampleCellX(patient.x, AI_W);
+            const side = px === cellX0
+              ? (2 * cellX0 < AI_W - 1 ? -1 : 1)
+              : (cellX0 < px ? -1 : 1);
+            target = [px + side, worldToCellFloor(patient.y)];
           }
         }
       }

@@ -4492,3 +4492,24 @@ op-25's decision inputs in both worlds) reproduces it in ~90 s;
 next session instruments the resupply scan's candidate list
 directly. Ladder: 2 → 107 → 903 held; the remaining divergence is
 DOCTRINE-layer, the engine floors are clean.
+
+## rung 4 CLOSED: the park-east chirality (2026-08-02)
+
+The t=902 truck scan divergence was neither a tie nor a score — it
+was a CONSTANT: field-repair's "park beside" target hardcoded
+`patient.x + 1` (always EAST; the mirror of park-east is park-west),
+and the bridge-rebuild parking hardcoded the WESTERN edge while its
+comment claimed "side-neutral". Both now park on the APPROACH side
+with the axis-side law breaking same-column ties. Probe: 902 → 953.
+
+RUNG 5 (evidence banked, next session): t=953, a MOVING B-scout
+(asset 22, escortish duty) is re-targeted mid-flight in the normal
+world only — pre-tick states and targets mirror exactly (both wp=1),
+post-tick the normal has a NEW target (114,70) while the mirror kept
+flying. The re-order came from a pre-gate re-target (escort
+tight-follow or a patrol/waypoint handoff). The grep for this bug
+CLASS is now known: absolute-direction CONSTANTS in doctrine
+(`+ 1`, `- 1`, `cols[0]`, "west", "east") — audit every literal
+offset in ai_regency the way the boundary lint audits floors; a
+source lint for `\.cellX [+-] 1` style offsets may be worth writing
+before hand-hunting rung 5.
