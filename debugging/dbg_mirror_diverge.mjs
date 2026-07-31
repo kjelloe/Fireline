@@ -67,6 +67,8 @@ function firstDivergence(n, m) {
     if (b.heading !== mh(a.heading)) return `asset ${i} heading: ${a.heading} vs ${b.heading} (expect ${mh(a.heading)})`;
     if (b.hp !== a.hp) return `asset ${i} hp: ${a.hp} vs ${b.hp}`;
     if (b.state !== a.state) return `asset ${i} state: ${a.state} vs ${b.state}`;
+    if (b.targetX !== mx(a.targetX)) return `asset ${i} targetX: ${a.targetX} vs ${b.targetX} (expect ${mx(a.targetX)})`;
+    if (b.targetY !== a.targetY) return `asset ${i} targetY: ${a.targetY} vs ${b.targetY}`;
     if (b.fuel !== a.fuel) return `asset ${i} fuel: ${a.fuel} vs ${b.fuel}`;
     if (b.ammo !== a.ammo) return `asset ${i} ammo: ${a.ammo} vs ${b.ammo}`;
     if (b.reloadTimer !== a.reloadTimer) return `asset ${i} reload: ${a.reloadTimer} vs ${b.reloadTimer}`;

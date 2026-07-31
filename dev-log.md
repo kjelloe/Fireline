@@ -4429,3 +4429,18 @@ The probe itself grew: DUMP=1 pre-divergence context, and it now
 compares caltrops/mines/downed/tickets (it was blind to them — the
 t=107 "asset drift" was really an earlier invisible divergence
 class; instrument-first applies to instruments, part three).
+
+## residue ladder, third rung identified (2026-08-01, end of window)
+
+t=902 (post-both-laws): an IDLE truck's designation differed between
+mirrored worlds — the AI layer's floored-position scans (needy/wreck
+cheb distances over OTHER assets, any of which may sit on a boundary)
+are the same parity class. THE SYSTEMATIC FIX (next session, fresh
+context): promote sampleCellX to shared/fixedmath as the mirror-safe
+x-cell sampler and sweep EVERY `worldToCellFloor(*.x)` DECISION site
+in reducer + ai_regency (~40 sites; y stays plain floor — the mirror
+is x-only). The probe now also compares targets (third blindness
+fixed: position-mirrored worlds were hiding order-level divergence).
+Ladder state: 2 → 107 → 903; ends at probe-clean 16k×5, then pows +
+default batteries re-baseline (PATH SHAPES CHANGED — no pre-fix
+number survives).
