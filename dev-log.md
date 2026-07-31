@@ -4249,3 +4249,20 @@ Client-only — zero engine surface, zero balance impact. Suite
   paint (barely walking; the carrier ride is the rescue).
 - (The v1-acceptance "outruns real time" test red-herringed once
   under parallel suite load — passes alone and in the fresh run.)
+
+## the vault conviction: pulled from the live map (2026-08-01)
+
+The verification battery on the vault slice read 36%/29% A — a ~15-pt
+team-B edge in BOTH honest worlds. The ab ladder convicted in one
+round: ab_novault 51.3% A (FAIR), ab_noalarmresp 36% (unchanged —
+alarm response exonerated). A mirror-symmetric site pair excited a
+team-linked mode, exactly the rearguard precedent — and the same
+remedy applies: the frontier placement is PULLED (fixture v61, site
+census back to 8), the vault MACHINERY stays engine-supported and
+sandbox-tested (kind 4, income pass, cap, mode exclusion, labels),
+and the vault ships on a map that MEASURES fair. Also noteworthy:
+the 5/5 gate improvement came WITH the bias — tempo bought at
+fairness cost is no deal, and 5 seeds cannot see a 15-point lean.
+Mechanism hunt (why north-trail objectives are team-asymmetric)
+joins the POWS hunt in the open-questions ledger — likely the same
+latent chirality family. Verification battery queued post-pull.
