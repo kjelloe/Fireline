@@ -272,9 +272,13 @@ handle_job() { # $1 = JSON body
       ab_rp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('raidparty',1))" "$body")
       ab_pa=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('powarc',1))" "$body")
       ab_label=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('label','ab'))" "$body")
-      RAIDPARTY=$ab_rp POWARC=$ab_pa UNIQUES=1 run_sweep \
+      local ab_uq ab_pows ab_mirror
+      ab_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',1))" "$body")
+      ab_pows=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('pows',''))" "$body")
+      ab_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      RAIDPARTY=$ab_rp POWARC=$ab_pa POWS=$ab_pows UNIQUES=$ab_uq run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        0 1 "$ab_label" ;;
+        "$ab_mirror" 1 "$ab_label" ;;
     matrix)
       local d
       d=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('difficulty',1))" "$body")
