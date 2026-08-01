@@ -4607,3 +4607,18 @@ objective intact. Fixture v65; 1D census 14; 13F pin; the v1
 abandonment). Gate: 5/5 decided, mixed horn/tickets — the ending
 profile already reads healthier than the powPreplaced-2 era's 51%
 horn. The real pacing/fairness verdict is the queued battery pair.
+
+## slice-caldera-fix: the clause meets the law (2026-08-02)
+
+Q57's first item. FIX-FIRST discipline honored: the conviction's
+hypothesis (raider's-clause-on-a-ring) was CONFIRMED by a surgical
+discriminator before any fix — a RAIDERCLAUSE=0 kill-switch
+(rules.raiderClause, sweep env) run on caldera read fair 20-minute
+wars where the convicted map read 31.7% A / 9-min dominations. THE
+FIX is the spec's own candidate (b) as MAP LAW: the clause is OFF on
+caldera by default (the premium pattern — map-keyed, explicit rules
+always win for A/B), live everywhere else. Landing gate 30+30
+mirrored on the fix: 60%/50% A (fair band at n=30), medians ~12k,
+dominations halved. Suite 729/729. The n=300 battery decides
+promotion; dominations-as-endings at healthy length may simply be
+the circle map's identity — the battery and a playtest will say.

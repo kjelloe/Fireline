@@ -61,3 +61,13 @@ test("caldera: an AI war runs, decides or fights, and stays deterministic", () =
   const captures = a.state.sites.filter((s) => s.owner !== -1).length;
   assert.ok(captures > 0, "relays change hands — the map is ALIVE");
 });
+
+test("caldera: the raider's clause is OFF here by map law (specs/10 §4g)", async () => {
+  const { createInitialState } = await import("../engine/state.js");
+  const s = createInitialState(42, "caldera");
+  assert.equal(s.rules.raiderClause, false, "the ring answers the clause with law");
+  const f = createInitialState(42, "frontier_corridor");
+  assert.notEqual(f.rules.raiderClause, false, "everywhere else the clause lives");
+  const explicit = createInitialState(42, "caldera", { raiderClause: true });
+  assert.equal(explicit.rules.raiderClause, true, "explicit rules always win (A/B)");
+});

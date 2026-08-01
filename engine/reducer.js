@@ -1750,7 +1750,7 @@ function applyAdvanceTick(next) {
       // operable enemy within RAID_RADIUS_CELLS of the site) doubles the
       // clock. Presence of any enemy nearby kills the bonus before the
       // fight even starts — this rewards the raid, never the brawl.
-      {
+      if (next.rules?.raiderClause !== false) {
         let raiderHere = false;
         for (const a of next.assets) {
           if (a.team !== team || !getUnitStats(a.type).raider) continue;

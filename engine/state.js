@@ -452,6 +452,19 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
       }
     }
   }
+  // Q31 × item-40 (the caldera conviction, specs/10 §4g): the raider's
+  // clause on a RING is a stomp factory — the circle is one long rear
+  // area nobody guards, so the Skimmer double-captures endlessly
+  // (convicted 31.7% A / 9-min dominations; clause-off discriminator
+  // read fair 20-minute wars). MAP-KEYED deactivation, the premium
+  // pattern: the clause stays live everywhere the geometry can answer
+  // it. Explicit rules.raiderClause always wins.
+  const mergedRules = { ...DEFAULT_RULES, ...(rules ?? {}) };
+  if (typeof mapArg === "string" && mapArg === "caldera" &&
+      rules?.raiderClause === undefined) {
+    mergedRules.raiderClause = false;
+  }
+
   return {
     tick: 0,
     mapSeed: mapSeed >>> 0,
@@ -463,7 +476,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     bases,
     standards, // 8A: physical Command Standards
     mapProfile: typeof mapArg === "string" ? mapArg : "frontier_corridor", // 11M
-    rules: { ...DEFAULT_RULES, ...(rules ?? {}) }, // 13F: hashed session rules
+    rules: mergedRules, // 13F: hashed session rules (+ map laws above)
     tickets: [
       (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
       (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
