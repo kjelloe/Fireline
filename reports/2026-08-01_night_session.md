@@ -200,3 +200,30 @@ Chasing the POWS=2 bias produced the session's biggest find:
 Also this round: prompt-119's review caught the landship/self-recall
 trap (fixed + tested) before it could eat anyone's captured fortress.
 Playtest away — the served game is on the latest push.
+
+---
+
+## FINAL addendum: the ladder is down, and it paid (2026-08-02)
+
+Eight rungs, each found by instrument and verified by the probe:
+prison mirror → A* origin-side ties → boundary parity (+78-site
+sweep, lint-enforced) → park-east chirality → segmentBlocked floors
+→ baseCentreCol (the prison bug's twin, 5 sites) → centre-facing
+rebuilds → probe centre-anchor exceptions. First-divergence horizon:
+tick 2 → 6280; what remains is the DESIGNED half-cell of
+centre-anchored objectives.
+
+**The payoff, n=600 per config:** the default game is fair in both
+worlds (48.8/53.5, edge flips). **POWS=2 in the live world is IN
+BAND at 47.1% — it read 24% when this hunt began.** Twenty-three
+points of fairness recovered from eight "small" asymmetries.
+
+**Q46 — your call, with a recommendation:** FLIP powPreplaced to 2.
+The live game is in band, tempo is clean, and POWS=2 is the designed
+day-one experience. The only caution: the POWS-mirror world still
+reads 41% (aggregate one point outside the strict band), which looks
+like centre-anchor coupling rather than doctrine — the banked fix is
+seed-parity column alternation if it ever matters at scale.
+Sawtooth/blackwood batteries are pre-ladder and queued for re-runs;
+the vault's VAULTS=2 re-test is now meaningful. Next up on your Q57
+order: the caldera fix.
