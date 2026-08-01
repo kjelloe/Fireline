@@ -498,6 +498,18 @@ function init() {
   const contrastEl = document.getElementById("opt-contrast");
   if (contrastEl) {
     contrastEl.checked = localStorage.getItem("mf_contrast") === "1";
+    // Soundtrack toggle (prompt 135) — shipped AHEAD of the tracks so
+    // the composer integration lands into a ready switch. The music
+    // bus consults window.__musicEnabled; nothing plays yet.
+    const musicEl = document.getElementById("opt-music");
+    if (musicEl) {
+      musicEl.checked = localStorage.getItem("mf_music") !== "0";
+      window.__musicEnabled = musicEl.checked;
+      musicEl.onchange = () => {
+        window.__musicEnabled = musicEl.checked;
+        try { localStorage.setItem("mf_music", musicEl.checked ? "1" : "0"); } catch { /* private mode */ }
+      };
+    }
     contrastEl.onchange = (e) => {
       localStorage.setItem("mf_contrast", e.target.checked ? "1" : "0");
       applyA11y();

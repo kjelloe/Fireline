@@ -114,4 +114,5 @@ sting and stretch into a theme.
   pattern keeps the manifest trivial.
 - Anything you deliver will be wired behind the existing audio-cues
   module with per-track volume in settings; the synth SFX bus stays
-  separate so your mix survives the battlefield.
+  separate so your mix survives the battlefield. A player-facing
+  Music on/off toggle already ships in the options panel.

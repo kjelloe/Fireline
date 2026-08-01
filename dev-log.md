@@ -4704,3 +4704,13 @@ the n=300 pair decides. Suite 735/735.
   Arguably a legitimate arcade identity, clearly a DIFFERENT one.
   Stays EXPERIMENTAL pending the owner's playtest (Q63: bless the
   brawl-map identity, or tune MPG/pool for the ring?).
+
+## prompt-135: music toggle + shareable composer brief (2026-08-02)
+
+- Options panel gains "Music / Musikk" checkbox (`opt-music`, persisted
+  `mf_music`, default ON, exposed as `window.__musicEnabled`) — shipped
+  AHEAD of the tracks so the composer integration lands into a ready
+  switch. Nothing plays yet.
+- `specs/game-soundtrack-design.html` — self-contained styled twin of
+  the md brief for sharing with the human composer (print-friendly).
+- Gates: client smoke OK, ui acceptance OK, suite 736/736.

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fireline Command — Soundtrack Design Brief</title>
+<style>
+  :root {
+    --bg: #14160f;
+    --panel: #1d2016;
+    --panel2: #23271b;
+    --ink: #d8d4c4;
+    --dim: #8f8a76;
+    --accent: #d4a24a;      /* fireline amber */
+    --directorate: #6f8fb0; /* slate blue */
+    --outliers: #c4744a;    /* terracotta */
+    --line: #3a3e2e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.55; font-size: 16px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { border-bottom: 2px solid var(--accent); padding-bottom: 20px; margin-bottom: 28px; }
+  h1 {
+    font-family: "Trebuchet MS", Verdana, sans-serif; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--accent); font-size: 26px; margin: 0 0 6px;
+  }
+  .subtitle { color: var(--dim); font-style: italic; margin: 0; }
+  h2 {
+    font-family: "Trebuchet MS", Verdana, sans-serif; letter-spacing: 2px;
+    text-transform: uppercase; font-size: 17px; color: var(--accent);
+    border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 40px 0 14px;
+  }
+  h3 {
+    font-family: "Trebuchet MS", Verdana, sans-serif; font-size: 14px;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--ink); margin: 26px 0 10px;
+  }
+  p { margin: 0 0 12px; }
+  b, strong { color: #f0ecd8; }
+  ul { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 14.5px; }
+  th {
+    text-align: left; font-family: "Trebuchet MS", Verdana, sans-serif;
+    font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--dim); border-bottom: 2px solid var(--line); padding: 8px 10px;
+  }
+  td { border-bottom: 1px solid var(--line); padding: 10px; vertical-align: top; }
+  tr:nth-child(even) td { background: var(--panel); }
+  td.num { color: var(--accent); font-weight: bold; white-space: nowrap; }
+  td.len { white-space: nowrap; color: var(--dim); }
+  .track { color: #f0ecd8; font-weight: bold; }
+  .callout {
+    background: var(--panel); border-left: 4px solid var(--accent);
+    padding: 14px 18px; margin: 16px 0; border-radius: 0 4px 4px 0;
+  }
+  .factions { display: flex; gap: 14px; flex-wrap: wrap; margin: 14px 0; }
+  .faction {
+    flex: 1 1 260px; background: var(--panel2); border-radius: 6px;
+    padding: 14px 16px; border-top: 3px solid var(--line);
+  }
+  .faction.dir { border-top-color: var(--directorate); }
+  .faction.out { border-top-color: var(--outliers); }
+  .faction h4 {
+    margin: 0 0 8px; font-family: "Trebuchet MS", Verdana, sans-serif;
+    letter-spacing: 1px; text-transform: uppercase; font-size: 13px;
+  }
+  .faction.dir h4 { color: var(--directorate); }
+  .faction.out h4 { color: var(--outliers); }
+  .faction p { font-size: 14px; margin: 0; color: var(--ink); }
+  code {
+    font-family: Consolas, Menlo, monospace; font-size: 13px;
+    background: var(--panel2); padding: 1px 6px; border-radius: 3px; color: #e6d9a8;
+  }
+  .prio { counter-reset: p; margin: 0 0 14px; padding-left: 0; list-style: none; }
+  .prio li {
+    counter-increment: p; position: relative; padding-left: 40px; margin-bottom: 10px;
+  }
+  .prio li::before {
+    content: counter(p); position: absolute; left: 0; top: 0;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent);
+    color: var(--bg); font-family: "Trebuchet MS", Verdana, sans-serif;
+    font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  }
+  footer { margin-top: 48px; color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); padding-top: 14px; }
+  @media print {
+    body { background: #fff; color: #222; }
+    :root { --panel: #f4f2ea; --panel2: #ece9dd; --ink: #222; --dim: #666; --line: #ccc; }
+    .wrap { padding: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Fireline Command &mdash; Soundtrack Design Brief</h1>
+  <p class="subtitle">For the composer &middot; August 2026 &middot; a deterministic multiplayer wargame
+  &mdash; 32 combined-arms seats, two factions, fog of war, rescue-over-kills values.
+  Tagline: <b>&ldquo;Join the battle. Turn the front.&rdquo;</b></p>
+</header>
+
+<h2>The sound of the game (read this first)</h2>
+
+<p><b>The world.</b> A weathered mid-century-adjacent front &mdash; tanks, scout bikes,
+logistics trucks, command carriers, artillery. Not WW2 pastiche, not sci-fi:
+a <i>fictional</i> war with radio chatter, mud roads, farmhands who flee the
+fighting, prison compounds with watchmen. The art is low-poly with faction
+paint over worn metal.</p>
+
+<div class="callout">
+<p style="margin:0"><b>The values: rescue outranks kills.</b> Towing a wreck home, springing a
+POW, escorting a carrier &mdash; that&rsquo;s the glory here. The music should carry
+<i>duty and camaraderie</i> more than triumph and menace.</p>
+</div>
+
+<p><b>The established audio direction</b> is synth-first (all in-game SFX are
+synthesized). The score works best as a <b>hybrid</b>: analog-style synth beds
+and pulses as the backbone, with one or two <i>human</i> lead voices per theme
+(a horn, a cello, a twanged guitar, a whistled line) so the emotional reads
+stay warm against the synthetic battlefield. Think &ldquo;Scandinavian synthwave
+meets field-radio folk&rdquo; &mdash; but your instincts win; this is a direction,
+not a cage.</p>
+
+<p><b>The two factions</b> (for flavour, not separate scores):</p>
+<div class="factions">
+  <div class="faction dir">
+    <h4>The Directorate</h4>
+    <p>Order, doctrine, slate-blue. Motifs: square rhythms, brass-like pads,
+    confident fourths and fifths.</p>
+  </div>
+  <div class="faction out">
+    <h4>The Outliers</h4>
+    <p>Improvisers, scavengers, terracotta. Motifs: syncopation, bent notes,
+    found-percussion textures.</p>
+  </div>
+</div>
+<p>A shared 4&ndash;6 note <b>Fireline motif</b> that both flavours can quote would
+tie the whole score together &mdash; it should fit in a 3-second sting and
+stretch into a theme.</p>
+
+<h2>Technical constraints</h2>
+<ul>
+  <li><b>Format:</b> OGG Vorbis preferred (plus source WAV). Target &le; 5&nbsp;MB
+  per loop; the game ships small, and music will be its biggest asset class.</li>
+  <li><b>Loops must be seamless</b> &mdash; please author intro&rarr;loop structure as
+  TWO files (<code>x_intro.ogg</code> + <code>x_loop.ogg</code>) so we can play the
+  intro once and loop cleanly, or a single file with a documented loop point
+  in samples.</li>
+  <li>Mix for small speakers and headphones both; the game&rsquo;s SFX (synthesized
+  shots and engines) sit mid-band, so leave <b>300&nbsp;Hz&ndash;2&nbsp;kHz</b> uncluttered
+  during &ldquo;war&rdquo; tracks.</li>
+  <li>Stingers must land their point in the stated length with a clean tail
+  (we duck or stop music under them).</li>
+</ul>
+
+<h2>Track list</h2>
+
+<h3>1. Core loop &mdash; highest priority; the game needs these four first</h3>
+<table>
+  <tr><th>#</th><th>Track</th><th>Where it plays</th><th>Length</th><th>Theme &amp; notes</th></tr>
+  <tr><td class="num">1</td><td class="track">Fireline Theme<br>(splash / loading)</td>
+    <td>Splash screen and loading</td><td class="len">45&ndash;70 s<br>intro + loop</td>
+    <td>The front at dawn before anything moves. State the Fireline motif fully &mdash;
+    restrained, expectant, a slow build that never quite breaks. This is the track
+    players will hear a thousand times: <b>beauty over bombast</b>.</td></tr>
+  <tr><td class="num">2</td><td class="track">Briefing</td>
+    <td>The join/briefing overlay (&ldquo;MOVE OUT&rdquo;)</td><td class="len">30&ndash;45 s loop</td>
+    <td>Radio-room urgency: teletype/morse-adjacent percussion textures, a map-table
+    pulse, the motif clipped short. Should make pressing &ldquo;Move out&rdquo; feel inevitable.</td></tr>
+  <tr><td class="num">3</td><td class="track">The Front</td>
+    <td>Default map (frontier corridor), in-war bed</td><td class="len">2:30&ndash;3:30 loop</td>
+    <td>The workhorse track. Mid-energy, long phrases, room for 20-minute wars &mdash;
+    duty, mud, convoys on a road. Must survive hundreds of listens: lean on texture
+    and a patient bassline, quote the motif sparingly. Leave the mix open for gunfire.</td></tr>
+  <tr><td class="num">4</td><td class="track">Victory / Defeat pair</td>
+    <td>End screen</td><td class="len">12&ndash;20 s each<br>no loop*</td>
+    <td>Victory: the motif resolved warmly &mdash; <i>earned</i>, comradely, not imperial
+    (rescues won this war). Defeat: the same motif unresolved, minor-leaning,
+    respectful &mdash; another war starts in 30 seconds, so no despair.
+    <br><span style="color:var(--dim)">*a 30&ndash;45 s looping tail underneath is welcome.</span></td></tr>
+</table>
+
+<h3>2. Map themes &mdash; one per shipped map; each map has a stated identity</h3>
+<table>
+  <tr><th>#</th><th>Track</th><th>Map &amp; identity</th><th>Length</th><th>Theme</th></tr>
+  <tr><td class="num">5</td><td class="track">Blackwood</td>
+    <td>Dense woodland; quiet positional wars, ambushes, fog is king</td>
+    <td class="len">2:30&ndash;3:30 loop</td>
+    <td>Hushed and close: low woodwind-like synth, ticking percussion like branches,
+    held dissonances that never resolve. The scariest thing on this map is what you
+    can&rsquo;t see.</td></tr>
+  <tr><td class="num">6</td><td class="track">Sawtooth</td>
+    <td>Canyon mesas, chokepoints, a western stand-off feel</td>
+    <td class="len">2:30&ndash;3:30 loop</td>
+    <td>Wide-open reverb, twang (a guitar or synth-steel lead), drums like distant
+    rockfall. High noon at the gap.</td></tr>
+  <tr><td class="num">7</td><td class="track">Riverline</td>
+    <td>Water crossings, bridges blown and rebuilt, the amphibious Skimmer</td>
+    <td class="len">2:30&ndash;3:30 loop</td>
+    <td>Flowing ostinatos, water-glass textures, a theme that &ldquo;crosses&rdquo; registers
+    the way the map crosses the river. Slightly melancholy &mdash; this map&rsquo;s wars
+    run long.</td></tr>
+  <tr><td class="num">8</td><td class="track">Caldera</td>
+    <td>The ring road around a crater; fast, brutal, elimination-heavy brawls
+    (~13-minute wars)</td>
+    <td class="len">2:00&ndash;2:30 loop</td>
+    <td>The arena track: a driving, circular chord loop that never cadences (the road
+    has no end) &mdash; the score&rsquo;s highest sustained energy. A shorter loop is fine;
+    the wars are short.</td></tr>
+</table>
+
+<h3>3. Mode beds &amp; stingers &mdash; the asymmetric modes</h3>
+<table>
+  <tr><th>#</th><th>Track</th><th>Where</th><th>Length</th><th>Theme</th></tr>
+  <tr><td class="num">9</td><td class="track">Convoy Escort bed</td>
+    <td>Convoy mode wars (replaces the map bed)</td><td class="len">2:00&ndash;3:00 loop</td>
+    <td>A rolling wheels-on-road pulse that <i>keeps moving</i> &mdash; the convoy must
+    not stop, and neither does the track.</td></tr>
+  <tr><td class="num">10</td><td class="track">Heist bed</td>
+    <td>Heist mode wars</td><td class="len">2:00&ndash;3:00 loop</td>
+    <td>Slow-burn caper over a war engine: muted pulse, pizzicato-like plucks, the
+    motif played <i>sneakily</i>. When the stolen Asset moves, radio pings betray the
+    thief &mdash; the track should feel like being hunted.</td></tr>
+  <tr><td class="num">11</td><td class="track">Mission clock sting</td>
+    <td>Last 60 s of a convoy/heist clock</td><td class="len">8&ndash;12 s, layerable</td>
+    <td>A rising radio-alarm figure we can layer over the bed as the timer runs out.</td></tr>
+  <tr><td class="num">12</td><td class="track">Mercy / Last Convoy sting</td>
+    <td>When the endgame flips &mdash; a beaten team runs its last hulls home</td>
+    <td class="len">10&ndash;15 s</td>
+    <td>The saddest, proudest moment in the game: the motif as a retreat hymn.
+    <b>This moment is why the score exists.</b></td></tr>
+</table>
+
+<h3>4. Optional second round &mdash; nice-to-have, after the above</h3>
+<ul>
+  <li><b>Intensity layer</b> for tracks 3 and 5&ndash;8: a stem (percussion + high-string
+  tension) we fade in when combat density rises near the player, and out in quiet
+  phases. If you author the map themes as stems anyway, this comes almost free.</li>
+  <li><b>Vote / postgame interlude</b> (20&ndash;30 s loop): the campfire between wars;
+  acoustic-leaning, the motif hummed. Plays under the end screen&rsquo;s map + mode vote.</li>
+  <li><b>POW rescue sting</b> (5&ndash;8 s): a freed-prisoner moment &mdash; one bright
+  phrase, warm, quick.</li>
+  <li><b>The Landship horn</b> (3&ndash;5 s): a foghorn-like ident when the neutral
+  fortress is claimed. Diegetic &mdash; as if the vehicle itself sounds it.</li>
+  <li><b>Weather front layer</b> (60 s texture loop): seed-scheduled storms halve
+  sensors in-game; a wind/static texture we can blend in.</li>
+</ul>
+
+<h2>Delivery priorities</h2>
+<ol class="prio">
+  <li><b>Tracks 1&ndash;4</b> &mdash; the game feels <i>scored</i> the moment these land.</li>
+  <li><b>Tracks 5&ndash;8</b> &mdash; each shipped map gets its identity.</li>
+  <li><b>Tracks 9&ndash;12</b> &mdash; the modes and the big emotional beats.</li>
+  <li><b>Section 4</b> as inspiration strikes.</li>
+</ol>
+
+<h2>Practical notes for integration</h2>
+<ul>
+  <li>We control playback: fades, ducks under stingers, and per-map selection are
+  our job &mdash; you never need to author transitions between tracks.</li>
+  <li>Loudness target around <b>-16 LUFS</b> integrated for beds; stingers may peak
+  louder. We normalize on import either way.</li>
+  <li>Naming: the <code>01_fireline_theme_intro.ogg</code> /
+  <code>01_fireline_theme_loop.ogg</code> pattern keeps the manifest trivial.</li>
+  <li>Everything you deliver is wired behind the game&rsquo;s audio module with
+  per-track volume in settings; the synth SFX bus stays separate so your mix
+  survives the battlefield. A player-facing <b>Music on/off toggle</b> already
+  ships in the options panel.</li>
+</ul>
+
+<footer>
+Fireline Command &middot; soundtrack design brief &middot; questions welcome &mdash;
+nothing here is final except the file format and the loop rule.
+</footer>
+
+</div>
+</body>
+</html>
