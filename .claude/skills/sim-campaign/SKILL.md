@@ -34,7 +34,7 @@ path shapes; everything older is a different game):
 | frontier POWS=2 (human-session flavour) | 47.1 / 41.0% A | fair live-world; regent-war config only |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
 | convoy (Q62 corridor) | attackers **32 / 34%** | best config measured; Q47 bar still with designer |
-| riverline (post-pacing + farm fix) | **54.5 / 59.3% A** (n=600 on c51a557) — tempo VERIFIED (horn 0, median ~11.6k); the 56.9% agg lean SURVIVED the farm fix UNCHANGED — riverline's own A-keyed mechanism | EXPERIMENTAL; the lean is the successor hunt (suspects: Q18 first-strike converted by stalemate attrition; a pacing-off A/B rung separates them) |
+| riverline (post-pacing + farm fix) | **54.5 / 59.3% A** (n=600 on c51a557) — tempo VERIFIED (horn 0, median ~11.6k); the 56.9% agg lean SURVIVED the farm fix UNCHANGED — riverline's own A-keyed mechanism | EXPERIMENTAL; Q69 hunt OPEN. STALEMATE=0 rung DONE (56.8% agg — the grind exonerated, Q18-conversion hypothesis dead); uniques-off pair queued next (the Skimmer SHOULD favour B on the water map, yet B loses — if UNIQUES=0 reads fair, the unique pair is the channel) |
 | sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
