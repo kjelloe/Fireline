@@ -311,6 +311,11 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   salvage — but a respawn clock is running, and when it fires the
   wreck vanishes and a fresh neutral hull appears at the other berth.
 
-- POWs ship by DEFAULT now (Q46 ruled): every war starts with two of
-  your crews in the enemy compound — springing them is the day-one
-  objective. POWS=0 on the server restores the old census.
+- POWs are the HUMAN-SESSION flavour (the arc settled at prompt 133):
+  start the server with POWS=2 and each side holds two enemy crews —
+  the designed day-one objective. The default war keeps the classic
+  census; organic scout captures still fill compounds either way.
+- HEIST mode: MODE=heist — only the defenders keep a standard (the
+  Asset); the attackers' carrier must steal it home before the clock.
+  The radio pings the Asset's position to the defenders while it
+  moves. MODEATTACKER=1 flips sides.

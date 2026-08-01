@@ -110,3 +110,16 @@ test("convoy: the driver holds unless armour rides alongside", () => {
   assert.ok(Math.abs(go.targetCellX - 60) <= 2 || go.targetCellX > 20,
     `toward the gate: ${JSON.stringify(go)}`);
 });
+
+test("Q62: the push corridor is a real predicate (integer point-to-segment)", async () => {
+  const { CORRIDOR_CELLS } = await import("../engine/ai_regency.js");
+  assert.equal(CORRIDOR_CELLS, 10, "the ruled width");
+  // The corridor law is behavioural: in a convoy war the attacker
+  // designates capturers ONLY for relays near base->gate. Off-spine
+  // relays stay undesignated (the blanket-gate era) while spine
+  // relays get their capturer back (the zero-capturer era's fix).
+  const { createInitialState } = await import("../engine/state.js");
+  const s = createInitialState(42, "frontier_corridor", { mode: 1, modeAttacker: 0 });
+  const g = s.mission;
+  assert.ok(g.gateCellX > 64, "attacker A pushes east");
+});

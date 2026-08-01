@@ -28,14 +28,14 @@ outcome. Renderer presents fog-filtered views only.
   ladder: divergence 2 → 107 → 903; RUNG 3 DONE (78 x-floor decision
   sites law-compliant across 8 engine files, ENFORCED by
   test/boundary_law.test.js source lint — new sites fail the suite).
-  RUNG 4 CLOSED: the PARK-EAST chirality (field-repair/bridge parking
-  hardcoded absolute directions — the mirror of park-east is
-  park-west); doctrine now parks APPROACH-SIDE with axis-side ties.
-  Bug class named: absolute-direction constants in doctrine (audited
-  clean 2026-08-02 — only the axis-side law itself matches the grep).
-  RUNG 5 open: t=953 mid-flight re-target of a moving scout, one
-  world only (escort tight-follow vs patrol handoff; DUMP harness).
-  Then probe-clean 16k×5 → FULL RE-BASELINE (path shapes changed).
+  LADDER CLOSED (8 rungs, 2026-08-02): + park-east chirality,
+  segmentBlocked floors, baseCentreCol (5 sites), centre-facing
+  rebuilds, probe centre-anchor exceptions. Horizon 2 → 6280; the
+  remaining drift is the DESIGNED half-cell of centre-anchored
+  objectives (landship berth, B6 drop — rule-equal at col 64). The
+  three tie laws live in specs/08 §7/§7b; two lints enforce. Payoff:
+  POWS fairness 24% → 47.1%. RE-BASELINED: default 48.8/53.5% A
+  (fair both worlds).
   Deterministic PRNG
   (`shared/prng.js` — algorithms pinned by fixtures 0C/0D), stable iteration
   order, canonical little-endian serialization (`shared/canonical.js`).
@@ -179,7 +179,10 @@ outcome. Renderer presents fog-filtered views only.
   POWS=2 reads 33/35% A even after the prison-mirror fix banked
   +8 pts). Next opener: first-divergence step-input dump; candidates
   and the verification ladder are in dev-log 2026-08-01. The vault
-  chirality (pulled) may share this root. powPreplaced stays 0.
+  chirality (pulled) may share this root. powPreplaced SETTLED at 0
+  (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
+  POWS=2 = the human-session flavour; the POW-era doctrine tempo and
+  a POW×unique×ring caldera coupling both dissolved at 0).
   PRISONS: rear-edge geometry (5 in from the edge AWAY from map
   centre — mirror-pinned by test across all profiles).
   Faction uniques crew BY DEFAULT (16B — TRUE ONLY SINCE 2026-07-31:
