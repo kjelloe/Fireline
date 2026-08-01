@@ -92,3 +92,24 @@ tie laws) + two lint tests.
 - **New: Q63** — caldera's identity: fair now, but a death circle
   (13.1-min medians, 63% elimination endings). Bless the brawl-map
   identity, or tune MPG/pool for the ring? Your playtest decides.
+
+---
+
+## Afternoon addendum (prompts 134-137)
+
+| Work | Verdict |
+|---|---|
+| Review round | CLAUDE/skill/RUNNING synced to the settled state (ladder closed, powPreplaced arc, era table); Q62 corridor pin test |
+| Composer brief | `specs/game-soundtrack-design.md` + a shareable **.html** twin — 12 prioritized tracks, Fireline motif, OGG intro+loop delivery rules. Music on/off toggle already ships in options (`opt-music`) |
+| `slice-riverline-pacing` | Q57 queue COMPLETE. Stalemate attrition (both pools grind when the war is joined but nobody holds majority) + B3 overtime cap (600 ticks, fixture v67) + heart-relay rule. **Horn 34% → 0%** local 32+32 both worlds, median ~18.5 min, 51.6% A agg / 47% flip (fair chaos). Suite 746/746 |
+| Batch-lane hygiene | A void riverline battery (74.7% "A-lean" = stale worker build + the map job's uniques:0 default) exposed two config-drift rungs — both now in the skill. Lane rebuilt update-first: **1,800-war post-ladder era-table refresh queued** (riverline/sawtooth/blackwood mirrored pairs, uniques-on). Ignore the two stale done-mails (map_sawtooth/map_blackwood on 4b3b053) |
+| Q58 delivered | `specs/13_weapons_cache_brief.md` — site.kind 4 reload-tempo aura (R5, -25%), vault-pull lessons as design constraints, CACHE=0 kill-switch, sawtooth-first proposal |
+
+### New questions (Q64-Q67, detail in specs/13)
+
+- **Q64**: cache ship map — sawtooth first (recommended), or hold until your sawtooth playtest?
+- **Q65**: cache aura while the site is suppressed — recommend: radiates while owned, full stop.
+- **Q66**: AI doctrine weight for the cache — recommend: plain capture-seek v1, measure first.
+- **Q67**: run the pulled vault's VAULTS=2 re-test before the cache lands, or let the cache leapfrog?
+
+Your playtest, whenever you have time: riverline pacing (`MAP=riverline npm start` — a stalled war now grinds), the heist mode (`MODE=heist`), and sawtooth-with-premium are the three most verdict-hungry.
