@@ -43,6 +43,7 @@ import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./ass
 import {
   ownStandardLine, enemyStandardLine, relayTally, currentHint, briefingText, autoSelectTarget,
 } from "./objective_model.js";
+import { ambientAnchors, ambientFigures } from "./ambients_model.js";
 
 const CELL = 256; // fixed world units per cell
 const TERRAIN_COLORS = [0x3e5a3e, 0x8a8a72, 0x274427, 0x5e5240, 0x2b2b33, 0x6e5f42, 0x2a4a66]; // 11N path, 12C water
@@ -151,6 +152,8 @@ const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
 const sandbagMeshes = new Map(); // sandbagId -> Mesh (Q45/Q50)
 const prisonFigures = new Map(); // "g0"/"p0-2" -> Mesh (figure kit)
+const ambientMeshes = new Map(); // idx -> Mesh (figure kit r2)
+let ambientAnchorCache = null;   // per-map, computed once
 let alarmFlashUntil = 0;         // wall-clock ms; cosmetic only
 const droneMeshes = new Map(); // droneId -> Mesh (9G)
 let fogGhosts = []; // 13E: last-seen enemy contacts
@@ -2652,6 +2655,43 @@ function updateGhostMeshes(nowMs) {
 // FIGURE KIT: the compounds get people — one watchman per prison
 // (alarm lamp pulses after a prison_alarm ping) and a kneeling figure
 // per held POW. Pure presentation from public view data.
+// Figure kit r2: ambient civilians — pure f(seed, tick, terrain) on
+// the 16G precedent; flee reactions use ONLY the viewer's view.
+function updateAmbients(view) {
+  if (!cachedMap) return;
+  if (!ambientAnchorCache || ambientAnchorCache.seed !== cachedMap.seed) {
+    ambientAnchorCache = {
+      seed: cachedMap.seed,
+      anchors: ambientAnchors(cachedMap.cells, cachedMap.width, cachedMap.height, cachedMap.seed >>> 0),
+    };
+  }
+  const visible = [...(view.friendlyAssets ?? []), ...(view.visibleEnemies ?? [])];
+  const figs = ambientFigures(ambientAnchorCache.anchors, view.tick ?? 0, visible);
+  const live = new Set();
+  figs.forEach((f, i) => {
+    live.add(i);
+    let mesh = ambientMeshes.get(i);
+    if (!mesh) {
+      mesh = buildProcedural(f.kind);
+      if (!mesh) return;
+      scene.add(mesh);
+      ambientMeshes.set(i, mesh);
+    }
+    mesh.position.set(f.x, 0, f.y);
+    // Walk-bob / run-bob / kneel: pose as transform, per the kit.
+    if (f.pose === "kneel") {
+      mesh.scale.y = 0.7;
+    } else {
+      const bob = Math.sin((view.tick ?? 0) * (f.pose === "run" ? 0.9 : 0.35) + i) * 0.03;
+      mesh.scale.y = 1;
+      mesh.position.y = Math.max(0, bob);
+    }
+  });
+  for (const [i, mesh] of ambientMeshes) {
+    if (!live.has(i)) { scene.remove(mesh); ambientMeshes.delete(i); }
+  }
+}
+
 function updatePrisonFigures(view) {
   const live = new Set();
   for (const p of view.prisons ?? []) {
@@ -2853,6 +2893,7 @@ function renderBattlefield() {
   updateCaltropMeshes(view);
   updateSandbagMeshes(view);
   updatePrisonFigures(view);
+  updateAmbients(view);
   updateDroneMeshes(view, performance.now());
   updatePingLabels(view);
   updateDirectRing(view);

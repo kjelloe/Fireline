@@ -298,6 +298,30 @@ function buildLandship() {
   return g;
 }
 
+// Figure kit r2: CIVILIANS. Ambient figures — brighter cloth tints,
+// no team panel, no weapon geometry; the silhouette law again.
+function buildCivilian(tint) {
+  const g = new THREE.Group();
+  const legs = box(0.09, 0.14, 0.07, "#6b5f4e"); legs.position.set(0, 0.07, 0);
+  const smock = box(0.13, 0.17, 0.09, tint); smock.position.set(0, 0.23, 0);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.055, 6, 5), mat("#d4b896"));
+  head.position.set(0, 0.37, 0);
+  g.add(legs, smock, head);
+  return g;
+}
+
+function buildTraderCart() {
+  const g = new THREE.Group();
+  const C = colors();
+  const bed = box(0.4, 0.12, 0.22, "#7a5c3a"); bed.position.set(0, 0.16, 0);
+  const canopy = box(0.3, 0.1, 0.2, "#a89060"); canopy.position.set(-0.02, 0.3, 0);
+  const wheelL = cyl(0.09, 0.09, 0.04, 8, C.tread ?? "#333"); wheelL.rotation.x = Math.PI / 2; wheelL.position.set(0.1, 0.09, 0.13);
+  const wheelR = wheelL.clone(); wheelR.position.z = -0.13;
+  const mule = buildCivilian("#8f8f7a"); mule.position.set(0.35, 0, 0); mule.scale.set(0.9, 0.8, 0.9);
+  g.add(bed, canopy, wheelL, wheelR, mule);
+  return g;
+}
+
 function buildStandard(dropped) {
   const g = new THREE.Group();
   const C = colors();
@@ -490,6 +514,9 @@ const BUILDERS = {
   guard: buildGuardFigure,        // figure kit (specs/12)
   pow_figure: buildPowFigure,     // figure kit
   landship: buildLandship,                              // Q42
+  farmhand: () => buildCivilian("#b8985a"),   // figure kit r2
+  roadworker: () => buildCivilian("#c47a3a"), // hi-vis smock
+  trader: buildTraderCart,                    // figure kit r2
   wreck_landship: () => buildWreck("wreck_landship"),   // Q42
   standard_upright: () => buildStandard(false),
   standard_dropped: () => buildStandard(true),

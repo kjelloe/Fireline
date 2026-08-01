@@ -4653,3 +4653,23 @@ convoy maturation path, documented, tuning owed after playtest.
   n=10 both sides. Batteries queued (heist pair + the convoy pair
   re-run under the new gates); the real tuning follows the owner's
   playtest per the Q47 pattern.
+
+## slice-ambients: figure-kit round 2 — the world gets people (2026-08-02)
+
+Q57's third item (designer order: farmhands → road workers → trader).
+Suite 735/735 x2, smoke + acceptance green, strip 33 tiles.
+- `client/js/ambients_model.js` (pure, unit-tested): ambient NPCs on
+  the 16G WEATHER PRECEDENT — every position is f(map seed, tick,
+  terrain); nothing hashed, nothing transported, zero engine surface.
+  Anchors derive once per map (≤12 farmhands at open-ground pockets,
+  ≤6 road workers on road cells, ONE trader cart shuttling the main
+  road row on a triangle wave).
+- REACTIONS ARE VIEWER-LOCAL by design: a farmhand flees war
+  machines within 5 cells — but only machines the VIEWER can see
+  (fleeing from fog would leak information); two clients may
+  disagree about a civilian's panic, and cosmetics may.
+- Figure kit: civilians are bright-cloth, no team panel, NO weapon
+  geometry (the silhouette law); poses as transforms — walk-bob,
+  run-bob (faster), road-worker kneel; the trader is a cart + mule.
+- RUNNING note + the codex stay quiet about them on purpose: ambient
+  life should be DISCOVERED, not documented (the stray-dog spirit).
