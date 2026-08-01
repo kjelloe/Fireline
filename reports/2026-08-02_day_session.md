@@ -197,3 +197,36 @@ of PC time. When you green-light the residue hunt, that's the probe.
 **Your queue**: Q63 caldera identity · Q64-Q67 cache/specials · Q69
 riverline unique-pair lean (accept with disclosure, premium-style, or
 tune?) · Q47b convoy bar + side gap · Q70 heist getaway levers.
+
+---
+
+## The residue hunt: ROOT FOUND — frontier was never cell-symmetric
+
+You green-lit the hunt; it closed the same evening. The chain: the
+convoy instrument's att0/att1 gap turned out to confound direction
+with FACTION (att0 = Sentinel attacker, att1 = Skimmer) — so the
+mirror-diverge probe gained convoy mode, diverged at t=1085 on seed
+777, and the dump hand-computed to **step 14 vs step 28 from
+perfectly mirrored states**: different TERRAIN under the same
+mirrored position. The reveal: **frontier's rough/forest noise was
+drawn over the whole map — 1,615 of 8,192 mirror cell pairs differ
+per seed.** The mirror invariant was tested at layout level only;
+riverline/blackwood/sawtooth/caldera all measure zero asymmetric
+pairs. Frontier — the flagship, the default, the map every baseline
+is normalized against — was the only offender, and every frontier-
+clustered residue signature (the POWS corridor kill-zone's
+"symmetric cells" that weren't, the 16d probe drift) fed on that
+terrain luck.
+
+**Fixed by construction**: west-half noise reflected east (density
+preserved), the missing cell-level invariant test now pins all five
+profiles, fixtures re-pinned (v68 + 0I v6). Post-fix the convoy
+probe's only remaining divergence hand-verifies as the DESIGNED
+col-64 anchor half-cell (ruled, exempt).
+
+**Consequences**: every frontier number in the era table is stale.
+The verification ladder is queued post-fix (frontier default pair,
+POWS=2 pair, convoy attacker pair — ~30 min of PC time); the era
+table gets rebuilt from those. Note for your playtest: frontier's
+terrain LOOKS the same style but is a new world per seed — and now
+provably the same war for both sides.
