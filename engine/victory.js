@@ -15,6 +15,9 @@ export const WIN_CONVOY_DELIVERED = 6; // mode: the convoy reached the gate
 export const WIN_CONVOY_STOPPED = 7;   // mode: timer expired or hull salvaged
 export const WIN_HEIST_TIMEOUT = 8;    // mode: the Asset never left the vault
 
+// Prompt 136: total ticks B3 overtime may hold an empty pool open.
+export const OVERTIME_CAP_TICKS = 600;
+
 export const PHASE_RUNNING = 0;
 export const PHASE_OVER = 1;
 
@@ -106,6 +109,10 @@ export function checkVictory(state) {
     // it needs no new hashed field.
     const overtime = (team) => {
       if (state.rules?.overtime === false) return false;
+      // Prompt 136: the photo-finish window is one minute, total. The
+      // reducer counts held-open ticks in state.overtime; past the cap
+      // an empty pool ends the war no matter what play is live.
+      if ((state.overtime ?? 0) > (state.rules?.overtimeCapTicks ?? OVERTIME_CAP_TICKS)) return false;
       const capturing = (state.sites ?? []).some((s) => s.capturingTeam === team);
       const runLive = (state.standards ?? []).some((st) =>
         st.status === 1 /* CARRIED */ && st.team !== team) ||

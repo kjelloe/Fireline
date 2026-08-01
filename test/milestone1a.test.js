@@ -71,6 +71,7 @@ function stateHash(s) {
   }
   for (const m of (s.manufacture ?? [0, 0])) w.writeI32LE(m); // added 9D
   for (const t of (s.tickets ?? [0, 0])) w.writeI32LE(t); // added 13H
+  w.writeI32LE(s.overtime ?? 0); // added prompt-136 (overtime cap)
   for (const d of (s.downed ?? [])) { // added 9B
     w.writeI32LE(d.operatorId); w.writeI32LE(d.team);
     w.writeI32LE(d.x); w.writeI32LE(d.y);

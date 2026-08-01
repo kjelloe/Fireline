@@ -7,6 +7,7 @@
 import {
   OP_ABSENT, OP_ACTIVE, OP_DOWN, OP_CAPTIVE,
   ASSET_IDLE, ASSET_MOVING, ASSET_DISABLED, ASSET_SALVAGED,
+  MAP_LAYOUTS,
 } from "./state.js";
 import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
@@ -2457,6 +2458,14 @@ function applyAdvanceTick(next) {
       for (const site of next.sites) {
         if (site.owner === 0 || site.owner === 1) owned[site.owner] += 1;
       }
+      // Riverline pacing (prompt 136): a map may declare HEART relays
+      // (the bridge pair — the crossing itself). Owning every heart is
+      // bleed-equivalent to the majority: the enemy's river supply is
+      // cut even at an outer 3-3 split. Without this, wars with a
+      // decided crossing stalled to the 30-minute horn (~34-41%).
+      const hearts = MAP_LAYOUTS[next.mapProfile]?.heartSiteIds;
+      const holdsBleed = (team) => owned[team] >= majority ||
+        (hearts != null && hearts.every((id) => next.sites[id]?.owner === team));
       // B3 MERCY BLEED. The designer's wording was "full cap held 3
       // minutes", which turns out to be UNREACHABLE in this engine:
       // holding every site already wins outright after 300 ticks
@@ -2498,7 +2507,7 @@ function applyAdvanceTick(next) {
       for (const team of [0, 1]) {
         const foe = team === 0 ? 1 : 0;
         const cv = next.convoy[team];
-        if (cv.active || !nearlyOut(team) || owned[foe] < majority || !rout(team)) continue;
+        if (cv.active || !nearlyOut(team) || !holdsBleed(foe) || !rout(team)) continue;
         const fielded = next.assets.filter((a) =>
           a.team === team && a.operatorId !== -1 &&
           a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
@@ -2517,13 +2526,41 @@ function applyAdvanceTick(next) {
         }
         return (nearlyOut(foe) && !fightingBack(foe) && rout(foe)) ? mercyRate : 1;
       };
-      if (owned[0] >= majority && next.tickets[1] > 0) {
+      if (holdsBleed(0) && next.tickets[1] > 0) {
         next.tickets[1] = Math.max(0, next.tickets[1] - rate(0));
       }
-      if (owned[1] >= majority && next.tickets[0] > 0) {
+      if (holdsBleed(1) && next.tickets[0] > 0) {
         next.tickets[0] = Math.max(0, next.tickets[0] - rate(1));
       }
     }
+    // STALEMATE ATTRITION (prompt 136, riverline pacing): a map may
+    // declare that a joined-but-undecided war grinds both pools. Fires
+    // only when both teams own at least one relay and NEITHER holds a
+    // bleed majority — armies still marching (all-neutral sites) pay
+    // nothing, and any majority hands the war back to 13H bleed.
+    const stallTicks = next.rules?.stalemateBleedTicks ??
+      MAP_LAYOUTS[next.mapProfile]?.stalemateBleedTicks ?? 0;
+    if (stallTicks > 0 && next.tick % stallTicks === 0) {
+      const owned = [0, 0];
+      for (const site of next.sites) {
+        if (site.owner === 0 || site.owner === 1) owned[site.owner] += 1;
+      }
+      const mapMajority = ((next.sites.length / 2) | 0) + 1;
+      const majority = Math.min(next.rules?.ticketMajority ?? 5, mapMajority);
+      if (owned[0] > 0 && owned[1] > 0 &&
+          owned[0] < majority && owned[1] < majority) {
+        if (next.tickets[0] > 0) next.tickets[0] -= 1;
+        if (next.tickets[1] > 0) next.tickets[1] -= 1;
+      }
+    }
+  }
+  // Prompt 136 (overtime cap): count every tick an empty pool is being
+  // held open. B3's overtime lets a live play RESOLVE — it must not be
+  // renewable forever by back-to-back captures (riverline leaked 6,940
+  // ticks in one measured war). checkVictory caps on this counter.
+  if (next.tickets && !next.mission &&
+      (next.tickets[0] <= 0 || next.tickets[1] <= 0)) {
+    next.overtime = (next.overtime ?? 0) + 1;
   }
   // Victory pass (3E): track domination hold, then check every condition.
   const dominator = dominatingTeam(next);

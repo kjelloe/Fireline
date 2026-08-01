@@ -4714,3 +4714,29 @@ the n=300 pair decides. Suite 735/735.
 - `specs/game-soundtrack-design.html` — self-contained styled twin of
   the md brief for sharing with the human composer (print-friendly).
 - Gates: client smoke OK, ui acceptance OK, suite 736/736.
+
+## slice-riverline-pacing (2026-08-02, prompt 136 — the last Q57 item)
+
+The measured stall (fresh local 32+32, post-ladder): horn 34%, and 25/32
+wars had ZERO standard attempts. Diagnosis in three acts:
+1. HEART BLEED (bridge pair = bleed majority) — implemented, then the
+   discriminator (`dbg_heart_hold.mjs`) showed it REDUNDANT by geometry
+   in AI wars: taking the enemy bridge relay is always the 4th relay
+   (sweep byte-identical). KEPT for the human mutual-crossing case,
+   tests pin it; documented honestly.
+2. OVERTIME LEAK: seed 16 held an empty pool open 6,940 ticks — B3's
+   "let the play resolve" renewed forever by riverline's capture churn.
+   Fix: hashed `overtime` counter + OVERTIME_CAP_TICKS 600
+   (rules.overtimeCapTicks overrides). FIXTURE v67.
+3. STALEMATE ATTRITION (the real lever): 10/11 horn wars were 3-3
+   bank-sitting standoffs with ~full pools at the horn. Riverline
+   declares `stalemateBleedTicks: 50` — when both teams own a relay
+   and NEITHER holds bleed majority, BOTH pools grind. Joined wars
+   only (all-neutral pays nothing); other profiles undeclared = off.
+
+Local gate 32+32 mirrored: horn 11 -> 0 (both worlds), decided median
+13,460 -> ~11,135, overtime 6,940 -> 600 (capped), aggregate 51.6% A,
+flip rate 47% (fair chaos). Frontier 5-seed gate healthy (all tickets,
+9.4k-14.5k, systems firing). Suite 746/746 x2 (10 new tests in
+test/heart_bleed.test.js). 300+300 PC battery queued for the
+EXPERIMENTAL-exit read.

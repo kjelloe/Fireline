@@ -267,6 +267,21 @@ export const MAP_LAYOUTS = Object.freeze({
       { cellX: 44, cellY: 95 }, { cellX: 83, cellY: 95 },
       { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
     ],
+    // Riverline pacing (prompt 136): the bridge pair IS the crossing —
+    // a team owning EVERY heart relay has cut the enemy's river supply
+    // and bleeds tickets even at an outer 3-3 split. Mirror pair by
+    // construction (58<->69 under x'=127-x). NOTE: in AI-vs-AI wars this
+    // is redundant by geometry (the enemy bridge relay is always the 4th
+    // relay); it exists for the HUMAN mutual-crossing case (both sides
+    // trade outer relays across the river).
+    heartSiteIds: Object.freeze([4, 5]),
+    // The measured stall (10 of 11 horn wars, 2026-08-02): both armies
+    // sit on their own bank at 3-3 and nothing bleeds for 30 minutes.
+    // When the war is JOINED (both teams own a relay) but NEITHER holds
+    // a bleed majority, the river grinds BOTH pools on this cadence —
+    // the standoff converts to a ticket ending decided by accumulated
+    // wreck attrition. Undefined on other profiles = off.
+    stalemateBleedTicks: 50,
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),
   blackwood: Object.freeze({
@@ -488,6 +503,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
       (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
       (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
     ], // 13H: per-team pools, hashed
+    overtime: 0, // prompt 136: ticks an empty pool was held open (B3 cap)
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team
     salvage: [0, 0], // ruled 2026-07-31: recovered wrecks bank MPG-wave discounts
