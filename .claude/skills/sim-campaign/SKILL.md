@@ -29,21 +29,27 @@ path shapes; everything older is a different game):
 
 | config (live) | A-rate | verdict |
 |---|---|---|
-| frontier default | **48.8% / 53.5%** (normal/mirror — edge FLIPS = fair chaos) | FAIR |
-| frontier DEFAULT (powPreplaced 0 — SETTLED, prompt 133) | **48.8 / 53.5% A** (the ladder-verdict pair) | FAIR — the era baseline |
-| frontier POWS=2 (human-session flavour) | 47.1 / 41.0% A | fair live-world; regent-war config only |
+| frontier DEFAULT (SYMMETRIC-TERRAIN era, cff77cb) | **46.2 / 45.5% A** (n=600) — in band; edge does NOT flip = a small TEAM-keyed B tilt | FAIR — the new era baseline (pre-fix 48.8/53.5 is a DIFFERENT MAP) |
+| frontier POWS=2 (SYMMETRIC-TERRAIN era) | **25.4 / 27.7% A** (n=600) — the old 47.1% "fairness" RESTED on asymmetric terrain compensating a B-favoring mechanism | **OUT OF BAND — flag for human sessions (POWS=2 is the human flavour!)**; the team-keyed hunt owns this |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
-| convoy (post-escort-wall, 849fb27) | attackers **41.3% east / 64.7% west** (was 32/34) | the fix RAISED both sides and unmasked a 23-pt DIRECTIONAL gap — the residue's best instrument yet; Q47 bar still with designer |
+| convoy (SYMMETRIC-TERRAIN era, cff77cb) | attackers **39.1% (A) / 64.0% (B)** | the gap follows the TEAM, not the direction (mirror pair: A ~41-45 both directions, B ~65 both; uniques-off keeps 11 pts) — TEAM-KEYED, terrain-independent. The hunt's prime suspect: Q18 execution-order first-strike (tick-parity fix AWAITING GO since night 2) |
 | heist (post-doctrine, 849fb27) | attackers **8.0% east / 3.7% west** (was ~0.3) | alive but under any bar — the getaway is physics (Q70 levers with the owner) |
 | riverline (post-pacing + farm fix) | **54.5 / 59.3% A** uniques-ON; **47.2 / 34.7%** uniques-OFF (n=600 each) | Q69 rungs DONE: stalemate exonerated (56.8% without it); UNIQUES CONVICTED — the pair swings ~16 pts toward A on the water map (sawtooth seat-economics' sibling). Beneath it, uniques-off shows an EAST-SIDE curse (~-9 pts both worlds) = the directional residue |
 
-THE DIRECTIONAL RESIDUE now has MACRO INSTRUMENTS (2026-08-02): the
-east-attacking convoy loses 23 pts vs west (41.3/64.7 at n=600) and
-the uniques-off riverline east side loses ~9 — versus the old 3-pt
-POWS deltas and the 16d micro-probe. When the residue hunt resumes,
-A/B convoy batteries are the cheapest strong signal. (KNOWN OPEN, top
-of the queue in CLAUDE.md; candidates + verification ladder in
-dev-log 2026-08-01.)
+THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
+1. UNDESIGNED root FOUND+FIXED: frontier terrain was never
+   cell-symmetric (1,615/8,192 pairs/seed) — mirror-by-construction
+   since cff77cb; test/map_symmetry.test.js pins all profiles. EVERY
+   pre-cff77cb frontier number describes a map that no longer exists.
+2. DESIGNED remainder: the col-64 centre anchors (landship berth, B6
+   drop) — ruled half-cell, probe-exempt, verified by hand at t=5495.
+3. TEAM-KEYED remainder (the open hunt): convoy attacker 39/64,
+   POWS=2 at 25-28% A, frontier default's non-flipping 46/45.5 —
+   direction exonerated by the mirror pair, terrain exonerated by
+   the fix, landship/drops/uniques all partial-at-most. Prime
+   suspect: Q18 execution-order first-strike (tick-parity command
+   order fix proposed night 2, AWAITING the owner's GO). Instruments:
+   convoy A/B pair (25-pt signal, ~6 min PC), POWS pair (20-pt).
 | sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 

@@ -202,6 +202,15 @@ WSL Playwright is SwiftShader-only and useless for FPS numbers
 
 ## 7. Greatest-hits gotcha list (quick reference)
 
+-1. A claimed invariant needs a test AT THE LEVEL IT IS CLAIMED. The
+   mirror invariant was pinned for relays/spawns/patrols while
+   frontier's TERRAIN CELLS were never symmetric (1,615 asymmetric
+   pairs/seed for ~5 weeks of measurements). The probe method that
+   found it: mirror-diverge to the first tick, then HAND-COMPUTE the
+   single diverging step from the dump (step 14 vs 28 = different
+   terrain — arithmetic exonerated, world convicted). And instrument
+   lesson #4: the probe compared 9 fields but not moveProgress —
+   widen the instrument BEFORE trusting its first answer.
 0. Neutral entities (team -1) walk into every `team === 0 ? 1 : 0`
    foe computation as "enemy = team A" — the landship farm gave A a
    free scored drone-kill loop worth ~10 pts of blackwood A-rate.

@@ -112,7 +112,9 @@ outcome. Renderer presents fog-filtered views only.
   `engine/caldera.js` (item-40 circle map — EXPERIMENTAL, RED gate:
   raider's-clause-on-a-ring stomp factory, fix-first); Q31 raider
   clause + AI seat-swap; splash (`client/js/splash_model.js`, pure
-  tested controller). Full rulings: specs/12. MAP: frontier has EIGHT mirrored
+  tested controller). Full rulings: specs/12. MAP (terrain law,
+  prompt 143: every profile's TERRAIN is mirror-symmetric BY
+  CONSTRUCTION, cell-tested by map_symmetry.test.js): frontier has EIGHT mirrored
   relays — road 32/58/69/95 + lateral 44/83 at rows 40/86 — mirrored
   spawns (A x=7, B x=120). Mirror symmetry is a TESTED balance invariant
   (specs/08): never move one side without its mirror, and tie-breaks
@@ -184,15 +186,21 @@ outcome. Renderer presents fog-filtered views only.
   /rotation at runtime (POST loopback-only). MODE FRAMEWORK: see the
   2026-08-01 block above; convoy battery `batch_send.sh convoy`;
   bisection kill-switches RAIDPARTY=0/POWARC=0 + the `ab` job kind.
-  KNOWN OPEN — THE DIRECTIONAL RESIDUE (top of the queue): the 16d
-  divergence probe (dbg_mirror_diverge) runs RED even at 16d itself
-  (SEED=2026, t≈94; cumulative step drift, x AND y). Its measured
-  body count: the POWS corridor kill-zone (eastbound dies 3x at
-  symmetric cells → A's raid escorts die → 0.5 vs 2.0 at the wire →
-  POWS=2 reads 33/35% A even after the prison-mirror fix banked
-  +8 pts). Next opener: first-divergence step-input dump; candidates
-  and the verification ladder are in dev-log 2026-08-01. The vault
-  chirality (pulled) may share this root. powPreplaced SETTLED at 0
+  THE RESIDUE, RESOLVED INTO PARTS (2026-08-02, prompt 143): the
+  UNDESIGNED root was FRONTIER'S TERRAIN — never cell-symmetric
+  (noise drawn whole-map; 1,615/8,192 asymmetric mirror pairs/seed).
+  Mirror-BY-CONSTRUCTION since cff77cb (west-half noise reflected
+  east, budgets 550/55); test/map_symmetry.test.js pins ALL profiles
+  cell-for-cell — the invariant is now tested at the level it is
+  claimed. Every pre-cff77cb frontier measurement describes a map
+  that no longer exists. DESIGNED remainder: the col-64 centre
+  anchors (ruled half-cell). KNOWN OPEN — THE TEAM-KEYED REMAINDER
+  (top of the queue): convoy attackers 39%(A)/64%(B) BOTH directions
+  (mirror pair exonerates direction), POWS=2 at 25-28% A on clean
+  terrain (the old 47% rested on terrain luck), frontier default
+  46.2/45.5 in-band but non-flipping. Prime suspect: Q18
+  execution-order first-strike — the tick-parity command-order fix
+  is proposed and AWAITING THE OWNER'S GO. powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
   POWS=2 = the human-session flavour; the POW-era doctrine tempo and
   a POW×unique×ring caldera coupling both dissolved at 0).

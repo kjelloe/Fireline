@@ -161,7 +161,8 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 | Q67 | Specials-ladder order: VAULTS=2 re-test before the cache lands, or cache leapfrogs? | you | PC lane free |
 | Q68 | DISSOLVED: blackwood restored to 51.0/48.3% fair by the landship-farm fix — promotion stands | — | — |
 | Q69 | ANSWERED BY DATA: riverline's lean is the UNIQUE PAIR (~16 pts toward A on water — seat-economics' sibling; uniques-off reads 40.9% agg). Beneath it: an east-side curse (~9 pts, both worlds) = the directional residue. Design question now: accept the pair's lean on riverline (premium-style disclosure), or tune? | you | — |
-| Q47b | Convoy post-escort-wall: attackers 41.3% east / 64.7% west (was 32/34) — the bar question is now also a SIDE question (23-pt directional gap = the residue's macro instrument) | you + residue hunt | — |
+| Q47b | Convoy attackers 39.1%(A)/64.0%(B) on clean terrain — the gap is TEAM-keyed (direction exonerated by the mirror pair) | folds into Q71 | — |
+| **Q71** | **THE Q18 GO**: the team-keyed remainder (convoy 39/64, POWS=2 at 25-28% A post-terrain-fix — out of band for the human flavour) points at execution-order first-strike; the tick-parity command-order fix has been proposed since night 2 AWAITING GO. Trial it behind a kill-switch and measure the convoy+POWS pairs? | **you** | — |
 | Q70 | Heist getaway levers (the grab works, the escape is physics — scouts speed 56 catch the carrier 24): fast raider as a mode rule (the getaway car), attacker MPG edge, thinner pings, or bless attrition-first? | you | heist battery |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |

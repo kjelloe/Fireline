@@ -1286,7 +1286,10 @@ function dirForHeading(heading) {
 }
 
 // Sector 0..15 of the vector (dx, dy) using rational tan boundaries.
-function bearing16(dx, dy) {
+// Mirror-equivariance PINNED (prompt 143): bearing16(-dx,dy) === (8-k)&15
+// — abs-based octant + quadrant mapping commute with the x-mirror,
+// verified by hand at the t=5495 dump and by test (mirror_laws).
+export function bearing16(dx, dy) {
   const ax = absI32(dx);
   const ay = absI32(dy);
   // Octant sectors via |dy|/|dx| against tan(11.25/33.75/56.25/78.75) deg.

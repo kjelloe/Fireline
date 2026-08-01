@@ -62,3 +62,18 @@ test("A* origin-side law: wall-detour paths mirror exactly (the tick-2 pair)", (
     }
   }
 });
+
+test("bearing16 commutes with the x-mirror for every direction (prompt 143)", async () => {
+  // Verified by hand during the residue hunt (the t=5495 dump initially
+  // looked like a bearing asymmetry and was exonerated). Pin it: the
+  // mirror of sector k is (8 - k) & 15, including the axes.
+  const { bearing16 } = await import("../engine/reducer.js");
+  for (let dx = -40; dx <= 40; dx += 4) {
+    for (let dy = -40; dy <= 40; dy += 4) {
+      if (dx === 0 && dy === 0) continue;
+      const k = bearing16(dx, dy);
+      const km = bearing16(-dx, dy);
+      assert.equal(km, (8 - k + 16) & 15, `(${dx},${dy}): ${k} vs mirror ${km}`);
+    }
+  }
+});

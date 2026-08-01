@@ -230,3 +230,22 @@ POWS=2 pair, convoy attacker pair — ~30 min of PC time); the era
 table gets rebuilt from those. Note for your playtest: frontier's
 terrain LOOKS the same style but is a new world per seed — and now
 provably the same war for both sides.
+
+---
+
+## Verification ladder verdicts (post-terrain-fix, cff77cb) — and Q71
+
+| config (n=600, clean terrain) | read | meaning |
+|---|---|---|
+| frontier default | **46.2 / 45.5% A** | in band; the edge no longer flips — a small team-keyed B tilt |
+| frontier POWS=2 | **25.4 / 27.7% A** | **OUT OF BAND** — the old 47% "fairness" rested on terrain luck compensating a B-favoring mechanism. This is the human-session flavour: heads-up for your sessions |
+| convoy attackers | **39.1% (A) / 64.0% (B)** | the 25-pt gap survives clean terrain; the pre-fix mirror pair proved it follows the TEAM, not the direction |
+
+Landship and drops rungs: both innocent for the convoy gap.
+
+**Q71 (the one decision this hunt now needs)**: the team-keyed
+remainder points at Q18's execution-order first-strike bias — the
+tick-parity command-order fix you have had "proposed, AWAITING GO"
+since night 2. Say GO and I trial it behind a kill-switch
+(ORDERPARITY=0 reverts) and measure the convoy + POWS pairs; if it
+closes the gaps, the last engine chirality falls.
