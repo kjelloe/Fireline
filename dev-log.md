@@ -4561,3 +4561,25 @@ ENDGAME NOW: pows pair + default pair batteries on this build decide
 Q46 and the era baseline. If a centre-anchor lean ever shows at
 n=600, the banked fix is seed-parity column alternation (63/64),
 the landship-berth pattern.
+
+## THE LADDER'S VERDICT (2026-08-02, n=600 per config on 0328573)
+
+- **Default game: 48.8% / 53.5% A** — fair in both worlds, edge flips
+  with the mirror. The post-ladder era baseline is clean.
+- **POWS=2: 47.1% A in the NORMAL world — IN BAND, up from 24%.**
+  The eight rungs (prison mirror, A* ties, boundary parity, the
+  78-site sweep, park-east, segmentBlocked, baseCentreCol, rebuild
+  facing) were collectively worth ~23 points of POWS fairness.
+  The mirror world still reads 41.0% (aggregate 44.0, one point
+  outside the band) — and since the default-mirror leans the OTHER
+  way (53.5% A), this is POWS-specific residue, plausibly the
+  centre-anchor coupling (POW traffic orbits compounds; the drop and
+  landship sit rule-equal at column 64). Banked fix if it matters:
+  seed-parity column alternation.
+- **Q46 stays with the owner** (as the plan assigns): recommendation
+  is FLIP — the live game is what humans play and it is in band,
+  tempo is clean (2.3% undecided) — but the flip repins everything,
+  so it ships on the owner's word with this data in front of them.
+- Sawtooth/blackwood numbers are pre-ladder: re-run their batteries
+  before trusting anything about them. The vault re-test (VAULTS=2
+  rung) is now meaningful.

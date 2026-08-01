@@ -23,15 +23,15 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, CURRENT baseline (**people-era re-baseline, 1,800 wars on
-d37e979, 2026-08-01** — walls + pathfinding + raider's clause +
-stations + POW captures; everything older is a different game):
+Healthy war, CURRENT baseline (**POST-LADDER era, n=600/config on
+0328573, 2026-08-02** — the eight-rung equivariance ladder changed
+path shapes; everything older is a different game):
 
-| profile (live config) | A-rate agg | median | horn | tickets | undecided |
-|---|---|---|---|---|---|
-| frontier | **48.5%** (48.8/48.1 both worlds — FAIR) | 21.7 min | 15% | 76% | 0% |
-| sawtooth | **56.7%** (HELD; premium stays, >55) | 18.6 min | — | — | — |
-| blackwood | **49.2%** (flips w/ mirror — fair; PROMOTED holds) | 23.5 min | — | — | — |
+| config (live) | A-rate | verdict |
+|---|---|---|
+| frontier default | **48.8% / 53.5%** (normal/mirror — edge FLIPS = fair chaos) | FAIR |
+| frontier POWS=2 | **47.1% normal (IN BAND — was 24%!) / 41.0% mirror** | live game fair; mirror residue open (Q46 with the user) |
+| sawtooth / blackwood | pre-ladder reads (56.7 / 49.2) — re-run before trusting | STALE |
 
 Era horn settled at ~15% on frontier — up from the pool-ladder 9%;
 the accumulated features bought new gameplay for ~6 points of horn.
