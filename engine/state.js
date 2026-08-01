@@ -185,7 +185,7 @@ export function fieldSpawnFor(id, bases = null) {
   return { team, type: RESERVE_TYPES_BY_TEAM[team][slot % 12], cellX: col, cellY: row };
 }
 
-function createFieldAssets() {
+function createFieldAssets(landshipEnabled = true) {
   const assets = [];
   let id = 0;
   for (let team = 0; team < TEAM_COUNT; team++) {
@@ -210,9 +210,12 @@ function createFieldAssets() {
   // a rotation point on the CENTRE COLUMN (x untouched by rotation, so
   // the x-mirror is exact; north/south alternation rides the hashed
   // landship law in the reducer). Nobody owns it until someone climbs
-  // in.
-  assets.push(makeFieldAsset(32, 9 /* UNIT_LANDSHIP */, -1,
-    LANDSHIP_SPAWNS[0][0], LANDSHIP_SPAWNS[0][1]));
+  // in. rules.landship === false omits it (LANDSHIP=0 — the A-keyed
+  // hunt's bisection switch, vault-precedent).
+  if (landshipEnabled) {
+    assets.push(makeFieldAsset(32, 9 /* UNIT_LANDSHIP */, -1,
+      LANDSHIP_SPAWNS[0][0], LANDSHIP_SPAWNS[0][1]));
+  }
   return assets;
 }
 
@@ -420,7 +423,7 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     const profile = MAP_PROFILES[mapArg];
     if (!profile) throw new RangeError(`unknown map profile: ${mapArg}`);
     map = profile(mapSeed >>> 0);
-    assets = createFieldAssets();
+    assets = createFieldAssets(rules?.landship !== false);
     sites = createSites(typeof mapArg === "string" ? mapArg : "frontier_corridor");
     bases = createBases();
     standards = createStandards(

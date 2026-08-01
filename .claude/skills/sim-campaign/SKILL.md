@@ -48,11 +48,13 @@ THE A-KEYED HUNT (opened 2026-08-02, endpoints VERIFIED): blackwood
 regression lives in d37e979..937b1af, a span that CONTAINS THE WHOLE
 EQUIVARIANCE LADDER. Riverline's 56.9% aggregate lean is likely the
 same root (A-keyed in both worlds on both maps; sawtooth's stable 55.5
-may be the same thing at lower gain). Frontier post-Q61 battery pair
-queued — if the default map also drifted A-ward, suspect a GLOBAL
-mechanism (Q18 execution-order first-strike bias, ~6 pts A, fix
-proposed but never applied: tick-parity command order) newly unmasked
-by the ladder removing geometric compensators. Bisect the span with
+may be the same thing at lower gain). Frontier post-Q61 VERDICT
+(n=600, 937b1af): **48.7 / 53.5% A — unchanged, FAIR** — the drift is
+NOT global (Q18 execution-order hypothesis dead). Map-specific:
+pre-ladder blackwood leaned by SIDE (west wins both worlds — flips
+with mirror, team-fair aggregate); post-ladder it leans by TEAM. A
+ladder tie-law is the prime suspect, amplified by blackwood/riverline
+geometry while frontier absorbs it. Bisect the span with
 `map blackwood 300 0 1` at halving commits (worker `update` between
 rungs — it runs whatever is pushed) or local 32+32 worktrees.
 

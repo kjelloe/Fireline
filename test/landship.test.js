@@ -136,3 +136,15 @@ test("landship: exempt from abandoned-hull self-recall; the station is boardable
   s2 = apply(s2, { type: "board_station", operatorId: 1, assetId: LS });
   assert.equal(s2.assets[LS].stationOp, 1, "the heavy station takes a gunner");
 });
+
+test("A-keyed hunt: the neutral landship NEVER draws a camp drone", () => {
+  let s = createInitialState(2026, "frontier_corridor", {});
+  // idle every crewed asset in supply (base) — only the landship sits
+  // unsupplied mid-map. Advance well past the camping threshold.
+  for (let i = 0; i < 1500; i++) s = apply(s, { type: "advance_tick" });
+  assert.equal(s.assets[32].campTicks, 0, "the fortress is not a camper");
+  assert.ok(!s.drones.some((d) => d.targetAssetId === 32), "no drone hunts it");
+  assert.ok(!s.events.some((e) => e.type === "asset_disabled" && e.assetId === 32),
+    "and it was never farmed for score");
+  assert.deepEqual([...s.teamScores], [0, 0], "no free points for anyone");
+});

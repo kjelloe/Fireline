@@ -40,6 +40,7 @@ const RAIDPARTY = process.env.RAIDPARTY !== "0";
 const POWARC = process.env.POWARC !== "0";
 const ALARMRESPONSE = process.env.ALARMRESPONSE !== "0";
 const RAIDERCLAUSE = process.env.RAIDERCLAUSE !== "0"; // Q31 clause kill-switch (caldera hunt)
+const LANDSHIP = process.env.LANDSHIP !== "0"; // Q42 hull kill-switch (the A-keyed hunt)
 const VAULTS = process.env.VAULTS !== "0"; // 0 strips kind-4 sites pre-war
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
@@ -57,12 +58,13 @@ for (let seed = 1; seed <= COUNT; seed++) {
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
     alarmResponse: ALARMRESPONSE,
-    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
           ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
           ...(!POWARC ? { powArc: false } : {}),
-          ...(!RAIDERCLAUSE ? { raiderClause: false } : {}) }
+          ...(!RAIDERCLAUSE ? { raiderClause: false } : {}),
+          ...(!LANDSHIP ? { landship: false } : {}) }
       : null,
   });
   // Config-plumbing self-check (the crewing-bug lesson): say what the

@@ -1670,6 +1670,12 @@ function applyAdvanceTick(next) {
   }  // 9G anti-camping: idling outside your own supply umbrella draws a drone
   // from the enemy's nearest owned relay.
   for (const asset of next.assets) {
+    // THE LANDSHIP FARM (A-keyed hunt conviction, 2026-08-02): the
+    // neutral hull idles unsupplied forever, and `team === 0 ? 1 : 0`
+    // on team -1 minted its drone for TEAM A — a free scored kill on a
+    // 1000-tick respawn loop, every map, all war (blackwood read 62%
+    // A). Anti-camping punishes CAMPERS; a neutral fortress isn't one.
+    if (asset.team === -1) { asset.campTicks = 0; continue; }
     const atTheWheel = asset.driveThrottle !== 0 || asset.driveTurn !== 0; // 11L
     if (asset.state === ASSET_IDLE && !atTheWheel && !inSupply(next, asset)) {
       asset.campTicks += 1;

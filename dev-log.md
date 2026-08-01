@@ -4783,3 +4783,37 @@ protected from strangers while regented). What was missing:
 - Token write hardened (try/catch, private-mode session identity).
 
 Suite 748/748 x2. Smoke OK. Acceptance OK.
+
+## THE A-KEYED HUNT: convicted + fixed same evening (2026-08-02)
+
+The era-table refresh read blackwood 62.0/59.7% A (was 49.2 fair) and
+riverline 53.0/60.7. Frontier's post-Q61 pair: 48.7/53.5 — UNCHANGED,
+killing the global-mechanism (Q18) hypothesis. Bisection (local 64-war
+worktree rungs; endpoints verified per the bisect law):
+
+- d37e979 43.8% -> c45d119 52.5% -> 515e509 51.6% (all FAIR)
+- fd2d1d4 (slice-landship) 60.9% -> HEAD 62% (LEAN)
+
+CONVICTED: **the landship farm**. The anti-camping pass iterates every
+asset; the neutral hull (team -1) idles unsupplied forever, and
+`team === 0 ? 1 : 0` minted its punishment drone for TEAM A — which
+one-shots it (disableAsset -> +SCORE_DISABLE to A), the landship
+respawns on its own 1000-tick law, and the farm repeats all war on
+every map. Score-decided endings cash it in: blackwood (25% horn) bled
+hardest; frontier (~15% horn, tickets-led) absorbed it into the band.
+chargeWreckTicket was already guarded (team 0/1) — score was the only
+leak. The bug class (foe-computation on team -1) audited across
+engine/: all other sites operate on regented 0/1 assets only.
+
+Fix: team -1 assets are exempt from the camping pass (a fortress is
+not a camper). Pinned in landship.test.js (no drone, no disable, 0-0
+scores at t=1500). LANDSHIP=0 sweep env + rules.landship added as the
+bisection kill-switch (vault precedent) BEFORE the conviction — kept.
+Suite 749/749. Re-verify: blackwood 64 local post-fix + a fresh
+blackwood/riverline battery pair on the PC.
+
+POST-FIX EVIDENCE: the 5-seed gate re-run shows team A's scores down
+EXACTLY 20-30 pts per seed (250->230, 235->210, 195->175, 330->300)
+with B's identical — the farm's take, surgically removed. Local
+blackwood post-fix 57.1% (n=63, CI too wide); the n=600 battery pair
+is the judge. Gate healthy (all tickets endings, same tempo).
