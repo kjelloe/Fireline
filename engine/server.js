@@ -32,7 +32,7 @@ export class GameServer {
       // didn't pass the option: the LIVE SERVER, every 5-seed gate,
       // every debugging probe. Only sim_sweep (explicit UNIQUES) ever
       // measured the intended game. Found 2026-07-31 chasing a lean.
-      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true, uniqueCrewing: options.uniqueCrewing !== false, raidParty: options.raidParty !== false, alarmResponse: options.alarmResponse !== false })
+      ? new AIRegency({ difficulty: this.aiDifficulty, mirrored: options.aiMirrored === true, uniqueCrewing: options.uniqueCrewing !== false, raidParty: options.raidParty !== false, alarmResponse: options.alarmResponse !== false, orderParity: options.orderParity === true })
       : null;
     // 1K: authoritative command log (client + AI + advance_tick, in order).
     this.commandLog = [];

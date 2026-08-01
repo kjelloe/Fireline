@@ -208,16 +208,17 @@ handle_job() { # $1 = JSON body
       # new job kind per map. Optional "uniques":1 runs the LIVE game
       # config (16B crewing on) — default stays 0 so old batteries remain
       # comparable; label gains _uq so the two configs never mix in a CSV.
-      local mp mp_mirror mp_uq mp_swap mp_stale
+      local mp mp_mirror mp_uq mp_swap mp_stale mp_op
       mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
       mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
       mp_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',0))" "$body")
       mp_swap=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
       # Q69 rung: "stalemate":0 disables the prompt-136 grind for A/B.
       mp_stale=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('stalemate',1))" "$body")
-      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale run_sweep \
+      mp_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
+      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale ORDERPARITY=$mp_op run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
-        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_op" = 1 ] && echo _op)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror
@@ -256,9 +257,10 @@ handle_job() { # $1 = JSON body
       local pw pw_mirror
       pw=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('n',2))" "$body")
       pw_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
-      POWS=$pw UNIQUES=1 run_sweep \
+      pw_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
+      POWS=$pw UNIQUES=1 ORDERPARITY=$pw_op run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        "$pw_mirror" 1 "pows_${pw}$([ "$pw_mirror" = 1 ] && echo _mirror)" ;;
+        "$pw_mirror" 1 "pows_${pw}$([ "${pw_op:-0}" = 1 ] && echo _op)$([ "$pw_mirror" = 1 ] && echo _mirror)" ;;
     heist)
       # Q52 battery: {"kind":"heist","attacker":0,"count":300}.
       local ha
@@ -269,7 +271,7 @@ handle_job() { # $1 = JSON body
     convoy)
       # Convoy Escort battery: {"kind":"convoy","attacker":0,"count":300}.
       # Mode wars, live config, frontier. Run both attacker sides.
-      local cva cv_ls cv_dr cv_mir cv_uq cv_sw
+      local cva cv_ls cv_dr cv_mir cv_uq cv_sw cv_op
       cva=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('attacker',0))" "$body")
       # Residue-hunt rungs: "landship":0 / "drops":0 kill the col-64
       # centre anchors; "mirror":1 flips the WORLD (same faction,
@@ -280,9 +282,10 @@ handle_job() { # $1 = JSON body
       cv_mir=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
       cv_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',1))" "$body")
       cv_sw=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
-      MODE=convoy MODEATTACKER=$cva UNIQUES=$cv_uq FACTIONSWAP=$cv_sw LANDSHIP=$cv_ls DROPS=$cv_dr run_sweep \
+      cv_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
+      MODE=convoy MODEATTACKER=$cva UNIQUES=$cv_uq FACTIONSWAP=$cv_sw LANDSHIP=$cv_ls DROPS=$cv_dr ORDERPARITY=$cv_op run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        "$cv_mir" 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)$([ "$cv_uq" = 0 ] && echo _nouq)$([ "$cv_sw" = 1 ] && echo _swap)$([ "$cv_mir" = 1 ] && echo _mirror)" ;;
+        "$cv_mir" 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)$([ "$cv_uq" = 0 ] && echo _nouq)$([ "$cv_sw" = 1 ] && echo _swap)$([ "$cv_op" = 1 ] && echo _op)$([ "$cv_mir" = 1 ] && echo _mirror)" ;;
     ab)
       # Bisection rung: {"kind":"ab","raidparty":0,"powarc":1,
       # "count":300,"label":"ab_raidparty0"}. Whitelisted env only.

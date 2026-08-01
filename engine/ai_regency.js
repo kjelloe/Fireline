@@ -371,6 +371,13 @@ export class AIRegency {
     // gate -> no-squat Sentinel -> trail affinity). UNIQUES=0 disables
     // for A/B sweeps.
     this.uniqueCrewing = options.uniqueCrewing !== false;
+    // Q71 TRIAL (prompt 145, the Q18 GO): tick-parity COMMAND order —
+    // on odd ticks team B's commands apply first (stable within each
+    // team, so per-operator sequences hold). The suspected first-strike
+    // chirality: A's regents (lower operator ids) always enqueued first,
+    // so A's shots resolved before B's answers, every tick, all war.
+    // OFF by default until the trial batteries speak (ORDERPARITY=1).
+    this.orderParity = options.orderParity === true;
     // A/B kill-switch (bisection only, never a shipped config): skip
     // the prison raid-party doctrine entirely.
     this.raidPartyEnabled = options.raidParty !== false;
@@ -1900,6 +1907,15 @@ export class AIRegency {
           targetCellX: step[0], targetCellY: step[1],
         });
       }
+    }
+    if (this.orderParity && (state.tick & 1) === 1) {
+      // Stable partition: B-issued commands first on odd ticks. The
+      // sort key is the ISSUING team only — within a team the original
+      // order (and thus every per-operator sequence) is preserved.
+      const teamOf = (c) => state.operators[c.operatorId]?.team ?? -1;
+      const b = commands.filter((c) => teamOf(c) === 1);
+      const rest = commands.filter((c) => teamOf(c) !== 1);
+      return b.concat(rest);
     }
     return commands;
   }
