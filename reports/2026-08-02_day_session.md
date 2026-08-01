@@ -113,3 +113,34 @@ tie laws) + two lint tests.
 - **Q67**: run the pulled vault's VAULTS=2 re-test before the cache lands, or let the cache leapfrog?
 
 Your playtest, whenever you have time: riverline pacing (`MAP=riverline npm start` — a stalled war now grinds), the heist mode (`MODE=heist`), and sawtooth-with-premium are the three most verdict-hungry.
+
+---
+
+## Evening addendum: the era-table refresh came back — and opened a hunt
+
+The 1,800-war refresh (all on the right build this time, verified by
+done-mail hash):
+
+| map (n=600, uniques-on, mirrored pairs) | A-rate | verdict |
+|---|---|---|
+| riverline (post-pacing) | 53.0 / 60.7% | **tempo VERIFIED**: horn 0/600, undecided ~0, median ~19 min — the pacing slice holds at scale. But an A-keyed lean (56.9% agg) is now visible |
+| sawtooth | 56.3 / 54.7% | the held lean persists unchanged — premium stays, no news |
+| blackwood | **62.0 / 59.7%** | **REGRESSED** from the 49.2% promoted read; POWS=2 amplifies it to 94% A (local n=32) |
+
+**THE A-KEYED HUNT (top open item)**: endpoint verified — blackwood at
+`d37e979` (the old baseline commit) reads 43.8% A on the same seeds
+that read ~62% on HEAD. The regression lives in `d37e979..937b1af`,
+a span containing the whole equivariance ladder. Both worlds lean A on
+both maps, so it's team-keyed, not geometry. Frontier post-Q61 pair is
+queued on the PC — if the default map also drifted, the prime suspect
+is the old Q18 execution-order first-strike bias (~6 pts A, fix
+proposed but never applied) unmasked by the ladder removing geometric
+compensators. Bisection next.
+
+**Q68**: blackwood is PROMOTED and in the vote pool — keep serving it
+while the hunt runs, or pull it back to EXPERIMENTAL until fair again?
+(Riverline/sawtooth were already EXPERIMENTAL/HELD, no status change.)
+
+Also this evening: your mobile-connectivity writeup (prompt 139) is
+recorded and adopted as the next slice — grace window, token identity,
+persist-on-hide, reconnect-on-visible.

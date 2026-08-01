@@ -34,12 +34,27 @@ path shapes; everything older is a different game):
 | frontier POWS=2 (human-session flavour) | 47.1 / 41.0% A | fair live-world; regent-war config only |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
 | convoy (Q62 corridor) | attackers **32 / 34%** | best config measured; Q47 bar still with designer |
+| riverline (post-pacing, prompt 136) | **53.0 / 60.7% A** (n=600) — tempo VERIFIED (horn 0, undecided 0, median ~11.6k) but an A-keyed lean above band | pacing SOLVED; lean OPEN (see the A-keyed hunt) |
+| sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
+| blackwood (post-ladder re-battery) | **62.0 / 59.7% A** (n=600) — REGRESSED from 49.2 fair; POWS=2 amplifies to 94% A (n=32 local) | A-KEYED HUNT (top open item) |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the
 default read 30 min/51% horn; at 1 still 28.5/46 — the POW-era
 doctrine itself is slow, so the classic census returned and POWS=2
 became the human-session flavour. GATE: TICKS defaults 18000.
-| sawtooth / blackwood | pre-ladder reads (56.7 / 49.2) — re-run before trusting | STALE |
+
+THE A-KEYED HUNT (opened 2026-08-02, endpoints VERIFIED): blackwood
+@d37e979 reads 43.8% A (n=32 local, same seeds ~62% on HEAD) — the
+regression lives in d37e979..937b1af, a span that CONTAINS THE WHOLE
+EQUIVARIANCE LADDER. Riverline's 56.9% aggregate lean is likely the
+same root (A-keyed in both worlds on both maps; sawtooth's stable 55.5
+may be the same thing at lower gain). Frontier post-Q61 battery pair
+queued — if the default map also drifted A-ward, suspect a GLOBAL
+mechanism (Q18 execution-order first-strike bias, ~6 pts A, fix
+proposed but never applied: tick-parity command order) newly unmasked
+by the ladder removing geometric compensators. Bisect the span with
+`map blackwood 300 0 1` at halving commits (worker `update` between
+rungs — it runs whatever is pushed) or local 32+32 worktrees.
 
 Era horn settled at ~15% on frontier — up from the pool-ladder 9%;
 the accumulated features bought new gameplay for ~6 points of horn.
