@@ -208,14 +208,16 @@ handle_job() { # $1 = JSON body
       # new job kind per map. Optional "uniques":1 runs the LIVE game
       # config (16B crewing on) — default stays 0 so old batteries remain
       # comparable; label gains _uq so the two configs never mix in a CSV.
-      local mp mp_mirror mp_uq mp_swap
+      local mp mp_mirror mp_uq mp_swap mp_stale
       mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
       mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
       mp_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',0))" "$body")
       mp_swap=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
-      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap run_sweep \
+      # Q69 rung: "stalemate":0 disables the prompt-136 grind for A/B.
+      mp_stale=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('stalemate',1))" "$body")
+      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
-        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror
