@@ -241,7 +241,8 @@ npm start                              # host machine
   dry artillery on their own.
 - Accessibility (15C): the ⚙ panel has high contrast, text size
   (100/125/150%), remappable action keys (click an action, press a key),
-  and the language switch. All persisted per browser.
+  the language switch, and a Music on/off toggle (ready for the
+  composer's tracks — nothing plays yet). All persisted per browser.
 - Rescue autopilot (11G): carriers auto-scoop adjacent downed teammates by
   default. The ⚙ options panel can turn that off per player — then crawl
   beside a carrier and press B to board; U hops you out anywhere.

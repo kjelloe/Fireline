@@ -121,8 +121,15 @@ outcome. Renderer presents fog-filtered views only.
   in `ai_regency.js` PATROLS — all three mirror-closed, enumeration-
   tested): `frontier_corridor` (default), `blackwood` (PROMOTED
   2026-07-31 — battery + corridors + playtest all passed), `riverline`
-  (EXPERIMENTAL, battery owed) + `sawtooth` (battery passed, HELD for
-  the human playtest per ruling).
+  (EXPERIMENTAL; PACING SOLVED prompt 136: layout-declared STALEMATE
+  ATTRITION — joined war, nobody at bleed majority → both pools grind
+  on `stalemateBleedTicks` — plus heart-relay bleed [bridge pair =
+  majority-equivalent; AI-war-redundant by geometry, kept for human
+  mutual-crossings]; horn 34%→0 local, post-ladder battery pair
+  pending) + `sawtooth` (battery passed, HELD for the human playtest
+  per ruling). B3 overtime is CAPPED (prompt 136): hashed `overtime`
+  counter, 600 ticks total (rules.overtimeCapTicks), fixture v67 —
+  an empty pool can no longer be held open forever by capture churn.
   Design of record + hard profile constraints + 6-map bank:
   specs/10_map_roster.md. Wall rule (18B/18E): impassable (0-speed)
   cells REFUSE entry (speed samples the CURRENT cell, so entering would

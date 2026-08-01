@@ -108,3 +108,13 @@ test("overtime cap: the reducer counts held-open ticks (hashed)", () => {
   s = tick(s, 3); // war ends by tickets on the first tick — one count
   assert.ok(s.overtime >= 1, `counter runs: ${s.overtime}`);
 });
+
+test("stalemate: MODE wars never grind (mission suspends all bleed)", () => {
+  let s = createInitialState(2026, "riverline", { mode: 1, modeAttacker: 0 });
+  assert.ok(s.mission, "convoy mission is live");
+  s.sites[0].owner = 0;
+  s.sites[1].owner = 1;
+  const before = s.tickets[0];
+  s = tick(s, 101);
+  assert.deepEqual(s.tickets, [before, before]);
+});

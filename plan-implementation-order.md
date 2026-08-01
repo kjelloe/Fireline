@@ -223,8 +223,14 @@ shipped, in order, with outcomes); design rulings live in
 **`specs/10_map_roster.md`**. The "awaiting rulings" list below is
 resolved except where the register says otherwise.
 
-Current state: suite 547, fixture v40, four map profiles
-(frontier_corridor default; riverline/blackwood/sawtooth EXPERIMENTAL
-pending their 300-war batteries). Next queued: 13E bridges → B1
-meaningful deaths → B3 mercy/overtime → B2 node classes → salvage →
-Last Convoy → 12E NPCs.
+Current state (refreshed 2026-08-02): suite 747, fixture v67, FIVE map
+profiles — frontier_corridor default, blackwood PROMOTED, sawtooth
+battery-passed but HELD for the human playtest, riverline EXPERIMENTAL
+with pacing SOLVED (stalemate attrition + overtime cap, prompt 136),
+caldera EXPERIMENTAL (fair but Q63 death-circle identity open). The
+13E→12E chain listed below all landed, as did modes (convoy/heist),
+POW arc, crew stations, honors, salvage, Last Convoy, the landship and
+the equivariance ladder. Open queue: playtest-gated verdicts (heist
+attacker tuning, Q63, Q47, sawtooth), the specials ladder (Q64-Q67,
+specs/13 cache brief), music integration when the composer delivers,
+and the 1,800-war post-ladder era-table refresh on the PC lane.

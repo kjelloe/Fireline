@@ -155,6 +155,10 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 | Q60 | DISSOLVED: on the classic default caldera reads 54.3/51.7% A in band — the lean was a POW×unique×ring coupling that Q61 removed; no uniques-off needed | — | — |
 | Q62 | VERIFIED at n=600: convoy attackers 32/34% — best config yet, side gap closed | — | — |
 | Q63 | Caldera identity: fairness passes but 13-min / 63%-elimination death-circle wars — bless the brawl identity or tune MPG/pool for the ring? | you + playtest | — |
+| Q64 | Weapons cache (specs/13): ship on sawtooth first, or hold until your sawtooth playtest verdict? | you | — |
+| Q65 | Cache aura while the site is suppressed — recommend: radiates while owned, full stop | you | — |
+| Q66 | AI doctrine weight for the cache — recommend: plain capture-seek v1, measure first | you | — |
+| Q67 | Specials-ladder order: VAULTS=2 re-test before the cache lands, or cache leapfrogs? | you | PC lane free |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
 | Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |
