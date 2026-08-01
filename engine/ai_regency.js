@@ -25,6 +25,42 @@ import { baseCentreCol } from "./state.js";
 // there).
 const stdOf = (state, team) => state.standards.find((s) => s.team === team) ?? null;
 
+// Q62 (prompt 133): the push CORRIDOR — mission attackers capture
+// relays along the spine from their base to the objective ONLY (zero
+// capturers starved the push of forward supply and cost convoy 17
+// points of attacker rate; all-relays bled the posture dry). Pure
+// integer point-to-segment test.
+export const CORRIDOR_CELLS = 10;
+function nearSegment(px, py, ax, ay, bx, by, r) {
+  const abx = bx - ax, aby = by - ay;
+  const apx = px - ax, apy = py - ay;
+  const dot = apx * abx + apy * aby;
+  const len2 = abx * abx + aby * aby;
+  if (len2 === 0 || dot <= 0) return apx * apx + apy * apy <= r * r;
+  if (dot >= len2) {
+    const dx = px - bx, dy = py - by;
+    return dx * dx + dy * dy <= r * r;
+  }
+  const cross = apx * aby - apy * abx;
+  return cross * cross <= r * r * len2;
+}
+function missionObjectiveCell(state, attacker) {
+  const m = state.mission;
+  if (!m) return null;
+  if (m.kind === 1) return [m.gateCellX, m.gateCellY];
+  const std = stdOf(state, attacker === 0 ? 1 : 0);
+  return std ? [sampleCellX(std.x, AI_W), worldToCellFloor(std.y)] : null;
+}
+function corridorRelay(state, team, site) {
+  const home = state.bases.find((b) => b.team === team);
+  const obj = missionObjectiveCell(state, team);
+  if (!home || !obj) return false;
+  return nearSegment(site.cellX, site.cellY,
+    baseCentreCol(home), home.y + ((home.height / 2) | 0),
+    obj[0], obj[1], CORRIDOR_CELLS);
+}
+
+
 // Boundary-parity law (specs/08 §7): every x-position DECISION floors
 // through sampleCellX. Module-scoped width, refreshed at plan() entry
 // — helpers below plan() run only inside a plan pass.
@@ -469,12 +505,12 @@ export class AIRegency {
     for (const site of state.sites) {
       for (const team of [0, 1]) {
         if (site.owner === team) continue;
-        // MODE WARS: the ATTACKER designates no capturers at all —
-        // gating only the movement left capturerOps swallowing every
-        // seat, which emptied the escort pool at the SOURCE (heist:
-        // escNear 0-1 forever, window never opened). Designations are
-        // where doctrine allocates people; gate them at the top.
-        if (state.mission && team === state.mission.attacker) continue;
+        // MODE WARS (Q62): the ATTACKER captures along the PUSH
+        // CORRIDOR only — the supply spine to the objective. Zero
+        // capturers starved the push (convoy 27/19 -> 10% under the
+        // blanket gate); all-relays bled the posture (escNear 0-1).
+        if (state.mission && team === state.mission.attacker &&
+            !corridorRelay(state, team, site)) continue;
         let bestOp = -1;
         let bestDist = Infinity;
         // 16B residue fix: the Sentinel is no CAPTURER — a 150hp hull
@@ -1732,14 +1768,12 @@ export class AIRegency {
       // the capture). It won't stare down an enemy-held flag it cannot
       // shoot at (out of supply): that froze whole wars at 0-0.
       if (!target) {
-        // MODE WARS: the ATTACKER never bleeds into flag errands —
-        // relays cannot win a mission and the posture needs the hulls
-        // (measured: every combat seat became a capturer and the heist
-        // carrier crossed alone, escNear 0-1 all war). The DEFENSE
-        // keeps its supply web.
+        // MODE WARS (Q62): attacker flag errands are CORRIDOR-ONLY —
+        // the movement gate mirrors the designation gate above.
         const missionAttacker = state.mission &&
           asset.team === state.mission.attacker;
-        const relay = missionAttacker ? null : nearestUnownedRelay(state, asset);
+        let relay = nearestUnownedRelay(state, asset);
+        if (missionAttacker && relay && !corridorRelay(state, asset.team, relay)) relay = null;
         if (relay && capturerFor.get(`${asset.team}:${relay.id}`) === operatorId) {
           const enemyOnFlag = state.assets.some((e) =>
             e.team !== asset.team && !isWreck(e) &&

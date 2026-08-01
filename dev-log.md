@@ -4673,3 +4673,15 @@ Suite 735/735 x2, smoke + acceptance green, strip 33 tiles.
   run-bob (faster), road-worker kneel; the trader is a cart + mule.
 - RUNNING note + the codex stay quiet about them on purpose: ambient
   life should be DISCOVERED, not documented (the stray-dog spirit).
+
+## Q61 + Q62 shipped (2026-08-02 morning)
+
+Q61: powPreplaced back to 0 (fixture v66) — the classic tempo is the
+default; POWS=2 is the designed human-session flavour; organic scout
+captures still populate compounds in every war. The ladder-verdict
+battery (48.8/53.5% A, 21.7-min class) IS the powPreplaced-0
+baseline — no re-run needed. Q62: mission attackers capture along
+the PUSH CORRIDOR only (integer point-to-segment, CORRIDOR_CELLS 10,
+base-centre → objective; designation AND movement gates share the
+predicate). 5-seed convoy probe shows near-misses at 8-9 cells;
+the n=300 pair decides. Suite 735/735.

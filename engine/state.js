@@ -358,13 +358,14 @@ export const DEFAULT_RULES = Object.freeze({
   // B3: a full-cap hold this long accelerates the enemy's bleed (mercy),
   // and an empty pool waits while the losing side still has a play live
   // (overtime). Both tunable; overtime:false restores the hard cutoff.
-  // POW arc: pre-placed captives per prison. Ruled 2 (prompt 130)
-  // when the ladder's battery read POWS=2 in band — then the PACING
-  // read came in (30-min medians, 51% horn: four locked seats slow
-  // the whole war) and the owner took the middle lever (Q59, prompt
-  // 131): ONE captive per prison — half the lock, most of the
-  // day-one objective. POWS= on the server overrides either way.
-  powPreplaced: 1,
+  // POW arc: pre-placed captives per prison. The full ruling arc:
+  // 2 (prompt 130, fairness in band) → 1 (Q59, pacing) → 0 (Q61,
+  // prompt 133): even one lock kept the POW-era doctrine tempo
+  // (28.5 min / 46% horn vs the classic 21.7/15) and fairness sat at
+  // band-edge. THE CLASSIC TEMPO IS THE DEFAULT; POWS=2 on the
+  // server is the designed HUMAN-SESSION flavour (organic scout
+  // captures still populate compounds in every war regardless).
+  powPreplaced: 0,
   mercyPoolFraction: 4,  // mercy engages at pool/4 left (25%)
   mercyMultiplier: 3,
   overtime: true,

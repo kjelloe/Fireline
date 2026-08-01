@@ -17,11 +17,11 @@ test("1D AI Regency claims initial unoccupied assets deterministically", () => {
     assert.equal(server.state.operators[operatorId].assetId, assetId);
     assert.equal(server.state.assets[assetId].operatorId, operatorId);
   }
-  // 16 fixed regents since the 32-asset expansion (ops 16-31) — MINUS
-  // the two pre-placed captives (powPreplaced: 1 since Q59/prompt 131;
-  // ops 26 and 30 start OP_CAPTIVE — see test/prisons.test.js).
-  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 14);
-  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 14);
+  // 16 fixed regents since the 32-asset expansion (ops 16-31).
+  // powPreplaced is 0 again (Q61, prompt 133 — the classic tempo is
+  // the default; POWS=2 is the human-session flavour).
+  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 16);
+  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 16);
 });
 
 test("1D AI issues normal move_order commands on its next decision pass", () => {

@@ -120,7 +120,7 @@ test("13F session rules: defaults change nothing; custom rules change the law", 
     ticketPool: 315, // pool ladder verdict 2026-07-31 (21.2 min median, 9% horn)
     ticketBleedTicks: 20, ticketMajority: 5,
     ticketPerDisable: 1, // B1: a wreck costs a ticket, refunded on recovery
-    powPreplaced: 1, // Q59 (prompt 131): one captive per prison — the pacing lever
+    powPreplaced: 0, // Q61 (prompt 133): classic tempo default; POWS=2 = human-session flavour
     mercyPoolFraction: 4, mercyMultiplier: 3, overtime: true, // B3
   });
   const plain = createInitialState(42, "frontier_corridor");
