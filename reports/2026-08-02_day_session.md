@@ -54,3 +54,23 @@ tie laws) + two lint tests.
    tempo with POWs as human-session flavour (POWS=2 env).
 3. **Heist needs its tuning round** — engine sound, regents can't
    crack a defended vault yet. Playtest will say whether humans can.
+
+---
+
+## Battery appendix (n=300 per row, collected end of window)
+
+| Battery | Result | Verdict |
+|---|---|---|
+| Q59 default (powPreplaced 1) | 46.5% / 43.7% A | band-edge fairness + pacing lever underdelivered (28.5 min / 46% horn) — Q59-followup below |
+| heist att0 / att1 | attackers 0.3% / 0.3% | AI attacker can't crack a vault (known; engine sound; playtest will judge the human game) |
+| convoy att0 / att1 (re-run under the new gates) | attackers 9.7% / 10.3% | **REGRESSION from 27/19%** — the mission-attacker gates cost convoy. Working hypothesis: zero capturers = zero forward SUPPLY (halved speed, no fire off the web). The refinement is route-spine capturing, not none. Banked, not applied. |
+| caldera factionswap | 68% A (lean did NOT flip) | not the specific unique |
+| **caldera UNIQUES=0** | **146/149 — DEAD FAIR** | **the lean is the unique PAIR, team-A-keyed regardless of arrangement** — this is the old 16B "unknown A-keyed residual" from the crewing era, amplified by the ring. Caldera stays RED with the mechanism finally named. |
+
+## New questions from the data
+
+| # | Question | Owner |
+|---|---|---|
+| Q60 | Caldera lever: UNIQUES OFF by map law (measured fair, but kills faction identity there), or hold RED until the A-keyed pair mechanism is hunted (it's the last 16B ghost)? | you |
+| Q61 | Q59 follow-up: the POW-era tempo driver is doctrine, not locked seats. Pool/bleed ladder for the era, accept the slower identity, or powPreplaced 0 with POWS=2 as the human-session flavour? | you |
+| Q62 | Convoy gates: apply the route-spine capturer refinement (attackers capture along the push corridor only), then re-battery? | you (recommend YES) |
