@@ -4583,3 +4583,17 @@ the landship-berth pattern.
 - Sawtooth/blackwood numbers are pre-ladder: re-run their batteries
   before trusting anything about them. The vault re-test (VAULTS=2
   rung) is now meaningful.
+
+## Q46 SHIPPED: powPreplaced 2 is the game (2026-08-02)
+
+Ruled (prompt 130) and landed: fixture v64, suite 728/728 x2, gate
+5/5 at the era's 18k horizon, smoke green. Census fallout handled
+honestly: 1D asserts the ORDER direction at team level (first legs
+are gate waypoints now) and joins=12; five doctrine tests pin
+POWS-0 worlds explicitly (they watch other doctrine — the default
+POW objective would draft their subjects); 13F pins the new default.
+THE ERA'S CHARACTER CHANGED and is flagged, not buried: POWS-era
+default wars run 30-minute medians with 51% horn (was 21.7/15%) —
+fairness in band, tempo question filed as Q59 with three levers
+(accept / retune pool-bleed for the smaller census / powPreplaced 1).
+The gate script's horizon is 18000 by default now (TICKS= overrides).

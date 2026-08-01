@@ -13,7 +13,7 @@ import { getUnitStats } from "../engine/units.js";
 import { expectedStep } from "./helpers.js";
 
 test("ai objective: the CARRIER raider is ordered onto the enemy standard (9A)", () => {
-  const server = new GameServer({ mapSeed: 42, enableAi: true });
+  const server = new GameServer({ mapSeed: 42, enableAi: true, rules: { powPreplaced: 0 } /* this test watches OTHER doctrine; the default POW objective would draft its subjects into the raid party */ });
   const carrierSpawn = [
     worldToCellFloor(server.state.assets[8].x),
     worldToCellFloor(server.state.assets[8].y),
@@ -42,7 +42,7 @@ test("ai objective: the CARRIER raider is ordered onto the enemy standard (9A)",
 });
 
 test("ai objective: a carrier turns for home; a lone AI carrier is irreplaceable (pinned)", () => {
-  const server = new GameServer({ mapSeed: 42, enableAi: true });
+  const server = new GameServer({ mapSeed: 42, enableAi: true, rules: { powPreplaced: 0 } /* this test watches OTHER doctrine; the default POW objective would draft its subjects into the raid party */ });
   server.step();
   // Stage the grab MID-MAP: teleporting the scout into the enemy base gets it
   // shot before the pickup pass, and staging at the scout's spawn scores
@@ -93,7 +93,7 @@ test("ai objective: a carrier turns for home; a lone AI carrier is irreplaceable
 });
 
 test("ai objective: each team recovers its OWN dropped standard (sim-found bug pin)", () => {
-  const server = new GameServer({ mapSeed: 42, enableAi: true });
+  const server = new GameServer({ mapSeed: 42, enableAi: true, rules: { powPreplaced: 0 } /* this test watches OTHER doctrine; the default POW objective would draft its subjects into the raid party */ });
   server.step();
   const S = () => server.state;
   // Drop TEAM B's standard in the open field near B's lines.

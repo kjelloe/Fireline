@@ -120,7 +120,7 @@ test("13F session rules: defaults change nothing; custom rules change the law", 
     ticketPool: 315, // pool ladder verdict 2026-07-31 (21.2 min median, 9% horn)
     ticketBleedTicks: 20, ticketMajority: 5,
     ticketPerDisable: 1, // B1: a wreck costs a ticket, refunded on recovery
-    powPreplaced: 0, // POW arc: session-rule pre-placement (deviation note in state.js)
+    powPreplaced: 2, // Q46 ruled (prompt 130): the designed day-one POW objective
     mercyPoolFraction: 4, mercyMultiplier: 3, overtime: true, // B3
   });
   const plain = createInitialState(42, "frontier_corridor");

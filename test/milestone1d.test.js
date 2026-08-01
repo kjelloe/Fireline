@@ -17,11 +17,12 @@ test("1D AI Regency claims initial unoccupied assets deterministically", () => {
     assert.equal(server.state.operators[operatorId].assetId, assetId);
     assert.equal(server.state.assets[assetId].operatorId, operatorId);
   }
-  // 16 fixed regents since the 32-asset expansion (ops 16-31).
-  // (POW pre-placement defaults to 0 — with POWS=2 four of these seats
-  // would start captive; see test/prisons.test.js.)
-  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 16);
-  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 16);
+  // 16 fixed regents since the 32-asset expansion (ops 16-31) — MINUS
+  // the four pre-placed captives (powPreplaced: 2 is the DESIGNED
+  // default since prompt 130; ops 26/27/30/31 start OP_CAPTIVE and
+  // cannot join until sprung — see test/prisons.test.js).
+  assert.equal(snap.views[0].events.filter(e => e.type === "operator_joined").length, 12);
+  assert.equal(snap.views[0].events.filter(e => e.type === "asset_selected").length, 12);
 });
 
 test("1D AI issues normal move_order commands on its next decision pass", () => {
@@ -31,8 +32,13 @@ test("1D AI issues normal move_order commands on its next decision pass", () => 
   for (let assetId = 0; assetId < 8; assetId++) {
     assert.equal(server.state.assets[assetId].state, ASSET_MOVING);
   }
-  assert.ok(server.state.assets[0].x > cellToWorld(7), "team A regent should advance east");
-  assert.ok(server.state.assets[4].x < cellToWorld(120), "team B regent should advance west");
+  // Since powPreplaced:2 + base walls + waypoints, a hull's FIRST leg
+  // may be its own gate (same column) — assert the war's direction at
+  // team level: someone on each side is ordered toward the enemy.
+  const aEast = server.state.assets.slice(0, 4).some((a) => a.targetX > cellToWorld(8));
+  const bWest = server.state.assets.slice(4, 8).some((a) => a.targetX < cellToWorld(119));
+  assert.ok(aEast, "some team A regent ordered east");
+  assert.ok(bWest, "some team B regent ordered west");
 });
 
 test("1D human command resolves before AI and AI does not evict that human", () => {

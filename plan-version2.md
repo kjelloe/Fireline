@@ -150,7 +150,8 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 
 | # | Question | Owner | Blocked by |
 |---|---|---|---|
-| Q46 | powPreplaced flip | — | the residue ladder (auto-resolves: battery re-runs after rung 4) |
+| Q46 | RULED+SHIPPED (prompt 130): powPreplaced 2 is the default — POWS 47.1% A in band | — | — |
+| Q59 | POWS-era pacing: default wars now median 30 min with 51% horn (was 21.7/15%). Accept as the designed slow-burn, retune pool/bleed for the POWS census, or drop to powPreplaced 1? | you | — |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
 | Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |

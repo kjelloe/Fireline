@@ -30,7 +30,15 @@ path shapes; everything older is a different game):
 | config (live) | A-rate | verdict |
 |---|---|---|
 | frontier default | **48.8% / 53.5%** (normal/mirror — edge FLIPS = fair chaos) | FAIR |
-| frontier POWS=2 | **47.1% normal (IN BAND — was 24%!) / 41.0% mirror** | live game fair; mirror residue open (Q46 with the user) |
+| frontier POWS=2 (THE DEFAULT since prompt 130) | **47.1% normal (IN BAND — was 24%!) / 41.0% mirror** | live game fair; mirror residue open |
+
+POWS-ERA PACING (the default game now): median 30 min, HORN 51%,
+tickets 31%, standard 16%, undecided 2%, comebacks 8%. Four locked
+seats slow the whole war — this is a CHARACTER change from the
+pool-ladder target (21.7 min / 15% horn), flagged to the owner as
+Q59 (levers: accept as designed slow-burn / pool-bleed retune for
+the POWS census / powPreplaced 1). GATE: TICKS defaults 18000 now;
+expect horn-heavy endings and don't panic on 5 seeds.
 | sawtooth / blackwood | pre-ladder reads (56.7 / 49.2) — re-run before trusting | STALE |
 
 Era horn settled at ~15% on frontier — up from the pool-ladder 9%;

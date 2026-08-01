@@ -358,13 +358,13 @@ export const DEFAULT_RULES = Object.freeze({
   // B3: a full-cap hold this long accelerates the enemy's bleed (mercy),
   // and an empty pool waits while the losing side still has a play live
   // (overtime). Both tunable; overtime:false restores the hard cutoff.
-  // POW arc: pre-placed captives per prison (specs/12 Q40 wants 2 as a
-  // day-one objective — DEVIATION, flagged 2026-08-01: locking 4 regent
-  // seats collapsed AI-war tempo (3/5 gate seeds undecided) and the AI
-  // raid doctrine cannot yet spring them (0 raids in 5 wars — a lone
-  // scout dies at the wire). Default 0 until AI raids work or the
-  // owner rules it human-sessions-only; POWS=2 on the server enables.
-  powPreplaced: 0,
+  // POW arc: pre-placed captives per prison — THE DESIGNED DEFAULT
+  // (specs/12 Q40), ruled ON by the owner 2026-08-02 (prompt 130)
+  // after the deviation resolved: the formation raid party springs
+  // seats for BOTH teams, and the post-ladder battery read POWS=2 at
+  // 47.1% A in band with 2.3% undecided (dev-log, the ladder's
+  // verdict). POWS=0 on the server restores the old census for A/B.
+  powPreplaced: 2,
   mercyPoolFraction: 4,  // mercy engages at pool/4 left (25%)
   mercyMultiplier: 3,
   overtime: true,

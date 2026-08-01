@@ -310,3 +310,7 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   bring a friend. Wreck it and ANY team can tow the hulk home for
   salvage — but a respawn clock is running, and when it fires the
   wreck vanishes and a fresh neutral hull appears at the other berth.
+
+- POWs ship by DEFAULT now (Q46 ruled): every war starts with two of
+  your crews in the enemy compound — springing them is the day-one
+  objective. POWS=0 on the server restores the old census.

@@ -78,7 +78,7 @@ test("11V a team with no crewed tube crews a mortar from the garage", () => {
 });
 
 test("11V light chassis patrol the trails; heavy chassis keep the road", () => {
-  const server = new GameServer({ mapSeed: 42, enableAi: true, aiDifficulty: 1 });
+  const server = new GameServer({ mapSeed: 42, enableAi: true, aiDifficulty: 1, rules: { powPreplaced: 0 } }); // patrol test: POWS-0 so the raid party does not draft the patrollers
   for (let i = 0; i < 3; i++) server.step();
   const moves = server.commandLog.filter((e) => e.cmd.type === "move_order");
   const targetFor = (opId) => {

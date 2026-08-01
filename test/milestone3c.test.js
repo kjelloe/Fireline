@@ -15,7 +15,7 @@ import { expectedStep } from "./helpers.js";
 const settle = (ms = 50) => new Promise((r) => setTimeout(r, ms));
 
 test("3C regency takes over a dropped operator and pushes for a relay", () => {
-  const server = new GameServer({ mapSeed: 42 }); // no fixed AI
+  const server = new GameServer({ mapSeed: 42, rules: { powPreplaced: 0 } }); // no fixed AI; POWS-0: this test watches takeover doctrine
   server.enqueue({ type: "join_operator", operatorId: 0, team: 0 });
   server.enqueue({ type: "select_asset", operatorId: 0, assetId: 0 });
   server.step();
@@ -39,7 +39,7 @@ test("3C regency takes over a dropped operator and pushes for a relay", () => {
 });
 
 test("3C release stops regency commands for that slot", () => {
-  const server = new GameServer({ mapSeed: 42 });
+  const server = new GameServer({ mapSeed: 42, rules: { powPreplaced: 0 } });
   server.enqueue({ type: "join_operator", operatorId: 0, team: 0 });
   server.enqueue({ type: "select_asset", operatorId: 0, assetId: 0 });
   server.step();
@@ -53,7 +53,7 @@ test("3C release stops regency commands for that slot", () => {
 });
 
 test("3C AI fires on a visible enemy in range under supply rules", () => {
-  const server = new GameServer({ mapSeed: 42, enableAi: true });
+  const server = new GameServer({ mapSeed: 42, enableAi: true, rules: { powPreplaced: 0 } /* this test watches OTHER doctrine; the default POW objective would draft its subjects into the raid party */ });
   server.step(); // AI joins and selects
   // Present a target: drag enemy asset 4 next to AI-run asset 0 inside team
   // A's base supply umbrella.
@@ -68,7 +68,7 @@ test("3C AI fires on a visible enemy in range under supply rules", () => {
 
 test("3C regency war remains hash-deterministic across runs", () => {
   const run = () => {
-    const server = new GameServer({ mapSeed: 7, enableAi: true });
+    const server = new GameServer({ mapSeed: 7, enableAi: true, rules: { powPreplaced: 0 } });
     server.enqueue({ type: "join_operator", operatorId: 2, team: 0 });
     server.enqueue({ type: "select_asset", operatorId: 2, assetId: 2 });
     for (let i = 0; i < 40; i++) {
@@ -99,7 +99,7 @@ test("3C ws disconnect hands the slot to regency", async () => {
 });
 
 test("3C regented asset without relays holds position", () => {
-  const server = new GameServer({ mapSeed: 42 });
+  const server = new GameServer({ mapSeed: 42, rules: { powPreplaced: 0 } });
   server.state.sites = server.state.sites.map((s) => ({ ...s, owner: 0 })); // team 0 owns all
   server.enqueue({ type: "join_operator", operatorId: 0, team: 0 });
   server.enqueue({ type: "select_asset", operatorId: 0, assetId: 0 });
