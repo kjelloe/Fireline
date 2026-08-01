@@ -127,8 +127,10 @@ npm start                              # host machine
 - Second map (11M): `MAP=riverline npm start` — a rough-water river splits
   the field, three road bridges cross it, relays sit in mirrored pairs
   north and south. Terrain is mirror-symmetric BY CONSTRUCTION (west half
-  generated, east half mirrored). Wars there run slower — tuning follows
-  your first playtest.
+  generated, east half mirrored). PACING (prompt 136): a joined war where
+  neither side holds the relay majority grinds BOTH ticket pools slowly —
+  sitting on your own bank is not a plan; cross or bleed. Holding both
+  bridge relays counts as bleed majority (the crossing is the supply line).
 - Bridges (13E, riverline): the three crossings can be DROPPED. Artillery
   (only artillery) shells a span until it collapses; the cells become open
   water, so heavy hulls must ford in misery or go the long way round —
