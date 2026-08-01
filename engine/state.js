@@ -358,13 +358,13 @@ export const DEFAULT_RULES = Object.freeze({
   // B3: a full-cap hold this long accelerates the enemy's bleed (mercy),
   // and an empty pool waits while the losing side still has a play live
   // (overtime). Both tunable; overtime:false restores the hard cutoff.
-  // POW arc: pre-placed captives per prison — THE DESIGNED DEFAULT
-  // (specs/12 Q40), ruled ON by the owner 2026-08-02 (prompt 130)
-  // after the deviation resolved: the formation raid party springs
-  // seats for BOTH teams, and the post-ladder battery read POWS=2 at
-  // 47.1% A in band with 2.3% undecided (dev-log, the ladder's
-  // verdict). POWS=0 on the server restores the old census for A/B.
-  powPreplaced: 2,
+  // POW arc: pre-placed captives per prison. Ruled 2 (prompt 130)
+  // when the ladder's battery read POWS=2 in band — then the PACING
+  // read came in (30-min medians, 51% horn: four locked seats slow
+  // the whole war) and the owner took the middle lever (Q59, prompt
+  // 131): ONE captive per prison — half the lock, most of the
+  // day-one objective. POWS= on the server overrides either way.
+  powPreplaced: 1,
   mercyPoolFraction: 4,  // mercy engages at pool/4 left (25%)
   mercyMultiplier: 3,
   overtime: true,

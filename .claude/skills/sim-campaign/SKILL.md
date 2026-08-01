@@ -30,7 +30,8 @@ path shapes; everything older is a different game):
 | config (live) | A-rate | verdict |
 |---|---|---|
 | frontier default | **48.8% / 53.5%** (normal/mirror — edge FLIPS = fair chaos) | FAIR |
-| frontier POWS=2 (THE DEFAULT since prompt 130) | **47.1% normal (IN BAND — was 24%!) / 41.0% mirror** | live game fair; mirror residue open |
+| frontier powPreplaced 1 (THE DEFAULT since Q59/prompt 131) | battery queued — pacing was the reason for the lever | pending |
+| frontier POWS=2 | **47.1% normal (IN BAND — was 24%!) / 41.0% mirror** | fair live; the 30-min/51%-horn pacing moved the owner to powPreplaced 1 |
 
 POWS-ERA PACING (the default game now): median 30 min, HORN 51%,
 tickets 31%, standard 16%, undecided 2%, comebacks 8%. Four locked

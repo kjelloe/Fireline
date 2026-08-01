@@ -4597,3 +4597,13 @@ default wars run 30-minute medians with 51% horn (was 21.7/15%) —
 fairness in band, tempo question filed as Q59 with three levers
 (accept / retune pool-bleed for the smaller census / powPreplaced 1).
 The gate script's horizon is 18000 by default now (TICKS= overrides).
+
+## Q59 SHIPPED: one captive per prison (2026-08-02)
+
+The pacing lever, ruled prompt 131: powPreplaced 1 — ops 26 and 30
+start captive (one per compound), half the lock with the day-one
+objective intact. Fixture v65; 1D census 14; 13F pin; the v1
+32-seat floor recalibrated to 16 (captive is a designed state, not
+abandonment). Gate: 5/5 decided, mixed horn/tickets — the ending
+profile already reads healthier than the powPreplaced-2 era's 51%
+horn. The real pacing/fairness verdict is the queued battery pair.

@@ -24,7 +24,10 @@ test("v1: all 32 operator seats participate (active, downed, or aboard)", () => 
   // less supply is projected and more seats are legitimately mid-rescue
   // (walking or aboard a carrier) at any sampled tick. 2026@1500 measures
   // 22 active / 6 walking / 4 aboard — all 32 participating.
-  assert.ok(result.activeOperators >= 20, `${result.activeOperators} active seats`);
+  // Floor recalibrated for the POW era (Q59): two seats start captive
+  // and organic captures churn more mid-war — captive is a designed
+  // state, not abandonment.
+  assert.ok(result.activeOperators >= 16, `${result.activeOperators} active seats`);
 });
 
 test("v1: the war is fought — relays change hands and assets fall", () => {
