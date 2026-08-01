@@ -269,11 +269,15 @@ handle_job() { # $1 = JSON body
     convoy)
       # Convoy Escort battery: {"kind":"convoy","attacker":0,"count":300}.
       # Mode wars, live config, frontier. Run both attacker sides.
-      local cva
+      local cva cv_ls cv_dr
       cva=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('attacker',0))" "$body")
-      MODE=convoy MODEATTACKER=$cva UNIQUES=1 run_sweep \
+      # Residue-hunt rungs: "landship":0 / "drops":0 kill the col-64
+      # centre anchors for A/B (labels gain _nols/_nodrop).
+      cv_ls=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('landship',1))" "$body")
+      cv_dr=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('drops',1))" "$body")
+      MODE=convoy MODEATTACKER=$cva UNIQUES=1 LANDSHIP=$cv_ls DROPS=$cv_dr run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        0 1 "convoy_att${cva}" ;;
+        0 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)" ;;
     ab)
       # Bisection rung: {"kind":"ab","raidparty":0,"powarc":1,
       # "count":300,"label":"ab_raidparty0"}. Whitelisted env only.

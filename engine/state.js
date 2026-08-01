@@ -530,7 +530,9 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     bridges: createBridges(typeof mapArg === "string" ? mapArg : "frontier_corridor"),
     // B6: the seed-scheduled neutral supply drop (own array, NOT a site
     // — a mid-war site would move the majority denominator; 13E lesson).
-    drops: createDrops(mapSeed >>> 0),
+    // rules.drops === false empties the schedule (DROPS=0 — residue-hunt
+    // rung: the B6 circle is a col-64 centre anchor, half a cell east).
+    drops: mergedRules?.drops === false ? [] : createDrops(mapSeed >>> 0),
     // POW arc slice 1: one prison per base, pre-loaded symmetrically
     // (the pre-placed enemy regents start OP_CAPTIVE — see below).
     prisons: createPrisons(bases, powN, map.width),
