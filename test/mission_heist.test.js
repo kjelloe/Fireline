@@ -65,3 +65,20 @@ test("heist: the radio betrays the carried Asset to the DEFENDERS", () => {
   assert.ok(ping, "the Asset is on the air");
   assert.equal(ping.toTeam, 1, "for the DEFENDERS' ears");
 });
+
+test("141: the heist doctrine block is NEVER nested inside the convoy branch", async () => {
+  // The dead-code class: the Q52 vault-guard/interceptor block sat
+  // inside `if (mission.kind === MISSION_CONVOY)` from landing until
+  // prompt 141 — mission.kind can't be 1 and 2 at once, so none of it
+  // ever ran. Pin the structure: the heist doctrine `if` must sit at
+  // plan scope (4-space indent), not buried in another branch.
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("../engine/ai_regency.js", import.meta.url), "utf8");
+  const hits = src.split("\n").filter((l) =>
+    l.includes("if (state.mission?.kind === MISSION_HEIST)"));
+  assert.ok(hits.length >= 1, "the heist doctrine block exists");
+  for (const l of hits) {
+    assert.ok(/^ {4}if /.test(l),
+      `heist doctrine must be at plan scope, got: "${l.slice(0, 24)}..."`);
+  }
+});

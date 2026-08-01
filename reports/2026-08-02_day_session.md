@@ -173,3 +173,27 @@ phone evicts its own stale socket — the iOS-resume killer), client
 auto-rejoin, reconnect-on-visible, no-briefing-replay on resume.
 
 Suite 750/750. Fixture v67. All pushed to dev_night.
+
+---
+
+## Late-night addendum: mode batteries + the residue's new instruments
+
+CORRECTION first: my turn summary earlier misread the heist mail as
+"96% westbound attacker" — "A wins" in a done-mail is TEAM A, who is
+the DEFENDER in att=1. The corrected, probe-consistent verdicts:
+
+| battery (n=600/mode, 849fb27) | read | meaning |
+|---|---|---|
+| Convoy attackers | **41.3% east / 64.7% west** (was 32/34) | escort-wall fix raised BOTH sides; a 23-pt DIRECTIONAL gap surfaced |
+| Heist attackers | **8.0% east / 3.7% west** (was ~0.3) | alive, far under bar — Q70 getaway levers with you |
+| Riverline uniques-off | **47.2 / 34.7%** (vs 54.5/59.3 on) | Q69 ANSWERED: the unique pair swings ~16 pts toward A on the water map; beneath it, an east-side curse ~9 pts both worlds |
+
+**The through-line**: eastbound convoys -23, east-side riverline -9,
+eastbound POWS deaths 3x, the 16d step drift — one signature. THE
+DIRECTIONAL RESIDUE (already top of the KNOWN OPEN queue) now has
+macro instruments: a convoy A/B pair reads a 23-pt signal for ~6 min
+of PC time. When you green-light the residue hunt, that's the probe.
+
+**Your queue**: Q63 caldera identity · Q64-Q67 cache/specials · Q69
+riverline unique-pair lean (accept with disclosure, premium-style, or
+tune?) · Q47b convoy bar + side gap · Q70 heist getaway levers.

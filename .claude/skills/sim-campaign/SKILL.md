@@ -33,8 +33,17 @@ path shapes; everything older is a different game):
 | frontier DEFAULT (powPreplaced 0 — SETTLED, prompt 133) | **48.8 / 53.5% A** (the ladder-verdict pair) | FAIR — the era baseline |
 | frontier POWS=2 (human-session flavour) | 47.1 / 41.0% A | fair live-world; regent-war config only |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
-| convoy (Q62 corridor) | attackers **32 / 34%** | best config measured; Q47 bar still with designer |
-| riverline (post-pacing + farm fix) | **54.5 / 59.3% A** (n=600 on c51a557) — tempo VERIFIED (horn 0, median ~11.6k); the 56.9% agg lean SURVIVED the farm fix UNCHANGED — riverline's own A-keyed mechanism | EXPERIMENTAL; Q69 hunt OPEN. STALEMATE=0 rung DONE (56.8% agg — the grind exonerated, Q18-conversion hypothesis dead); uniques-off pair queued next (the Skimmer SHOULD favour B on the water map, yet B loses — if UNIQUES=0 reads fair, the unique pair is the channel) |
+| convoy (post-escort-wall, 849fb27) | attackers **41.3% east / 64.7% west** (was 32/34) | the fix RAISED both sides and unmasked a 23-pt DIRECTIONAL gap — the residue's best instrument yet; Q47 bar still with designer |
+| heist (post-doctrine, 849fb27) | attackers **8.0% east / 3.7% west** (was ~0.3) | alive but under any bar — the getaway is physics (Q70 levers with the owner) |
+| riverline (post-pacing + farm fix) | **54.5 / 59.3% A** uniques-ON; **47.2 / 34.7%** uniques-OFF (n=600 each) | Q69 rungs DONE: stalemate exonerated (56.8% without it); UNIQUES CONVICTED — the pair swings ~16 pts toward A on the water map (sawtooth seat-economics' sibling). Beneath it, uniques-off shows an EAST-SIDE curse (~-9 pts both worlds) = the directional residue |
+
+THE DIRECTIONAL RESIDUE now has MACRO INSTRUMENTS (2026-08-02): the
+east-attacking convoy loses 23 pts vs west (41.3/64.7 at n=600) and
+the uniques-off riverline east side loses ~9 — versus the old 3-pt
+POWS deltas and the 16d micro-probe. When the residue hunt resumes,
+A/B convoy batteries are the cheapest strong signal. (KNOWN OPEN, top
+of the queue in CLAUDE.md; candidates + verification ladder in
+dev-log 2026-08-01.)
 | sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
