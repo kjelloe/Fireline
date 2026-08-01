@@ -89,6 +89,13 @@ function firstDivergence(n, m) {
     if (b.fuel !== a.fuel) return `asset ${i} fuel: ${a.fuel} vs ${b.fuel}`;
     if (b.ammo !== a.ammo) return `asset ${i} ammo: ${a.ammo} vs ${b.ammo}`;
     if (b.reloadTimer !== a.reloadTimer) return `asset ${i} reload: ${a.reloadTimer} vs ${b.reloadTimer}`;
+    // Probe widening #4 (the lesson keeps applying to the instrument):
+    // moveProgress is the fixed-point step accumulator — it diverged
+    // SILENTLY before positions did and the first visible x-mismatch
+    // pointed at the wrong tick entirely.
+    if (b.moveProgress !== a.moveProgress) return `asset ${i} moveProgress: ${a.moveProgress} vs ${b.moveProgress}`;
+    if (b.suppressedTimer !== a.suppressedTimer) return `asset ${i} suppressed: ${a.suppressedTimer} vs ${b.suppressedTimer}`;
+    if (b.campTicks !== a.campTicks) return `asset ${i} campTicks: ${a.campTicks} vs ${b.campTicks}`;
   }
   const mc = (x) => W - 1 - x;
   for (let i = 0; i < (n.caltrops ?? []).length || i < (m.caltrops ?? []).length; i++) {

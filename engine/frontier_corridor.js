@@ -57,25 +57,37 @@ export function generateFrontierCorridor(rootSeed) {
   const cells = new Uint8Array(p.width * p.height);
   let state = seedSfc32(rootSeed >>> 0);
 
-  // Fixed PRNG budget: 1,100 rough attempts then 110 forest random-walk clumps.
-  for (let i = 0; i < 1100; i++) {
-    const rx = randBelow(state, p.width); state = rx.state;
+  // FAIRNESS BY CONSTRUCTION (prompt 143 — the residue hunt's root):
+  // noise lands on the WEST half and is REFLECTED east, the riverline
+  // pattern. The old whole-map noise left ~1,600 asymmetric cell pairs
+  // per seed — the flagship map violated the mirror invariant at the
+  // CELL level while every other profile held it, and the frontier-
+  // clustered "directional residue" signatures fed on that terrain
+  // luck. Budgets are HALVED (550/55) so per-seed density matches the
+  // old 1,100/110 whole-map draw.
+  for (let i = 0; i < 550; i++) {
+    const rx = randBelow(state, p.width / 2); state = rx.state;
     const ry = randBelow(state, p.height); state = ry.state;
     const at = indexOf(rx.value, ry.value, p.width);
     if (cells[at] === T_OPEN) cells[at] = T_ROUGH;
   }
-  for (let clump = 0; clump < 110; clump++) {
-    const sx = randBelow(state, p.width); state = sx.state;
+  for (let clump = 0; clump < 55; clump++) {
+    const sx = randBelow(state, p.width / 2); state = sx.state;
     const sy = randBelow(state, p.height); state = sy.state;
     let x = sx.value, y = sy.value;
     cells[indexOf(x, y, p.width)] = T_FOREST;
     for (let step = 0; step < 12; step++) {
       const dx = randBelow(state, 3); state = dx.state;
       const dy = randBelow(state, 3); state = dy.state;
-      x = Math.max(0, Math.min(p.width - 1, x + dx.value - 1));
+      x = Math.max(0, Math.min(p.width / 2 - 1, x + dx.value - 1));
       y = Math.max(0, Math.min(p.height - 1, y + dy.value - 1));
       const at = indexOf(x, y, p.width);
       if (cells[at] === T_OPEN) cells[at] = T_FOREST;
+    }
+  }
+  for (let y = 0; y < p.height; y++) {
+    for (let x = 0; x < p.width / 2; x++) {
+      cells[indexOf(p.width - 1 - x, y, p.width)] = cells[indexOf(x, y, p.width)];
     }
   }
   stampInfrastructure(cells);

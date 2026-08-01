@@ -4851,3 +4851,46 @@ thinning, or bless attrition-first as the mode's true shape.
 CONVOY WINDFALL: the escort-wall fix moved local deliveries 1/10 ->
 5/10 (att=1 5/5 at ~t=2250) — re-battery queued (att 0/1 + heist 0/1).
 Standard gate healthy (mixed winners, tickets endings). 750/750.
+
+## slice-terrain-symmetry — THE RESIDUE'S UNDESIGNED ROOT (2026-08-02, prompt 143)
+
+The hunt, in order:
+1. Convoy instrument first read: att0/att1 = direction × faction
+   CONFOUNDED (att0 = Sentinel faction pushing east). Discriminator
+   pairs queued (mirror = same faction/opposite direction; uniques-0).
+2. dbg_mirror_diverge gained MODE (+ probe widening #4: moveProgress/
+   suppressedTimer/campTicks — the instrument lesson, again). Convoy
+   seed 2026: PERFECT equivariance to t=9000. Seeds 777/31337: DIVERGED
+   at t=1085.
+3. The t=1085 dump hand-computed: normal step 14 vs mirror step 28 —
+   DIFFERENT TERRAIN under the same mirrored position. At the exact
+   world-centre (x=16384) the boundary law assigns cell 64 in both
+   worlds, and mirror-world cell 64 = normal cell 63 — harmless ONLY
+   if the map is cell-symmetric there.
+4. **FRONTIER IS NOT CELL-SYMMETRIC**: 1,615 of 8,192 mirror pairs
+   differ (seed 777). The flagship map's rough/forest noise was drawn
+   over the WHOLE map — the mirror invariant was tested at layout
+   level (relays/spawns/patrols) but never at the CELL level. Every
+   other profile measures 0 asymmetric pairs (riverline's "fairness
+   by construction" pattern). Density bias between halves is small
+   (~1%, ≈2σ) — the damage is per-seed terrain LUCK feeding every
+   frontier-clustered directional signature (POWS corridor kill-zone
+   "at symmetric cells" — the cells were NOT symmetric; the 16d probe
+   drift; plausibly part of the convoy att gap).
+5. FIX: west-half noise reflected east, budgets halved (550/55) to
+   keep density. test/map_symmetry.test.js pins ALL profiles × 5
+   seeds cell-for-cell (the missing invariant test). Fixture v68 +
+   0I fixture v6 (regen script debugging/regen_0i.mjs).
+6. Post-fix probes: convoy 777 divergence 1085 → 5495, and the
+   remaining divergence hand-verifies as the DESIGNED centre-anchor
+   half-cell (both worlds approach the rule-equal col-64 drop from
+   987 vs 731 units — bearing16 legitimately differs; bearing16
+   itself checked equivariant on true mirror pairs). Seed 31337
+   convoy: clean to horizon.
+
+Verification ladder queued on the PC (post-fix build): frontier
+default pair, POWS=2 pair, convoy att pair. Every frontier baseline
+in the era table is STALE until they land. Pre-fix discriminator
+rungs (landship/drops/mirror/uniques convoy pairs) still in the queue
+run on 2d4202e — treat as pre-fix reference only.
+Suite 752/752 x2. Gate healthy. Smoke OK.

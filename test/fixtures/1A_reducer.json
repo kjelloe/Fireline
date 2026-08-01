@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 67,
+  "fixtureVersion": 68,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 67 (2026-08-01): prompt-136 riverline pacing: overtime counter joins hashed state (stalemate attrition + B3 overtime cap); hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
+  "note": "fixtureVersion 68 (2026-08-01): prompt-143 residue hunt: frontier terrain mirror-BY-CONSTRUCTION (west-half noise reflected east, budgets halved 550/55) — the undesigned residue root; ~1,600 asymmetric cell pairs/seed are gone; hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "39bb9eccab7f1af9",

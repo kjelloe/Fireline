@@ -1,5 +1,5 @@
 {
- "fixtureVersion": 5,
+ "fixtureVersion": 6,
  "id": "0I_frontier_corridor_128",
  "purpose": "Compact deterministic parity contract for the 128x128 named profile. Does not store the 16,384-cell array.",
  "profile": {
@@ -20,12 +20,12 @@
   {
    "id": "seed_42",
    "rootSeed": 42,
-   "expectedHashFnv1a64": "4b5c4c818a5860c9",
+   "expectedHashFnv1a64": "000be524b00aec3d",
    "expectedTerrainCounts": [
-    13548,
+    13530,
     640,
-    816,
-    952,
+    806,
+    980,
     108,
     320,
     0
@@ -106,12 +106,12 @@
   {
    "id": "seed_3735928559",
    "rootSeed": 3735928559,
-   "expectedHashFnv1a64": "0d5753f7a34ba4eb",
+   "expectedHashFnv1a64": "c324c3793817cff7",
    "expectedTerrainCounts": [
-    13536,
+    13546,
     640,
-    822,
-    958,
+    816,
+    954,
     108,
     320,
     0
@@ -190,5 +190,5 @@
    ]
   }
  ],
- "provenance": "11N: mirrored woodland paths added (rows 40/41/86/87, x 24..103); terrain id 5"
+ "provenance": "prompt-143: mirror-BY-CONSTRUCTION (west-half noise reflected east, budgets 550/55) — the directional-residue root fix; re-pinned from the new generator"
 }
