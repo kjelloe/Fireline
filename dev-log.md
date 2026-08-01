@@ -4907,3 +4907,22 @@ law's own refusal); Q63 blessed + Q56 re-affirmed (register).
 Suite 754/754. Gate green. STILL OWED (sequenced after the Q71
 verdict, since a default flip re-baselines): the sawtooth cache slice
 (Q64-66) and the Q70 getaway-car experiment.
+
+## Q71 VERDICT: tick-parity is INERT — Q18's first-strike hypothesis DEAD (2026-08-02)
+
+The trial batteries came back BYTE-IDENTICAL to baseline (convoy pair
+117/183 + 108/192 exactly; POWS 75/220 exactly). Config verified
+locally (ai.orderParity=true reaches the regency; plan emits fires on
+both parities; 18 odd ticks per war carry CROSS-TEAM fire races) —
+the reorder simply never lands on a kill boundary: same-tick mutual
+fire where one shot disables the other shooter is rare enough that
+900 wars never once flipped. Honest conclusion: command-application
+order is NOT the team-keyed mechanism. The switch stays in the tree
+(cheap, proven-inert, useful control).
+
+THE TEAM-KEYED HUNT'S REMAINING LADDER: convoy uniques-off still
+gapped 20/31 (11 pts, pre-fix build) — so a non-unique team-keyed
+channel exists in mission wars. Next rungs: convoy FACTIONSWAP pair
+(does the residual gap follow the unique pair or the team ids?) +
+an audit of team-shared-resource tie-breaks (drop-ring races, role
+designation on ascending ids). Sequenced after the cache slice.
