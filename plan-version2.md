@@ -161,6 +161,7 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 | Q67 | Specials-ladder order: VAULTS=2 re-test before the cache lands, or cache leapfrogs? | you | PC lane free |
 | Q68 | DISSOLVED: blackwood restored to 51.0/48.3% fair by the landship-farm fix — promotion stands | — | — |
 | Q69 | Riverline's own A-keyed lean (56.9% agg, survives the farm fix): hunt now, or after your playtest? Suspect ladder: Q18 first-strike bias converted by stalemate attrition | you | — |
+| Q70 | Heist getaway levers (the grab works, the escape is physics — scouts speed 56 catch the carrier 24): fast raider as a mode rule (the getaway car), attacker MPG edge, thinner pings, or bless attrition-first? | you | heist battery |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
 | Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |
