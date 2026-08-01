@@ -4740,3 +4740,21 @@ flip rate 47% (fair chaos). Frontier 5-seed gate healthy (all tickets,
 9.4k-14.5k, systems firing). Suite 746/746 x2 (10 new tests in
 test/heart_bleed.test.js). 300+300 PC battery queued for the
 EXPERIMENTAL-exit read.
+
+## batch-lane hygiene + Q58 cache brief (2026-08-02, prompt 137)
+
+- VOID BATTERY caught by its own absurdity: map_riverline came back
+  74.7% A — but ran on 4b3b053 (pre-pacing; the worker updates ONLY
+  via an explicit `update` job) AND with the map job kind's default
+  uniques:0. Double config-drift; two new rungs added to the skill's
+  CONFIG-DRIFT LAW (update-before-battery + the map job's
+  mirror/uniques defaults). The morning caldera verdict (#503)
+  STANDS — 4b3b053 was the right build for that question.
+- Lane rebuilt: update → riverline/sawtooth/blackwood 300-war pairs
+  (mirror 0/1, uniques 1) = 1,800 wars, the post-ladder era table's
+  missing rows. Two stale in-flight results (map_sawtooth/
+  map_blackwood on 4b3b053 uq0) are VOID on arrival — ignore.
+- Q58 delivered: specs/13_weapons_cache_brief.md — site.kind 4
+  reload-tempo aura (R5, -25%), vault-pull lessons as constraints
+  (no movement surface, mirror-enumerable, CACHE=0 kill-switch),
+  sawtooth-first proposal, Q64-Q67 filed.

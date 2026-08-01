@@ -170,6 +170,16 @@ plain sweep/mirror kinds ran legacy UNIQUES=0 for a day and a
 hypotheses. run_sweep now defaults UNIQUES=1; the `ab` job kind
 (raidparty/powarc/uniques/pows/mirror fields) is the bisection
 lane — one rung per suspect, n=300, ~3 min each on the PC.
+TWO MORE RUNGS (2026-08-02, the void riverline battery — 74.7%
+"A-lean" that was pure config): (1) the WORKER UPDATES ONLY VIA AN
+EXPLICIT `update` JOB — queue `batch_send.sh update` BEFORE any
+battery that must run the just-pushed build, and check the build
+hash the worker reports in its done-mail against `git log`;
+(2) `map <profile> [count] [mirror] [uniques]` defaults mirror=0
+AND uniques=0 — an era-baseline battery is the PAIR
+`map X 300 0 1` + `map X 300 1 1`. A result mail from a stale
+build or a bare `map X N` call is VOID: ignore it, don't reconcile
+it.
 MODE WARS (slice-convoy): MODE=convoy is a DIFFERENT game — no
 standards, no ticket bleed, verdict by reasons 6/7 only. Never mix
 mode rows into standard-war baselines. Probe with
