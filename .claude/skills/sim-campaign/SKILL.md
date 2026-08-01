@@ -36,14 +36,27 @@ path shapes; everything older is a different game):
 | convoy (Q62 corridor) | attackers **32 / 34%** | best config measured; Q47 bar still with designer |
 | riverline (post-pacing, prompt 136) | **53.0 / 60.7% A** (n=600) — tempo VERIFIED (horn 0, undecided 0, median ~11.6k) but an A-keyed lean above band | pacing SOLVED; lean OPEN (see the A-keyed hunt) |
 | sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
-| blackwood (post-ladder re-battery) | **62.0 / 59.7% A** (n=600) — REGRESSED from 49.2 fair; POWS=2 amplifies to 94% A (n=32 local) | A-KEYED HUNT (top open item) |
+| blackwood (post-ladder re-battery) | **62.0 / 59.7% A** (n=600) — REGRESSED from 49.2 fair; POWS=2 amplifies to 94% A (n=32 local) | CONVICTED + FIXED (the landship farm) — post-fix battery pair pending |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the
 default read 30 min/51% horn; at 1 still 28.5/46 — the POW-era
 doctrine itself is slow, so the classic census returned and POWS=2
 became the human-session flavour. GATE: TICKS defaults 18000.
 
-THE A-KEYED HUNT (opened 2026-08-02, endpoints VERIFIED): blackwood
+THE A-KEYED HUNT — CLOSED same day (2026-08-02): worktree bisection
+(64-war rungs) walked d37e979 43.8% -> c45d119 52.5% -> 515e509 51.6%
+(fair) -> fd2d1d4 60.9% (the LANDSHIP slice). Mechanism: the
+anti-camping pass drafted the neutral hull (team -1, idle+unsupplied
+forever) as a camper, and `team === 0 ? 1 : 0` minted its punishment
+drone for TEAM A — a free one-shot scored kill on the landship's own
+1000-tick respawn loop, every map, all war. Score-decided endings
+cashed it in (blackwood 25% horn bled hardest; frontier's tickets
+meta absorbed it). Fix: team -1 exempt from camping (no-farm pin in
+landship.test.js); LANDSHIP=0 sweep env = the kill-switch. Post-fix
+gate: A's scores down EXACTLY 20-30/war, B's identical. BUG CLASS to
+grep for on any neutral-entity slice: foe computations
+(`team === 0 ? 1 : 0`) reachable with team -1. Hunt archaeology
+(kept for method): blackwood
 @d37e979 reads 43.8% A (n=32 local, same seeds ~62% on HEAD) — the
 regression lives in d37e979..937b1af, a span that CONTAINS THE WHOLE
 EQUIVARIANCE LADDER. Riverline's 56.9% aggregate lean is likely the
