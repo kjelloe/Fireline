@@ -9,7 +9,7 @@
 // held profiles join when they pass — server owners may still opt
 // them in explicitly via VOTE_MAPS.
 export const COMPLETED_MAPS = ["frontier_corridor", "blackwood"];
-export const ALL_MODES = ["standard", "convoy"];
+export const ALL_MODES = ["standard", "convoy", "heist"];
 
 export function normalizePool(pool = {}, validMaps = null) {
   let maps = Array.isArray(pool.maps) && pool.maps.length ? [...pool.maps] : [...COMPLETED_MAPS];
@@ -36,10 +36,19 @@ export function voteCandidates(state, warsStarted, pool) {
   const idx = maps.indexOf(cur);
   const other = maps[(Math.max(idx, 0) + 1) % maps.length];
   if (other && other !== cur) out.push({ map: other, mode: 0 });
-  if (curMode === 1) {
+  // The mode-flip candidate: a running mode offers the way back to
+  // standard; a standard war offers the next enabled mode, cycling by
+  // war count so convoy and heist share the slot fairly.
+  if (curMode !== 0) {
     out.push({ map: cur, mode: 0 });
-  } else if (modes.includes("convoy")) {
-    out.push({ map: cur, mode: 1, modeAttacker: warsStarted & 1 });
+  } else {
+    const flips = [];
+    if (modes.includes("convoy")) flips.push(1);
+    if (modes.includes("heist")) flips.push(2);
+    if (flips.length) {
+      const mode = flips[warsStarted % flips.length];
+      out.push({ map: cur, mode, modeAttacker: warsStarted & 1 });
+    }
   }
   return out;
 }

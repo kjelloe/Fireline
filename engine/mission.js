@@ -16,6 +16,10 @@
 
 export const MISSION_NONE = 0;
 export const MISSION_CONVOY = 1;
+export const MISSION_HEIST = 2; // Q52: the one-sided standard grab
+// Heist clock: tighter than convoy — the vault run is a sprint with a
+// getaway, not a siege. rules.heistTimer overrides.
+export const HEIST_TIMER_TICKS = 9000;
 
 // The convoy scores standing this close to the gate, operable.
 export const CONVOY_DELIVER_CELLS = 3;
@@ -38,7 +42,19 @@ export const CONVOY_RESTART_TICKS = 80;
 // gate is the DEFENDER base centre. Returns null when the rules ask for
 // no mode (the standard war).
 export function createMission(rules, assets, bases, getStats) {
-  if ((rules?.mode ?? MISSION_NONE) !== MISSION_CONVOY) return null;
+  const mode = rules?.mode ?? MISSION_NONE;
+  if (mode === MISSION_HEIST) {
+    // Q52 HEIST: only the DEFENDER keeps a standard (the Asset in
+    // their vault); the attacker's carrier must grab it and bring it
+    // home before the clock dies. Scoring rides the 8B standard
+    // machinery verbatim — this object is the clock and the sides.
+    return {
+      kind: MISSION_HEIST,
+      attacker: rules.modeAttacker === 1 ? 1 : 0,
+      timerTicks: rules.heistTimer ?? HEIST_TIMER_TICKS,
+    };
+  }
+  if (mode !== MISSION_CONVOY) return null;
   const attacker = rules.modeAttacker === 1 ? 1 : 0;
   const truck = assets.find(
     (a) => a.team === attacker && getStats(a.type).canTow);

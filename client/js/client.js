@@ -1281,7 +1281,8 @@ function showVote(candidates) {
     const b = document.createElement("button");
     b.className = "btn";
     const mapName = t(`map.${c.map}`) !== `map.${c.map}` ? t(`map.${c.map}`) : c.map;
-    b.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName }) : mapName;
+    b.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName })
+      : c.mode === 2 ? t("vote.heist_on", { map: mapName }) : mapName;
     b.onclick = () => send({ type: "c_vote", choice: i });
     buttons.appendChild(b);
   });

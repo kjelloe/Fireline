@@ -32,7 +32,7 @@ const TICKETPOOL = process.env.TICKETPOOL ? Number(process.env.TICKETPOOL) : nul
 // so the flip of the powPreplaced default can be judged at n=300.
 const POWS = process.env.POWS ? Number(process.env.POWS) : null;
 // Convoy Escort battery: MODE=convoy, MODEATTACKER=0|1 picks the side.
-const MODE = process.env.MODE === "convoy" ? 1 : null;
+const MODE = process.env.MODE === "convoy" ? 1 : process.env.MODE === "heist" ? 2 : null;
 const MODEATTACKER = process.env.MODEATTACKER === "1" ? 1 : 0;
 // Bisection kill-switches (A/B only): RAIDPARTY=0 disables the AI
 // prison-party doctrine; POWARC=0 disables scout captures entirely.

@@ -48,7 +48,7 @@ export function describeWinReason(reason) {
   const keys = {
     0: "win.interrupted", 1: "win.elimination", 2: "win.domination",
     3: "win.points", 4: "win.standard", 5: "win.tickets",
-    6: "win.convoy_delivered", 7: "win.convoy_stopped",
+    6: "win.convoy_delivered", 7: "win.convoy_stopped", 8: "win.heist_timeout",
   };
   return t(keys[reason] ?? "win.unknown");
 }

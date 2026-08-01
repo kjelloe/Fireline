@@ -4622,3 +4622,34 @@ mirrored on the fix: 60%/50% A (fair band at n=30), medians ~12k,
 dominations halved. Suite 729/729. The n=300 battery decides
 promotion; dominations-as-endings at healthy length may simply be
 the circle map's identity — the battery and a playtest will say.
+
+## slice-heist: mode #2 lands, engine-complete / AI-weak (2026-08-02)
+
+Q52 (Q57's second item). Suite 733/733, all mode/vote/string surface
+shipped; the AI attacker LAUNCHES but does not yet survive — the
+convoy maturation path, documented, tuning owed after playtest.
+- ENGINE: MISSION_HEIST (kind 2) on the mode framework — only the
+  DEFENDER keeps a standard (the Asset); canScore's heist exception
+  makes the attacker's absent standard vacuously safe; scoring rides
+  the 8B machinery verbatim (reason 4 keeps its meaning); the clock
+  (9000) hands it to the defenders (reason 8); the radio betrays the
+  CARRIED Asset to the defenders on the convoy cadence. MODE=heist
+  env; vote pool cycles convoy/heist in the flip slot by war parity;
+  strings both locales; hash shape ??-guarded for kind-2 missions.
+- THE LENGTH-2 PURGE: heist's one-standard shape exposed every
+  `standards.length === 2` gate and index in the AI — all converted
+  to stdOf(team) lookups with null guards (raidWindowOpen crashed
+  outright for the defender: heist wars found FOUR latent gates the
+  two-standard world never tested).
+- DOCTRINE GATES (both modes benefit): mission-war ATTACKERS
+  designate no capturers (gating only movement left capturerOps
+  swallowing the escort pool at the source — escNear 0-1 forever)
+  and FIGHT ON THE MOVE (the fire-doctrine continue pinned whole
+  postures); heist vault guard capped at 3 (a full-team camp is a
+  fortress assault nobody enjoys); heist posture masses free
+  attacker hulls on the raid carrier.
+- STATE: window opens, raids LAUNCH (traced: carrier riding for the
+  vault at t=6000); the escort screen dies crossing — 0 grabs at
+  n=10 both sides. Batteries queued (heist pair + the convoy pair
+  re-run under the new gates); the real tuning follows the owner's
+  playtest per the Q47 pattern.

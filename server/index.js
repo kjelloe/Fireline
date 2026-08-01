@@ -94,6 +94,9 @@ export function createAppServer(options = {}) {
       ...(process.env.MODE === "convoy"
         ? { mode: 1, modeAttacker: process.env.MODEATTACKER === "1" ? 1 : 0 }
         : {}),
+      ...(process.env.MODE === "heist"
+        ? { mode: 2, modeAttacker: process.env.MODEATTACKER === "1" ? 1 : 0 }
+        : {}),
     },
   });
   const transport = new NetworkTransport(gameServer, wss);
@@ -150,8 +153,8 @@ export function createAppServer(options = {}) {
         const pick = verdict?.pick;
         gameServer.resetWar(nextSeed, pick ? {
           mapProfile: pick.map,
-          modeRules: pick.mode === 1
-            ? { mode: 1, modeAttacker: pick.modeAttacker ?? 0 }
+          modeRules: pick.mode
+            ? { mode: pick.mode, modeAttacker: pick.modeAttacker ?? 0 }
             : null,
         } : {});
         archived = false;

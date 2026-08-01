@@ -43,14 +43,15 @@ export function relayTally(view, myTeam) {
 // standard (9A: Command Carriers only).
 export function currentHint(view, myTeam, opts = {}) {
   // Convoy Escort mode: one mission, one hint per side, with the clock.
-  if (view?.mission?.kind === 1) {
+  if (view?.mission?.kind === 1 || view?.mission?.kind === 2) {
     const m = view.mission;
     const mins = Math.max(0, Math.floor(m.timerTicks / 600));
     const secs = Math.max(0, Math.floor((m.timerTicks % 600) / 10));
     const clock = `${mins}:${String(secs).padStart(2, "0")}`;
+    const kind = m.kind === 1 ? "convoy" : "heist";
     return myTeam === m.attacker
-      ? t("hint.convoy_attack", { clock })
-      : t("hint.convoy_defend", { clock });
+      ? t(`hint.${kind}_attack`, { clock })
+      : t(`hint.${kind}_defend`, { clock });
   }
   const own = (view?.standards ?? []).find((s) => s.team === myTeam);
   const enemy = (view?.standards ?? []).find((s) => s.team !== myTeam);
@@ -83,8 +84,10 @@ export function briefingText(myTeam, faction = null, mapProfile = null, mission 
   return [
     t("brief.fight_for", { name: teamName }),
     ...(faction ? [faction.line] : []),
-    ...(mission?.kind === 1
-      ? [mission.attacker === myTeam ? t("brief.convoy_attack") : t("brief.convoy_defend")]
+    ...(mission?.kind === 1 || mission?.kind === 2
+      ? [mission.attacker === myTeam
+          ? t(mission.kind === 1 ? "brief.convoy_attack" : "brief.heist_attack")
+          : t(mission.kind === 1 ? "brief.convoy_defend" : "brief.heist_defend")]
       : [t("brief.win")]),
     t("brief.relays"),
     t("brief.fog"),

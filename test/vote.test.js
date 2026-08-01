@@ -102,15 +102,18 @@ test("Q49: silence keeps the status quo; spectators cannot vote", async () => {
 test("Q54: pool defaults, filtering, and candidate law", async () => {
   const { normalizePool, voteCandidates, COMPLETED_MAPS } = await import("../engine/vote.js");
   // Defaults: every completed map, every mode.
-  assert.deepEqual(normalizePool({}), { maps: COMPLETED_MAPS, modes: ["standard", "convoy"] });
+  assert.deepEqual(normalizePool({}), { maps: COMPLETED_MAPS, modes: ["standard", "convoy", "heist"] });
   // Unknown maps filtered against the valid list; empty result falls back.
   assert.deepEqual(
     normalizePool({ maps: ["blackwood", "atlantis"] }, ["frontier_corridor", "blackwood"]).maps,
     ["blackwood"]);
   assert.deepEqual(normalizePool({ maps: ["atlantis"] }, ["blackwood"]).maps, COMPLETED_MAPS);
   // Modes: unknown entries dropped; empty = standard only.
-  assert.deepEqual(normalizePool({ modes: ["convoy", "heist"] }).modes, ["convoy"]);
-  assert.deepEqual(normalizePool({ modes: ["heist"] }).modes, ["standard"]);
+  assert.deepEqual(normalizePool({ modes: ["convoy", "heist"] }).modes, ["convoy", "heist"],
+    "heist is a real mode since Q52");
+  assert.deepEqual(normalizePool({ modes: ["convoy", "atlantis_mode"] }).modes, ["convoy"]);
+  assert.deepEqual(normalizePool({ modes: ["heist"] }).modes, ["heist"], "a heist-only server is legal since Q52");
+  assert.deepEqual(normalizePool({ modes: ["atlantis_mode"] }).modes, ["standard"], "all-invalid falls back to standard");
 
   const state = { mapProfile: "frontier_corridor", rules: {} };
   // Full pool: status quo, rotation, convoy flip.
@@ -118,7 +121,11 @@ test("Q54: pool defaults, filtering, and candidate law", async () => {
   assert.equal(full.length, 3);
   assert.deepEqual(full[0], { map: "frontier_corridor", mode: 0, modeAttacker: 0 });
   assert.equal(full[1].map, "blackwood");
-  assert.deepEqual(full[2], { map: "frontier_corridor", mode: 1, modeAttacker: 1 });
+  // warsStarted 3 with two flip modes -> flips[3 % 2] = heist (Q52).
+  assert.deepEqual(full[2], { map: "frontier_corridor", mode: 2, modeAttacker: 1 });
+  const evenWar = voteCandidates(state, 4, normalizePool({}));
+  assert.deepEqual(evenWar[2], { map: "frontier_corridor", mode: 1, modeAttacker: 0 },
+    "convoy and heist share the flip slot by war parity");
   // Convoy disabled: no mode flip offered.
   const noConvoy = voteCandidates(state, 3, normalizePool({ modes: ["standard"] }));
   assert.equal(noConvoy.length, 2);

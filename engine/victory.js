@@ -13,6 +13,7 @@ export const WIN_STANDARD = 4; // 8C: the primary victory — flag captured
 export const WIN_TICKETS = 5;  // 13H: the enemy pool bled dry (prompt-51 hybrid)
 export const WIN_CONVOY_DELIVERED = 6; // mode: the convoy reached the gate
 export const WIN_CONVOY_STOPPED = 7;   // mode: timer expired or hull salvaged
+export const WIN_HEIST_TIMEOUT = 8;    // mode: the Asset never left the vault
 
 export const PHASE_RUNNING = 0;
 export const PHASE_OVER = 1;
@@ -38,6 +39,24 @@ export function checkVictory(state) {
   // win paths (standards never spawn; tickets/domination cannot end a
   // mode war — its clock and objective are the whole story).
   // Elimination stays as the backstop for a genuinely dead war.
+  // Q52 HEIST: the scored Asset IS the standard win (reason 4 keeps
+  // its meaning); the clock hands it to the defenders; elimination
+  // stays the backstop. Tickets/domination cannot end a mode war.
+  if (state.mission?.kind === 2 /* MISSION_HEIST */) {
+    const m = state.mission;
+    const scored = state.standards.find((st) => st.status === 3 /* STD_SCORED */);
+    if (scored) return { winner: m.attacker, reason: WIN_STANDARD };
+    if (m.timerTicks <= 0) {
+      return { winner: m.attacker === 0 ? 1 : 0, reason: WIN_HEIST_TIMEOUT };
+    }
+    const aDead = teamEliminated(state, 0);
+    const bDead = teamEliminated(state, 1);
+    if (aDead && bDead) return { winner: -1, reason: WIN_ELIMINATION };
+    if (aDead) return { winner: 1, reason: WIN_ELIMINATION };
+    if (bDead) return { winner: 0, reason: WIN_ELIMINATION };
+    return null;
+  }
+
   if (state.mission?.kind === MISSION_CONVOY) {
     const m = state.mission;
     const convoy = state.assets[m.convoyId];

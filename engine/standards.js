@@ -80,7 +80,12 @@ export function standardReturnableBy(state, asset) {
 // Scoring gate: carrier inside own command zone AND own standard AT_BASE.
 export function canScore(state, carrierAsset) {
   const own = state.standards.find((s) => s.team === carrierAsset.team);
-  if (!own || own.status !== STD_AT_BASE) return false;
+  // HEIST mode (mission kind 2): the attacker HAS no standard — theirs
+  // is vacuously safe; the one-sided grab is the whole game. In the
+  // standard war the guard below stands untouched.
+  if (!own) {
+    if (state.mission?.kind !== 2) return false;
+  } else if (own.status !== STD_AT_BASE) return false;
   const cellX = sampleCellX(carrierAsset.x);
   const cellY = worldToCellFloor(carrierAsset.y);
   return state.bases.some(

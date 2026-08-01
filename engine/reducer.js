@@ -40,7 +40,7 @@ import {
   RESECURE_TICKS, GUARD_SENSE_CELLS, ALARM_COOLDOWN_TICKS,
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
-import { MISSION_CONVOY, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
+import { MISSION_CONVOY, MISSION_HEIST, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
 import {
   CALTROP_TICKS, CALTROP_SLOW_NUM, CALTROP_SLOW_DEN, caltropAt, enemyCaltropAt,
 } from "./caltrops.js";
@@ -2043,6 +2043,21 @@ function applyAdvanceTick(next) {
   // tick; the defenders hear where the convoy is on a fixed cadence
   // (deterministic, fog-independent — the designer's "sporadic radio
   // pings" that make the hunt possible without wallhacks).
+  // Q52 HEIST clock + the hide-and-seek ping: while the Asset is
+  // CARRIED, the DEFENDERS hear where it is on the convoy cadence.
+  if (next.mission?.kind === MISSION_HEIST) {
+    next.mission.timerTicks -= 1;
+    if (next.tick % CONVOY_PING_TICKS === 0) {
+      const carried = next.standards.find((st) => st.status === STD_CARRIED);
+      if (carried) {
+        next.events.push({
+          type: "ping", kind: "heist_asset", team: next.mission.attacker === 0 ? 1 : 0,
+          toTeam: next.mission.attacker === 0 ? 1 : 0,
+          cellX: worldToCellFloor(carried.x), cellY: worldToCellFloor(carried.y),
+        });
+      }
+    }
+  }
   if (next.mission?.kind === MISSION_CONVOY) {
     next.mission.timerTicks -= 1;
     // RESTART law (mode-scoped): a friendly truck beside the convoy

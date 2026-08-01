@@ -20,6 +20,11 @@ import { GUARD_SENSE_CELLS } from "./prisons.js";
 import { sampleCellX } from "../shared/fixedmath.js";
 import { baseCentreCol } from "./state.js";
 
+// Standards by TEAM lookup (heist mode fields ONE standard — the
+// length-2 index pattern silently disabled every standard doctrine
+// there).
+const stdOf = (state, team) => state.standards.find((s) => s.team === team) ?? null;
+
 // Boundary-parity law (specs/08 §7): every x-position DECISION floors
 // through sampleCellX. Module-scoped width, refreshed at plan() entry
 // — helpers below plan() run only inside a plan pass.
@@ -34,7 +39,7 @@ import { getUnitStats } from "./units.js";
 import { STD_AT_BASE, STD_CARRIED, STD_DROPPED } from "./standards.js";
 import { CMD_REDEPLOY, CMD_CRAWL_ORDER } from "./commands.js";
 import { downedFor, REDEPLOY_TICKS, CRAWL_RADIUS_CELLS } from "./downed.js";
-import { MISSION_CONVOY, CONVOY_PING_TICKS } from "./mission.js";
+import { MISSION_CONVOY, MISSION_HEIST, CONVOY_PING_TICKS } from "./mission.js";
 import { towRejection, towedWreck } from "./recovery.js";
 import { OP_DOWN } from "./state.js";
 import { worldToCellFloor } from "../shared/fixedmath.js";
@@ -205,7 +210,8 @@ function raidWindowOpen(state, carrier, visibleSet) {
     if (d <= ESCORT_CELLS) escorts++;
     if (escorts >= 2) return true;
   }
-  const std = state.standards[carrier.team === 0 ? 1 : 0];
+  const std = stdOf(state, carrier.team === 0 ? 1 : 0);
+  if (!std) return false; // heist defenders have no target to raid
   const sx = sampleCellX(std.x, AI_W);
   const sy = worldToCellFloor(std.y);
   const mx = (cx + sx) >> 1;
@@ -463,6 +469,12 @@ export class AIRegency {
     for (const site of state.sites) {
       for (const team of [0, 1]) {
         if (site.owner === team) continue;
+        // MODE WARS: the ATTACKER designates no capturers at all —
+        // gating only the movement left capturerOps swallowing every
+        // seat, which emptied the escort pool at the SOURCE (heist:
+        // escNear 0-1 forever, window never opened). Designations are
+        // where doctrine allocates people; gate them at the top.
+        if (state.mission && team === state.mission.attacker) continue;
         let bestOp = -1;
         let bestDist = Infinity;
         // 16B residue fix: the Sentinel is no CAPTURER — a 150hp hull
@@ -608,7 +620,7 @@ export class AIRegency {
       if (raiderId === -1) continue;
       const carrier = state.assets[raiderId];
       if (!carrier || isWreck(carrier)) continue;
-      const eStd = state.standards.length === 2 ? state.standards[team === 0 ? 1 : 0] : null;
+      const eStd = stdOf(state, team === 0 ? 1 : 0);
       if (!eStd) continue;
       const wantRaid = eStd.status === STD_AT_BASE || eStd.status === STD_DROPPED;
       const raiding = eStd.status === STD_CARRIED && eStd.carrierAssetId === raiderId;
@@ -642,6 +654,7 @@ export class AIRegency {
     // the same intel the mode grants everyone, no fog cheating in
     // between).
     const interceptorOps = new Set();
+    const vaultGuardOps = new Set();
     let wreckerOp = -1;
     if (state.mission?.kind === MISSION_CONVOY) {
       const m = state.mission;
@@ -694,6 +707,32 @@ export class AIRegency {
         }
         hunters.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
         for (const [, opId] of hunters.slice(0, 2)) interceptorOps.add(opId);
+      }
+      // Q52 HEIST vault guard: THREE hulls hold the Asset; the rest of
+      // the defense fights forward (a full-team camp is a fortress
+      // assault nobody enjoys and a doctrine pathology besides).
+      if (state.mission?.kind === MISSION_HEIST) {
+        const mh = state.mission;
+        const defender = mh.attacker === 0 ? 1 : 0;
+        const std = stdOf(state, defender);
+        if (std) {
+          const sx = sampleCellX(std.x, AI_W);
+          const sy = worldToCellFloor(std.y);
+          const gs = [];
+          for (const [opId] of controlled) {
+            const op = state.operators[opId];
+            if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+            const a = state.assets[op.assetId];
+            if (!a || a.team !== defender || a.operatorId !== opId || isWreck(a)) continue;
+            const st = getUnitStats(a.type);
+            if (st.canTow || st.canCarryStandard || st.indirect) continue;
+            const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - sx),
+                               Math.abs(worldToCellFloor(a.y) - sy));
+            gs.push([d, opId]);
+          }
+          gs.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+          for (const [, opId] of gs.slice(0, 3)) vaultGuardOps.add(opId);
+        }
       }
       // WRECKER designation: the convoy is DOWN — the nearest other
       // attacker truck drops everything (resupply included) and rides
@@ -774,7 +813,7 @@ export class AIRegency {
       // standard safe at home), locked while it is LIVE (carried).
       // Capturers are last-resort. Rank: free hulls, +50 carrier
       // escorts, +100 capturers.
-      const eStd = state.standards.length === 2 ? state.standards[team === 0 ? 1 : 0] : null;
+      const eStd = stdOf(state, team === 0 ? 1 : 0);
       const stdRaidLive = eStd ? eStd.status === STD_CARRIED : false;
       const cands = [];
       for (const [opId] of controlled) {
@@ -899,8 +938,7 @@ export class AIRegency {
         // 11V courier: our standard lies in the open and nobody fast is on
         // it — grab the garage bike (fastest return in the war).
         let roleBike = null;
-        if (!roleCarrier && state.standards.length === 2 &&
-            state.standards[team].status === STD_DROPPED &&
+        if (!roleCarrier && stdOf(state, team)?.status === STD_DROPPED &&
             (recovererSpeed[team] ?? -1) < 72) {
           roleBike = state.assets.find((a) =>
             a.team === team && a.operatorId === -1 && !isWreck(a) &&
@@ -1024,8 +1062,14 @@ export class AIRegency {
       // 29,662 advance ticks, zero arrivals, seed 2026). The member
       // shoots AND falls through to the formation movement below.
       const partyNow = prisonRaiderFor.get(asset.team);
-      const fightsMoving = !!partyNow && (asset.prisoner ?? -1) === -1 &&
-        (partyNow.opId === operatorId || partyNow.escorts.includes(operatorId));
+      const fightsMoving = ((!!partyNow && (asset.prisoner ?? -1) === -1 &&
+        (partyNow.opId === operatorId || partyNow.escorts.includes(operatorId))) ||
+        // Mission-war ATTACKERS fight on the move too — the fire
+        // doctrine's continue pinned whole postures in place (heist:
+        // escNear 0-1 all war, carrier crossing alone; the exact
+        // starvation the raid party had before this law).
+        (state.mission != null && asset.team === state.mission.attacker &&
+         !getUnitStats(asset.type).indirect));
 
       // Q45 chase-shaper doctrine (BEFORE the fire doctrine — a mauled
       // runner's escape kit outranks its peashooter): pursued at ≤ half
@@ -1160,12 +1204,12 @@ export class AIRegency {
       // carrying; the recoverer announces its run; scouts flag marked mines.
       if (state.tick - operator.lastPingTick >= AI_PING_INTERVAL_TICKS) {
         let ping = null;
-        if (state.standards.length === 2) {
-          const enemyStd = state.standards[asset.team === 0 ? 1 : 0];
-          const ownStd = state.standards[asset.team];
-          if (enemyStd.status === STD_CARRIED && enemyStd.carrierAssetId === asset.id) {
+        {
+          const enemyStd = stdOf(state, asset.team === 0 ? 1 : 0);
+          const ownStd = stdOf(state, asset.team);
+          if (enemyStd && enemyStd.status === STD_CARRIED && enemyStd.carrierAssetId === asset.id) {
             ping = { kind: "need_escort" };
-          } else if (ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
+          } else if (ownStd && ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
             ping = {
               kind: "recovery_in_progress",
               targetCellX: worldToCellFloor(ownStd.x), targetCellY: worldToCellFloor(ownStd.y),
@@ -1196,8 +1240,8 @@ export class AIRegency {
       // en route WITHOUT the standard whose window closed breaks off and
       // rallies home instead of soloing into the guns.
       if (asset.id === raiderFor[asset.team] && asset.state === ASSET_MOVING &&
-          state.standards.length === 2) {
-        const eStd = state.standards[asset.team === 0 ? 1 : 0];
+          stdOf(state, asset.team === 0 ? 1 : 0)) {
+        const eStd = stdOf(state, asset.team === 0 ? 1 : 0);
         const carryingIt = eStd.status === STD_CARRIED && eStd.carrierAssetId === asset.id;
         const boundForStd = Math.max(
           Math.abs(asset.targetX - eStd.x), Math.abs(asset.targetY - eStd.y)) < 1024;
@@ -1367,14 +1411,19 @@ export class AIRegency {
       }
       if (asset.state !== ASSET_IDLE) continue;
       let target = null;
-      if (state.standards.length === 2) {
-        const ownStd = state.standards[asset.team];
-        const enemyStd = state.standards[asset.team === 0 ? 1 : 0];
-        if (enemyStd.status === STD_CARRIED && enemyStd.carrierAssetId === asset.id) {
-          target = [ownStd.homeCellX, ownStd.homeCellY]; // escort yourself home
-        } else if (ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
+      {
+        const ownStd = stdOf(state, asset.team);
+        const enemyStd = stdOf(state, asset.team === 0 ? 1 : 0);
+        if (enemyStd && enemyStd.status === STD_CARRIED && enemyStd.carrierAssetId === asset.id) {
+          // Escort yourself home — to your standard's plinth, or (heist:
+          // the attacker HAS no standard) to your own base centre.
+          const ownBase = state.bases.find((b) => b.team === asset.team);
+          target = ownStd
+            ? [ownStd.homeCellX, ownStd.homeCellY]
+            : [baseCentreCol(ownBase), ownBase.y + ((ownBase.height / 2) | 0)];
+        } else if (ownStd && ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
           target = [worldToCellFloor(ownStd.x), worldToCellFloor(ownStd.y)];
-        } else if (asset.id === raiderFor[asset.team] &&
+        } else if (enemyStd && asset.id === raiderFor[asset.team] &&
                    (enemyStd.status === STD_AT_BASE || enemyStd.status === STD_DROPPED)) {
           // Item 11 (ruled: BOTH triggers): the raid launches only as a
           // group attack (>=2 combat escorts alongside) OR through a
@@ -1577,6 +1626,32 @@ export class AIRegency {
           if (d > 8) target = [m2.gateCellX, m2.gateCellY];
         }
       }
+      // Q52 HEIST posture: relays cannot win this war either. Free
+      // attacker combat hulls mass on the RAID CARRIER (the escort
+      // census is what opens the group-attack window); free defenders
+      // hold near the Asset — at home, or wherever the thief drags it.
+      if (!target && state.mission?.kind === MISSION_HEIST &&
+          !stats.canTow && !stats.canCarryStandard && !stats.indirect) {
+        const m2 = state.mission;
+        if (asset.team === m2.attacker) {
+          const cv = state.assets[raiderFor[asset.team] ?? -1];
+          if (cv && !isWreck(cv)) {
+            const wx = sampleCellX(cv.x, AI_W);
+            const wy = worldToCellFloor(cv.y);
+            if (Math.max(Math.abs(cellX0 - wx), Math.abs(cellY0 - wy)) > 3) {
+              target = [wx, wy];
+            }
+          }
+        } else if (vaultGuardOps.has(operatorId)) {
+          const std = stdOf(state, asset.team);
+          if (std) {
+            const sx = sampleCellX(std.x, AI_W);
+            const sy = worldToCellFloor(std.y);
+            const d = Math.max(Math.abs(cellX0 - sx), Math.abs(cellY0 - sy));
+            if (d > 5) target = [sx, sy];
+          }
+        }
+      }
       if (!target && stats.canTow) {
         const inTow = towedWreck(state, asset.id);
         if (inTow) {
@@ -1657,7 +1732,14 @@ export class AIRegency {
       // the capture). It won't stare down an enemy-held flag it cannot
       // shoot at (out of supply): that froze whole wars at 0-0.
       if (!target) {
-        const relay = nearestUnownedRelay(state, asset);
+        // MODE WARS: the ATTACKER never bleeds into flag errands —
+        // relays cannot win a mission and the posture needs the hulls
+        // (measured: every combat seat became a capturer and the heist
+        // carrier crossed alone, escNear 0-1 all war). The DEFENSE
+        // keeps its supply web.
+        const missionAttacker = state.mission &&
+          asset.team === state.mission.attacker;
+        const relay = missionAttacker ? null : nearestUnownedRelay(state, asset);
         if (relay && capturerFor.get(`${asset.team}:${relay.id}`) === operatorId) {
           const enemyOnFlag = state.assets.some((e) =>
             e.team !== asset.team && !isWreck(e) &&

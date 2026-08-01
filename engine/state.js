@@ -425,8 +425,27 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
   // never notices (the bridges pattern). Convoy wars spawn NO
   // standards — a scored flag that cannot end the war is a lie on the
   // map.
-  const mission = createMission(rules, assets, bases, (t) => getUnitStats(t));
-  if (mission) standards = [];
+  // Q31 × item-40 (the caldera conviction, specs/10 §4g): the raider's
+  // clause on a RING is a stomp factory — the circle is one long rear
+  // area nobody guards, so the Skimmer double-captures endlessly
+  // (convicted 31.7% A / 9-min dominations; clause-off discriminator
+  // read fair 20-minute wars). MAP-KEYED deactivation, the premium
+  // pattern: the clause stays live everywhere the geometry can answer
+  // it. Explicit rules.raiderClause always wins.
+  const mergedRules = { ...DEFAULT_RULES, ...(rules ?? {}) };
+  if (typeof mapArg === "string" && mapArg === "caldera" &&
+      rules?.raiderClause === undefined) {
+    mergedRules.raiderClause = false;
+  }
+
+  const mission = createMission(mergedRules, assets, bases, (t) => getUnitStats(t));
+  if (mission?.kind === 1) standards = []; // convoy: no standards at all
+  if (mission?.kind === 2) {
+    // HEIST (Q52): only the DEFENDER keeps a standard — the Asset in
+    // their vault. The attacker's plinth stands empty; canScore's
+    // heist exception makes their side vacuously safe.
+    standards = standards.filter((st) => st.team !== mission.attacker);
+  }
 
   // Q42: the landship's FIRST berth alternates by seed parity (wars
   // rotate seeds deterministically, so servers alternate fairly); the
@@ -452,19 +471,6 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
       }
     }
   }
-  // Q31 × item-40 (the caldera conviction, specs/10 §4g): the raider's
-  // clause on a RING is a stomp factory — the circle is one long rear
-  // area nobody guards, so the Skimmer double-captures endlessly
-  // (convicted 31.7% A / 9-min dominations; clause-off discriminator
-  // read fair 20-minute wars). MAP-KEYED deactivation, the premium
-  // pattern: the clause stays live everywhere the geometry can answer
-  // it. Explicit rules.raiderClause always wins.
-  const mergedRules = { ...DEFAULT_RULES, ...(rules ?? {}) };
-  if (typeof mapArg === "string" && mapArg === "caldera" &&
-      rules?.raiderClause === undefined) {
-    mergedRules.raiderClause = false;
-  }
-
   return {
     tick: 0,
     mapSeed: mapSeed >>> 0,
