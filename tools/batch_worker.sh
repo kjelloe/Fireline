@@ -269,15 +269,20 @@ handle_job() { # $1 = JSON body
     convoy)
       # Convoy Escort battery: {"kind":"convoy","attacker":0,"count":300}.
       # Mode wars, live config, frontier. Run both attacker sides.
-      local cva cv_ls cv_dr
+      local cva cv_ls cv_dr cv_mir cv_uq cv_sw
       cva=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('attacker',0))" "$body")
       # Residue-hunt rungs: "landship":0 / "drops":0 kill the col-64
-      # centre anchors for A/B (labels gain _nols/_nodrop).
+      # centre anchors; "mirror":1 flips the WORLD (same faction,
+      # opposite push direction — the pure-direction read); "uniques":0
+      # removes factions (the pure-geometry read); "swap":1 trades them.
       cv_ls=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('landship',1))" "$body")
       cv_dr=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('drops',1))" "$body")
-      MODE=convoy MODEATTACKER=$cva UNIQUES=1 LANDSHIP=$cv_ls DROPS=$cv_dr run_sweep \
+      cv_mir=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
+      cv_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',1))" "$body")
+      cv_sw=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
+      MODE=convoy MODEATTACKER=$cva UNIQUES=$cv_uq FACTIONSWAP=$cv_sw LANDSHIP=$cv_ls DROPS=$cv_dr run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        0 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)" ;;
+        "$cv_mir" 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)$([ "$cv_uq" = 0 ] && echo _nouq)$([ "$cv_sw" = 1 ] && echo _swap)$([ "$cv_mir" = 1 ] && echo _mirror)" ;;
     ab)
       # Bisection rung: {"kind":"ab","raidparty":0,"powarc":1,
       # "count":300,"label":"ab_raidparty0"}. Whitelisted env only.

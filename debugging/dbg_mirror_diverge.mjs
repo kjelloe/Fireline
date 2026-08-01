@@ -11,9 +11,14 @@ const SEED = Number(process.env.SEED ?? 7);
 const MAP = process.env.MAP || "riverline";
 const HORIZON = Number(process.env.TICKS ?? 18000);
 
+const MODE = process.env.MODE === "convoy" ? 1 : process.env.MODE === "heist" ? 2 : null;
+const MODEATTACKER = process.env.MODEATTACKER === "1" ? 1 : 0;
+
 function makeServer(mirror) {
   const server = new GameServer({
     mapSeed: SEED, enableAi: true, aiDifficulty: 1, aiMirrored: mirror, mapProfile: MAP,
+    uniqueCrewing: true,
+    ...(MODE !== null ? { rules: { mode: MODE, modeAttacker: MODEATTACKER } } : {}),
   });
   if (mirror) {
     const s = server.state;
