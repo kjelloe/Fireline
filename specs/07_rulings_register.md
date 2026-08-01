@@ -313,3 +313,28 @@ pair decides sawtooth; mechanism = seat economics):
 
 Gate: sawtooth 30+30 mirrored after both levers, then the PC battery.
 The premium stays live until a battery shows the band restored.
+
+## Prompt 145 rulings (2026-08-02)
+
+- **Q71 GO**: tick-parity command order trialled behind ORDERPARITY=1
+  (odd ticks: team B's AI commands first, stable within team).
+  Batteries queued; default flips only on verdict.
+- **Q63 BLESSED**: caldera's death-circle IS the map — 13-minute
+  elimination brawls are its identity, not a defect. Fairness (54.3/
+  51.7) already passed; identity now ruled.
+- **Q64/Q65/Q66**: the weapons cache ships on SAWTOOTH first; the
+  aura radiates while owned (suppression-independent); plain
+  capture-seek v1, measure before weighting. (Sequenced AFTER the
+  Q71 verdict — a default flip would re-baseline the trial battery.)
+- **Q69 ACCEPTED**: riverline's unique-pair lean stands; team B earns
+  the 25% underdog premium (gen_premium conviction, 56.9% agg) with
+  automatic briefing disclosure — the sawtooth pattern.
+- **Q70 (reframed as a question)**: "is a faster getaway car
+  SUFFICIENT?" — to be answered with data: fast-raider mode rule
+  behind a switch, heist pair battery. After Q71.
+- **Q53**: road walls ALLOWED up to the cap — implemented as the
+  TWO-LANE LAW (a road build must leave >=2 open road cells in its
+  column cross-section; the run cap alone couldn't guarantee it).
+  Balance condition: gate green; AI builds no road walls, so the
+  live risk is human-session feel — watch the playtest.
+- **Q56**: landship stays human-only for now (re-affirmed).

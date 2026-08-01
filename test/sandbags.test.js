@@ -56,10 +56,12 @@ test("sandbags: abandoned builds collapse; distance and terrain law hold", () =>
   let s = truckWorld();
   s = build(s, 20, 30, 30);
   assert.equal(s.events.at(-1).reason, "build beside the truck");
-  // Roads are refused outright — routes may be shaped, never severed.
+  // Q53 (prompt 145): roads are buildable UP TO the two-lane law. A
+  // lone road cell has no spare lanes, so it still refuses — with the
+  // law's own reason now, not a blanket ban.
   s.map.cells[20 * s.map.width + 19] = T_ROAD;
   s = build(s, 20, 19, 20);
-  assert.equal(s.events.at(-1).reason, "cannot build on this ground");
+  assert.equal(s.events.at(-1).reason, "the road must keep two lanes");
   // Start a legal build, then drive away: it collapses silently.
   s = build(s, 20, 21, 20);
   assert.equal(s.sandbags.length, 1);
@@ -124,4 +126,24 @@ test("sandbags: any gun tears it down and the ground comes back", () => {
   assert.equal(s.sandbags.length, 0, `destroyed after ${shots} shots`);
   assert.equal(s.map.cells[20 * s.map.width + 21], T_OPEN, "the ground is back");
   assert.ok(s.events.some?.((e) => e.type === "sandbag_destroyed") || true);
+});
+
+test("Q53: roads are buildable, but the two-lane law holds", async () => {
+  const { buildRejection } = await import("../engine/sandbags.js");
+  const { createInitialState, apply } = await import("../engine/reducer.js");
+  let s = createInitialState(2026, "frontier_corridor", {});
+  const truck = s.assets.find((a) => a.type === 3 && a.team === 0);
+  const stats = { canClearMines: true };
+  truck.sandbagsLeft = 2;
+  // Road rows are 62-65 (4-wide). One bag on a road: legal now.
+  assert.equal(buildRejection(s, truck, stats, 40, 62), null, "road builds allowed");
+  // Choke the column: bags on 62 and 63 exist -> building on 64 would
+  // leave ONE open lane (65). The law refuses.
+  s.sandbags = [
+    { id: 0, team: 0, cellX: 40, cellY: 62, hp: 40, buildTicks: 0 },
+    { id: 1, team: 0, cellX: 40, cellY: 63, hp: 40, buildTicks: 0 },
+  ];
+  assert.equal(buildRejection(s, truck, stats, 40, 64), "the road must keep two lanes");
+  // A different column is untouched by that choke.
+  assert.equal(buildRejection(s, truck, stats, 41, 64), null);
 });

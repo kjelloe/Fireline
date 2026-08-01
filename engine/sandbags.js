@@ -16,7 +16,7 @@
 //     SANDBAG_MAX_RUN cells (the two-lane cap made checkable);
 //   - racks of SANDBAGS_PER_TRUCK, team total capped live.
 
-import { T_OPEN, T_ROUGH, T_FOREST } from "./mapgen.js";
+import { T_OPEN, T_ROUGH, T_FOREST, T_ROAD } from "./mapgen.js";
 
 export const SANDBAG_HP = 40;
 export const SANDBAGS_PER_TRUCK = 2;
@@ -24,7 +24,13 @@ export const SANDBAG_TEAM_CAP = 6;
 export const SANDBAG_BUILD_TICKS = 50; // 5 s beside the work
 export const SANDBAG_MAX_RUN = 4;      // the owner's two-lane cap
 
-const BUILDABLE = new Set([T_OPEN, T_ROUGH, T_FOREST]);
+// Q53 (prompt 145): ROADS are buildable up to the TWO-LANE law — a
+// build on a road must leave at least 2 open road cells in that
+// road's cross-section (the vertical span of contiguous road through
+// this column). The run cap alone could not guarantee it: a 4-run
+// laid vertically severs a 4-row road outright. Trails/water stay
+// forbidden (routes shaped, never severed).
+const BUILDABLE = new Set([T_OPEN, T_ROUGH, T_FOREST, T_ROAD]);
 
 export function sandbagAt(state, cellX, cellY) {
   return (state.sandbags ?? []).find((s) => s.cellX === cellX && s.cellY === cellY) ?? null;
@@ -63,6 +69,20 @@ export function buildRejection(state, truck, stats, cellX, cellY) {
   if (live >= SANDBAG_TEAM_CAP) return "team sandbag limit reached";
   if (runLengthWith(state, cellX, cellY) > SANDBAG_MAX_RUN) {
     return "wall run too long";
+  }
+  if (terrain === T_ROAD) {
+    // The two-lane law, column-local (mirror-inert: pure y-scan).
+    const W = state.map.width;
+    let top = cellY;
+    while (top > 0 && state.map.cells[(top - 1) * W + cellX] === T_ROAD) top--;
+    let bot = cellY;
+    while (bot < state.map.height - 1 && state.map.cells[(bot + 1) * W + cellX] === T_ROAD) bot++;
+    let open = 0;
+    for (let y = top; y <= bot; y++) {
+      if (y === cellY) continue; // this build takes the cell
+      if (!sandbagAt(state, cellX, y)) open++;
+    }
+    if (open < 2) return "the road must keep two lanes";
   }
   const inAnyBase = state.bases.some(
     (b) => cellX >= b.x && cellX < b.x + b.width &&

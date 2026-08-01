@@ -116,10 +116,12 @@ test("Q26 escorts get paid when the rescue they guarded succeeds", async () => {
 
 test("underdog premium: fair maps pay flat; the convicted map pays team B 25% more", async () => {
   const { premiumPoints, MAP_PREMIUM } = await import("../engine/premium.js");
-  // First conviction 2026-07-31: sawtooth at 69% A — team B (1) earns
-  // the premium there. Every other live map measured fair and stays
-  // absent from the table.
-  assert.deepEqual(MAP_PREMIUM, { sawtooth: 1 });
+  // Convictions: sawtooth (2026-07-31, 69% A) and riverline (Q69
+  // ACCEPTED prompt 145 — the unique pair on the water map, 56.9%
+  // agg). Team B (1) earns the premium on both. Every other live map
+  // measured fair and stays absent from the table.
+  assert.deepEqual(MAP_PREMIUM, { sawtooth: 1, riverline: 1 });
+  assert.equal(premiumPoints(8, 1, "riverline"), 10, "riverline underdog pays 10");
   assert.equal(premiumPoints(8, 0, "frontier_corridor"), 8);
   assert.equal(premiumPoints(8, 1, "frontier_corridor"), 8);
   assert.equal(premiumPoints(8, 1, "sawtooth"), 10, "the underdog's tow pays 10");

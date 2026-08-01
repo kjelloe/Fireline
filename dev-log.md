@@ -4894,3 +4894,16 @@ in the era table is STALE until they land. Pre-fix discriminator
 rungs (landship/drops/mirror/uniques convoy pairs) still in the queue
 run on 2d4202e — treat as pre-fix reference only.
 Suite 752/752 x2. Gate healthy. Smoke OK.
+
+## prompt-145: the ruling slate, easiest-first (2026-08-02)
+
+Landed this pass: Q71 trial switch (tick-parity command order,
+ORDERPARITY=1, six-battery verdict slate queued: convoy pair + POWS
+pair + frontier pair); Q69 accepted → riverline joins MAP_PREMIUM
+(team B +25%, auto-disclosed in the briefing); Q53 road walls via the
+TWO-LANE LAW (cross-section check — the run cap alone would let a
+vertical 4-run sever a 4-row road; lone-road-cell pin updated to the
+law's own refusal); Q63 blessed + Q56 re-affirmed (register).
+Suite 754/754. Gate green. STILL OWED (sequenced after the Q71
+verdict, since a default flip re-baselines): the sawtooth cache slice
+(Q64-66) and the Q70 getaway-car experiment.
