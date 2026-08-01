@@ -74,3 +74,21 @@ tie laws) + two lint tests.
 | Q60 | Caldera lever: UNIQUES OFF by map law (measured fair, but kills faction identity there), or hold RED until the A-keyed pair mechanism is hunted (it's the last 16B ghost)? | you |
 | Q61 | Q59 follow-up: the POW-era tempo driver is doctrine, not locked seats. Pool/bleed ladder for the era, accept the slower identity, or powPreplaced 0 with POWS=2 as the human-session flavour? | you |
 | Q62 | Convoy gates: apply the route-spine capturer refinement (attackers capture along the push corridor only), then re-battery? | you (recommend YES) |
+
+---
+
+## Morning-after addendum (prompt 133): all three rulings resolved
+
+- **Q61 shipped**: powPreplaced 0, classic tempo default, POWS=2 as
+  the human-session flavour (fixture v66).
+- **Q62 shipped + VERIFIED**: route-spine corridor capturing took
+  convoy attackers to **32%/34% at n=600** — the best config measured,
+  side gap closed.
+- **Q60 DISSOLVED before it was hunted**: the caldera A-lean existed
+  only under powPreplaced 1 — on the classic default the ring reads
+  **54.3/51.7% A, in band both worlds**. The "16B ghost" on caldera
+  was a POW×unique×ring coupling; your Q61 ruling removed it from the
+  live game. No uniques-off law needed.
+- **New: Q63** — caldera's identity: fair now, but a death circle
+  (13.1-min medians, 63% elimination endings). Bless the brawl-map
+  identity, or tune MPG/pool for the ring? Your playtest decides.

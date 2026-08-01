@@ -4685,3 +4685,22 @@ the PUSH CORRIDOR only (integer point-to-segment, CORRIDOR_CELLS 10,
 base-centre → objective; designation AND movement gates share the
 predicate). 5-seed convoy probe shows near-misses at 8-9 cells;
 the n=300 pair decides. Suite 735/735.
+
+## the morning verdicts: Q60 dissolved, Q62 verified (2026-08-02)
+
+- **Q62 route-spine corridor, n=600: attackers 32% / 34%** — the best
+  convoy config measured (27/19 pre-gates, 10 under the blanket
+  gate), and the old 8-point side gap closed to 2. VERIFIED.
+- **Q60 — the ghost dissolved**: caldera on the classic default reads
+  **54.3% / 51.7% A — in band, both worlds.** The 66-70% A lean was a
+  POW×unique×ring COUPLING (it existed only at powPreplaced 1);
+  Q61's flip-back dissolved it in the live game. No uniques-off law
+  needed; the mechanism hunt's target no longer exists where players
+  play. (The 16B ghost remains a curiosity of the POWS census —
+  hunt it if POWS=2 sessions ever matter competitively.)
+- **Caldera identity (new, honest)**: fairness passes but the ring is
+  a DEATH CIRCLE — median 13.1 min, 63% elimination endings (wreck
+  piles outrun the MPG on a ring that concentrates every fight).
+  Arguably a legitimate arcade identity, clearly a DIFFERENT one.
+  Stays EXPERIMENTAL pending the owner's playtest (Q63: bless the
+  brawl-map identity, or tune MPG/pool for the ring?).
