@@ -148,3 +148,10 @@ test("A-keyed hunt: the neutral landship NEVER draws a camp drone", () => {
     "and it was never farmed for score");
   assert.deepEqual([...s.teamScores], [0, 0], "no free points for anyone");
 });
+
+test("A-keyed hunt: a CAPTURED landship is a camper like any hull", () => {
+  let s = createInitialState(2026, "frontier_corridor", {});
+  s.assets[32].team = 0; // someone claimed it, then left it idle mid-map
+  for (let i = 0; i < 400; i++) s = apply(s, { type: "advance_tick" });
+  assert.ok(s.assets[32].campTicks > 0, "the exemption is for NEUTRAL only");
+});

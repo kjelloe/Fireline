@@ -239,6 +239,10 @@ npm start                              # host machine
   reloaded silently at base — pull alongside a thirsty teammate and press
   V (or click the banner) to transfer. AI trucks run resupply errands to
   dry artillery on their own.
+- Phones & tabs (prompt 139): backgrounding the game is SAFE — your
+  seat is held (AI drives your hull meanwhile), and coming back
+  reclaims it automatically, even from a new tab or after the screen
+  locks. The reconnect fires the moment the tab becomes visible.
 - Accessibility (15C): the ⚙ panel has high contrast, text size
   (100/125/150%), remappable action keys (click an action, press a key),
   the language switch, and a Music on/off toggle (ready for the

@@ -34,9 +34,9 @@ path shapes; everything older is a different game):
 | frontier POWS=2 (human-session flavour) | 47.1 / 41.0% A | fair live-world; regent-war config only |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
 | convoy (Q62 corridor) | attackers **32 / 34%** | best config measured; Q47 bar still with designer |
-| riverline (post-pacing, prompt 136) | **53.0 / 60.7% A** (n=600) — tempo VERIFIED (horn 0, undecided 0, median ~11.6k) but an A-keyed lean above band | pacing SOLVED; lean OPEN (see the A-keyed hunt) |
+| riverline (post-pacing + farm fix) | **54.5 / 59.3% A** (n=600 on c51a557) — tempo VERIFIED (horn 0, median ~11.6k); the 56.9% agg lean SURVIVED the farm fix UNCHANGED — riverline's own A-keyed mechanism | EXPERIMENTAL; the lean is the successor hunt (suspects: Q18 first-strike converted by stalemate attrition; a pacing-off A/B rung separates them) |
 | sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
-| blackwood (post-ladder re-battery) | **62.0 / 59.7% A** (n=600) — REGRESSED from 49.2 fair; POWS=2 amplifies to 94% A (n=32 local) | CONVICTED + FIXED (the landship farm) — post-fix battery pair pending |
+| blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the
 default read 30 min/51% horn; at 1 still 28.5/46 — the POW-era

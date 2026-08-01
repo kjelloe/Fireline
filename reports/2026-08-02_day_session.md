@@ -144,3 +144,32 @@ while the hunt runs, or pull it back to EXPERIMENTAL until fair again?
 Also this evening: your mobile-connectivity writeup (prompt 139) is
 recorded and adopted as the next slice — grace window, token identity,
 persist-on-hide, reconnect-on-visible.
+
+---
+
+## Night addendum: the farm, the fix, and the clean verdicts
+
+**Blackwood is RESTORED**: post-fix battery pair 51.0 / 48.3% A
+(n=600, edge flips = fair chaos). The landship farm was the entire
+regression — promotion stands, **Q68 dissolved**. The mechanism, for
+the record: the anti-camping pass drafted the neutral landship as a
+camper, and the foe computation on team -1 minted its punishment
+drone for team A — a free scored kill on a 1000-tick respawn loop,
+every map, all war. The 5-seed gate showed A's scores drop by exactly
+the farm's take (20-30/war) with B's identical.
+
+**Riverline's lean is its OWN**: 54.5 / 59.3% A post-fix — the 56.9%
+aggregate survived the farm fix unchanged. **Q69 filed**: hunt it now
+or after your playtest? Prime suspect: the old Q18 execution-order
+first-strike bias (~6 pts A, fix proposed but never applied) being
+CONVERTED into ticket wins by the new stalemate attrition (score-
+decided endings were always A-tinted; attrition-decided endings may
+inherit the same tint through wreck-count differences). A pacing-off
+A/B rung (STALEMATE=0 env, to be added) would separate the two in one
+battery.
+
+**Mobile resilience** (prompt 139) landed: token takeover (a resumed
+phone evicts its own stale socket — the iOS-resume killer), client
+auto-rejoin, reconnect-on-visible, no-briefing-replay on resume.
+
+Suite 750/750. Fixture v67. All pushed to dev_night.

@@ -159,6 +159,8 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 | Q65 | Cache aura while the site is suppressed — recommend: radiates while owned, full stop | you | — |
 | Q66 | AI doctrine weight for the cache — recommend: plain capture-seek v1, measure first | you | — |
 | Q67 | Specials-ladder order: VAULTS=2 re-test before the cache lands, or cache leapfrogs? | you | PC lane free |
+| Q68 | DISSOLVED: blackwood restored to 51.0/48.3% fair by the landship-farm fix — promotion stands | — | — |
+| Q69 | Riverline's own A-keyed lean (56.9% agg, survives the farm fix): hunt now, or after your playtest? Suspect ladder: Q18 first-strike bias converted by stalemate attrition | you | — |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
 | Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |

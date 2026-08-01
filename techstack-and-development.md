@@ -202,6 +202,14 @@ WSL Playwright is SwiftShader-only and useless for FPS numbers
 
 ## 7. Greatest-hits gotcha list (quick reference)
 
+0. Neutral entities (team -1) walk into every `team === 0 ? 1 : 0`
+   foe computation as "enemy = team A" — the landship farm gave A a
+   free scored drone-kill loop worth ~10 pts of blackwood A-rate.
+   Grep the foe-calc class whenever an entity exists outside 0/1.
+   Bisection practice that closed it in one evening: `git worktree
+   add --detach` at the suspect commit, symlink node_modules, run the
+   sharded local sweep (64 wars) per rung — endpoints VERIFIED first,
+   n=600 battery for the final word (64-war rungs carry ±12 pts).
 1. Probe vs sweep disagree → **config plumbing first** (the crewing
    bug; then again as batch-job env drift — the phantom regression;
    then AGAIN as the void 74.7% riverline battery: the batch worker

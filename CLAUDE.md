@@ -150,7 +150,13 @@ outcome. Renderer presents fog-filtered views only.
   uncrewed only), either-team tow, own hashed respawn law
   {respawnTicks, spawnIdx} — 100 s clock, centre-column berths via
   landshipBerth (terrain-aware column walk, x fixed = mirror-exact),
-  MPG excluded, AI neither claims nor shoots team -1. Contract flags are EXPLICIT on every
+  MPG excluded, AI neither claims nor shoots team -1, and team -1 is
+  EXEMPT from anti-camping (the LANDSHIP FARM, 2026-08-02: the camp
+  pass drafted the idle neutral hull and `team === 0 ? 1 : 0` minted
+  its drone for TEAM A — a free scored kill loop worth ~10 pts of
+  blackwood A-rate; LANDSHIP=0 = kill-switch. BUG CLASS: audit every
+  foe computation reachable with team -1 when adding neutral
+  entities). Contract flags are EXPLICIT on every
   chassis: canTow, canCarryStandard, capacity, canMine, canClearMines,
   heavy (11N paths), canCapture (11R — bikes neither capture nor
   contest), siege (11R — only artillery breaches sites), deployable
