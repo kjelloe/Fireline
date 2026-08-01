@@ -612,10 +612,11 @@ async function loadGlobalServers() {
 
 // 5B: stable per-browser identity so a refresh reattaches to your operator.
 function myPlayerId() {
-  let id = localStorage.getItem("mf_player_id");
+  let id = null;
+  try { id = localStorage.getItem("mf_player_id"); } catch { /* private mode */ }
   if (!id) {
     id = `p-${Math.random().toString(36).slice(2, 12)}`; // identity only, never game logic
-    localStorage.setItem("mf_player_id", id);
+    try { localStorage.setItem("mf_player_id", id); } catch { /* session-only identity */ }
   }
   return id;
 }
@@ -641,7 +642,18 @@ function connect() {
   // reveal menu", the brief's ladder). Views require joining, and
   // joining sits BEHIND the splash — gating on the first view was a
   // deadlock the smoke gate caught on the first run.
-  socket.addEventListener("open", () => splashAssetsReady());
+  socket.addEventListener("open", () => {
+    splashAssetsReady();
+    // Prompt 139 (mobile resilience): a reconnect re-presents the token
+    // and takes the same seat back without touching the join menu. The
+    // server evicts our own stale socket, so this is safe to send on
+    // every reopen (idempotent reclaim).
+    if (lastJoin === "spectate") {
+      socket.send(JSON.stringify({ type: "c_spectate" }));
+    } else if (lastJoin !== null) {
+      socket.send(JSON.stringify({ type: "c_join", team: lastJoin, playerId: myPlayerId() }));
+    }
+  });
   socket.onmessage = (event) => {
     hideReconnectBanner(); // any live message = the link is back (item 21)
     const msg = JSON.parse(event.data);
@@ -677,9 +689,10 @@ function connect() {
       document.getElementById("join-overlay").style.display = "none";
       pushEvent(t("ui.spectating"));
     } else if (msg.type === "s_joined") {
+      const resumed = msg.rejoined === true && joined !== null;
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
-      showBriefing();
+      if (!resumed) showBriefing(); // prompt 139: a resume never replays the briefing
       updateOpInfo(null);
     } else if (msg.type === "s_snapshot") {
       interpolator.push(msg.view, performance.now());
@@ -770,6 +783,17 @@ function showReconnectBanner() {
   attempt();
 }
 
+// Prompt 139: mobile browsers freeze background tabs and the socket dies
+// with them (close 1006, no handshake). The moment the player looks back
+// is exactly when the network is back — reconnect immediately instead of
+// waiting for the retry timer. Every close is treated as recoverable.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (!socket || socket.readyState > 1 /* CLOSING/CLOSED */) {
+    try { connect(); } catch { /* the banner timer keeps retrying */ }
+  }
+});
+
 function hideReconnectBanner() {
   const el = document.getElementById("reconnect-banner");
   if (el) el.style.display = "none";
@@ -842,8 +866,10 @@ function renderBindRows(container) {
   }
 }
 
+let lastJoin = null; // prompt 139: last join intent (team number or "spectate")
 function joinTeam(team) {
   if (!socket || socket.readyState !== 1) return;
+  lastJoin = team;
   socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId() }));
 }
 
@@ -963,6 +989,7 @@ function updateTouchDrive(view) {
 
 function spectate() { // 10A
   if (!socket || socket.readyState !== 1) return;
+  lastJoin = "spectate"; // prompt 139: spectators auto-resume too
   socket.send(JSON.stringify({ type: "c_spectate" }));
 }
 

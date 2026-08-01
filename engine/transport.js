@@ -81,9 +81,21 @@ export class NetworkTransport {
                     ? msg.playerId : null;
                 const knownOperator = playerId != null ? this.players.get(playerId) : undefined;
                 if (knownOperator !== undefined) {
+                    // Prompt 139 (mobile resilience): the token IS the person.
+                    // A mobile resume rarely closes the old socket first, so a
+                    // live duplicate is the SAME player coming back, not an
+                    // intruder — the newest connection wins the seat and the
+                    // stale socket is evicted. Idempotent by construction: the
+                    // seat is reused, never minted twice. (The token is
+                    // private; guessing it is the only impersonation path,
+                    // same trust model as 5B.)
                     if (this.reserved.has(knownOperator)) {
-                        ws.send(JSON.stringify({ type: "s_rejected", reason: "player already connected" }));
-                        return;
+                        for (const [oldWs, oldSession] of this.sessions.entries()) {
+                            if (oldSession.spectator || oldSession.operatorId !== knownOperator) continue;
+                            this.sessions.delete(oldWs); // its close event becomes a no-op
+                            try { oldWs.close(4000, "seat resumed elsewhere"); }
+                            catch { oldWs.terminate?.(); }
+                        }
                     }
                     const operator = this.server.state.operators[knownOperator];
                     this.reserved.add(knownOperator);

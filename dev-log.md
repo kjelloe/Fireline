@@ -4758,3 +4758,28 @@ EXPERIMENTAL-exit read.
   reload-tempo aura (R5, -25%), vault-pull lessons as constraints
   (no movement surface, mirror-enumerable, CACHE=0 kill-switch),
   sawtooth-first proposal, Q64-Q67 filed.
+
+## slice-mobile-resilience (2026-08-02, prompt 139 — the RetroMultiCiv writeup)
+
+"Stop trying to keep the connection alive — make losing it cheap."
+Fireline already had half the layers (5B token identity, instant AI
+regency on drop = never-stall AND a reversible seat-hold, seats
+protected from strangers while regented). What was missing:
+
+- IDEMPOTENT TAKEOVER RECLAIM (the iOS-resume killer): a suspended
+  phone's socket lingers server-side, so the resumed tab's rejoin was
+  REFUSED ("player already connected") until the 5s heartbeat reaped
+  it. Now the token is the person: a live duplicate is a RESUME — the
+  newest socket wins, the stale one is evicted (its close becomes a
+  no-op; the seat never passes through regency). OVERTURNS the 5B
+  refusal test — replaced with takeover + stranger-still-refused pins.
+- CLIENT AUTO-REJOIN: reconnects re-present the token and retake the
+  seat without touching the join menu (lastJoin intent, spectators
+  included); a resume never replays the briefing (acceptance caught
+  the overlay covering the HUD).
+- RECONNECT-ON-VISIBLE: visibilitychange→visible reconnects
+  immediately — the moment the player looks is when the network is
+  back. Every close treated as recoverable (no close-code branching).
+- Token write hardened (try/catch, private-mode session identity).
+
+Suite 748/748 x2. Smoke OK. Acceptance OK.

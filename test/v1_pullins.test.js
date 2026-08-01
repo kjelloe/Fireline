@@ -56,15 +56,42 @@ test("5B same playerId reattaches to its operator and ends regency", async () =>
   });
 });
 
-test("5B live duplicate playerId is refused", async () => {
+// Prompt 139 (mobile resilience) OVERTURNS the old 5B refusal: a mobile
+// resume rarely closes the old socket first, so a live duplicate token is
+// the SAME player coming back. Newest socket wins; no second seat minted.
+test("139: same token while old socket lingers = takeover, not refusal", async () => {
   await withServer({}, async (appServer, port) => {
     const a = await connect(port);
     a.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "dupe" }));
-    await settle();
+    await until(() => a.messages.some((m) => m.type === "s_joined"));
+    const opId = a.messages.find((m) => m.type === "s_joined").operatorId;
+    let aClosed = false;
+    a.ws.on("close", () => { aClosed = true; });
+
     const b = await connect(port);
     b.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "dupe" }));
+    await until(() => b.messages.some((m) => m.type === "s_joined"));
+    const resumed = b.messages.find((m) => m.type === "s_joined");
+    assert.equal(resumed.operatorId, opId, "the SAME seat, never a second one");
+    assert.equal(resumed.rejoined, true);
+    assert.ok(await until(() => aClosed), "the stale socket was evicted");
+    // the evicted socket's close must not free the seat under the new owner
     await settle();
-    assert.equal(b.messages.find((m) => m.type === "s_rejected").reason, "player already connected");
+    assert.equal(appServer.gameServer.ai?.regented?.has(opId) ?? false, false,
+      "no regency: the seat stayed human across the handover");
+    b.ws.close();
+  });
+});
+
+test("139: a DIFFERENT token still cannot take a held seat", async () => {
+  await withServer({}, async (appServer, port) => {
+    const a = await connect(port);
+    a.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "owner", operatorId: 0 }));
+    await until(() => a.messages.some((m) => m.type === "s_joined"));
+    const b = await connect(port);
+    b.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "stranger", operatorId: 0 }));
+    await until(() => b.messages.some((m) => m.type === "s_rejected"));
+    assert.equal(b.messages.find((m) => m.type === "s_rejected").reason, "operator already connected");
     a.ws.close(); b.ws.close();
   });
 });
