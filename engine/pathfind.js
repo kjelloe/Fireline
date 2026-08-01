@@ -26,7 +26,7 @@
 //   this last-mile planner's.
 
 import { speedMultiplier } from "./terrain.js";
-import { worldToCellFloor, cellToWorld, absI32 } from "../shared/fixedmath.js";
+import { worldToCellFloor, cellToWorld, absI32, sampleCellX } from "../shared/fixedmath.js";
 
 export const PATHFIND_MAX_EXPAND = 4096; // enclosed target = give up, old behaviour
 
@@ -44,7 +44,7 @@ export function segmentBlocked(map, x0, y0, x1, y1, stats) {
   for (let i = 1; i <= steps; i++) {
     const x = x0 + ((dx * i / steps) | 0);
     const y = y0 + ((dy * i / steps) | 0);
-    if (walled(map, worldToCellFloor(x), worldToCellFloor(y), stats)) return true;
+    if (walled(map, sampleCellX(x, map.width), worldToCellFloor(y), stats)) return true;
   }
   return false;
 }

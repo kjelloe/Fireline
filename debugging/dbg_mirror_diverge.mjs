@@ -62,12 +62,24 @@ const mh = (h) => (128 - h) & 255;
 function firstDivergence(n, m) {
   for (let i = 0; i < n.assets.length; i++) {
     const a = n.assets[i], b = m.assets[i];
+    // Asset 32 (the landship) is CENTRE-ANCHORED by rule: its berth
+    // column (64) has no mirror partner, so a respawn puts it at the
+    // same rule-position in both worlds. Rule-equal OR mirrored both
+    // count as agreement for the neutral hull.
+    if (i === 32 && (b.x === mx(a.x) || b.x === a.x)) {
+      if (b.y !== a.y) return `asset ${i} y: ${a.y} vs ${b.y}`;
+      continue;
+    }
     if (b.x !== mx(a.x)) return `asset ${i} x: normal ${a.x} mirror ${b.x} (expect ${mx(a.x)})`;
     if (b.y !== a.y) return `asset ${i} y: ${a.y} vs ${b.y}`;
     if (b.heading !== mh(a.heading)) return `asset ${i} heading: ${a.heading} vs ${b.heading} (expect ${mh(a.heading)})`;
     if (b.hp !== a.hp) return `asset ${i} hp: ${a.hp} vs ${b.hp}`;
     if (b.state !== a.state) return `asset ${i} state: ${a.state} vs ${b.state}`;
-    if (b.targetX !== mx(a.targetX)) return `asset ${i} targetX: ${a.targetX} vs ${b.targetX} (expect ${mx(a.targetX)})`;
+    // Centre-anchored designs (the B6 drop column, the landship berth)
+    // produce RULE-EQUAL targets at cell 64 in both worlds — the
+    // centre column is its own mirror by design.
+    const centreTarget = b.targetX === a.targetX && (a.targetX >> 8) === 64;
+    if (!centreTarget && b.targetX !== mx(a.targetX)) return `asset ${i} targetX: ${a.targetX} vs ${b.targetX} (expect ${mx(a.targetX)})`;
     if (b.targetY !== a.targetY) return `asset ${i} targetY: ${a.targetY} vs ${b.targetY}`;
     if (b.fuel !== a.fuel) return `asset ${i} fuel: ${a.fuel} vs ${b.fuel}`;
     if (b.ammo !== a.ammo) return `asset ${i} ammo: ${a.ammo} vs ${b.ammo}`;

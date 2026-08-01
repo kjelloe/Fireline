@@ -2254,7 +2254,10 @@ function applyAdvanceTick(next) {
       wreck.y = cellToWorld(spawn.cellY);
       wreck.targetX = wreck.x;
       wreck.targetY = wreck.y;
-      wreck.heading = team === 1 ? 128 : 0;
+      // Face the MAP CENTRE, not a team-absolute east/west (specs/08
+      // §7b: a rebuilt hull in a mirrored world must face the mirrored
+      // way — the old team constant was rung 6 of the residue ladder).
+      wreck.heading = 2 * wreck.x < next.map.width * 256 ? 0 : 128;
       wreck.operatorId = -1;
       wreck.suppressedTimer = 0;
       wreck.reloadTimer = 0;

@@ -18,6 +18,7 @@ import { mineAt, MINE_CLEAR_RADIUS_CELLS } from "./mines.js";
 import { caltropAt } from "./caltrops.js";
 import { GUARD_SENSE_CELLS } from "./prisons.js";
 import { sampleCellX } from "../shared/fixedmath.js";
+import { baseCentreCol } from "./state.js";
 
 // Boundary-parity law (specs/08 §7): every x-position DECISION floors
 // through sampleCellX. Module-scoped width, refreshed at plan() entry
@@ -134,7 +135,7 @@ function patrolTarget(agent, tick, profileName = "frontier_corridor", mirrored =
 function homeCellFor(state, team) {
   const base = state.bases.find((b) => b.team === team);
   if (!base) return null;
-  return [base.x + ((base.width / 2) | 0), base.y + ((base.height / 2) | 0)];
+  return [baseCentreCol(base), base.y + ((base.height / 2) | 0)];
 }
 
 function isWreck(asset) {
@@ -583,7 +584,7 @@ export class AIRegency {
       // Geometry-derived (base centre + prison), so it commutes with
       // the mirror.
       const homeBase = state.bases.find((b) => b.team === team);
-      const bx = homeBase ? homeBase.x + ((homeBase.width / 2) | 0) : prison.cellX;
+      const bx = homeBase ? baseCentreCol(homeBase) : prison.cellX;
       const sx = prison.cellX > bx ? 1 : prison.cellX < bx ? -1 : 0;
       const laneY = Math.min(state.map.height - 1, prison.cellY + RAID_LANE_ROWS);
       const stage = [
@@ -859,7 +860,7 @@ export class AIRegency {
             // minimally to cover") — a cross-map target is rejected.
             // Short LEGS toward home instead: 3 cells at a time, one
             // axis then the other, re-issued as each leg completes.
-            const hx = home.x + ((home.width / 2) | 0);
+            const hx = baseCentreCol(home);
             const hy = home.y + ((home.height / 2) | 0);
             const cx = sampleCellX(down.x, AI_W);
             const cy = worldToCellFloor(down.y);
@@ -1627,7 +1628,7 @@ export class AIRegency {
         if (cv?.active && cv.done < cv.need && cv.ids.includes(asset.id)) {
           const home = state.bases.find((b) => b.team === asset.team);
           if (home) {
-            const hx = home.x + ((home.width / 2) | 0);
+            const hx = baseCentreCol(home);
             const hy = home.y + ((home.height / 2) | 0);
             if (worldToCellFloor(asset.x) !== hx || worldToCellFloor(asset.y) !== hy) {
               target = [hx, hy];

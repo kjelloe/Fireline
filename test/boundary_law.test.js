@@ -13,6 +13,7 @@ const FILES = [
   "engine/reducer.js", "engine/ai_regency.js", "engine/sites.js",
   "engine/downed.js", "engine/recovery.js", "engine/supply.js",
   "engine/los.js", "engine/mines.js", "engine/standards.js",
+  "engine/pathfind.js", "engine/route_graph.js", "engine/bridges.js",
 ];
 
 // Reviewed exceptions: pure y-uses share lines with nothing, and

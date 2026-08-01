@@ -4525,3 +4525,39 @@ side for parking/stances, axis side for same-column ties); new
 literal offsets get reviewed against it. Ladder state synced across
 CLAUDE/skill/plans: four rungs closed, baseline probe-red t≈953,
 rung 5 harness ready. Suite 728/728.
+
+## rungs 5-8: the ladder reaches its floor (2026-08-02)
+
+Four more rungs in one sitting, each ~a minute from probe to fix:
+- **Rung 5** (953→2496): `segmentBlocked` — the string-puller floored
+  interpolated LINE points (the interpolation itself is antisymmetric
+  truncation ✓; only the floor sinned). pathfind/route_graph/bridges
+  added to the boundary lint's file list — the lint would have
+  caught it.
+- **Rung 6** (2496, position): the MPG rebuild spawn column —
+  `base.x + w/2` from the west edge of both bases, THE PRISON BUG'S
+  TWIN (B's column 113 vs mirror-fair 112). `baseCentreCol()` in
+  state.js is now the one true centre-column (east-half bases count
+  from their east edge); five chiral call sites converted (rebuild
+  spawn, AI home targets ×3, raid rally bx).
+- **Rung 7** (2496, heading): rebuilt hulls faced a TEAM-absolute
+  east/west; a mirrored world's rebuild must face the mirrored way.
+  Now they face the MAP CENTRE (geometry, not team).
+- **Rung 8** (2623/6280, probe exceptions, NOT bugs): the landship
+  berth and the B6 drop are CENTRE-ANCHORED BY DESIGN — column 64 is
+  its own mirror, so both worlds put rule-equal (not mirrored)
+  coordinates there. The probe now accepts rule-equal centre values.
+
+LADDER VERDICT: first divergence 2 → 107 → 903 → 953 → 2496 → 6280,
+and the remaining drift (t≈6311) is the DESIGNED half-cell
+consequence of centre-anchored objectives — units racing the shared
+column from opposite sides cannot mirror, which is rule-fairness
+(equal ACCESS), the accepted B6 trade-off, battery-measured fair.
+Every CHIRALITY BUG class found is fixed and doctrine'd (specs/08
+§7/§7b, two lints, the tie-law family). The ladder's exit criterion
+amends honestly: "probe clean of chirality classes" (achieved) rather
+than "probe silent" (impossible while centre-anchored designs exist).
+ENDGAME NOW: pows pair + default pair batteries on this build decide
+Q46 and the era baseline. If a centre-anchor lean ever shows at
+n=600, the banked fix is seed-parity column alternation (63/64),
+the landship-berth pattern.

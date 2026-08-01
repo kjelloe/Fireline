@@ -156,12 +156,23 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
 // load-bearing (rebuilds spawning behind enemy lines → 47 phantom
 // dominations in one 300-war mirrored battery). Type/row still come from
 // the pinned tables — roster identity never moves.
+// Mirror-true base centre COLUMN (specs/08 §7b — the prison bug's
+// twin): an even-width rect has no self-mirror column, and
+// `x + (w/2|0)` from the west edge picks the 10th column on BOTH
+// sides — the mirror of A's 10th is B's 9th. East-half bases count
+// from their east edge instead.
+export function baseCentreCol(base, mapWidth = 128) {
+  const half = (base.width / 2) | 0;
+  const west = base.x + half;
+  return 2 * (base.x + half) < mapWidth ? west : base.x + base.width - 1 - half;
+}
+
 export function fieldSpawnFor(id, bases = null) {
   // Layout: 0-3 team A originals, 4-7 team B originals, 8-19 team A
   // reserves, 20-31 team B reserves (see createFieldAssets).
   const team = id < 8 ? (id < 4 ? 0 : 1) : (id < 20 ? 0 : 1);
   const base = bases?.find?.((b) => b.team === team);
-  const centerCol = base ? base.x + ((base.width / 2) | 0) : null;
+  const centerCol = base ? baseCentreCol(base) : null;
   if (id < 8) {
     const slot = id % 4;
     const spawnX = centerCol ?? (team === 0 ? TEAM_A_SPAWN_X : TEAM_B_SPAWN_X);
