@@ -678,7 +678,15 @@ export class AIRegency {
         candidates.push([d, opId]);
       }
       candidates.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
-      for (const [, opId] of candidates.slice(0, 2)) escortFor.set(opId, raiderId);
+      // HEIST (prompt 141): the attacker fields NO standard — nothing
+      // at home to defend, so the WHOLE free line rides with the raid
+      // (the convoy's last-kilometre law, applied from t=0). Two
+      // escorts was the meat grinder: carriers died solo at the centre
+      // choke (esc=0-1 in every trace) while the attacker out-fielded
+      // the defence 14v7 and never once concentrated it.
+      const escortN = state.mission?.kind === MISSION_HEIST &&
+        team === state.mission.attacker ? candidates.length : 2;
+      for (const [, opId] of candidates.slice(0, escortN)) escortFor.set(opId, raiderId);
     }
 
     // CONVOY ESCORT mission doctrine. Attackers: the two nearest free
@@ -744,32 +752,6 @@ export class AIRegency {
         hunters.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
         for (const [, opId] of hunters.slice(0, 2)) interceptorOps.add(opId);
       }
-      // Q52 HEIST vault guard: THREE hulls hold the Asset; the rest of
-      // the defense fights forward (a full-team camp is a fortress
-      // assault nobody enjoys and a doctrine pathology besides).
-      if (state.mission?.kind === MISSION_HEIST) {
-        const mh = state.mission;
-        const defender = mh.attacker === 0 ? 1 : 0;
-        const std = stdOf(state, defender);
-        if (std) {
-          const sx = sampleCellX(std.x, AI_W);
-          const sy = worldToCellFloor(std.y);
-          const gs = [];
-          for (const [opId] of controlled) {
-            const op = state.operators[opId];
-            if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
-            const a = state.assets[op.assetId];
-            if (!a || a.team !== defender || a.operatorId !== opId || isWreck(a)) continue;
-            const st = getUnitStats(a.type);
-            if (st.canTow || st.canCarryStandard || st.indirect) continue;
-            const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - sx),
-                               Math.abs(worldToCellFloor(a.y) - sy));
-            gs.push([d, opId]);
-          }
-          gs.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
-          for (const [, opId] of gs.slice(0, 3)) vaultGuardOps.add(opId);
-        }
-      }
       // WRECKER designation: the convoy is DOWN — the nearest other
       // attacker truck drops everything (resupply included) and rides
       // to the wreck. Standing beside it runs the restart clock.
@@ -789,6 +771,59 @@ export class AIRegency {
           if (d < bestD) { bestD = d; best = opId; }
         }
         wreckerOp = best;
+      }
+    }
+
+    // Q52 HEIST doctrine (prompt 141: this block was NESTED INSIDE the
+    // convoy branch since it landed — mission.kind can't be 1 and 2 at
+    // once, so NONE of it ever ran; the trace showed it: no guard cap,
+    // no interceptors, carriers soloing the centre choke all war).
+    // Defenders: THREE hulls hold the Asset, the rest fight forward;
+    // while the Asset is CARRIED the radio betrays the thief and two
+    // free seats hunt the last ping.
+    if (state.mission?.kind === MISSION_HEIST) {
+      const mh = state.mission;
+      const defender = mh.attacker === 0 ? 1 : 0;
+      const std = stdOf(state, defender);
+      if (std) {
+        const sx = sampleCellX(std.x, AI_W);
+        const sy = worldToCellFloor(std.y);
+        const gs = [];
+        for (const [opId] of controlled) {
+          const op = state.operators[opId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== defender || a.operatorId !== opId || isWreck(a)) continue;
+          const st = getUnitStats(a.type);
+          if (st.canTow || st.canCarryStandard || st.indirect) continue;
+          const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - sx),
+                             Math.abs(worldToCellFloor(a.y) - sy));
+          gs.push([d, opId]);
+        }
+        gs.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+        for (const [, opId] of gs.slice(0, 3)) vaultGuardOps.add(opId);
+        if (std.status === 1 /* STD_CARRIED */) {
+          if (state.tick % CONVOY_PING_TICKS === 0 || !this.heistIntel) {
+            this.heistIntel = [sx, sy];
+          }
+          const hunters = [];
+          for (const [opId] of controlled) {
+            if (vaultGuardOps.has(opId) || escortFor.has(opId)) continue;
+            const op = state.operators[opId];
+            if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+            const a = state.assets[op.assetId];
+            if (!a || a.team !== defender || a.operatorId !== opId || isWreck(a)) continue;
+            const st = getUnitStats(a.type);
+            if (st.canTow || st.canCarryStandard || st.indirect) continue;
+            const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - this.heistIntel[0]),
+                               Math.abs(worldToCellFloor(a.y) - this.heistIntel[1]));
+            hunters.push([d, opId]);
+          }
+          hunters.sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+          for (const [, opId] of hunters.slice(0, 2)) interceptorOps.add(opId);
+        } else {
+          this.heistIntel = null;
+        }
       }
     }
 
@@ -1466,20 +1501,66 @@ export class AIRegency {
           // sneak window (thin defenses near the route). Otherwise the
           // carrier stays with the pack (falls through to patrol).
           if (raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
-            target = [worldToCellFloor(enemyStd.x), worldToCellFloor(enemyStd.y)];
+            const sxr = sampleCellX(enemyStd.x, AI_W);
+            const syr = worldToCellFloor(enemyStd.y);
+            // HEIST HOLD-SHORT (prompt 141, the party law's core idea
+            // for a 60hp hull): escorts lead the assault; the carrier
+            // holds 8 cells short of a vault with >=2 live guards and
+            // dives only once the escorts have thinned them. The hold
+            // cell shifts toward OUR base (geometry-derived sign, so
+            // it commutes with the mirror).
+            let guards = 0;
+            if (state.mission?.kind === MISSION_HEIST &&
+                asset.team === state.mission.attacker) {
+              for (const e of state.assets) {
+                if (e.team !== asset.team && e.team !== -1 && !isWreck(e) &&
+                    e.operatorId !== -1 &&
+                    Math.max(Math.abs(sampleCellX(e.x, AI_W) - sxr),
+                             Math.abs(worldToCellFloor(e.y) - syr)) <= 6) guards++;
+              }
+            }
+            if (guards >= 2) {
+              const ownBase = state.bases.find((b) => b.team === asset.team);
+              const dir = baseCentreCol(ownBase) < sxr ? -1 : 1;
+              target = [sxr + dir * 8, syr];
+            } else {
+              target = [sxr, syr];
+            }
           }
         }
       }
       // Item 11: designated escorts converge on the carrier, then ride
       // along; inside 3 cells they hold formation (idle near the carrier
       // is exactly what opens the group-attack window).
+      // THE ESCORT WALL (prompt 141): holding formation next to a
+      // MOVING carrier parks bodies in its path — body collision
+      // refuses entry and the raid entombs itself (a heist trace froze
+      // 28 cells from the vault for 1,500 ticks, boxed by its own
+      // guard). A moving leader's escorts share its DESTINATION and
+      // keep rolling; only an idle leader is worth orbiting.
       if (!target && escortFor.has(operatorId)) {
         const c = state.assets[escortFor.get(operatorId)];
         if (c && !isWreck(c)) {
           const ecx = sampleCellX(c.x, AI_W);
           const ecy = worldToCellFloor(c.y);
           const d = Math.max(Math.abs(cellX0 - ecx), Math.abs(cellY0 - ecy));
-          if (d > 3) target = [ecx, ecy];
+          if (d > 3) {
+            target = [ecx, ecy];
+          } else if (state.mission?.kind === MISSION_HEIST &&
+                     asset.team === state.mission.attacker) {
+            // Prompt 141: heist escorts LEAD — once assembled on the
+            // carrier they push the VAULT itself (clear the guards so
+            // the hold-short carrier can dive); with the Asset aboard
+            // our raider they screen the getaway instead.
+            const dStd = stdOf(state, asset.team === 0 ? 1 : 0);
+            if (dStd && (dStd.status === STD_AT_BASE || dStd.status === STD_DROPPED)) {
+              target = [sampleCellX(dStd.x, AI_W), worldToCellFloor(dStd.y)];
+            } else if (c.state === ASSET_MOVING) {
+              target = [sampleCellX(c.targetX, AI_W), worldToCellFloor(c.targetY)];
+            }
+          } else if (c.state === ASSET_MOVING) {
+            target = [sampleCellX(c.targetX, AI_W), worldToCellFloor(c.targetY)];
+          }
         }
       }
       // 13B resupply runner (prompt 31): a truck with cargo tops up the

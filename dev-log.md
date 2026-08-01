@@ -4817,3 +4817,37 @@ EXACTLY 20-30 pts per seed (250->230, 235->210, 195->175, 330->300)
 with B's identical — the farm's take, surgically removed. Local
 blackwood post-fix 57.1% (n=63, CI too wide); the n=600 battery pair
 is the judge. Gate healthy (all tickets endings, same tempo).
+
+## slice-heist-doctrine (2026-08-02, prompt 141 — the convoy-precedent maturation)
+
+Trace-driven, four structural finds:
+1. DEAD DOCTRINE: the entire Q52 heist block (vault-guard cap 3 +
+   everything since added) was NESTED INSIDE the convoy branch —
+   mission.kind can't be 1 and 2 at once, so none of it ever ran.
+   Un-nested; heist defenders now actually cap the vault at 3 and
+   hunt the radio ping (2 interceptors) while the Asset is carried.
+2. THE ESCORT WALL (all modes): escorts holding formation beside a
+   MOVING leader park bodies in its path — body collision refuses
+   entry and the raid entombs itself (heist trace: frozen 28 cells
+   from the vault for 1,500 ticks, boxed by its own guard; convoy's
+   documented "13-40 cells short" equilibrium was the same wall).
+   A moving leader's escorts now share its DESTINATION and keep
+   rolling; only an idle leader is orbited.
+3. WHOLE-ARMY heist raid: the attacker fields no standard — nothing
+   to defend at home, so every free combat seat escorts the raid
+   (the convoy last-kilometre law from t=0).
+4. HOLD-SHORT + ESCORTS-LEAD: the 60hp carrier holds 8 cells short
+   (mirror-safe geometry-derived side) while >=2 guards hold the
+   vault; assembled escorts push the vault itself and clear it; with
+   the Asset aboard, everyone screens the getaway.
+
+Verdict, honestly: grabs 1/10 -> 3-4/10 local, wins still 0/10. The
+autopsy is PHYSICS, not doctrine: enemy scouts (speed 56) catch the
+carrier (24) in ~150 ticks — with radio pings live, a slow hull
+cannot outrun pursuit unless the defence is nearly dead. Q70 FILED
+(the getaway levers, designer's call): fast heist raider (scout-class
+carry as a mode rule — the getaway car), attacker MPG edge, ping
+thinning, or bless attrition-first as the mode's true shape.
+CONVOY WINDFALL: the escort-wall fix moved local deliveries 1/10 ->
+5/10 (att=1 5/5 at ~t=2250) — re-battery queued (att 0/1 + heist 0/1).
+Standard gate healthy (mixed winners, tickets endings). 750/750.
