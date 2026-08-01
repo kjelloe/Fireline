@@ -151,7 +151,9 @@ serves it), Q49/Q50/Q54 (built), Q52 (queued behind convoy tuning).
 | # | Question | Owner | Blocked by |
 |---|---|---|---|
 | Q46 | RULED+SHIPPED (prompt 130): powPreplaced 2 is the default — POWS 47.1% A in band | — | — |
-| Q59 | RULED (prompt 131): powPreplaced 1 — half the lock, most of the objective; verification battery queued | — | — |
+| Q59-Q61 | SETTLED (prompt 133): powPreplaced 0 — classic tempo default; POWS=2 = the human-session flavour | — | — |
+| Q60 | RULED: hunt the A-keyed pair mechanism first; UNIQUES-off-by-map-law is the fallback. TWIST: the 66-70% A battery ran on powPreplaced 1 — re-verdict on the classic default in flight (the ghost may be a POW×unique×ring coupling Q61 dissolved) | in flight | battery |
+| Q62 | RULED+SHIPPED: route-spine corridor capturing (integer point-to-segment, 10 cells); convoy re-verdict in flight | — | battery |
 | Q47 | Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%; also ratify 15-min timer + defender-MPG ×2 | designer + your playtest | — |
 | Q53 | Sandbags: current law forbids building ON roads outright (stricter than your two-lane cap, provably map-safe). Keep, or allow road walls up to the cap? | you | — |
 | Q56 | AI landship doctrine: should regents claim/crew the neutral fortress, and with what priority? (Currently human-only, like stations v1) | you, after playing it | playtest feel |
