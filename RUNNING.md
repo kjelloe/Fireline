@@ -262,6 +262,10 @@ npm start                              # host machine
   W/S throttle, A/D steer, click an enemy to fire; your chassis'
   specials (mine, caltrops, sandbag, hardpoint) appear as buttons;
   on touch the compass pad steers. ✕ EXIT (or G, or Esc habits) leaves.
+- Measured ticket offsets (154): on maps where the unique pair
+  measurably leans the war (sawtooth, riverline), the disadvantaged
+  team STARTS with extra tickets — the briefing discloses it to both
+  sides. Outcome fairness; the +25% underdog premium stays for reward.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

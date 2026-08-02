@@ -338,3 +338,13 @@ The premium stays live until a battery shows the band restored.
   Balance condition: gate green; AI builds no road walls, so the
   live risk is human-session feel — watch the playtest.
 - **Q56**: landship stays human-only for now (re-affirmed).
+
+## Prompt 154 ruling (2026-08-03) — D+C: the unique-pair policy
+
+Measured, DISCLOSED ticket offsets for OUTCOME fairness (the
+disadvantaged team starts +N tickets on battery-convicted maps;
+ladder-tuned; briefing disclosure both directions) + the underdog
+premium stays for REWARD fairness. A stays only as targeted mechanism
+fixes; B's unique-bench only as a temporary measure if a lean is
+intolerable pre-tuning. Mode-role counterweights ride mode rules
+(the defender-MPG precedent).

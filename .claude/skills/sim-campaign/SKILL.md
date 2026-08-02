@@ -40,12 +40,16 @@ THE TEAM-KEYED REMAINDER, LARGELY DISSOLVED (2026-08-03): the convoy
 gap, sawtooth's lean, and riverline's lean are ALL the unique pair
 (factionswap/uniques-off squares). VAULTS=2 on clean terrain STILL
 convicts (41.7/42.3% A — the vault's harm was never terrain luck; it
-stays pulled). Still open — THE LAST ANOMALY: POWS=2 at 25-28% A is NOT uniques
-(uniques-off pair read 25.3/22.7 — identical), not terrain, not
-command order. It is POW-mechanics-specific and team-keyed. Rung
-queued: RAIDPARTY=0 pair (the party doctrine once carried a
-team-keyed +10/+6 split — 2fd5444's sibling may remain). Also open:
-the small convoy east-pusher residual (+7-13 same-unique). THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
+stays pulled). Still open — THE LAST ANOMALY: POWS=2 at 25-28% A survives EVERY
+tested mechanism: not uniques (25.3/22.7), not terrain, not command
+order, NOT the raid party (RAIDPARTY=0 read 26.1/21.5 — identical).
+Remaining rungs QUEUED: ALARMRESPONSE=0 pair + POWARC=0-with-POWS=2
+pair (does captivity alone lean?). Also open: the small convoy
+east-pusher residual (+7-13 same-unique).
+OFFSET-ERA MEASUREMENT LAW (prompt 154): convicted maps (sawtooth,
+riverline) now carry MAP_TICKET_OFFSET in live config — batteries on
+them measure the OFFSET game. HANDICAP=0 for mechanism reads;
+the ladder knob is HANDICAP=<n> / the map job's handicap field. THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
 1. UNDESIGNED root FOUND+FIXED: frontier terrain was never
    cell-symmetric (1,615/8,192 pairs/seed) — mirror-by-construction
    since cff77cb; test/map_symmetry.test.js pins all profiles. EVERY
