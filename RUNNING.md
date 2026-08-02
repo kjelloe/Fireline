@@ -266,6 +266,12 @@ npm start                              # host machine
   measurably leans the war (sawtooth, riverline), the disadvantaged
   team STARTS with extra tickets — the briefing discloses it to both
   sides. Outcome fairness; the +25% underdog premium stays for reward.
+- The battlefield LOOKS like a place now (157, art phases 1-3):
+  blended terrain with sand-banked water and semantic relief, per-map
+  tree species with forest verges and field patches, typed relay
+  dressing (radar dish, depot crates, factory stack), filled-in base
+  compounds. `?lowdetail=1` (automatic on touch) thins the dressing
+  for weaker devices.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

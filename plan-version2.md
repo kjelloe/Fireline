@@ -91,6 +91,7 @@ plus three experimental maps that have not earned promotion.
 |---|---|
 | Direct control + targeting | ✅ `11l`/`11o` + **SURFACED prompt 149 (the Firepower homage)**: 🕹 button, low-ride zoom, howto toast, on-screen specials, ✕ EXIT; touch compass = mobile controls |
 | Art rounds 1, 2c props, 2a faction palette, 2b motion, 2d baked sprites | ✅ `11q`, `14a`, `14b`, `14c`, `14d` |
+| **Detail era (prompt 157)** | ✅ phases 1-3: terrain mesh v2 (blended, banded, semantic relief, AO, sheen) + species/verges/patches + low-detail mode + typed-node dressing + compound v2. 🔜 phase 4 units detail, phase 5 atmosphere |
 | Base compounds / map detailing | ✅ `14g` |
 | Field Encyclopedia | ✅ `14k` |
 | Replay viewer / spectator | ✅ `11h` / `10a` |
