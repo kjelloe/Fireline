@@ -34,6 +34,15 @@ export function baseCompound(base, eastSide = false) {
     ["post", 0.05, 0.95, 0, 1],
     ["post", 0.95, 0.05, 0, 1],
     ["post", 0.95, 0.95, 0, 1],
+    // Art phase 3 (prompt 157): the compound fills in — a barracks row,
+    // the watchtower over the gate approach, an ammo dump behind the
+    // warehouse, a vehicle bay by the pad. Fractional layout keeps the
+    // east mirror exact, piece-for-piece.
+    ["barracks", 0.62, 0.18, 0, 1],
+    ["barracks", 0.62, 0.32, 0, 1],
+    ["watchtower", 0.18, 0.5, 0, 1],
+    ["ammo_dump", 0.58, 0.5, 0, 0.9],
+    ["vehicle_bay", 0.38, 0.85, 0, 1],
   ];
   return LAYOUT.map(([kind, fx, fy, rotation, scale]) => ({
     kind,

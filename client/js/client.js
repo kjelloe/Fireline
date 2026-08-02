@@ -3071,6 +3071,20 @@ function updateWarDressing(view) {
     // Item 13: the supply depot — long warehouse + crate stacks.
     warehouse: { geo: () => new THREE.BoxGeometry(2.8, 1.0, 1.4), y: 0.5 },
     crates: { geo: () => new THREE.BoxGeometry(0.7, 0.5, 0.7), y: 0.25 },
+    // Art phase 3: the compound fills in.
+    barracks: { geo: () => new THREE.BoxGeometry(1.9, 0.7, 0.9), y: 0.35 },
+    watchtower: { geo: () => {
+      const g = new THREE.CylinderGeometry(0.32, 0.14, 0.5, 5);
+      g.translate(0, 1.5, 0);
+      return g;
+    }, y: 0 },
+    ammo_dump: { geo: () => {
+      const g = new THREE.SphereGeometry(0.5, 6, 4);
+      g.scale(1, 0.45, 1);
+      g.translate(0, 0.2, 0);
+      return g;
+    }, y: 0 },
+    vehicle_bay: { geo: () => new THREE.BoxGeometry(1.5, 0.55, 2.0), y: 0.28 },
   };
   for (const b of view.bases ?? []) {
     const faction = factionFor(b.team);
@@ -3100,6 +3114,38 @@ function updateWarDressing(view) {
   scene.add(dressingGroup);
 }
 
+// Art phase 3 (prompt 157): typed nodes finally LOOK typed — a dish on
+// the RADAR, crates at the DEPOT, a smokestack on the FACTORY, an
+// ammo-rack ring on the CACHE (when one ever ships). Attached once per
+// mesh, team-inert (the mast carries the ownership color).
+function siteKindDressing(mesh, kind) {
+  if (mesh.userData.kindDressed) return;
+  mesh.userData.kindDressed = true;
+  const grey = new THREE.MeshLambertMaterial({ color: 0x9a9a8e });
+  const dark = new THREE.MeshLambertMaterial({ color: 0x4a4136 });
+  if (kind === 1) { // RADAR: the dish
+    const dish = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 6, 0, Math.PI * 2, 0, Math.PI / 2), grey);
+    dish.rotation.x = Math.PI / 3.2;
+    dish.position.set(0.18, 0.95, 0);
+    mesh.add(dish);
+  } else if (kind === 2) { // DEPOT: crate cluster
+    for (const [dx, dz, s] of [[0.35, 0.1, 0.16], [0.42, -0.14, 0.12], [0.24, -0.05, 0.1]]) {
+      const c = new THREE.Mesh(new THREE.BoxGeometry(s, s, s), dark);
+      c.position.set(dx, s / 2, dz);
+      mesh.add(c);
+    }
+  } else if (kind === 3) { // FACTORY: the smokestack
+    const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.9, 6), dark);
+    stack.position.set(-0.3, 0.45, 0.1);
+    mesh.add(stack);
+  } else if (kind === 5) { // CACHE: ammo-rack ring
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 6, 10), dark);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(0, 0.08, 0);
+    mesh.add(ring);
+  }
+}
+
 function upsertSiteMesh(site) {
   let mesh = siteMeshes.get(site.id);
   if (!mesh) {
@@ -3107,6 +3153,7 @@ function upsertSiteMesh(site) {
     mesh = buildProcedural(resolved.key ?? "relay");
     scene.add(mesh);
     siteMeshes.set(site.id, mesh);
+    siteKindDressing(mesh, site.kind ?? 0);
   }
   const color = site.owner === -1
     ? "#888888" : teamToken(ASSET_TOKENS, site.owner).color;

@@ -5152,3 +5152,13 @@ the faint field feel. LOW-DETAIL mode (auto on touch, ?lowdetail=1,
 window.__mfLowDetail) drops the dressing, never the readability props.
 Pure model (props_model), deterministic-pinned. Suite green, smoke +
 acceptance OK.
+
+## slice-art-p3: BUILDINGS PASS (2026-08-03, phase 3)
+
+Typed nodes finally LOOK typed (site dressing: RADAR dish, DEPOT
+crates, FACTORY smokestack, CACHE ammo-ring ready for its someday
+map); base compounds v2 (barracks row, gate watchtower, ammo dump,
+vehicle bay — fractional layout keeps the east mirror piece-exact;
+the road-sanctity check still governs). Suite 773/773 x2, smoke +
+acceptance OK. 14G bush pin already extended to the verge law
+(phase-2's red-commit slip, corrected same hour).
