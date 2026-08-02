@@ -65,6 +65,7 @@ import {
   SITE_HP_MAX, siteOperational,
   teamHasKind, KIND_FACTORY, FACTORY_WAVE_DISCOUNT, // B2
   KIND_VAULT, VAULT_INCOME_TICKS, // Q39
+  KIND_CACHE, CACHE_AURA_CELLS, // Q64
 } from "./sites.js";
 import {
   assetCarries, standardTakeableBy, standardReturnableBy, canScore,
@@ -476,6 +477,21 @@ function applyMoveOrder(next, command) {
   return next;
 }
 
+// Q64 (specs/13, prompt 145): the WEAPONS CACHE aura — a shooter
+// within CACHE_AURA_CELLS of a cache their team owns reloads 25%
+// faster. Owned = radiates, full stop (Q65 — the site's aura, not the
+// garrison's). rules.cacheAura === false is the CACHE=0 kill-switch.
+function fireReloadTicks(next, attacker) {
+  const base = getUnitStats(attacker.type).reloadTicks;
+  if (next.rules?.cacheAura === false) return base;
+  const ax = sampleCellX(attacker.x, next.map.width);
+  const ay = worldToCellFloor(attacker.y);
+  const near = next.sites.some((s) =>
+    s.kind === KIND_CACHE && s.owner === attacker.team &&
+    Math.max(absI32(s.cellX - ax), absI32(s.cellY - ay)) <= CACHE_AURA_CELLS);
+  return near ? (base * 3) >> 2 : base;
+}
+
 function applyFireOrder(next, command) {
   const operator = next.operators[command.operatorId];
   if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
@@ -503,7 +519,7 @@ function applyFireOrder(next, command) {
     const sitePos = { x: cellToWorld(site.cellX), y: cellToWorld(site.cellY) };
     if (!inFireRange(attacker, sitePos)) return reject(next, command, "target out of range");
     attacker.ammo -= SUPPLY_FIRE_COST;
-    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    attacker.reloadTimer = fireReloadTicks(next, attacker);
     site.hp = Math.max(0, site.hp - getUnitStats(attacker.type).damage);
     next.events.push({
       type: "site_shelled", siteId: site.id, byAssetId: attacker.id, siteHp: site.hp,
@@ -535,7 +551,7 @@ function applyFireOrder(next, command) {
     };
     if (!inFireRange(attacker, spanPos)) return reject(next, command, "target out of range");
     attacker.ammo -= SUPPLY_FIRE_COST;
-    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    attacker.reloadTimer = fireReloadTicks(next, attacker);
     bridge.hp = Math.max(0, bridge.hp - getUnitStats(attacker.type).damage);
     next.events.push({
       type: "bridge_shelled", bridgeId: bridge.id, byAssetId: attacker.id, bridgeHp: bridge.hp,
@@ -561,7 +577,7 @@ function applyFireOrder(next, command) {
     const pos = { x: cellToWorld(bag.cellX), y: cellToWorld(bag.cellY) };
     if (!inFireRange(attacker, pos)) return reject(next, command, "target out of range");
     attacker.ammo -= SUPPLY_FIRE_COST;
-    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    attacker.reloadTimer = fireReloadTicks(next, attacker);
     bag.hp = Math.max(0, bag.hp - getUnitStats(attacker.type).damage);
     next.events.push({
       type: "sandbag_shelled", sandbagId: bag.id, byAssetId: attacker.id, sandbagHp: bag.hp,
@@ -589,7 +605,7 @@ function applyFireOrder(next, command) {
     if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
     if (!inFireRange(attacker, drone)) return reject(next, command, "target out of range");
     attacker.ammo -= SUPPLY_FIRE_COST;
-    attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks;
+    attacker.reloadTimer = fireReloadTicks(next, attacker);
     next.drones = next.drones.filter((d) => d.id !== drone.id);
     next.events.push({ type: "drone_downed", droneId: drone.id, byAssetId: attacker.id });
     return next;
@@ -616,7 +632,7 @@ function applyFireOrder(next, command) {
   }
 
   attacker.ammo -= SUPPLY_FIRE_COST;
-  attacker.reloadTimer = getUnitStats(attacker.type).reloadTicks; // 8E
+  attacker.reloadTimer = fireReloadTicks(next, attacker); // 8E
   const shot = resolveShot(attacker, target);
   target.hp = Math.max(0, target.hp - shot.hpDelta);
   if (shot.suppressed && target.hp > 0) target.suppressedTimer = SUPPRESSION_TICKS;

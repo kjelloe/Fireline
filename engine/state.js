@@ -326,6 +326,13 @@ export const MAP_LAYOUTS = Object.freeze({
       { cellX: 58, cellY: 63 }, { cellX: 69, cellY: 63 },
       { cellX: 44, cellY: 34 }, { cellX: 83, cellY: 34 },
       { cellX: 44, cellY: 93 }, { cellX: 83, cellY: 93 },
+      // Q64 (prompt 145, specs/13): the WEAPONS CACHE pair — kind 5,
+      // reload-tempo aura to the owner. At the lane chokepoints (the
+      // midpoint between each lane's gap-exit relays), where the
+      // standing duels this map is made of actually happen. Mirror
+      // pair by construction (127-44=83, same row). Site count 6->8,
+      // ticket majority 4->5 (floor(8/2)+1) — the battery judges it.
+      { cellX: 44, cellY: 63, kind: 5 }, { cellX: 83, cellY: 63, kind: 5 },
     ],
     standardHomes: [{ cellX: 14, cellY: 59 }, { cellX: 113, cellY: 59 }],
   }),

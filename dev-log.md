@@ -4951,3 +4951,19 @@ spotting edge; rendered as a 128x128 DataTexture plane (row-flipped —
 the -PI/2 plane rotation runs v against texture memory), refreshed
 every 5 snapshots; spectators exempt. 3 model tests.
 Suite 758/758 x2. Smoke OK. Acceptance OK.
+
+## slice-cache (2026-08-02, Q64-Q66 landed — the specials ladder rung 2)
+
+KIND_CACHE = 5 (the pulled vault keeps 4). Sawtooth gains the pair at
+the lane chokepoints (44,63)/(83,63) — mirror by construction, on
+real traffic (18C law), site count 6→8 so ticket majority 4→5.
+Aura: fireReloadTicks() in the reducer — every fire path pays
+(base*3)>>2 within 5 cells of an OWNED cache (Q65: radiates while
+owned, full stop; suppression-independent). CACHE=0 → rules.cacheAura
+false (kill-switch, vault precedent). Q66: no doctrine weight — plain
+capture-seek picks the pair up (they sit on lane traffic). Tests:
+mirror-pair enumeration + aura on/off/enemy/edge/kill-switch (sandbox
+— the supply trap bit the first draft). 18B pin extended. Suite
+761/761 x2. Gates green (frontier + sawtooth 5-seed). Battery pair +
+CACHE=0 A/B queued — sawtooth's HELD verdict gets re-judged with the
+cache live.

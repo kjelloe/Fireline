@@ -18,6 +18,11 @@ export const KIND_RADAR = 1;   // owning team's sensors reach further
 export const KIND_DEPOT = 2;   // forward resupply point (idle beside it)
 export const KIND_FACTORY = 3; // rebuild waves arrive sooner
 export const KIND_VAULT = 4;   // Q39: slow ticket income to the controller
+export const KIND_CACHE = 5;   // Q64 (specs/13): reload-tempo aura to the owner
+// Q64/Q65: the aura radiates while OWNED, full stop (suppression-
+// independent — the site's, not the garrison's). -25% reload within
+// the radius; integer math in the reducer ((base*3)>>2).
+export const CACHE_AURA_CELLS = 5;
 // Q39 vault income: +1 ticket on this cadence while held. Small by
 // design — bleed drains 1/20 ticks on majority, so a held vault
 // counter-bleeds ~13%: a lifeline, never an engine. Capped at the

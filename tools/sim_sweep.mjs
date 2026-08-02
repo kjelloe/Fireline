@@ -45,6 +45,7 @@ const STALEMATE = process.env.STALEMATE !== "0"; // prompt-136 grind kill-switch
 const DROPS = process.env.DROPS !== "0"; // B6 circle kill-switch (residue rung)
 const VAULTS = process.env.VAULTS !== "0"; // 0 strips kind-4 sites pre-war
 const ORDERPARITY = process.env.ORDERPARITY === "1"; // Q71 trial: tick-parity command order
+const CACHE = process.env.CACHE !== "0"; // Q64 aura kill-switch
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -61,7 +62,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
     alarmResponse: ALARMRESPONSE, orderParity: ORDERPARITY,
-    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
           ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
@@ -69,7 +70,8 @@ for (let seed = 1; seed <= COUNT; seed++) {
           ...(!RAIDERCLAUSE ? { raiderClause: false } : {}),
           ...(!LANDSHIP ? { landship: false } : {}),
           ...(!STALEMATE ? { stalemateBleedTicks: 0 } : {}),
-          ...(!DROPS ? { drops: false } : {}) }
+          ...(!DROPS ? { drops: false } : {}),
+          ...(!CACHE ? { cacheAura: false } : {}) }
       : null,
   });
   // Config-plumbing self-check (the crewing-bug lesson): say what the

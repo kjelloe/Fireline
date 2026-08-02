@@ -1,9 +1,13 @@
 # Weapons Cache — design brief (Q58, ruled GO prompt 129)
 
 Second rung of the Q39 per-map specials ladder (specs/12 §Q39: vault →
-**cache** → alloys → laboratory). Written 2026-08-02, post-equivariance-
-ladder, while the vault sits PULLED. This is a brief for a ruling, not a
-landed design: nothing here is implemented.
+**cache** → alloys → laboratory). Written 2026-08-02; RULED prompt 145
+(Q64 sawtooth-first, Q65 aura-while-owned, Q66 plain seek) and LANDED
+the same day: **kind 5** (the pulled vault keeps kind 4), the pair at
+sawtooth's lane chokepoints (44,63)/(83,63), aura R5 -25% integer
+((base*3)>>2) in the reducer fire path, CACHE=0 kill-switch, tests in
+test/cache.test.js. Site count 6→8, ticket majority 4→5 — the battery
+pair + a CACHE=0 A/B judge the map.
 
 ## What it is
 
