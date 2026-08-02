@@ -5255,3 +5255,21 @@ the aboard notice now teaches U + J (the MG ring); a richer
 aboard-screen is banked. Suite 774/774 (one intermittent ws flake
 re-sighted, passes on rerun — third sighting, watch it). Smoke +
 acceptance OK.
+
+## POWS hunt: the contradiction DISSOLVED, the opener SHARPENED (2026-08-03)
+
+The unified probe (dbg_pows_unified — one script, plan AND state
+checks; probe-widening #5 added headings) settles it: at t=16 EVERY
+field of both worlds mirrors exactly and the tick's PLANS are
+mirror-equal — then ONE advance_tick produces heading 56 vs 80
+(mirror of 56 is 72), a diverged position, and the NORMAL world pops
+its waypoint while the mirror doesn't. All neighbors stay perfectly
+mirrored; only asset 0 breaks, beside the POWS-parked reserve hulls.
+The snap condition (|dx|+|dy| <= step) is mirror-invariant on its
+inputs, so something INSIDE stepAsset's snap/collision/press path is
+not. NEXT OPENER (hand-computation distance): dump asset 0's full
+step inputs at t=16 (x, y, target, step, waypoint list, snap-check
+sides, collision verdicts at the target) in both worlds and replicate
+the step by hand — the non-antisymmetric operation falls out in one
+sitting, the terrain-find's exact method. Seed 777, POWS=2, frontier;
+reproduces in seconds.
