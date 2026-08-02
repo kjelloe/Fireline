@@ -4989,3 +4989,16 @@ next slice if the mode should be AI-viable; human attackers may
 already open vaults naturally (coordination the AI lacks). The rule
 STAYS (it demonstrably fixes the escape phase; humans benefit now).
 Battery pair queued for the scale read. Suite 761/761 x2.
+
+## CACHE PAIR PULLED — the specials ladder's second lesson (2026-08-02)
+
+The battery spoke fast: sawtooth WITH the cache pair = 65.5/70.2% A
+(agg 67.9, n=600) — the held 55-56 lean inflated by ~12 pts. The aura
+snowballs whoever already holds the ground, and sawtooth already
+leans; a personality node AMPLIFIES the map's existing lean (the
+vault's arc, now twice observed = a LAW for the specials ladder:
+specials belong on maps that measure FAIR, or as compensating
+UNDERDOG-side singles, never as neutral pairs on a leaning map).
+Pulled the pair (mechanism stays engine-complete + sandbox-tested,
+CACHE=0 switch, awaiting a fairer home — frontier post-symmetry is
+the candidate that measures fair). Confirm battery queued. 761/761 x2.

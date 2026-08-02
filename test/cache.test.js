@@ -10,13 +10,12 @@ import { KIND_CACHE } from "../engine/sites.js";
 import { getUnitStats } from "../engine/units.js";
 import { sandbox } from "./helpers.js";
 
-test("cache: sawtooth declares an exact mirror pair; no other profile has one", () => {
-  const pair = MAP_LAYOUTS.sawtooth.relayCells.filter((c) => c.kind === KIND_CACHE);
-  assert.equal(pair.length, 2);
-  assert.equal(127 - pair[0].cellX, pair[1].cellX, "x-mirror pair");
-  assert.equal(pair[0].cellY, pair[1].cellY, "same row");
+test("cache: NO live profile carries a cache (pulled after the 67.9% verdict)", () => {
+  // The mechanism is engine-complete and sandbox-tested below; the
+  // sawtooth pair lasted one battery (65.5/70.2% A — personality
+  // nodes amplify the map's existing lean). Any future placement
+  // must arrive as a mirror pair AND re-run the battery gate.
   for (const [name, layout] of Object.entries(MAP_LAYOUTS)) {
-    if (name === "sawtooth") continue;
     assert.ok(!(layout.relayCells ?? []).some((c) => c.kind === KIND_CACHE),
       `${name} has no cache`);
   }

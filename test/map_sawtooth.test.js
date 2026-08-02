@@ -84,11 +84,9 @@ test("18B sawtooth states build with their own relays and remember the profile",
   assert.equal(s.mapProfile, "sawtooth");
   assert.deepEqual(
     s.sites.map((x) => [x.cellX, x.cellY]),
-    [[58, 63], [69, 63], [44, 34], [83, 34], [44, 93], [83, 93], [44, 63], [83, 63]],
-    "heart + lane pairs + the Q64 cache pair at the lane chokepoints"
+    [[58, 63], [69, 63], [44, 34], [83, 34], [44, 93], [83, 93]],
+    "canyon heart + one pair per outer lane (Q64 cache pair PULLED — 67.9% A verdict)"
   );
-  assert.deepEqual(s.sites.filter((x) => x.kind === 5).map((x) => x.cellX), [44, 83],
-    "the caches are the kind-5 pair");
   assert.equal(s.assets.length, 33, "same roster on every map (+the neutral landship, Q42)");
 });
 
