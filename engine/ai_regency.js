@@ -501,13 +501,12 @@ export class AIRegency {
       if (raiderFor[a.team] === -1 && getUnitStats(a.type).canCarryStandard) {
         raiderFor[a.team] = a.id; // first operable controlled carrier raids
       }
-      // Q70: heist attackers designate the SCOUT as the getaway car —
-      // it can carry (standards.js mode rule) and it can outrun the
-      // pursuit that kills every carrier escape.
-      if (state.mission?.kind === 2 && a.team === state.mission.attacker &&
-          state.rules?.heistGetaway !== false && a.type === 1) {
-        raiderFor[a.team] = a.id;
-      }
+      // Q70 POSTSCRIPT: the AI scout-raider (always-dive getaway) was
+      // TRIED and REVERTED same night — the battery read attacker 1%
+      // (from 8): a solo dive into the garrison is a suicide doctrine
+      // that bleeds the attacker's elimination-path wins. The CARRY
+      // rule stays for humans (standards.js); the AI raids by carrier
+      // until siege prep (the named missing lever) gets its GO.
     }
 
     // 11C capture-seek roles: ONE designated capturer per (team, unowned
@@ -1325,8 +1324,6 @@ export class AIRegency {
       // en route WITHOUT the standard whose window closed breaks off and
       // rallies home instead of soloing into the guns.
       if (asset.id === raiderFor[asset.team] && asset.state === ASSET_MOVING &&
-          !(state.mission?.kind === 2 && asset.team === state.mission.attacker &&
-            asset.type === 1 && state.rules?.heistGetaway !== false) &&
           stdOf(state, asset.team === 0 ? 1 : 0)) {
         const eStd = stdOf(state, asset.team === 0 ? 1 : 0);
         const carryingIt = eStd.status === STD_CARRIED && eStd.carrierAssetId === asset.id;
@@ -1516,14 +1513,7 @@ export class AIRegency {
           // group attack (>=2 combat escorts alongside) OR through a
           // sneak window (thin defenses near the route). Otherwise the
           // carrier stays with the pack (falls through to patrol).
-          // Q70: the getaway SCOUT is a lurker, not a column — it
-          // outruns its own escorts, so the group window never opens
-          // for it. It dives SOLO the moment the vault thins and
-          // lurks at 12 cells otherwise (no rally-home thrash).
-          const getawayScout = state.mission?.kind === 2 &&
-            asset.team === state.mission.attacker && asset.type === 1 &&
-            state.rules?.heistGetaway !== false;
-          if (getawayScout || raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
+          if (raidWindowOpen(state, asset, visibleByTeam[asset.team])) {
             const sxr = sampleCellX(enemyStd.x, AI_W);
             const syr = worldToCellFloor(enemyStd.y);
             // HEIST HOLD-SHORT (prompt 141, the party law's core idea
@@ -1542,15 +1532,11 @@ export class AIRegency {
                              Math.abs(worldToCellFloor(e.y) - syr)) <= 6) guards++;
               }
             }
-            if (!getawayScout && guards >= 2) {
+            if (guards >= 2) {
               const ownBase = state.bases.find((b) => b.team === asset.team);
               const dir = baseCentreCol(ownBase) < sxr ? -1 : 1;
               target = [sxr + dir * 8, syr];
             } else {
-              // The getaway scout ALWAYS dives — the Q70 question is
-              // whether SPEED ALONE survives the grab and the run; a
-              // gate that waits for a thin vault never fires against
-              // the 3-guard garrison, and answers nothing.
               target = [sxr, syr];
             }
           }

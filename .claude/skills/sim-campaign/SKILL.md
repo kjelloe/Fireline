@@ -50,15 +50,13 @@ THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
    suspect: Q18 execution-order first-strike (tick-parity command
    order fix proposed night 2, AWAITING the owner's GO). Instruments:
    convoy A/B pair (25-pt signal, ~6 min PC), POWS pair (20-pt).
-| sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays. Cache-pair trial read 65.5/70.2 and was PULLED same night |
+| sawtooth (2026-08-03 pair, cache REMOVED, on f20ce07) | **69.3 / 67.1% A** — REGRESSED from 56.3/54.7; the CONFIRM pair EXONERATED the cache (with-cache read the same 65.5/70.2) | HELD harder; premium stays; NEW HUNT: something in the c51a557..f20ce07 span moved sawtooth +12 — prime suspect THE ESCORT-WALL FIX (raid dynamics changed on every map; blackwood stayed fair because its lean's ROOT was removed — sawtooth's persists and got amplified). Bisect rung: sawtooth 64-war worktree at 15ba1b5^ vs 15ba1b5 |
 
-THE SPECIALS-LADDER LAW (twice observed — vault 2026-07-31, cache
-2026-08-03): a personality node AMPLIFIES the map's existing lean
-(the aura/income compounds for whoever already holds ground). Ship
-specials only on maps that measure FAIR, or as an UNDERDOG-side
-single (premium-style compensation) — never neutral pairs on a
-leaning map. Battery gate MANDATORY before a special survives a
-night.
+THE SPECIALS-LADDER CAUTION (down from "law" — the cache observation
+was VOID, a cross-build comparison; the config-drift class caught by
+its own confirm battery): the vault remains the single observation
+that a personality node can compound a lean. Ship specials with a
+SAME-BUILD kill-switch A/B, never judged against an older baseline.
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the

@@ -5002,3 +5002,24 @@ UNDERDOG-side singles, never as neutral pairs on a leaning map).
 Pulled the pair (mechanism stays engine-complete + sandbox-tested,
 CACHE=0 switch, awaiting a fairer home — frontier post-symmetry is
 the candidate that measures fair). Confirm battery queued. 761/761 x2.
+
+## Confirm batteries: two same-night corrections (2026-08-03)
+
+1. THE CACHE WAS INNOCENT: sawtooth WITHOUT the cache reads 69.3/67.1
+   (with: 65.5/70.2 — identical). My pull-attribution compared
+   against a STALE-BUILD baseline (the config-drift class; the
+   confirm pair caught my own error). The pull stands regardless
+   (nothing ships on a 68% map) but the "specials-ladder law" drops
+   to a CAUTION (vault = the single real observation). Judge specials
+   only by same-build kill-switch A/Bs. NEW HUNT OPENED: sawtooth
+   56 -> 68 somewhere in c51a557..f20ce07 — prime suspect the
+   escort-wall fix (all-map raid dynamics; blackwood stayed fair
+   because its root was REMOVED, sawtooth's lean persists and
+   compounds). Bisect rung named in the skill.
+2. THE GETAWAY AI WAS A SUICIDE DOCTRINE: heist battery read attacker
+   1%/0.3% (from 8/3.7) — the always-dive scout bleeds the
+   elimination-path wins that were the attacker's only wins. AI
+   doctrine REVERTED to carrier raids (probe back to the 8% shape);
+   the CARRY RULE stays — human heist attackers keep the getaway car.
+   Siege prep remains the named lever, awaiting the owner's GO.
+Suite 761/761. Both corrections pushed.

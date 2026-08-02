@@ -9,13 +9,15 @@ sawtooth's lane chokepoints (44,63)/(83,63), aura R5 -25% integer
 test/cache.test.js. Site count 6→8, ticket majority 4→5 — the battery
 pair + a CACHE=0 A/B judge the map.
 
-**PULLED the same night**: the battery read 65.5/70.2% A (the held
-55-56 became 68) — the aura snowballs whoever already holds the
-lanes. THE SPECIALS-LADDER LAW (vault, then cache): personality
-nodes amplify the map's existing lean; ship them only on maps that
-measure FAIR (frontier post-terrain-symmetry is the candidate) or as
-underdog-side compensating singles. The mechanism remains
-engine-complete behind CACHE=0.
+**PULLED the same night — then EXONERATED by the confirm pair**: the
+with-cache battery read 65.5/70.2% A, but sawtooth WITHOUT the cache
+reads 69.3/67.1 on the same build — the jump from the held 55-56 was
+NOT the cache (a cross-build comparison had convicted it; the
+config-drift class, caught by its own confirm battery). Sawtooth has
+its own new regression under hunt. The pull STANDS anyway (no
+specials on a map that measures 68) and the mechanism remains
+engine-complete behind CACHE=0, still awaiting a fair map. Lesson
+kept: judge a special ONLY by a same-build kill-switch A/B.
 
 ## What it is
 
