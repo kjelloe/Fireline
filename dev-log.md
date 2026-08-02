@@ -5319,3 +5319,20 @@ Next instruments: the t=5,444 plan divergence (the last equivariance
 thread) AND a density-keyed A/B (slide on/off pair would attribute
 the frontier drift; SLIDE=0 switch is a 5-line add). Filed as the
 top item — next session's opener.
+
+## THE HUNT GETS A SHAPE: the loss census (2026-08-03, prompt 162)
+
+The direct question, finally asked (dbg_loss_census, 5 seeds/config):
+POWS=2 — A loses 86 to B's 58; A loses the CENTRE 2:1 (79 vs 40); B
+dies DEEP WEST 17 times to A's 3 deep-east (B penetrates and profits
+from the trade); A's soft-skins die 1.6x more. POWS=0 — totals dead
+even (124/124) but the SAME west-band signature (17 vs 2). So the
+mechanism: something lets B fight DEEPER and out-trade A at the
+centre, present always, amplified into outcomes by interaction
+density (POWs, slide-around). Suspect list narrowed to doctrine-
+shape candidates (the fixed patrol geometry crossing centre — though
+aiMirrored swaps patrols, so a pure patrol lean should flip in
+mirror pairs and doesn't; verify that swap ACTUALLY swaps), and the
+trade math at contact (who shoots first at meeting engagements).
+Next instruments: killer-team/chassis census + SLIDE=0 pair (in
+flight) + verify aiMirrored's patrol swap end-to-end.
