@@ -45,13 +45,14 @@ export const MAP_PREMIUM = Object.freeze({
 // profile -> { team: the team that RECEIVES the offset, tickets: N }.
 // Seeds below are FIRST GUESSES pending the ladder verdict.
 export const MAP_TICKET_OFFSET = Object.freeze({
-  // LADDER VERDICTS (2026-08-03): riverline responds ~2.4 pts per 10
-  // tickets (94% tickets-decided) — h15 read 47.2% normal-world,
-  // mirror-confirm in flight. SAWTOOTH WAS DROPPED: offsets measured
-  // INERT there (h20/40/60 -> 68.0/67.3/67.0) — a no-op entry would
-  // make "measured, disclosed" a lie; sawtooth keeps the premium and
-  // awaits the owner's bench/mechanism decision.
-  riverline: Object.freeze({ team: 1, tickets: 15 }),
+  // TABLE EMPTY (2026-08-03) — twice-learned law: an offset is
+  // "measured" ONLY against a SAME-BUILD baseline pair. Sawtooth:
+  // offsets INERT (h20-60 moved ~1 pt). Riverline: the ladder was
+  // read against a stale (pre-escort-wall) baseline — the current
+  // build's mirror control reads 41.0% A with NO offset (the map's
+  // own lean moved). A fresh same-build h0 pair decides whether any
+  // offset (and which DIRECTION) is warranted. The mechanism stays,
+  // battle-tested and disclosed, awaiting honest numbers.
 });
 
 export function ticketOffsetFor(mapProfile, rules) {
