@@ -794,10 +794,27 @@ export class AIRegency {
     // Defenders: THREE hulls hold the Asset, the rest fight forward;
     // while the Asset is CARRIED the radio betrays the thief and two
     // free seats hunt the last ping.
+    const siegeOps = new Set(); // Q72: the heist siege battery
     if (state.mission?.kind === MISSION_HEIST) {
       const mh = state.mission;
       const defender = mh.attacker === 0 ? 1 : 0;
       const std = stdOf(state, defender);
+      // Q72 SIEGE PREP (prompt 151): the attacker's indirect tubes are
+      // the SIEGE BATTERY — they stand ~9 cells off the vault (outside
+      // the garrison's 5-cell guns, inside their own 12) and shell the
+      // guards the escorts spot; the hold-short carrier already dives
+      // the moment the vault thins. SIEGE=0 (rules.heistSiege=false)
+      // is the A/B switch.
+      if (std && state.rules?.heistSiege !== false) {
+        for (const [opId] of controlled) {
+          const op = state.operators[opId];
+          if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+          const a = state.assets[op.assetId];
+          if (!a || a.team !== mh.attacker || a.operatorId !== opId || isWreck(a)) continue;
+          if (!getUnitStats(a.type).indirect) continue;
+          siegeOps.add(opId);
+        }
+      }
       if (std) {
         const sx = sampleCellX(std.x, AI_W);
         const sy = worldToCellFloor(std.y);
@@ -1540,6 +1557,22 @@ export class AIRegency {
               target = [sxr, syr];
             }
           }
+        }
+      }
+      // Q72: the siege battery rides to its firing stand and stays —
+      // the stand sits 9 cells from the vault toward OUR base
+      // (geometry-derived sign, mirror-safe); inside 2 cells of it the
+      // tube holds and the fire doctrine does the shelling.
+      if (!target && siegeOps.has(operatorId) && state.mission?.kind === MISSION_HEIST) {
+        const dStd = stdOf(state, asset.team === 0 ? 1 : 0);
+        if (dStd) {
+          const sxs = sampleCellX(dStd.x, AI_W);
+          const sys = worldToCellFloor(dStd.y);
+          const ownBase = state.bases.find((b) => b.team === asset.team);
+          const dir = baseCentreCol(ownBase) < sxs ? -1 : 1;
+          const standX = sxs + dir * 9;
+          const d = Math.max(Math.abs(cellX0 - standX), Math.abs(cellY0 - sys));
+          if (d > 2) target = [standX, sys];
         }
       }
       // Item 11: designated escorts converge on the carrier, then ride

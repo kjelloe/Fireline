@@ -5055,3 +5055,17 @@ ALSO: ui_acceptance item 31 was the harness's one remaining
 fixed-settle — flaked twice under SwiftShader before the diagnosis;
 now poll-waits per the harness's own rule + dumps statsDebug on
 failure. Suite 765/765 x2. Smoke OK. Acceptance OK x2.
+
+## slice-siege-prep (2026-08-03, Q72 GO — prompt 151 delegation)
+
+The attacker's indirect tubes (artillery + mortar) are the SIEGE
+BATTERY in heist wars: they stand 9 cells off the vault (outside the
+garrison's 5-cell guns, inside their own 12; geometry-derived side,
+mirror-safe), the whole-army escorts spot, the fire doctrine shells
+the guards, and the existing hold-short carrier dives the moment the
+vault thins. SIEGE=0 (rules.heistSiege=false) A/Bs it. Probe: att=1
+SCORES 2/5 (grab -> carried home -> WIN_STANDARD) — the first
+non-elimination heist wins any probe has produced; att=0 still 0/5
+(the team-keyed curse configuration, consistent with everything).
+Standard wars untouched (all gating mission-scoped): suite 765/765
+x2, gate 5/5. Heist battery pair queued behind the ruling slate.
