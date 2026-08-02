@@ -86,7 +86,11 @@ const SPECIES = Object.freeze({
 });
 
 export function propsFor(cells, width, height, profile = "frontier_corridor", opts = {}) {
-  const low = opts.lowDetail === true;
+  // Prompt 160 item 9: three visual tiers. "low" = the lowDetail mode,
+  // "high" doubles the woods and thickens the dressing.
+  const tier = opts.tier ?? (opts.lowDetail === true ? "low" : "medium");
+  const low = tier === "low";
+  const high = tier === "high";
   const species = SPECIES[profile] ?? SPECIES.frontier_corridor;
   const props = [];
   for (let cy = 0; cy < height; cy++) {
@@ -96,7 +100,7 @@ export function propsFor(cells, width, height, profile = "frontier_corridor", op
       const jx = ((h & 0xff) / 255 - 0.5) * 0.6;
       const jy = (((h >>> 8) & 0xff) / 255 - 0.5) * 0.6;
       const rot = (((h >>> 16) & 0xff) / 255) * Math.PI * 2;
-      if (terrain === T_FOREST && h % 3 === 0) {
+      if (terrain === T_FOREST && (h % 3 === 0 || (high && h % 3 === 2))) {
         props.push({
           kind: species[(h >>> 5) % species.length],
           x: cx + 0.5 + jx, y: cy + 0.5 + jy,
@@ -138,12 +142,12 @@ export function propsFor(cells, width, height, profile = "frontier_corridor", op
           cellAtIs(cells, width, height, cx - 1, cy, T_FOREST) ||
           cellAtIs(cells, width, height, cx, cy + 1, T_FOREST) ||
           cellAtIs(cells, width, height, cx, cy - 1, T_FOREST);
-        if (nearForest && h % 6 === 0) {
+        if (nearForest && (h % 6 === 0 || (high && h % 6 === 3))) {
           props.push({
             kind: "bush", x: cx + 0.5 + jx, y: cy + 0.5 + jy,
             scale: 0.35 + ((h >>> 24) & 0xff) / 255 * 0.25, rotation: rot,
           });
-        } else if (!nearForest && h % 23 === 0) {
+        } else if (!nearForest && h % (high ? 11 : 23) === 0) {
           props.push({
             kind: (h >>> 9) & 1 ? "patch_a" : "patch_b",
             x: cx + 0.5, y: cy + 0.5,

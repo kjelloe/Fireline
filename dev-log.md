@@ -5232,3 +5232,13 @@ translucent searchlight cone sweeping on a per-tower phase — pure
 theatre; the vision is the engine's). Suite 774/774 x2, gate 5/5,
 smoke + acceptance OK. Battery note: a vision change shifts balance —
 the queued frontier pair doubles as this slice's outcome check.
+
+## slice-playtest-11 part 3: VISUAL TIERS (item 9)
+
+⚙ Visuals: Low / Medium / High — persisted, live-rebuilds the
+terrain on change. Low = the touch/lowdetail mode; High doubles the
+woods, thickens verges, and densifies ground patches. The tier flows
+through propsFor({tier}); ?lowdetail= and touch auto-select Low.
+"Even more detail" beyond High (texture atlases, model LODs) is
+banked for an art round with real assets — procedural High is the
+honest ceiling of this pipeline.

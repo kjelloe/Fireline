@@ -591,6 +591,16 @@ function init() {
   }
   const scaleEl = document.getElementById("opt-fontscale");
   if (scaleEl) {
+    // Prompt 160 item 9: the visuals tier selector.
+    const visEl = document.getElementById("opt-visuals");
+    if (visEl) {
+      visEl.value = localStorage.getItem("mf_visuals") ?? "medium";
+      visEl.onchange = () => {
+        try { localStorage.setItem("mf_visuals", visEl.value); } catch { /* private mode */ }
+        window.__mfVisualTier = visEl.value;
+        if (terrainMesh) { scene.remove(terrainMesh); terrainMesh = null; } // rebuild live
+      };
+    }
     scaleEl.value = localStorage.getItem("mf_fontscale") ?? "1";
     scaleEl.onchange = (e) => {
       localStorage.setItem("mf_fontscale", e.target.value);
@@ -1515,10 +1525,11 @@ function buildTerrain() {
   // as trees, rough as rocks, trails as trodden ruts, at a glance.
   // Phase 2: low-detail mode (mobile auto / ?lowdetail=1) thins the
   // dressing — never the readability props (trees/rocks stay).
-  const lowDetail = window.__mfLowDetail ??
-    (new URLSearchParams(location.search).has("lowdetail") || "ontouchstart" in window);
-  window.__mfLowDetail = lowDetail;
-  const props = propsFor(cells, size, size, cachedMap.profile, { lowDetail });
+  const tier = window.__mfVisualTier ??
+    (new URLSearchParams(location.search).has("lowdetail") || "ontouchstart" in window
+      ? "low" : localStorage.getItem("mf_visuals") ?? "medium");
+  window.__mfVisualTier = tier;
+  const props = propsFor(cells, size, size, cachedMap.profile, { tier });
   const byKind = { tree: [], tree_tall: [], tree_round: [], tree_scrub: [],
     rock: [], rut: [], water: [], rail: [], reed: [], dash: [], bush: [],
     patch_a: [], patch_b: [] };
