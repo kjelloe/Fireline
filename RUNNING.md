@@ -272,6 +272,14 @@ npm start                              # host machine
   dressing (radar dish, depot crates, factory stack), filled-in base
   compounds. `?lowdetail=1` (automatic on touch) thins the dressing
   for weaker devices.
+- Playtest-11 batch (160): a green YOU-diamond over your hull; cyan
+  SEAT PIPS over hulls with a free bunk or station (carriers + the
+  landship — board with B, man the ring with J); enemy hulls are
+  obstacles you FLOW AROUND now; your compound always sees intruders
+  (watchtower searchlights sweep the corners); movement no longer
+  wobbles; war-clock announcements land big; centre always has
+  somewhere to take you; ⚙ Visuals Low/Medium/High; and the result
+  screen got real sections + map-tile voting with LIVE tallies.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

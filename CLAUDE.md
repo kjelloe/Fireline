@@ -158,6 +158,12 @@ outcome. Renderer presents fog-filtered views only.
   trap a unit forever). A glancing step SLIDES — fallbacks ordered by
   AXIS (x-only, then y-only), never by sign, so slides commute with the
   mirror; a head-on step sets ASSET_IDLE so the planner re-engages.
+  ENEMY HULLS are obstacles under the SAME axis-ordered slide law
+  (prompt 160.7 — the four-hulls-behind-one-truck stall); only a full
+  box-in stalls. THE COMPOUND WATCHES ITSELF (160.2): an enemy inside
+  or hard against (+1) a team's base rect is ALWAYS seen — bases with
+  width < map width only (sandbox whole-map bases have no walls);
+  fog_model mirrors the law exactly (agreement pinned by test).
   Objectives must sit within `CAPTURE_SEEK_CELLS` (16) of real traffic
   or they are never captured at all (18C). `engine/bridges.js` (13E):
   riverline's spans are hashed {id,hp}; artillery breaches, ANY team's
