@@ -102,7 +102,12 @@ export function createAppServer(options = {}) {
       })(),
     },
   });
-  const transport = new NetworkTransport(gameServer, wss);
+  const transport = new NetworkTransport(gameServer, wss, {
+    // Prompt 149: SPECTATE=0 / REPLAYS=0 (or options) disable the booth
+    // and the archive for this server.
+    spectate: options.spectate ?? process.env.SPECTATE !== "0",
+    replays: options.replays ?? process.env.REPLAYS !== "0",
+  });
 
   // 5A: match history. A finished war is archived exactly once.
   const replayStore = createReplayStore(
@@ -192,7 +197,10 @@ export function createAppServer(options = {}) {
     });
   });
 
-  app.get("/replays", (req, res) => res.json({ replays: replayStore.list() }));
+  app.get("/replays", (req, res) => {
+    if (!transport.replaysEnabled) return res.status(403).json({ error: "replays disabled on this server" });
+    return res.json({ replays: replayStore.list() });
+  });
   app.get("/replay/:id", (req, res) => {
     const record = replayStore.load(req.params.id);
     if (!record) { res.status(404).json({ error: "no such replay" }); return; }

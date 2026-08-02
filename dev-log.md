@@ -5032,3 +5032,26 @@ correct engineering (a real deadlock, convoy 32->41/65 proves it);
 working raids simply EXPRESS sawtooth's structural lean harder. No
 revert: the map's own mechanism hunt (unique-pair seat economics)
 inherits the urgency; HELD stays held; premium stays as disclosure.
+
+## slice-join+direct (2026-08-03, prompt 149 — playtest asks 1-3)
+
+1. JOIN SCREEN: 2x team buttons with short labels (strings, both
+   locales), spectate+replays on a smaller second line; SPECTATE=0 /
+   REPLAYS=0 server config (transport option + c_spectate reject +
+   /replays 403 + client hides).
+2. TEAM-BALANCE ROUTING: transport broadcasts s_lobby (live human
+   counts + config) to EVERY socket on connection and each seat
+   change; a side with 2+ more humans greys out with a tooltip and
+   frees up live; the server enforces the same gate on fresh joins
+   (token reclaims exempt — your own seat is always yours). 3 ws
+   tests (test/lobby.test.js).
+3. DIRECT CONTROL surfaced (the Firepower homage): the G-key mode
+   from 11L gets a 🕹 button, a low-ride zoom (restored on exit), an
+   instruction toast (touch variant for mobile — the 15A compass pad
+   IS the mobile control), an on-screen specials row mirroring the
+   chassis contract (mine/caltrops/sandbag/hardpoint — same dispatch
+   as the keybinds), and a loud ✕ EXIT.
+ALSO: ui_acceptance item 31 was the harness's one remaining
+fixed-settle — flaked twice under SwiftShader before the diagnosis;
+now poll-waits per the harness's own rule + dumps statsDebug on
+failure. Suite 765/765 x2. Smoke OK. Acceptance OK x2.

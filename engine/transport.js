@@ -11,12 +11,16 @@ import { buildSpectatorView } from "./view.js";
 const HUMAN_SLOT_MAX = 15;
 
 export class NetworkTransport {
-    constructor(server, wsServer) {
+    constructor(server, wsServer, options = {}) {
         this.server = server;
         this.wss = wsServer;
         this.sessions = new Map(); // socket -> Session
         this.reserved = new Set(); // operator ids held by live connections
         this.players = new Map(); // persistent playerId -> operatorId (5B)
+        // Prompt 149: lobby config — server owners may disable the
+        // spectator booth and the replay archive.
+        this.spectateEnabled = options.spectate !== false;
+        this.replaysEnabled = options.replays !== false;
 
         this.wss.on("connection", (ws) => {
             ws.on("message", (raw) => this.handleMessage(ws, raw));
@@ -25,7 +29,35 @@ export class NetworkTransport {
                 const session = this.sessions.get(ws);
                 if (session) session.lastSeenMs = Date.now();
             });
+            this.sendLobby(ws); // the join screen needs counts before joining
         });
+    }
+
+    // Prompt 149: per-team HUMAN head-count (joined, non-spectator).
+    humanCounts() {
+        const counts = [0, 0];
+        for (const s of this.sessions.values()) {
+            if (s.authenticated && !s.spectator && (s.team === 0 || s.team === 1)) {
+                counts[s.team] += 1;
+            }
+        }
+        return counts;
+    }
+
+    // The lobby packet: live team head-counts + what this server allows.
+    // Broadcast to EVERY socket (joined or not) on every seat change, so
+    // a player can wait for their favourite team to have room.
+    sendLobby(oneWs = null) {
+        const payload = JSON.stringify({
+            type: "s_lobby",
+            humans: this.humanCounts(),
+            spectate: this.spectateEnabled,
+            replays: this.replaysEnabled,
+        });
+        const targets = oneWs ? [oneWs] : [...this.wss.clients];
+        for (const ws of targets) {
+            if (ws.readyState === 1) { try { ws.send(payload); } catch { /* racing close */ } }
+        }
     }
 
     // 8I: ping live sessions; terminate the silent ones. Termination triggers
@@ -109,9 +141,20 @@ export class NetworkTransport {
                         operatorId: knownOperator, team: operator.team, rejoined: true, sequence: null,
                     });
                     this.sendMap(session);
+                    this.sendLobby();
                     return;
                 }
 
+                // Prompt 149: TEAM BALANCE — a fresh join is refused
+                // when the chosen side already has two or more MORE
+                // humans than the other. Token reclaims never pass here
+                // (the knownOperator path returns above): you always
+                // get your own seat back.
+                const counts = this.humanCounts();
+                if (counts[team] >= counts[team === 0 ? 1 : 0] + 2) {
+                    ws.send(JSON.stringify({ type: "s_rejected", reason: "team full" }));
+                    return;
+                }
                 const picked = this.pickOperatorId(msg.operatorId);
                 if (picked.error) {
                     ws.send(JSON.stringify({ type: "s_rejected", reason: picked.error }));
@@ -129,6 +172,7 @@ export class NetworkTransport {
                     this.sessions.set(ws, session);
                     session.send("s_joined", { operatorId, team, sequence: result.sequence });
                     this.sendMap(session);
+                    this.sendLobby();
                 } else {
                     ws.send(JSON.stringify({ type: "s_rejected", reason: result.reason }));
                 }
@@ -150,6 +194,10 @@ export class NetworkTransport {
             // 10A: spectator handshake — no operator slot, no team, no voice.
             if (msg.type === "c_spectate") {
                 if (session) return; // already seated
+                if (!this.spectateEnabled) {
+                    ws.send(JSON.stringify({ type: "s_rejected", reason: "spectating disabled" }));
+                    return;
+                }
                 session = new Session(ws, -1);
                 session.team = -1;
                 session.spectator = true;
@@ -212,6 +260,7 @@ export class NetworkTransport {
             if (session.authenticated) this.server.assumeRegency(session.operatorId);
         }
         this.sessions.delete(ws);
+        this.sendLobby(); // seats changed — the join screens update
     }
 
     // Q49: open the postgame vote — three (map, mode) pairs, one human

@@ -151,12 +151,21 @@ async function main() {
     if (el) el.style.display = "none";
   });
   await page.keyboard.press("i");
-  await page.waitForTimeout(300);
-  const codexOpen = await page.evaluate(() => {
-    const el = document.getElementById("codex-panel");
-    return el && el.style.display !== "none";
-  });
-  check("stats hotkey opens the unit panel (item 31)", codexOpen === true);
+  // Poll, never settle (the harness's own rule — this line was the one
+  // fixed-settle left, and it flaked under SwiftShader's rAF starvation).
+  let codexOpen = false;
+  for (let tries = 0; tries < 20 && !codexOpen; tries++) {
+    await page.waitForTimeout(150);
+    codexOpen = await page.evaluate(() => {
+      const el = document.getElementById("codex-panel");
+      return !!(el && el.style.display !== "none");
+    });
+  }
+  const codexWhy = codexOpen ? "" : await page.evaluate(() => JSON.stringify({
+    active: document.activeElement?.id || document.activeElement?.tagName,
+    dbg: window.__mfDebug?.statsDebug ?? null,
+  }));
+  check("stats hotkey opens the unit panel (item 31)", codexOpen === true, codexWhy);
 
   // Items 25/29: position resolves to something real, and centring uses it.
   const pos = await page.evaluate(() => window.__mfDebug.whereAmI());

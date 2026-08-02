@@ -79,11 +79,19 @@
         <p>An active war is running. Pick a side and take command of an asset.
            Click ground to move, click a visible enemy to fire.
            Return to base to resupply.</p>
-        <div>
-            <button class="btn team-a" id="btn-join-a">Join THE DIRECTORATE (west) — fortify · contain · stabilize</button>
-            <button class="btn team-b" id="btn-join-b">Join THE OUTLIERS (east) — bypass · improvise · disrupt</button>
+        <!-- Prompt 149: BIG team buttons (2x, short text), spectate +
+             replays on a smaller line below; disabled state carries a
+             tooltip when the balance gate holds a side closed. -->
+        <div style="display:flex; gap:18px;">
+            <button class="btn team-a" id="btn-join-a"
+              style="font-size:26px; padding:22px 44px; letter-spacing:1px;">JOIN THE DIRECTORATE</button>
+            <button class="btn team-b" id="btn-join-b"
+              style="font-size:26px; padding:22px 44px; letter-spacing:1px;">JOIN THE OUTLIERS</button>
+        </div>
+        <div id="join-balance-note" style="font-size:13px; color:#c9a; min-height:16px;"></div>
+        <div style="display:flex; gap:12px;">
             <button class="btn" id="btn-spectate">Spectate (watch the whole war)</button>
-            <a class="btn" href="/replay.html" style="text-decoration:none;">Replay viewer (archived wars)</a>
+            <a class="btn" id="link-replays" href="/replay.html" style="text-decoration:none;">Replay viewer (archived wars)</a>
         </div>
         <div id="global-servers" style="margin-top:10px; font-size:13px; color:#9ab; max-width:540px; text-align:center;">
         </div>
@@ -106,6 +114,15 @@
             <button class="btn" id="btn-settings" title="Options">⚙</button>
             <button class="btn" id="btn-encyclopedia" title="Encyclopedia">📖</button>
         </div>
+    </div>
+    <!-- Prompt 149: the Firepower homage — DIRECT CONTROL surfaced as a
+         real button (the G key always worked; nobody found it). -->
+    <button class="btn" id="btn-direct"
+      style="position:absolute; left:14px; bottom:14px; z-index:7;">🕹 DIRECT CONTROL</button>
+    <button class="btn" id="btn-direct-exit"
+      style="display:none; position:absolute; left:14px; bottom:14px; z-index:7; background:#7a2a1a;">✕ EXIT DIRECT CONTROL</button>
+    <div id="direct-specials"
+      style="display:none; position:absolute; left:14px; bottom:58px; z-index:7; flex-direction:column; gap:6px;">
     </div>
     <div id="touch-pad" style="display:none; position:absolute; left:14px; bottom:90px; z-index:6; width:150px; height:150px;">
         <!-- 15A: 8-direction steering pad + center stop (ruling Q10) -->

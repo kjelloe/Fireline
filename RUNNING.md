@@ -252,6 +252,16 @@ npm start                              # host machine
 - Heist getaway car (Q70/145): in heist wars the ATTACKING team's
   scouts can carry the Asset — grab it with the fast hull and run.
   (Carriers still work; every other war keeps carrier-only carrying.)
+- Join screen (149): two BIG team buttons; a side is greyed (with a
+  tooltip) while it has 2+ more humans than the other — counts update
+  live, so you can wait for room on your favourite team. Spectate and
+  the replay viewer sit on the line below; `SPECTATE=0` / `REPLAYS=0`
+  hide + disable them server-side.
+- DIRECT CONTROL (149, the Firepower homage): the 🕹 button lower-left
+  (or G) drops the camera low and turns WASD into tank controls —
+  W/S throttle, A/D steer, click an enemy to fire; your chassis'
+  specials (mine, caltrops, sandbag, hardpoint) appear as buttons;
+  on touch the compass pad steers. ✕ EXIT (or G, or Esc habits) leaves.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

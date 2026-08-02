@@ -169,7 +169,69 @@ let touchDesiredBrads = null;
 let lastTouchDrive = "";
 // 11L direct control (G toggles): WASD becomes tank controls.
 let directMode = false;
+let directPrevZoom = null; // prompt 149: restore the view on exit
 const driveHeld = { w: false, a: false, s: false, d: false };
+
+// Prompt 149 (the Firepower homage): DIRECT CONTROL as a first-class
+// mode — the G key always did this; now there is a button, a zoom, an
+// instruction toast, on-screen specials, and a loud exit.
+function setDirectMode(on) {
+  if (on === directMode) return;
+  directMode = on;
+  if (!on) { for (const k in driveHeld) driveHeld[k] = false; }
+  sendDriveIntent();
+  pushEvent(on ? t("ui.direct_on") : t("ui.direct_off"));
+  const btn = document.getElementById("btn-direct");
+  const exit = document.getElementById("btn-direct-exit");
+  const specials = document.getElementById("direct-specials");
+  if (btn) btn.style.display = on ? "none" : "";
+  if (exit) exit.style.display = on ? "" : "none";
+  if (specials) specials.style.display = on ? "flex" : "none";
+  if (on) {
+    freeCam.followMode(true);
+    directPrevZoom = freeCam.state.zoom;
+    freeCam.zoomBy(9 / freeCam.state.zoom); // ride low over the field
+    const touch = "ontouchstart" in window;
+    flashNotice(t(touch ? "ui.direct_howto_touch" : "ui.direct_howto"), 5200, "#f5c84a");
+    updateDirectSpecials();
+  } else if (directPrevZoom) {
+    freeCam.zoomBy(directPrevZoom / freeCam.state.zoom);
+    directPrevZoom = null;
+  }
+}
+
+// The specials row mirrors what YOUR chassis can actually do right now
+// (same dispatch as the keybinds — one contract, two surfaces).
+function updateDirectSpecials() {
+  const el = document.getElementById("direct-specials");
+  if (!el || !directMode) return;
+  const me = interpolator.latest()?.friendlyAssets?.find(
+    (a) => a.operatorId === joined?.operatorId);
+  const rows = [];
+  if ((me?.minesLeft ?? 0) > 0) rows.push(["ui.sp_mine", () => send({ type: "deploy_mine" })]);
+  if ((me?.caltropsLeft ?? 0) > 0) rows.push(["ui.sp_caltrops", () => send({ type: "deploy_caltrops" })]);
+  if ((me?.sandbagsLeft ?? 0) > 0) rows.push(["ui.sp_sandbag", () => {
+    const cx = Math.floor(me.x / CELL);
+    const cy = Math.floor(me.y / CELL);
+    const brads = me.heading ?? 0;
+    const dx = Math.round(Math.cos((brads / 256) * Math.PI * 2));
+    const dy = Math.round(Math.sin((brads / 256) * Math.PI * 2));
+    send({ type: "build_sandbag", targetCellX: cx + dx, targetCellY: cy + (dy || (dx === 0 ? 1 : 0)) });
+  }]);
+  if (me?.type === 7) rows.push(["ui.sp_hardpoint", () =>
+    send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" })]);
+  const sig = rows.map(([key]) => key).join("|");
+  if (el.dataset.sig === sig) return;
+  el.dataset.sig = sig;
+  el.innerHTML = "";
+  for (const [key, fn] of rows) {
+    const b = document.createElement("button");
+    b.className = "btn";
+    b.textContent = t(key);
+    b.onclick = fn;
+    el.appendChild(b);
+  }
+}
 let lastDriveSent = "0,0";
 let directRing = null; // 11O: the tracking targeting circle
 const orderMarkers = []; // 14I: click-order feedback {sprite, bornMs}
@@ -312,11 +374,7 @@ function init() {
     // (caught by the Playwright smoke the day it ran locally).
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (k === BINDS.directDrive) {
-      directMode = !directMode;
-      if (!directMode) { for (const k in driveHeld) driveHeld[k] = false; }
-      sendDriveIntent();
-      pushEvent(directMode ? t("ui.direct_on") : t("ui.direct_off"));
-      if (directMode) freeCam.followMode(true);
+      setDirectMode(!directMode);
       return;
     }
     if (directMode && e.key.toLowerCase() in driveHeld) {
@@ -333,6 +391,10 @@ function init() {
       const target = hoverAssetId !== null
         ? view?.friendlyAssets?.find((a) => a.id === hoverAssetId)
         : view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+      if (window.__mfDebug) window.__mfDebug.statsDebug = {
+        hover: hoverAssetId, op: joined?.operatorId,
+        found: target?.id ?? null, viewAssets: view?.friendlyAssets?.length ?? -1,
+      };
       if (target) showCodex(target.type);
       return;
     }
@@ -456,6 +518,10 @@ function init() {
     freeCam.jumpTo(cellX, cellY);
   });
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
+  const dBtn = document.getElementById("btn-direct");
+  if (dBtn) dBtn.onclick = () => setDirectMode(true);
+  const dExit = document.getElementById("btn-direct-exit");
+  if (dExit) dExit.onclick = () => setDirectMode(false);
   document.getElementById("btn-join-b").onclick = () => joinTeam(1);
   document.getElementById("btn-spectate").onclick = spectate; // 10A
   document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
@@ -658,6 +724,34 @@ function connect() {
   socket.onmessage = (event) => {
     hideReconnectBanner(); // any live message = the link is back (item 21)
     const msg = JSON.parse(event.data);
+    if (msg.type === "s_lobby") {
+      // Prompt 149: live team head-counts + server config on the join
+      // screen. A side with two or more MORE humans than the other is
+      // held closed (tooltip explains); updates land as players come
+      // and go, so waiting for your favourite team works.
+      const [ha, hb] = msg.humans ?? [0, 0];
+      const gate = (mine, theirs) => mine >= theirs + 2;
+      const btnA = document.getElementById("btn-join-a");
+      const btnB = document.getElementById("btn-join-b");
+      const note = document.getElementById("join-balance-note");
+      if (btnA && btnB) {
+        btnA.disabled = gate(ha, hb);
+        btnB.disabled = gate(hb, ha);
+        for (const [btn, closed] of [[btnA, btnA.disabled], [btnB, btnB.disabled]]) {
+          btn.style.opacity = closed ? "0.35" : "1";
+          btn.title = closed ? t("page.join_full") : "";
+        }
+        if (note) {
+          note.textContent = (btnA.disabled || btnB.disabled)
+            ? `${t("page.join_full")}  (${ha} v ${hb})` : ha + hb > 0 ? `${ha} v ${hb}` : "";
+        }
+      }
+      const spec = document.getElementById("btn-spectate");
+      if (spec) spec.style.display = msg.spectate === false ? "none" : "";
+      const rep = document.getElementById("link-replays");
+      if (rep) rep.style.display = msg.replays === false ? "none" : "";
+      return;
+    }
     if (msg.type === "s_map") {
       cachedMap = {
         width: msg.width, height: msg.height,
@@ -1860,6 +1954,7 @@ function updateObjectiveStrip(view) {
   if (!joined) return;
   updateMissionBanner(view);
   updateFogOverlay(view);
+  updateDirectSpecials();
   const own = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
   document.getElementById("obj-hint").innerText =
     currentHint(view, joined.team, { canCarry: own ? own.type === 4 : false });
