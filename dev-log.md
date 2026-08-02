@@ -5304,3 +5304,18 @@ accident. ALL converted to sampleCellX (standards' width made
 optional-chain robust for minimal test states). Divergence horizon
 (POWS=2, seed 777): 17 -> 3,976 -> **5,444**. Suite 774/774 x2,
 gate 5/5. The POWS outcome pair already queued rides the full sweep.
+
+## Outcome verdicts: equivariance real, the team-keyed channel remains (2026-08-04)
+
+POWS=2 post-sweep: 27.4/24.7% A — UNCHANGED. The boundary family was
+real (horizon 17→5,444) but was not the outcome mechanism. Frontier
+post-everything: 42.8/44.0 — BELOW BAND (46.2→43.1→42.8 across the
+obstacle-slide era), team-keyed B edge both worlds. THE MERGED HUNT:
+one team-keyed mechanism, visible at ~6.6 pts on default frontier and
+~24 pts under POWS density, strengthened by interaction density
+(slide-around raised interactions). NOT: terrain, uniques, command
+order, raid party, alarm, capture arc, pathfinding equivariance.
+Next instruments: the t=5,444 plan divergence (the last equivariance
+thread) AND a density-keyed A/B (slide on/off pair would attribute
+the frontier drift; SLIDE=0 switch is a 5-line add). Filed as the
+top item — next session's opener.

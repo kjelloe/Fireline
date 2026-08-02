@@ -29,8 +29,8 @@ path shapes; everything older is a different game):
 
 | config (live) | A-rate | verdict |
 |---|---|---|
-| frontier DEFAULT (SYMMETRIC-TERRAIN era, cff77cb) | **46.2 / 45.5% A** (n=600) — in band; edge does NOT flip = a small TEAM-keyed B tilt | FAIR — the new era baseline (pre-fix 48.8/53.5 is a DIFFERENT MAP) |
-| frontier POWS=2 (SYMMETRIC-TERRAIN era) | **25.4 / 27.7% A** (n=600) — the old 47.1% "fairness" RESTED on asymmetric terrain compensating a B-favoring mechanism | **OUT OF BAND — flag for human sessions (POWS=2 is the human flavour!)**; the team-keyed hunt owns this |
+| frontier DEFAULT (post-sweep, 72dae18) | **42.8 / 44.0% A** (n=600) — BELOW BAND, team-keyed B edge ~6.6 pts; the drift arrived with the obstacle-slide era (46.2/45.5 → 43.1/45.6 → 42.8/44.0) | **TOP OPEN ITEM** — the slide fix is correct gameplay; the team-keyed channel it amplifies is not identified. Same signature as POWS (26% A unchanged by ALL equivariance fixes): ONE team-keyed mechanism, strengthened by interaction density |
+| frontier POWS=2 (post-sweep) | **27.4 / 24.7% A** — UNCHANGED by the boundary-parity family sweep (equivariance horizon 17→5,444 proves the fixes real; the OUTCOME mechanism is something else) | OUT OF BAND; merged with the frontier drift into ONE team-keyed hunt |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
 | convoy (SYMMETRIC-TERRAIN era) | attackers: Sentinel-led **39.1(A)/32.3(B)**, Skimmer-led **78.0(A)/64.7(B)** | THE GAP IS THE UNIQUE PAIR (factionswap square, n=1200): a Skimmer-led attack is worth ~+35 pts regardless of team/direction (trail-affinity mobility vs the defensive turtle). Small residual: east-pusher +7-13 within same-unique. Q47's bar discussion now has the real axes |
 | heist (post-siege-prep, 53ab7c8) | attackers **12.7% (A) / 9.3% (B)** (arc: 0.3 → 8/3.7 → 12.7/9.3) | Q72 siege battery CONFIRMED at scale; the mode is a tuning dial now, not a wall. Unique-pair axis applies here too (untested rung: Skimmer-led heist) |
