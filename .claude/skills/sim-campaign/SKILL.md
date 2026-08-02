@@ -50,7 +50,7 @@ THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
    suspect: Q18 execution-order first-strike (tick-parity command
    order fix proposed night 2, AWAITING the owner's GO). Instruments:
    convoy A/B pair (25-pt signal, ~6 min PC), POWS pair (20-pt).
-| sawtooth (2026-08-03 pair, cache REMOVED, on f20ce07) | **69.3 / 67.1% A** — REGRESSED from 56.3/54.7; the CONFIRM pair EXONERATED the cache (with-cache read the same 65.5/70.2) | HELD harder; premium stays; NEW HUNT: something in the c51a557..f20ce07 span moved sawtooth +12 — prime suspect THE ESCORT-WALL FIX (raid dynamics changed on every map; blackwood stayed fair because its lean's ROOT was removed — sawtooth's persists and got amplified). Bisect rung: sawtooth 64-war worktree at 15ba1b5^ vs 15ba1b5 |
+| sawtooth (2026-08-03 pair, cache REMOVED, on f20ce07) | **69.3 / 67.1% A** — REGRESSED from 56.3/54.7; the CONFIRM pair EXONERATED the cache (with-cache read the same 65.5/70.2) | HELD harder; premium stays; CONVICTED same night: the ESCORT-WALL FIX span (0cb8cda 56.2% -> HEAD 64.1%, same 64 seeds) — the fix is CORRECT (a real deadlock); working raids AMPLIFY sawtooth's own persistent lean (unique-pair seat economics). The fix stays; sawtooth's mechanism hunt inherits the urgency; premium (B) stays as the disclosure |
 
 THE SPECIALS-LADDER CAUTION (down from "law" — the cache observation
 was VOID, a cross-build comparison; the config-drift class caught by

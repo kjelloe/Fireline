@@ -5023,3 +5023,12 @@ the candidate that measures fair). Confirm battery queued. 761/761 x2.
    the CARRY RULE stays — human heist attackers keep the getaway car.
    Siege prep remains the named lever, awaiting the owner's GO.
 Suite 761/761. Both corrections pushed.
+
+## Sawtooth 56->68 CONVICTED: the escort-wall span (2026-08-03)
+
+Worktree A/B, same 64 seeds: 0cb8cda (pre-escort-wall) 56.2% —
+exactly the old held reading — vs HEAD 64.1%. The escort-wall fix is
+correct engineering (a real deadlock, convoy 32->41/65 proves it);
+working raids simply EXPRESS sawtooth's structural lean harder. No
+revert: the map's own mechanism hunt (unique-pair seat economics)
+inherits the urgency; HELD stays held; premium stays as disclosure.
