@@ -5162,3 +5162,14 @@ vehicle bay — fractional layout keeps the east mirror piece-exact;
 the road-sanctity check still governs). Suite 773/773 x2, smoke +
 acceptance OK. 14G bush pin already extended to the verge law
 (phase-2's red-commit slip, corrected same hour).
+
+## Riverline offset: mirror read anomalous — reconcile queued (2026-08-03)
+
+h15 mirror read 36.9% A vs normal 47.2 — inconsistent with the
+ladder's own gentle slope (2.4 pts/10 tickets) and with the mirror
+baseline (59.3). Under the D+C "measured" law the value can't stand
+on one anomalous world: queued a reconcile pair on the CURRENT build
+(table-h15 mirror rerun + HANDICAP=0 mirror control). B+15 stays
+shipped meanwhile (normal-world evidence is solid), FLAGGED pending.
+POWS: nopowarc mirror 27.2% — the captivity lean is team-keyed in
+both worlds; the parked probe-reconciliation opener stands.
