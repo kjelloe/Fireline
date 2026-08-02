@@ -5173,3 +5173,15 @@ on one anomalous world: queued a reconcile pair on the CURRENT build
 shipped meanwhile (normal-world evidence is solid), FLAGGED pending.
 POWS: nopowarc mirror 27.2% — the captivity lean is team-keyed in
 both worlds; the parked probe-reconciliation opener stands.
+
+## slice-art-p4+p5: UNITS DETAIL + THE GOLDEN HOUR (2026-08-03)
+
+Phase 4 — the DETAIL KIT: a silhouette-safe pass over every chassis
+(headlight pips, rear-deck jerrycan + tarp roll, per-chassis
+positions; wrecks carry the same kit — the art pin's same-silhouette-
+source law made that the design, and burnt stowage reads as loss).
+Assets + strip regenerated (33 tiles, width pin unchanged).
+Phase 5 — THE GOLDEN HOUR: warm low sun + cool hemisphere fill
+replace the flat white lights (the new relief was invisible without
+angle), and the 16G storm now DIMS THE SUN (0.95→0.45, warm→ashen)
+along with its fog. Suite 773/773 x2, smoke + acceptance OK.

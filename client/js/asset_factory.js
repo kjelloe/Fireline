@@ -530,10 +530,56 @@ export function proceduralKeys() {
   return Object.keys(BUILDERS);
 }
 
+// Art phase 4 (prompt 157): the DETAIL KIT — a silhouette-safe pass of
+// small life applied over every LIVE chassis: headlight pips at the
+// nose, stowage on the rear deck (jerrycan + tarp roll), and a thin
+// trim stripe. Positions per chassis; wrecks stay bare (they read as
+// loss, not kit). Nothing here exceeds the silhouette law's envelope.
+const DETAIL_KIT = {
+  //          noseZ, noseY, deckZ, deckY, deckW
+  tank:      [0.44, 0.26, -0.36, 0.42, 0.18],
+  scout:     [0.38, 0.22, -0.30, 0.34, 0.12],
+  artillery: [0.40, 0.24, -0.42, 0.38, 0.16],
+  logistics: [0.42, 0.26, -0.10, 0.52, 0.20],
+  carrier:   [0.46, 0.26, -0.40, 0.46, 0.18],
+  bike:      [0.30, 0.18, null, 0, 0],
+  mortar:    [0.40, 0.24, -0.38, 0.38, 0.14],
+  sentinel:  [0.40, 0.24, -0.34, 0.40, 0.16],
+  skimmer:   [0.42, 0.20, -0.34, 0.34, 0.14],
+  landship:  [0.55, 0.30, -0.50, 0.55, 0.24],
+};
+
+function applyDetailKit(g, key) {
+  const spec = DETAIL_KIT[key];
+  if (!spec) return;
+  const C = colors();
+  const [noseZ, noseY, deckZ, deckY, deckW] = spec;
+  for (const side of [-1, 1]) {
+    const light = cyl(0.025, 0.025, 0.03, 6, "#e8e2b8", "wornMetal");
+    light.rotation.x = Math.PI / 2;
+    light.position.set(side * 0.16, noseY, noseZ);
+    g.add(light);
+  }
+  if (deckZ !== null) {
+    const can = box(0.08, 0.1, 0.06, C.barrel, "wornMetal");
+    can.position.set(deckW, deckY, deckZ);
+    g.add(can);
+    const tarp = cyl(0.05, 0.05, 0.22, 6, C.hullShadow);
+    tarp.rotation.z = Math.PI / 2;
+    tarp.position.set(-deckW * 0.7, deckY, deckZ);
+    g.add(tarp);
+  }
+}
+
 export function buildProcedural(key) {
   const builder = BUILDERS[key];
   if (!builder) return null;
-  return builder();
+  const g = builder();
+  // The kit rides live hulls AND their wrecks (same silhouette source —
+  // the art pin's law; burnt stowage reads as loss just fine).
+  const kitKey = key.startsWith("wreck_") ? key.slice(6) : key;
+  if (g && key !== "relay") applyDetailKit(g, kitKey);
+  return g;
 }
 
 // 11Y — Art round 2a (prompt 25): the faction paint scheme. Blends every

@@ -308,9 +308,14 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.getElementById("canvas-container").appendChild(renderer.domElement);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.9);
-  sun.position.set(30, 50, 20);
+  // Art phase 5 (prompt 157): the golden-hour front — a warm low sun,
+  // cool hemisphere fill (sky bounces blue, ground bounces olive), and
+  // a storm dimmer the weather visuals drive. Flat white light made
+  // the new relief invisible; angle + warmth make it read.
+  scene.add(new THREE.HemisphereLight(0xbdd0e8, 0x4a523c, 0.55));
+  const sun = new THREE.DirectionalLight(0xfff0d8, 0.95);
+  sun.position.set(38, 42, 14);
+  sun.name = "sun";
   scene.add(sun);
 
   raycaster = new THREE.Raycaster();
@@ -1877,12 +1882,15 @@ function updateWeatherVisual(view) {
   const active = view.tick >= w.start && view.tick < w.end;
   if (active === stormOn) return;
   stormOn = active;
+  const sun = scene.getObjectByName("sun");
   if (active) {
     scene.fog = new THREE.Fog(0x8a8676, 18, 60);
     scene.background = new THREE.Color(0x6e6a5c);
+    if (sun) { sun.intensity = 0.45; sun.color.set(0xc9c4b2); } // phase 5: the front dims the sun
   } else {
     scene.fog = null;
     scene.background = new THREE.Color(0x101018);
+    if (sun) { sun.intensity = 0.95; sun.color.set(0xfff0d8); }
   }
 }
 
