@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>More Firepower — Version 2 Plan</title>
+<title>Fireline Command — Version 2 Plan</title>
 <style>
   :root {
     --bg: #101018; --panel: #181824; --ink: #e8e8e2; --dim: #9a9aa8;
@@ -38,68 +38,72 @@
 </style>
 </head>
 <body><main>
+<h1>FIRELINE COMMAND — <span>V2 status board</span></h1>
+<p class="sub">Updated 2026-08-03 · suite 765/765 · fixture v68 · THE SYMMETRIC-TERRAIN ERA ·
+md twin: <code>plan-version2.md</code> · rulings: <code>specs/07</code> · maps: <code>specs/10</code></p>
 
-<h1>FIRELINE <span>COMMAND</span> — Version 2</h1>
-<p class="sub">Updated 2026-08-02 · suite 728/728 · fixture v63 · twin of plan-version2.md · v1: SHIPPED</p>
+<div class="banner"><b>Where the game stands:</b> v2.0 shipped long ago; the faction era,
+pacing era, mode framework, POW arc, and the equivariance/terrain fairness campaigns are done.
+What remains: the team-keyed balance remainder, heist AI viability, the homeless specials,
+music integration, and the Firepower homage.</div>
 
-<div class="banner"><strong class="ok">V2.0 “The Rescue Update” shipped — and so did the faction era, the pacing era and the map roster.</strong>
-What remains is mostly ECONOMY, NPCs and presentation, plus three experimental maps that have not earned promotion.
-Rulings: <code>specs/07_rulings_register.md</code> · maps: <code>specs/10_map_roster.md</code> · detail: <code>dev-log.md</code>.</div>
-
-<h2>Track A — Roster &amp; roles</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Command Carrier</td><td class="ok">✅</td><td>slice-9a — exclusive carrying, rescue bunks</td></tr><tr><td>Downed operators</td><td class="ok">✅</td><td>slice-9b + AI down-management</td></tr><tr><td>Scout Bike / Mortar Carrier</td><td class="ok">✅</td><td>slice-11r / 11s + AI doctrine 11v</td></tr><tr><td>Factions: <b>Directorate vs Outliers</b></td><td class="ok">✅</td><td>slice-12a — identity, palettes, insignia</td></tr><tr><td><b>Sentinel</b> (Directorate unique)</td><td class="ok">✅</td><td>slice-12b — deployable hardpoint, threat-reactive</td></tr><tr><td><b>Skimmer</b> (Outlier unique)</td><td class="ok">✅</td><td>slice-12c — amphibious + Riverline Drive trail affinity</td></tr><tr><td>Unique crewing + band tuning</td><td class="ok">✅</td><td><b>CREWING BUG fixed 2026-07-31</b> — the served game and every gate ran crewing OFF since 16B (only sweeps measured the intended game). Default-ON restored. Band 52.9→55.2% A across the walls change (1.2σ — watch)</td></tr><tr><td>AT satchel (downed crew)</td><td class="ok">✅</td><td>slice-16f</td></tr><tr><td>NPC layer + POWs</td><td class="next">🔜</td><td><b>ARC IN FLIGHT</b> — prisons + capture + raid party + <b>ALARM GUARDS landed</b> (watchman ping + defender response; raids still complete 4/5); powPreplaced flip = Q46 (battery pending); next: Landship (figure kit LANDED; vault machinery landed but live placement PULLED by battery conviction — ships on a map that measures fair)</td></tr><tr><td>Multi-crew “Landship”</td><td class="ok">✅</td><td>slice-landship — neutral capturable fortress (select-is-capture, heavy station, either-team tow, rotating berths); battery FAIR 53.4/48.6 n=600; AI crewing = future slice</td></tr></table>
-<h2>Track B — Battlefield systems</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td><b>Formation primitive (group movement)</b></td><td class="ok">✅</td><td>slice-formation — rally near own lines → advance together, escorts lead, cohesion hold, fights-on-the-move; the raid party rides it, convoy escorts reuse the follow law</td></tr><tr><td><b>Mode framework + Convoy Escort v1</b></td><td class="next">🔶</td><td>LANDED, TUNING — n=300: attacker 27%/19%, tempo clean; awaiting playtest + the designer's bar (Q47)</td></tr><tr><td>Vault machinery (Q39)</td><td class="next">🔶</td><td>ENGINE-COMPLETE, placement pulled (~15-pt edge, likely the residue — VAULTS=2 re-test after the ladder)</td></tr><tr><td>Mines / drone / MPG</td><td class="ok">✅</td><td>9e / 9g / 9d — MPG full waves, base-derived spawns</td></tr><tr><td>Damaged sites + materiel repair</td><td class="ok">✅</td><td>slice-11f — artillery-only siege</td></tr><tr><td><b>Ticket bleed (hybrid)</b></td><td class="ok">✅</td><td>slice-13h — three live victory paths</td></tr><tr><td><b>Respawn law</b></td><td class="ok">✅</td><td>15/15g — forced respawn, self-recalling hulls, carrier field respawn</td></tr><tr><td><b>Route graph + dynamic edges</b></td><td class="ok">✅</td><td>13c / 13d — equivariant Dijkstra, mine-aware</td></tr><tr><td><b>Body collision</b></td><td class="ok">✅</td><td>17 — enemy hard block, friendly soft compression</td></tr><tr><td><b>Weather fronts</b></td><td class="ok">✅</td><td>slice-16g — seed-scheduled, sensors halve</td></tr><tr><td><b>Wall rule + sliding</b></td><td class="ok">✅</td><td>18b / 18e — refuse rock, slide glancing, stop head-on</td></tr><tr><td>Full cargo + AI resupply runner</td><td class="ok">✅</td><td>13a / 13b</td></tr><tr><td><b>Bridge demolition (riverline)</b></td><td class="ok">✅</td><td><code>slice-13e-bridges</code> - artillery breaches, the span becomes water (Skimmer answer), either-team repair; AI doctrine landed (<code>slice-13e2</code>)</td></tr><tr><td>Meaningful deaths (B1)</td><td class="ok">✅</td><td>a wreck costs a ticket, refunded on recovery</td></tr><tr><td>Mercy + overtime (B3)</td><td class="ok">✅</td><td>retargeted trigger; horn tamed; pool 315 ladder-tuned</td></tr><tr><td>Salvage economy</td><td class="ok">✅</td><td>recoveries bank MPG-wave discounts (garage refit banked; tow double-pay awaits ratification)</td></tr><tr><td>Last Convoy finale</td><td class="ok">✅</td><td>suspends mercy; N=ceil(fielded/3) clamp 3..5</td></tr><tr><td>Neutral supply drop (B6)</td><td class="ok">✅</td><td>mirror-line crate, 10 s exclusive hold, +15 tickets</td></tr><tr><td><b>Grid pathfinding (item 39)</b></td><td class="ok">✅</td><td>A* around walls → waypoint queue, humans+AI, mirror-equivariant</td></tr><tr><td><b>Base walls + gates (item 38)</b></td><td class="ok">✅</td><td>Fireball homage, all maps; destructible walls banked</td></tr><tr><td>Underdog premium (58/68)</td><td class="ok">✅</td><td>mechanism + generator; table EMPTY (dormant) — <b>sawtooth convicts at 69%</b></td></tr><tr><td>Typed node classes (B2)</td><td class="ok">✅</td><td>slice-b2 — RADAR/DEPOT/FACTORY effects, mirror-paired (v50)</td></tr></table>
-<h2>Track C — Maps</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td><code>frontier_corridor</code></td><td class="ok">✅</td><td>DEFAULT — pool 315; people-era re-baseline <b>48.5% A both worlds (FAIR)</b>, horn settled 15%, median 21.7 min</td></tr><tr><td><code>riverline</code></td><td class="hold">⚠️</td><td>EXPERIMENTAL — fairness passes, <b>pacing fails (41% horn, 27 min)</b>; pacing slice queued</td></tr><tr><td><code>blackwood</code></td><td class="ok">✅</td><td><b>PROMOTED 2026-07-31</b> — batteries + 18G corridors + playtest all green</td></tr><tr><td><code>sawtooth</code></td><td class="hold">🔴</td><td>HELD — seat-economics conviction; Q31 levers keep gaining: 69→58.5→<b>56.7% A</b>; premium LIVE + disclosed; playtest pending</td></tr><tr><td><code>caldera</code> (circle map)</td><td class="hold">🔴</td><td>BUILT, RED gate — raider's-clause-on-a-ring stomp factory; fix-first (specs/10 §4g); CANDIDATE home for Convoy Escort once fixed (Q48)</td></tr><tr><td>The 6-map bank</td><td class="later">📝</td><td>archipelago · rail junction · urban grid · salt flat · highland ridge · fortress breach</td></tr><tr><td>Map rotation / voting</td><td class="later">⬜</td><td>filed (prompt 64) — minimap thumbnails, or “next map” on the end screen</td></tr></table>
-<h2>Track D — Coordination &amp; social</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Pings / task cards / takeover confirms</td><td class="ok">✅</td><td>10c / 11t / 10b</td></tr><tr><td>Recognition scoring + honors</td><td class="ok">✅</td><td>slice-11k — rescue outranks kills</td></tr><tr><td>Category awards + death recap</td><td class="ok">✅</td><td>B4 / B7 — 8 deed counters, six honors incl. BEST ESCORT, killer identity on the down banner</td></tr><tr><td>Quick-command wheel + callouts</td><td class="ok">✅</td><td>B5 — hold Q, "thanks" ping, fog-reveal contact callouts</td></tr><tr><td>Persistent profiles / leaderboard</td><td class="later">⬜</td><td>V2.x — carries the <b>underdog premium</b> (faction AND map)</td></tr><tr><td>Join flow / lobbies</td><td class="later">⛔</td><td>VERSION 3 by ruling</td></tr></table>
-<h2>Track E — Presentation &amp; platforms</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Direct control + targeting</td><td class="ok">✅</td><td>11l / 11o</td></tr><tr><td>Art: props, faction palette, motion, baked sprites</td><td class="ok">✅</td><td>11q · 14a · 14b · 14c · 14d</td></tr><tr><td>Base compounds · Field Encyclopedia</td><td class="ok">✅</td><td>14g · 14k</td></tr><tr><td>Replay viewer / spectator</td><td class="ok">✅</td><td>11h / 10a</td></tr><tr><td>i18n (en+no) + a11y + mobile touch</td><td class="ok">✅</td><td>15b / 15c / 15a</td></tr><tr><td>Discovery (master + global list)</td><td class="ok">✅</td><td>slice-15h</td></tr><tr><td><b>Client feel batch (playtest 8)</b></td><td class="ok">✅</td><td>18d — honest centre-on-me, war clock, fog notice, right-drag pan, stats key</td></tr><tr><td><b>Heading render fix (playtest 10)</b></td><td class="ok">✅</td><td>18h — every mover rendered ~east since 9F (interpolator clobbered brads); fixed + motion-facing slides</td></tr><tr><td>Audio identity</td><td class="later">⬜</td><td>V2.x — ruled synth-first</td></tr><tr><td>Camera/diorama + chase cam</td><td class="later">⬜</td><td>V2.x</td></tr><tr><td>Native perf numbers</td><td class="ok">✅</td><td>144 fps SUSTAINED at a 144 Hz display (still vsync-bound — headroom ≥144). Closed 2026-08-01.</td></tr></table>
-<h2>Track F — Meta &amp; live ops</h2><table><tr><th>Feature</th><th></th><th>Status</th></tr><tr><td>Ops hardening</td><td class="ok">✅</td><td>slice-11j</td></tr><tr><td>Batch-PC lane</td><td class="ok">✅</td><td>11p + per-map <code>map</code> job + self-update with autostash</td></tr><tr><td>Telemetry & heatmaps</td><td class="later">⬜</td><td>V2.x (<code>/metrics</code> is the seed)</td></tr><tr><td>Achievements · modding · campaign</td><td class="later">⬜</td><td>Horizon</td></tr></table>
-
-<h2>&#9888; Measurement eras (read before trusting any number)</h2>
-<div class="card">Cell-centre reset (2026-07-30) voided everything before it. Pool 315 landed 2026-07-31 on a full n=300 ladder.
-<strong>The 16B crewing bug</strong> (fixed 2026-07-31): sweeps/batteries always measured crewing-ON; the SERVED game and all
-5-seed gates ran crewing-OFF until the fix. Battery numbers stand; gate history and playtest feel predate the fix.
-<strong>People-era re-baseline (2026-08-01, 1,800 wars)</strong> is the current table: frontier 48.5% A/fair, horn 15% (stable),
-sawtooth 56.7%, blackwood 49.2%. MODE WARS (convoy) are a different game — never mix their rows into standard baselines.</div>
-
-<h2>What is actually blocking progress</h2>
-<div class="card"><ul>
-<li><strong>THE DIRECTIONAL RESIDUE — rung 5.</strong> Four rungs closed (A* origin-side · boundary-parity + 78-site sweep + lint · park-east chirality). Rung 5 = t=953 mid-flight re-target (harness ready). Then probe-clean → re-baseline → Q46 + the vault. After: the Q57 queue (caldera → heist → figures r2/ambients → riverline) + the Q58 cache brief.</li>
-<li><strong>Riverline pacing</strong> — 41% horn; the blackwood-18G playbook (instrument first, smallest terrain/graph change).</li>
-<li><strong>Caldera fix</strong> — raider's-clause-on-a-ring; then it can host Convoy Escort (Q48).</li>
-<li><strong>Alarm guards + figure kit</strong> — next POW-arc slice; rulings all in specs/12 (visual law: no weapon silhouette).</li>
-<li><strong>Sandbags/caltrops</strong> — tables recorded (Q45); awaiting the build GO (Q50).</li>
-<li><strong>User-side</strong> — sawtooth playtest (crewing is ON), convoy playtest (MODE=convoy), uncapped perf run.</li>
-</ul></div>
-
-<h2>Open design questions (clarify &amp; design queue)</h2>
-<div class="card"><p class="sub">Closed since last pass: Q24 (in use = ratified) · Q48 (vote pool) · Q49/Q50/Q54 (built) · Q52 (queued behind convoy tuning).</p><table>
-<tr><th>#</th><th>Question</th><th>Owner</th><th>Blocked by</th></tr>
-<tr><td>Q46</td><td>RULED+SHIPPED (prompt 130): powPreplaced 2 default — POWS 47.1% A in band</td><td>—</td><td>—</td></tr>
-<tr><td>Q59-Q61</td><td>SETTLED (prompt 133): powPreplaced 0 — classic tempo; POWS=2 = human-session flavour</td><td>—</td><td>—</td></tr>
-<tr><td>Q60</td><td>DISSOLVED: classic-default caldera reads 54.3/51.7% A in band — the lean was a POW×unique×ring coupling Q61 removed</td><td>—</td><td>—</td></tr>
-<tr><td>Q62</td><td>VERIFIED n=600: convoy attackers 32/34% — best config yet</td><td>—</td><td>—</td></tr>
-<tr><td>Q63</td><td>Caldera identity: fair but a DEATH CIRCLE (13 min, 63% eliminations) — bless the brawl or tune MPG/pool for the ring?</td><td>you + playtest</td><td>—</td></tr>
-<tr><td>Q64</td><td>Weapons cache (specs/13): ship on sawtooth first, or hold until the sawtooth playtest verdict?</td><td>you</td><td>—</td></tr>
-<tr><td>Q65</td><td>Cache aura while the site is suppressed — recommend: radiates while owned, full stop</td><td>you</td><td>—</td></tr>
-<tr><td>Q66</td><td>AI doctrine weight for the cache — recommend: plain capture-seek v1, measure first</td><td>you</td><td>—</td></tr>
-<tr><td>Q67</td><td>Specials-ladder order: VAULTS=2 re-test before the cache lands, or cache leapfrogs?</td><td>you</td><td>PC lane free</td></tr>
-<tr><td>Q68</td><td>DISSOLVED: blackwood restored to 51.0/48.3% fair by the landship-farm fix — promotion stands</td><td>—</td><td>—</td></tr>
-<tr><td>Q69</td><td>ANSWERED BY DATA: riverline's lean is the UNIQUE PAIR (~16 pts toward A on water; uniques-off 40.9% agg). Beneath it an east-side curse (~9 pts both worlds) = the directional residue. Accept with disclosure, or tune?</td><td>you</td><td>—</td></tr>
-<tr><td>Q47b</td><td>Convoy attackers 39.1%(A)/64.0%(B) on clean terrain — TEAM-keyed (direction exonerated by the mirror pair)</td><td>folds into Q71</td><td>—</td></tr>
-<tr><td>Q71</td><td>TRIALLED + VERDICT: tick-parity is INERT (n=900 byte-identical; cross-team fire races present but never on kill boundaries) — Q18's first-strike hypothesis DEAD. Hunt continues: factionswap rung + shared-resource tie-break audit</td><td>data</td><td>—</td></tr>
-<tr><td>Q70</td><td>ANSWERED: speed alone NOT sufficient — the getaway scout fixes the escape, dies at the garrisoned entry. Carry rule kept for humans; AI trial (1%) reverted</td><td>—</td><td>—</td></tr>
-<tr><td><b>Q72</b></td><td><b>SIEGE-PREP GO?</b> Attacker artillery shells the vault garrison before the dive — the named lever for AI-viable heist. Humans have the getaway car and may not need it</td><td><b>you</b></td><td>—</td></tr>
-<tr><td>Q73</td><td>Sawtooth hunt priority: escort-wall fix lets raids express the structural lean (56→68, convicted). Hunt now, after playtest, or retire to the bank?</td><td>you</td><td>—</td></tr>
-<tr><td>Q47</td><td>Convoy asymmetric bar: what attacker win-rate band is "fair"? Regents read 27/19%. Also ratify the 15-min timer + defender-MPG ×2</td><td>designer + your playtest</td><td>—</td></tr>
-<tr><td>Q53</td><td>Sandbags: current law forbids building ON roads outright (stricter than the two-lane cap, provably map-safe). Keep, or allow road walls up to the cap?</td><td>you</td><td>—</td></tr>
-<tr><td>Q56</td><td>AI landship doctrine: should regents claim/crew the fortress, and with what priority? (Human-only today, the stations precedent)</td><td>you, after playing it</td><td>playtest feel</td></tr>
-<tr><td>Q57</td><td>Sequencing after rung 4: riverline pacing · caldera fix (unlocks convoy's natural home) · heist mode · figure-kit r2 / ambient NPCs. Preference order?</td><td>you</td><td>—</td></tr>
-<tr><td>Q58</td><td>Q39 specials ladder: cache → alloys → lab after the vault re-test. Green-light the cache design brief?</td><td>you</td><td>vault re-test</td></tr>
+<h2>Maps (the symmetric-terrain era)</h2>
+<table>
+<tr><th>Profile</th><th>Status</th></tr>
+<tr><td><code>frontier_corridor</code></td><td><span class="ok">DEFAULT</span> — terrain mirror-BY-CONSTRUCTION since prompt 143 (it never was before, ~1,600 asymmetric cell pairs/seed); 46.2/45.5% A, in band</td></tr>
+<tr><td><code>blackwood</code></td><td><span class="ok">PROMOTED</span> — landship-farm bug fixed; restored to 51.0/48.3 (fair)</td></tr>
+<tr><td><code>riverline</code></td><td><span class="hold">EXPERIMENTAL</span> — pacing SOLVED (horn 41%→0); unique-pair lean accepted with premium disclosure (Q69)</td></tr>
+<tr><td><code>sawtooth</code></td><td><span class="next">HELD</span> — ~68% A: the escort-wall fix lets raids express the structural lean (Q73 = priority). Premium disclosed</td></tr>
+<tr><td><code>caldera</code></td><td><span class="ok">FIXED + BLESSED (Q63)</span> — 54.3/51.7 in band; the 13-minute elimination brawl IS the map</td></tr>
 </table>
-<p class="sub"><b>Playtest asks:</b> sawtooth · MODE=convoy · the Landship (click to claim, J = station) · POWS=2 · the end-screen vote.</p></div>
 
-<h2>Version 3 parking lot</h2>
-<div class="card">Lobbies/matchmaking as an OPTIONAL entry beside the no-lobby flow;
-whatever sustained multi-human sessions prove the game still needs.</div>
+<h2>Recently landed (prompts 134-149)</h2>
+<table>
+<tr><th>Slice</th><th>What</th></tr>
+<tr><td>Composer brief + music toggle</td><td>Human composer secured; 12-track brief (md + shareable html); ⚙ Music on/off ships</td></tr>
+<tr><td>Riverline pacing</td><td>Stalemate attrition + B3 overtime cap — horn 41%→0, median ~19 min</td></tr>
+<tr><td>Terrain symmetry (the residue's root)</td><td>Frontier mirror-by-construction + the cell-level invariant test all profiles</td></tr>
+<tr><td>Landship-farm fix</td><td>Team--1 foe-computation bug class found + fixed (blackwood 62%→fair)</td></tr>
+<tr><td>Mobile resilience</td><td>Token seat takeover, auto-rejoin, reconnect-on-visible</td></tr>
+<tr><td>Mode UX + fog sheen</td><td>Mission banner/cards/rings; the fog overlay's edge IS the spotting edge</td></tr>
+<tr><td>Escort-wall fix</td><td>Moving leaders' escorts keep rolling — convoy attackers 32→39/64%</td></tr>
+<tr><td>Join flow + balance gate</td><td>2x join buttons; live s_lobby team balancing (2+ greys out, tooltip); SPECTATE=0/REPLAYS=0</td></tr>
+<tr><td>DIRECT CONTROL surfaced</td><td>🕹 button, low zoom, howto, on-screen specials, ✕ EXIT — the Firepower homage begins</td></tr>
+<tr><td>Two-lane road walls (Q53)</td><td>Sandbags on roads, cross-section law keeps two lanes open</td></tr>
+<tr><td>Heist getaway car (Q70)</td><td>Attacker scouts carry the Asset (human-facing); AI trial reverted — speed alone insufficient</td></tr>
+</table>
 
+<h2>⚠ Measurement notes</h2>
+<div class="card">
+POWS=2 reads <b>25-28% A — OUT OF BAND</b> (the old 47% rested on terrain luck);
+convoy attackers 39/64% (team-keyed gap, direction exonerated); tick-parity ruled INERT
+(Q18 first-strike hypothesis dead). The team-keyed remainder is the one open balance hunt.
+Mode wars are a different game — never mix their rows into standard baselines.
+</div>
+
+<h2>Open design questions</h2>
+<table>
+<tr><th>#</th><th>Question</th><th>Owner</th><th>Blocked by</th></tr>
+<tr><td>Q47</td><td>Convoy asymmetric bar: attackers 39%(A)/64%(B) — what band is "fair", and does the team-keyed gap fold into the hunt first?</td><td>you + designer</td><td>playtest</td></tr>
+<tr><td>Q56</td><td>AI landship doctrine: should regents claim/crew the neutral fortress? (human-only, re-affirmed)</td><td>you</td><td>playtest feel</td></tr>
+<tr><td>Q67</td><td>Vault re-test timing (VAULTS=2): before any cache re-placement, or park the specials ladder until a map measures fair?</td><td>you</td><td>—</td></tr>
+<tr><td><b>Q72</b></td><td><b>SIEGE-PREP GO?</b> Attacker artillery shells the vault garrison before the dive — the named lever for AI-viable heist</td><td><b>you</b></td><td>—</td></tr>
+<tr><td><b>Q73</b></td><td><b>Sawtooth priority</b>: hunt the unique-pair mechanism now, after your playtest, or retire to the bank?</td><td><b>you</b></td><td>—</td></tr>
+</table>
+<p class="sub">Closed since the last pass: Q46/59-61 (powPreplaced→0), Q60/62/63, Q64-66 (cache pulled, mechanism kept),
+Q68-Q71, Q53, Q58 — full text in specs/07 and the md twin.</p>
+
+<h2>What is actually open</h2>
+<ul>
+<li><b>The team-keyed remainder</b> — POWS=2 out-of-band, convoy gap, sawtooth expression. Next rungs: convoy FACTIONSWAP pair + shared-resource tie-break audit.</li>
+<li><b>Heist AI viability</b> — Q72 with you; humans have the getaway car.</li>
+<li><b>The specials ladder</b> — vault + cache engine-complete, homeless; Q67.</li>
+<li><b>Music integration</b> — when the composer's tracks arrive.</li>
+<li><b>The homage, next steps</b> — chase-cam polish, direct-fire feel, arcade HUD.</li>
+<li><b>Your playtests</b> — join flow + balance gate + 🕹 + fog sheen + banners; sawtooth/riverline feel.</li>
+</ul>
+
+<p class="sub">Everything else — roster, systems, coordination, presentation tracks — lives with
+full detail in the md twin; this page is the at-a-glance board.</p>
 </main></body>
 </html>
