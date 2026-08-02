@@ -249,3 +249,24 @@ tick-parity command-order fix you have had "proposed, AWAITING GO"
 since night 2. Say GO and I trial it behind a kill-switch
 (ORDERPARITY=0 reverts) and measure the convoy + POWS pairs; if it
 closes the gaps, the last engine chirality falls.
+
+---
+
+## Night shift (you stepped away 7h — prompts 145-147 executed)
+
+| Work | Verdict |
+|---|---|
+| **Mode UX + fog sheen** (your playtest verdicts) | LANDED: mission banner (orders + clock, red last minute), first-class mission cards + rings (convoy escort/deliver/stop, heist seize/guard, both locales), and the FOG SHEEN — a pure model replicating engine LOS cell-for-cell, so the dark overlay's edge IS the spotting edge (squares, honestly; storms shrink it, RADAR widens it, spectators exempt) |
+| **--mode/--attacker CLI** | Landed earlier tonight with precedence tests |
+| **Q71 tick-parity** | INERT at n=900+ (byte-identical everywhere) — Q18's first-strike hypothesis dead; switch stays as a control |
+| **Q69/Q53/Q63/Q56** | Landed/recorded: riverline premium live + disclosed; road walls under the two-lane law; caldera blessed; landship human-only |
+| **Q64-66 cache** | Landed on sawtooth… and **PULLED the same night**: the battery read 65.5/70.2% A (held 55-56 → 68) — the aura snowballs whoever holds the ground. THE SPECIALS-LADDER LAW (twice observed now, vault then cache): **personality nodes amplify the map's existing lean** — they belong on maps that measure fair. Mechanism stays engine-complete + sandbox-tested (CACHE=0); frontier post-symmetry is the fair-map candidate. Sawtooth-restored confirm battery queued |
+| **Q70 answered with data** | **NO — speed alone is not sufficient.** The getaway scout (mode rule: heist attacker's scout carries, GETAWAY=0 switch) fixes the ESCAPE phase the carrier always lost, then dies at the ENTRY instead: shot 5-11 cells out at the garrisoned gate, every run, across three doctrine rungs (column → lurker → always-dive). The missing lever is SIEGE PREP (attacker artillery shelling the vault approach before the dive) — say GO if you want the mode AI-viable; human attackers may open vaults naturally. The rule stays: humans get a working getaway car today |
+
+**Pending on the lane**: heist pair with the getaway car (the scale
+read), sawtooth-restored confirm pair. Both fold on collection.
+
+**Your queue now**: Q67 (vault re-test timing — the cache's pull makes
+the specials-ladder law worth confirming against the vault's data
+too), the siege-prep GO for heist, and the playtest verdicts on fog
+sheen + mission banners + riverline/sawtooth feel.
