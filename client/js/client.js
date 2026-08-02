@@ -21,7 +21,7 @@ import { TIME_LIMIT_TICKS } from "../../engine/victory.js"; // item 27: the war 
 import { frameRect, sheetName } from "./sprite_frames.js";
 import { buildMinimapModel, minimapClickToCell } from "./minimap_model.js";
 import { createCamera, panForKey } from "./camera_model.js";
-import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors } from "./feedback_model.js";
+import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors, setOperatorNames } from "./feedback_model.js";
 import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
 import { createSplash } from "./splash_model.js";
 import { compassOctant } from "../../engine/reducer.js";
@@ -525,6 +525,8 @@ function init() {
     );
     freeCam.jumpTo(cellX, cellY);
   });
+  const jn = document.getElementById("join-name");
+  if (jn) { try { jn.value = localStorage.getItem("mf_name") ?? ""; } catch { /* private */ } }
   document.getElementById("btn-join-a").onclick = () => joinTeam(0);
   const dBtn = document.getElementById("btn-direct");
   if (dBtn) dBtn.onclick = () => setDirectMode(true);
@@ -747,6 +749,7 @@ function connect() {
       // screen. A side with two or more MORE humans than the other is
       // held closed (tooltip explains); updates land as players come
       // and go, so waiting for your favourite team works.
+      setOperatorNames(msg.names ?? {}); // O2: names ride the lobby packet
       const [ha, hb] = msg.humans ?? [0, 0];
       const gate = (mine, theirs) => mine >= theirs + 2;
       const btnA = document.getElementById("btn-join-a");
@@ -985,7 +988,10 @@ let lastJoin = null; // prompt 139: last join intent (team number or "spectate")
 function joinTeam(team) {
   if (!socket || socket.readyState !== 1) return;
   lastJoin = team;
-  socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId() }));
+  const nameEl = document.getElementById("join-name");
+  const name = (nameEl?.value ?? "").trim().slice(0, 16);
+  try { if (name) localStorage.setItem("mf_name", name); } catch { /* private */ }
+  socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId(), name }));
 }
 
 // ── 15A: the touch layer (ruling Q10) ───────────────────────────────────

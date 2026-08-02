@@ -79,3 +79,16 @@ test("149: SPECTATE off refuses the booth; REPLAYS off closes the archive", asyn
     c.ws.close();
   });
 });
+
+test("O2: names ride the join and land in everyone's lobby packet", async () => {
+  await withServer({}, async (app, port) => {
+    const a = await connect(port);
+    a.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "n1", name: "Kjell" }));
+    await until(() => a.messages.some((m) => m.type === "s_joined"));
+    const opId = a.messages.find((m) => m.type === "s_joined").operatorId;
+    const b = await connect(port);
+    assert.ok(await until(() => lastLobby(b)?.names?.[opId] === "Kjell"),
+      "a waiting socket sees the name");
+    a.ws.close(); b.ws.close();
+  });
+});

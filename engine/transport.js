@@ -17,6 +17,7 @@ export class NetworkTransport {
         this.sessions = new Map(); // socket -> Session
         this.reserved = new Set(); // operator ids held by live connections
         this.players = new Map(); // persistent playerId -> operatorId (5B)
+        this.names = new Map(); // operatorId -> display name (O2, prompt 164)
         // Prompt 149: lobby config — server owners may disable the
         // spectator booth and the replay archive.
         this.spectateEnabled = options.spectate !== false;
@@ -53,6 +54,7 @@ export class NetworkTransport {
             humans: this.humanCounts(),
             spectate: this.spectateEnabled,
             replays: this.replaysEnabled,
+            names: Object.fromEntries(this.names), // O2: opId -> name
         });
         const targets = oneWs ? [oneWs] : [...this.wss.clients];
         for (const ws of targets) {
@@ -111,6 +113,11 @@ export class NetworkTransport {
                 // takes it back from AI regency.
                 const playerId = typeof msg.playerId === "string" && msg.playerId.length <= 64
                     ? msg.playerId : null;
+                // O2 (prompt 164): a display name — recognition finally
+                // pays a PERSON. Sanitised, 16 chars, transport-only.
+                const name = typeof msg.name === "string"
+                    ? msg.name.replace(/[^\p{L}\p{N} _\-\.]/gu, "").slice(0, 16).trim()
+                    : "";
                 const knownOperator = playerId != null ? this.players.get(playerId) : undefined;
                 if (knownOperator !== undefined) {
                     // Prompt 139 (mobile resilience): the token IS the person.
@@ -137,6 +144,7 @@ export class NetworkTransport {
                     session.playerId = playerId;
                     session.authenticated = true;
                     this.sessions.set(ws, session);
+                    if (name) this.names.set(knownOperator, name);
                     session.send("s_joined", {
                         operatorId: knownOperator, team: operator.team, rejoined: true, sequence: null,
                     });
@@ -170,6 +178,7 @@ export class NetworkTransport {
                     session.playerId = playerId;
                     session.authenticated = true;
                     this.sessions.set(ws, session);
+                    if (name) this.names.set(operatorId, name);
                     session.send("s_joined", { operatorId, team, sequence: result.sequence });
                     this.sendMap(session);
                     this.sendLobby();

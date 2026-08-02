@@ -141,13 +141,21 @@ export function describeEvent(e, myTeam) {
 
 // 11K: top recognition earners for the end screen. Pure; human seats are
 // ids 0-15, AI regents 16-31 — both can earn honors.
+// O2 (prompt 164): the display-name registry — set from s_lobby;
+// everything that celebrates an operator asks here first.
+let NAMES = {};
+export function setOperatorNames(map) { NAMES = map ?? {}; }
+export function nameOf(id) {
+  return NAMES[id] ?? (id < 16 ? `Operator ${id}` : `Regent ${id}`);
+}
+
 export function topOperators(view, n = 3) {
   return (view?.operators ?? [])
     .filter((o) => o.score > 0)
     .sort((a, b) => b.score - a.score || a.id - b.id)
     .slice(0, n)
     .map((o) => {
-      const who = o.id < 16 ? `Operator ${o.id}` : `Regent ${o.id}`;
+      const who = nameOf(o.id);
       const side = o.team === 0 ? "A" : "B";
       return `${who} (${side}) — ${o.score} pts`;
     });
@@ -177,7 +185,7 @@ export function categoryHonors(view) {
       if (n > bestN) { best = o; bestN = n; }
     }
     if (best && bestN > 0) {
-      const who = best.id < 16 ? `Operator ${best.id}` : `Regent ${best.id}`;
+      const who = nameOf(best.id);
       const side = best.team === 0 ? "A" : "B";
       out.push(t(h.key, { who: `${who} (${side})`, n: bestN }));
     }
