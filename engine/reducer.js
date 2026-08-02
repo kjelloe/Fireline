@@ -1468,8 +1468,25 @@ function stepAsset(asset, map, supplied, carrying, towing, others, slowed = fals
   const dir = dirForHeading(asset.heading);
   let sdx = truncDivI32(step * DIR_COS[dir], 256);
   let sdy = truncDivI32(step * DIR_SIN[dir], 256);
-  const v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
-  if (v === 0) return; // 17: hard-blocked by an enemy hull; keep trying
+  let v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
+  if (v === 0) {
+    // Prompt 160 item 7 (the four-hulls-behind-one-truck stall): an
+    // enemy hull is an OBSTACLE, not a spell — try the same
+    // axis-ordered slides the wall rule uses (x-only then y-only,
+    // never by sign, so mirrored worlds slide identically). Only a
+    // full box-in still stalls the step.
+    if (sdx !== 0 && collisionVerdict(others, asset, asset.x + sdx, asset.y) !== 0 &&
+        !terrainWalled(map, asset.x + sdx, asset.y, stats)) {
+      sdy = 0;
+      v = collisionVerdict(others, asset, asset.x + sdx, asset.y);
+    } else if (sdy !== 0 && collisionVerdict(others, asset, asset.x, asset.y + sdy) !== 0 &&
+        !terrainWalled(map, asset.x, asset.y + sdy, stats)) {
+      sdx = 0;
+      v = collisionVerdict(others, asset, asset.x, asset.y + sdy);
+    } else {
+      return; // truly boxed in: keep trying
+    }
+  }
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
   [sdx, sdy] = slideAlongWall(map, asset, sdx, sdy, stats); // 18B/18E
   if (sdx === 0 && sdy === 0) {
