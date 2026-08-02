@@ -246,6 +246,14 @@ npm start                              # host machine
   seat is held (AI drives your hull meanwhile), and coming back
   reclaims it automatically, even from a new tab or after the screen
   locks. The reconnect fires the moment the tab becomes visible.
+- Fog of war SHEEN (147): unseen ground darkens under a translucent
+  overlay whose edge IS the spotting edge (squares, honestly — sensors
+  are chebyshev). Storms shrink your lit area; an owned RADAR widens
+  it. Spectators see everything, no sheen.
+- Mission banner (147): mode wars show a persistent gold banner top-
+  centre — your orders and the clock; it burns red in the last minute.
+  Mission cards + golden rings mark the convoy truck, the delivery
+  gate, and the heist Asset.
 - Accessibility (15C): the ⚙ panel has high contrast, text size
   (100/125/150%), remappable action keys (click an action, press a key),
   the language switch, and a Music on/off toggle (ready for the

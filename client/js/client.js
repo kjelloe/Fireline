@@ -31,6 +31,7 @@ import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { statusFor } from "./status_model.js";
 import { codexFor, codexAll, MECHANICS_PAGES } from "./codex.js";
 import { t, setLocale, getLocale } from "./strings.js";
+import { fogMask } from "./fog_model.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
   arrowDrive, ARROW_BRADS, classifyTouch, pinchFactor, isTouchDevice,
@@ -1782,8 +1783,83 @@ function showBriefing() {
   window.addEventListener("keydown", onKey);
 }
 
+// Prompt 147 (playtest: "I saw no sign of any convoy"): mode wars get
+// a LOUD persistent banner — mode, orders, and the clock — not just a
+// hint-bar line ("nobody reads a hint bar" is our own recorded lesson).
+function updateMissionBanner(view) {
+  let el = document.getElementById("mission-banner");
+  const m = view?.mission;
+  if (!m || !joined || joined.spectator) {
+    if (el) el.style.display = "none";
+    return;
+  }
+  if (!el) {
+    el = document.createElement("div");
+    el.id="mission-banner"; // (no spaces: the wiring net greps id="...")
+    el.style.cssText = "position:absolute;top:8px;left:50%;transform:translateX(-50%);" +
+      "background:rgba(20,18,8,0.85);color:#f5c84a;padding:6px 22px;border:1px solid #f5c84a;" +
+      "border-radius:8px;font:bold 15px sans-serif;z-index:6;text-align:center;pointer-events:none;";
+    document.body.appendChild(el);
+  }
+  el.style.display = "block";
+  el.textContent = currentHint(view, joined.team, {});
+  // The last minute burns red.
+  el.style.color = m.timerTicks <= 600 ? "#ff6b52" : "#f5c84a";
+  el.style.borderColor = el.style.color;
+}
+
+// Prompt 147: the FOG SHEEN — unseen ground darkens, and the sheen's
+// edge IS the spotting edge (fog_model replicates engine/los.js
+// cell-for-cell). A 128x128 alpha texture over the terrain, refreshed
+// every few snapshots; spectators see everything and get no sheen.
+let fogMesh = null;
+let fogTexture = null;
+let fogCountdown = 0;
+function updateFogOverlay(view) {
+  if (!cachedMap || typeof THREE === "undefined" || !scene) return;
+  if (!joined || joined.spectator || joined.team === -1) {
+    if (fogMesh) fogMesh.visible = false;
+    return;
+  }
+  const size = cachedMap.width;
+  if (!fogMesh) {
+    const data = new Uint8Array(size * size * 4);
+    fogTexture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+    fogTexture.magFilter = THREE.LinearFilter;
+    fogTexture.minFilter = THREE.LinearFilter;
+    const mat = new THREE.MeshBasicMaterial({
+      map: fogTexture, transparent: true, depthWrite: false,
+    });
+    fogMesh = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat);
+    fogMesh.rotation.x = -Math.PI / 2;
+    fogMesh.position.set(size / 2, 0.92, size / 2);
+    fogMesh.renderOrder = 3;
+    scene.add(fogMesh);
+  }
+  fogMesh.visible = true;
+  if (fogCountdown-- > 0) return; // refresh every 5 snapshots (~0.5 s)
+  fogCountdown = 4;
+  const mask = fogMask(view, joined.team, cachedMap.seed, view.tick ?? 0, size, size);
+  const data = fogTexture.image.data;
+  // The plane's v-axis runs opposite the texture's memory rows (the
+  // -PI/2 rotation maps local +Y to world -Z), so write row-flipped or
+  // the sheen mirrors north-south against the terrain.
+  for (let y = 0; y < size; y++) {
+    const src = y * size;
+    const dst = (size - 1 - y) * size;
+    for (let x = 0; x < size; x++) {
+      const o = (dst + x) * 4;
+      data[o] = 8; data[o + 1] = 10; data[o + 2] = 6;
+      data[o + 3] = mask[src + x] ? 0 : 118; // the sheen: ~46% dark over fog
+    }
+  }
+  fogTexture.needsUpdate = true;
+}
+
 function updateObjectiveStrip(view) {
   if (!joined) return;
+  updateMissionBanner(view);
+  updateFogOverlay(view);
   const own = view.friendlyAssets?.find((a) => a.operatorId === joined.operatorId);
   document.getElementById("obj-hint").innerText =
     currentHint(view, joined.team, { canCarry: own ? own.type === 4 : false });

@@ -4935,3 +4935,19 @@ with the real list (the 11M silent-fallback lesson, applied to modes
 before it could bite). start:convoy / start:heist scripts; banner
 names the mode; app-layer precedence pinned (session_rules.test.js);
 the start-script lint extended to modes. Suite 755/755 x2. Smoke OK.
+
+## slice-mode-ux + fog sheen (2026-08-02, prompt 147 — playtest verdicts)
+
+"I saw no sign of any convoy": the mode UX lived in a hint bar — our
+own recorded lesson says nobody reads it. Now: MISSION BANNER (gold,
+top-centre, orders + clock, red in the last minute), first-class
+mission CARDS (tasks model — convoy escort/deliver/stop, heist
+seize/guard, value 40 = outranks everything; destination rings show
+at any distance via dropoff semantics), both locales.
+FOG SHEEN: client/js/fog_model.js — a pure per-cell mask replicating
+engine/los.js EXACTLY (12-cell chebyshev squares, 6 suppressed, 16
+owned relays, storm halves, radar +6) so the sheen's edge IS the
+spotting edge; rendered as a 128x128 DataTexture plane (row-flipped —
+the -PI/2 plane rotation runs v against texture memory), refreshed
+every 5 snapshots; spectators exempt. 3 model tests.
+Suite 758/758 x2. Smoke OK. Acceptance OK.

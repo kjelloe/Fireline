@@ -20,6 +20,11 @@ function cellOf(worldX) {
 // what they PROTECT: stopping a thief denies a 25-point capture, so it
 // leads.
 const TASK_VALUE = Object.freeze({
+  mission_convoy_deliver: 40, // mode wars: the mission IS the war
+  mission_convoy_escort: 40,
+  mission_convoy_stop: 40,
+  mission_heist_seize: 40,
+  mission_heist_guard: 40,
   stop_thief: 25,       // denies the enemy the biggest score in the game
   secure_standard: 25,  // our own standard run, same stake
   join_convoy: 20,      // the team's remaining story — above everything but the standard
@@ -43,6 +48,49 @@ export function tasksFor(view, myOperatorId = null) {
   const std = (view?.standards ?? []);
   const own = std.find((s) => s.team === myTeam);
   const enemy = std.find((s) => s.team !== myTeam);
+
+  // Prompt 147 (playtest verdict: "I saw no sign of any convoy"): MODE
+  // wars carry FIRST-CLASS cards. The mission is the whole war — it
+  // outranks every other card and its destination ring shows at any
+  // distance (dropoff semantics).
+  const m = view?.mission;
+  if (m && (m.kind === 1 || m.kind === 2)) {
+    if (m.kind === 1) {
+      const truck =
+        (view?.friendlyAssets ?? []).find((a) => a.id === m.convoyId) ??
+        (view?.visibleEnemies ?? []).find((a) => a.id === m.convoyId);
+      if (myTeam === m.attacker) {
+        tasks.push({
+          kind: "mission_convoy_deliver", priority: 0, dropoff: true,
+          label: t("task.mission_convoy_deliver"),
+          cellX: m.gateCellX, cellY: m.gateCellY, ping: "rally",
+        });
+        if (truck) tasks.push({
+          kind: "mission_convoy_escort", priority: 0,
+          label: t("task.mission_convoy_escort"),
+          cellX: cellOf(truck.x), cellY: cellOf(truck.y), ping: "rally",
+        });
+      } else {
+        tasks.push({
+          kind: "mission_convoy_stop", priority: 0, dropoff: !truck,
+          label: t("task.mission_convoy_stop"),
+          cellX: truck ? cellOf(truck.x) : m.gateCellX,
+          cellY: truck ? cellOf(truck.y) : m.gateCellY, ping: "attack",
+        });
+      }
+    } else {
+      const asset = std.find((s) => s.team !== m.attacker);
+      if (asset) {
+        tasks.push({
+          kind: myTeam === m.attacker ? "mission_heist_seize" : "mission_heist_guard",
+          priority: 0, dropoff: true,
+          label: t(myTeam === m.attacker ? "task.mission_heist_seize" : "task.mission_heist_guard"),
+          cellX: cellOf(asset.x), cellY: cellOf(asset.y),
+          ping: myTeam === m.attacker ? "attack" : "defend",
+        });
+      }
+    }
+  }
 
   if (own && own.status === 1) { // STD_CARRIED — by the enemy
     tasks.push({
