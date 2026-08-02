@@ -5117,3 +5117,27 @@ switch+knob, table-hygiene; bleed suites pinned to handicap:false
 (they test mechanics on symmetric pools). Suite 769/769 x2, smoke OK.
 LADDER QUEUED: sawtooth h20/h40/h60 + riverline h15/h30/h45 (normal
 world n=300 each) — pick in-band, then mirror-confirm the winner.
+
+## POWS hunt: parked at an instrument contradiction (2026-08-03)
+
+The captivity lean survives EVERYTHING (uniques/terrain/order/party/
+alarm/capture-arc — all exonerated at n=300 each). The diverge probe
+with POWS=2 breaks at t=17 (a target change on asset 0 that the
+mirror twin doesn't get) — but a PLAN-DIFF probe (dbg_pows_plan)
+shows the two worlds' AI command lists mirror-equal through t=100.
+The two instruments contradict: NEXT OPENER = reconcile their
+configs (uniqueCrewing/difficulty/rules paths), then re-run both;
+whichever is right names the mechanism. Mirror halves of noalarm/
+nopowarc still queued for the outcome-level read.
+
+## slice-art-p1: TERRAIN MESH V2 (2026-08-03, prompt 157 phase 1)
+
+One vertex-colored blended ground mesh (client/js/terrain_mesh.js)
+replaces the per-cell ground boxes: border color blending, SAND
+BANDING at land/water edges, SEMANTIC micro-relief only (water sinks
+to a flat basin, rough/forest undulate, open stays honest — LOS/
+passability never lied about; walls keep their gameplay-true boxes),
+baked vertex AO at wall/forest verges, seeded tonal grain, and a
+breathing water sheen. Props ride the relief via heightAt. All pure
+f(cells, mapSeed) — the 16G/ambients precedent. 3 model tests;
+smoke + acceptance green.

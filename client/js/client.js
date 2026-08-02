@@ -32,6 +32,7 @@ import { statusFor } from "./status_model.js";
 import { codexFor, codexAll, MECHANICS_PAGES } from "./codex.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
+import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
   arrowDrive, ARROW_BRADS, classifyTouch, pinchFactor, isTouchDevice,
@@ -1463,28 +1464,33 @@ function buildTerrain() {
   const size = cachedMap.width;
   const cells = cachedMap.cells;
   const group = new THREE.Group();
-  const geometries = new Map();
-  for (let terrain = 0; terrain < TERRAIN_COLORS.length; terrain++) {
-    geometries.set(terrain, []);
-  }
+  // TERRAIN MESH V2 (prompt 157, art phase 1): one vertex-colored
+  // blended ground mesh (terrain_mesh.js — border blending, sand
+  // banding, semantic micro-relief, baked AO, water sheen) replaces
+  // the per-cell ground boxes. WALLS keep their instanced boxes on
+  // top — they are gameplay-true height.
+  const palette = TERRAIN_COLORS.map((hex) => [
+    ((hex >> 16) & 255) / 255, ((hex >> 8) & 255) / 255, (hex & 255) / 255,
+  ]);
+  group.add(buildTerrainMesh(THREE, cachedMap, palette));
+  const wallCells = [];
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
-      geometries.get(cells[y * size + x])?.push([x, y]);
+      if (cells[y * size + x] === 4) wallCells.push([x, y]);
     }
   }
-  for (const [terrain, positions] of geometries) {
-    if (!positions.length) continue;
-    const mesh = new THREE.InstancedMesh(
-      new THREE.BoxGeometry(1, terrain === 4 ? 0.8 : 0.1, 1),
-      new THREE.MeshLambertMaterial({ color: TERRAIN_COLORS[terrain] }),
-      positions.length
+  if (wallCells.length) {
+    const walls = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(1, 0.8, 1),
+      new THREE.MeshLambertMaterial({ color: TERRAIN_COLORS[4] }),
+      wallCells.length
     );
-    const m = new THREE.Matrix4();
-    positions.forEach(([x, y], i) => {
-      m.setPosition(x + 0.5, terrain === 4 ? 0.4 : 0, y + 0.5);
-      mesh.setMatrixAt(i, m);
+    const wm = new THREE.Matrix4();
+    wallCells.forEach(([x, y], i) => {
+      wm.setPosition(x + 0.5, 0.4, y + 0.5);
+      walls.setMatrixAt(i, wm);
     });
-    group.add(mesh);
+    group.add(walls);
   }
   // Art round 2c (prompt 25): instanced battlefield props — forest reads
   // as trees, rough as rocks, trails as trodden ruts, at a glance.
@@ -1553,7 +1559,9 @@ function buildTerrain() {
     list.forEach((pr, i) => {
       q.setFromAxisAngle(up, pr.rotation);
       one.set(pr.scale, pr.scale, pr.scale);
-      m.compose(new THREE.Vector3(pr.x, 0.05, pr.y), q, one);
+      m.compose(new THREE.Vector3(pr.x,
+        0.02 + heightAt(cells, size, cachedMap.seed >>> 0, Math.round(pr.x), Math.round(pr.y)),
+        pr.y), q, one);
       inst.setMatrixAt(i, m);
     });
     group.add(inst);
@@ -3160,6 +3168,9 @@ function onWindowResize() {
 function animate() {
   requestAnimationFrame(animate);
   renderBattlefield();
+  // Phase-1 water sheen: a slow opacity breath (visual only).
+  const sheen = terrainMesh?.getObjectByName?.("water-sheen");
+  if (sheen) sheen.material.opacity = 0.30 + 0.07 * Math.sin(performance.now() / 1400);
   renderer.render(scene, camera);
 }
 
