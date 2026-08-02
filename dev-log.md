@@ -5185,3 +5185,14 @@ Phase 5 — THE GOLDEN HOUR: warm low sun + cool hemisphere fill
 replace the flat white lights (the new relief was invisible without
 angle), and the 16G storm now DIMS THE SUN (0.95→0.45, warm→ashen)
 along with its fog. Suite 773/773 x2, smoke + acceptance OK.
+
+## Riverline same-build pair: NO offset — the lean went SIDE-keyed (2026-08-03)
+
+Current build: 50.8/41.0% A (agg 45.9). The escort-wall era moved
+riverline from team-keyed A-lean to a side-keyed EAST CURSE (~9 pts,
+matching convoy's east-pusher residual). Side-keyed leans get no
+offset (they flip with the join — the premium generator's own
+semantics), so the EMPTY table is the correct verdict, reached
+honestly. The east curse (riverline + convoy, ~9 pts) is now the one
+remaining side-keyed mystery; the POWS captivity lean the one
+team-keyed.
