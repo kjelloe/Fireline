@@ -28,13 +28,23 @@ const ALLOWED = [
 ];
 
 test("specs/08 §7 enforcement: no plain x-floor at decision sites", () => {
+  // PER-CALL granularity (the POWS-root lesson, prompt 161): the old
+  // line-level allowlist let an x-floor SHARE A LINE with a y-floor
+  // and slip through — reducer's A* start cell hid that way for two
+  // days and cost POWS=2 twenty fairness points.
   const offenders = [];
+  const CALL = /worldToCellFloor\(\s*([^)]*)\)/g;
   for (const f of FILES) {
     const src = readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
     src.split("\n").forEach((line, i) => {
       if (!line.includes("worldToCellFloor(")) return;
-      if (ALLOWED.some((re) => re.test(line))) return;
-      offenders.push(`${f}:${i + 1}: ${line.trim()}`);
+      if (/import/.test(line)) return;
+      for (const m of line.matchAll(CALL)) {
+        const arg = m[1];
+        if (/\.y\b|[yY]$|[yY]\s*$/.test(arg.trim())) continue; // y-uses are lawful
+        if (/targetX/.test(arg)) continue; // lattice-snapped by construction
+        offenders.push(`${f}:${i + 1}: worldToCellFloor(${arg.trim()})`);
+      }
     });
   }
   assert.deepEqual(offenders, [],

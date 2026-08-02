@@ -73,7 +73,7 @@ export function standardTakeableBy(state, asset) {
   return state.standards.find(
     (s) => s.team !== asset.team &&
       (s.status === STD_AT_BASE || s.status === STD_DROPPED) &&
-      worldToCellFloor(s.x) === cellX && worldToCellFloor(s.y) === cellY
+      sampleCellX(s.x, state.map?.width) === cellX && worldToCellFloor(s.y) === cellY
   ) ?? null;
 }
 
@@ -84,7 +84,7 @@ export function standardReturnableBy(state, asset) {
   const cellY = worldToCellFloor(asset.y);
   return state.standards.find(
     (s) => s.team === asset.team && s.status === STD_DROPPED &&
-      worldToCellFloor(s.x) === cellX && worldToCellFloor(s.y) === cellY
+      sampleCellX(s.x, state.map?.width) === cellX && worldToCellFloor(s.y) === cellY
   ) ?? null;
 }
 

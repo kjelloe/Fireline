@@ -1205,7 +1205,7 @@ function applySatchel(next, command) {
   });
   next.events.push({
     type: "ping", kind: "satchel_blast", team: operator.team, toTeam: operator.team,
-    cellX: worldToCellFloor(target.x), cellY: worldToCellFloor(target.y),
+    cellX: sampleCellX(target.x, next.map.width), cellY: worldToCellFloor(target.y),
   });
   if (target.hp <= 0) {
     target.hp = 0;
@@ -1570,7 +1570,7 @@ function applyAdvanceTick(next) {
         assetCarries(next, asset.id) !== null,
         towedWreck(next, asset.id) !== null,
         next.assets,
-        enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
+        enemyCaltropAt(next, sampleCellX(asset.x, next.map.width), worldToCellFloor(asset.y), asset.team) !== null
       );
       if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
       continue;
@@ -1584,7 +1584,7 @@ function applyAdvanceTick(next) {
       assetCarries(next, asset.id) !== null,
       towedWreck(next, asset.id) !== null,
       next.assets,
-      enemyCaltropAt(next, worldToCellFloor(asset.x), worldToCellFloor(asset.y), asset.team) !== null
+      enemyCaltropAt(next, sampleCellX(asset.x, next.map.width), worldToCellFloor(asset.y), asset.team) !== null
     );
     if (asset.x !== beforeX || asset.y !== beforeY) asset.fuel -= SUPPLY_MOVE_COST;
   }
@@ -1653,7 +1653,7 @@ function applyAdvanceTick(next) {
       const victim = next.assets.find(
         (a) => a.team !== mine.team &&
           a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
-          worldToCellFloor(a.x) === mine.cellX && worldToCellFloor(a.y) === mine.cellY
+          sampleCellX(a.x, next.map.width) === mine.cellX && worldToCellFloor(a.y) === mine.cellY
       );
       if (!victim) continue;
       detonated.add(mine.id);
@@ -1994,7 +1994,7 @@ function applyAdvanceTick(next) {
     const sy = worldToCellFloor(scout.y);
     const target = next.downed.find((dwn) =>
       dwn.team !== scout.team &&
-      Math.max(absI32(worldToCellFloor(dwn.x) - sx), absI32(worldToCellFloor(dwn.y) - sy)) <= 1);
+      Math.max(absI32(sampleCellX(dwn.x, next.map.width) - sx), absI32(worldToCellFloor(dwn.y) - sy)) <= 1);
     if (!target) {
       scout.captureTicks = 0;
       continue;
@@ -2015,7 +2015,7 @@ function applyAdvanceTick(next) {
     // automatic ping at the abduction site (the satchel-blast pattern).
     next.events.push({
       type: "ping", kind: "need_rescue", team: target.team, toTeam: target.team,
-      cellX: worldToCellFloor(target.x), cellY: worldToCellFloor(target.y),
+      cellX: sampleCellX(target.x, next.map.width), cellY: worldToCellFloor(target.y),
     });
   }
   // Review-2 delta: the anti-spiral rule — a freed POW left within 3
@@ -2102,7 +2102,7 @@ function applyAdvanceTick(next) {
         next.events.push({
           type: "ping", kind: "heist_asset", team: next.mission.attacker === 0 ? 1 : 0,
           toTeam: next.mission.attacker === 0 ? 1 : 0,
-          cellX: worldToCellFloor(carried.x), cellY: worldToCellFloor(carried.y),
+          cellX: sampleCellX(carried.x, next.map.width), cellY: worldToCellFloor(carried.y),
         });
       }
     }
@@ -2144,7 +2144,7 @@ function applyAdvanceTick(next) {
       if (c) {
         next.events.push({
           type: "convoy_ping", toTeam: next.mission.attacker === 0 ? 1 : 0,
-          cellX: worldToCellFloor(c.x), cellY: worldToCellFloor(c.y),
+          cellX: sampleCellX(c.x, next.map.width), cellY: worldToCellFloor(c.y),
           timerTicks: next.mission.timerTicks,
         });
       }

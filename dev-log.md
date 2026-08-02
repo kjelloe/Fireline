@@ -5292,3 +5292,15 @@ script never paths from a boundary). POWS=2 battery pair queued — the
 outcome question: does 25-28% A recover?
 LINT GAP: boundary_law.test.js scans pathfind.js but this caller
 lived in reducer.js in a form the lint pattern missed — tighten next.
+
+## THE ESCAPED FAMILY: 20+ more x-floor sites (2026-08-03)
+
+The per-call lint (line-level allowlists were the hole: an x-floor
+sharing a line with a y-floor slipped through) exposed the POWS
+root's whole hidden family — ~20 more `worldToCellFloor(<x>)`
+decision sites across reducer/ai_regency/standards, every one an
+escapee of the original 78-site sweep by the same line-sharing
+accident. ALL converted to sampleCellX (standards' width made
+optional-chain robust for minimal test states). Divergence horizon
+(POWS=2, seed 777): 17 -> 3,976 -> **5,444**. Suite 774/774 x2,
+gate 5/5. The POWS outcome pair already queued rides the full sweep.

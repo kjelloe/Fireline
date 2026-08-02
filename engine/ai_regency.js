@@ -242,7 +242,7 @@ function raidWindowOpen(state, carrier, visibleSet) {
     if (a.operatorId === -1) continue;
     const st = getUnitStats(a.type);
     if (st.canTow || st.canCarryStandard) continue; // the guns, not the train
-    const d = Math.max(Math.abs(worldToCellFloor(a.x) - cx), Math.abs(worldToCellFloor(a.y) - cy));
+    const d = Math.max(Math.abs(sampleCellX(a.x, AI_W) - cx), Math.abs(worldToCellFloor(a.y) - cy));
     if (d <= ESCORT_CELLS) escorts++;
     if (escorts >= 2) return true;
   }
@@ -942,7 +942,7 @@ export class AIRegency {
       const memberCells = [[rcx, rcy]];
       for (const opId of rp.escorts) {
         const a = state.assets[state.operators[opId].assetId];
-        memberCells.push([worldToCellFloor(a.x), worldToCellFloor(a.y)]);
+        memberCells.push([sampleCellX(a.x, AI_W), worldToCellFloor(a.y)]);
       }
       if (ph.phase === 0 && rp.escorts.length >= 2 && memberCells.every(([cx, cy]) =>
         Math.max(Math.abs(cx - rp.stage[0]), Math.abs(cy - rp.stage[1])) <= FORM_UP_CELLS)) {
@@ -1332,7 +1332,7 @@ export class AIRegency {
           } else if (ownStd && ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
             ping = {
               kind: "recovery_in_progress",
-              targetCellX: worldToCellFloor(ownStd.x), targetCellY: worldToCellFloor(ownStd.y),
+              targetCellX: sampleCellX(ownStd.x, AI_W), targetCellY: worldToCellFloor(ownStd.y),
             };
           }
         }
@@ -1431,7 +1431,7 @@ export class AIRegency {
             if (rp.prison.raidTicks > 0 || rp.sneak || nearest === null || nd <= RAID_COHESION_CELLS) {
               desired = goal;
             } else {
-              desired = [worldToCellFloor(nearest.x), worldToCellFloor(nearest.y)];
+              desired = [sampleCellX(nearest.x, AI_W), worldToCellFloor(nearest.y)];
             }
           }
           // Raw moves, not route-graph legs: waypoint re-issue from a
@@ -1497,7 +1497,7 @@ export class AIRegency {
           } else if (asset.state === ASSET_MOVING) {
             commands.push({
               type: CMD_MOVE_ORDER, operatorId,
-              targetCellX: worldToCellFloor(asset.x), targetCellY: worldToCellFloor(asset.y),
+              targetCellX: sampleCellX(asset.x, AI_W), targetCellY: worldToCellFloor(asset.y),
             });
           }
           continue;
@@ -1542,7 +1542,7 @@ export class AIRegency {
             ? [ownStd.homeCellX, ownStd.homeCellY]
             : [baseCentreCol(ownBase), ownBase.y + ((ownBase.height / 2) | 0)];
         } else if (ownStd && ownStd.status === STD_DROPPED && operatorId === recovererFor[asset.team]) {
-          target = [worldToCellFloor(ownStd.x), worldToCellFloor(ownStd.y)];
+          target = [sampleCellX(ownStd.x, AI_W), worldToCellFloor(ownStd.y)];
         } else if (enemyStd && asset.id === raiderFor[asset.team] &&
                    (enemyStd.status === STD_AT_BASE || enemyStd.status === STD_DROPPED)) {
           // Item 11 (ruled: BOTH triggers): the raid launches only as a
@@ -1656,7 +1656,7 @@ export class AIRegency {
             commands.push({ type: CMD_TRANSFER_CARGO, operatorId, targetAssetId: needy.id });
             continue;
           }
-          if (!target) target = [worldToCellFloor(needy.x), worldToCellFloor(needy.y)];
+          if (!target) target = [sampleCellX(needy.x, AI_W), worldToCellFloor(needy.y)];
         }
       }
 
@@ -1856,7 +1856,7 @@ export class AIRegency {
               commands.push({ type: CMD_TOW_ORDER, operatorId, wreckAssetId: wreck.id });
               continue;
             }
-            target = [worldToCellFloor(wreck.x), worldToCellFloor(wreck.y)];
+            target = [sampleCellX(wreck.x, AI_W), worldToCellFloor(wreck.y)];
           }
         }
       }
@@ -1873,7 +1873,7 @@ export class AIRegency {
             if (dist < bestDist) { bestDist = dist; body = d; }
           }
           if (body && bestDist <= RESCUE_SEEK_CELLS) {
-            target = [worldToCellFloor(body.x), worldToCellFloor(body.y)];
+            target = [sampleCellX(body.x, AI_W), worldToCellFloor(body.y)];
           }
         }
       }
@@ -1887,7 +1887,7 @@ export class AIRegency {
           if (home) {
             const hx = baseCentreCol(home);
             const hy = home.y + ((home.height / 2) | 0);
-            if (worldToCellFloor(asset.x) !== hx || worldToCellFloor(asset.y) !== hy) {
+            if (sampleCellX(asset.x, AI_W) !== hx || worldToCellFloor(asset.y) !== hy) {
               target = [hx, hy];
             }
           }
@@ -1923,7 +1923,7 @@ export class AIRegency {
         if (relay && capturerFor.get(`${asset.team}:${relay.id}`) === operatorId) {
           const enemyOnFlag = state.assets.some((e) =>
             e.team !== asset.team && !isWreck(e) &&
-            worldToCellFloor(e.x) === relay.cellX && worldToCellFloor(e.y) === relay.cellY);
+            sampleCellX(e.x, AI_W) === relay.cellX && worldToCellFloor(e.y) === relay.cellY);
           if (!enemyOnFlag || inSupply(state, asset)) {
             target = [relay.cellX, relay.cellY];
           }
