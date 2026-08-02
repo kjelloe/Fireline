@@ -36,3 +36,19 @@ test("terrain v2: deterministic in (cells, seed); seed changes the grain", () =>
   assert.equal(heightAt(cells, SIZE, 42, 3, 3), heightAt(cells, SIZE, 42, 3, 3));
   assert.notEqual(heightAt(cells, SIZE, 42, 3, 3), heightAt(cells, SIZE, 43, 3, 3));
 });
+
+test("phase 2: species per profile; edges bush; patches skip in low detail", async () => {
+  const { propsFor } = await import("../client/js/props_model.js");
+  const W = 32;
+  const cells = new Uint8Array(W * W).fill(0);
+  for (let y = 10; y < 20; y++) for (let x = 10; x < 20; x++) cells[y * W + x] = 2;
+  const bw = propsFor(cells, W, W, "blackwood");
+  assert.ok(bw.some((p) => p.kind === "tree_tall"), "blackwood grows old-growth");
+  const st = propsFor(cells, W, W, "sawtooth");
+  assert.ok(st.some((p) => p.kind === "tree_scrub"), "sawtooth grows scrub");
+  const full = propsFor(cells, W, W, "frontier_corridor");
+  assert.ok(full.some((p) => p.kind === "patch_a" || p.kind === "patch_b"), "open ground patches");
+  const low = propsFor(cells, W, W, "frontier_corridor", { lowDetail: true });
+  assert.ok(!low.some((p) => p.kind.startsWith("patch")), "low detail drops patches");
+  assert.equal(JSON.stringify(propsFor(cells, W, W, "blackwood")), JSON.stringify(bw), "deterministic");
+});

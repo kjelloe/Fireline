@@ -5141,3 +5141,14 @@ baked vertex AO at wall/forest verges, seeded tonal grain, and a
 breathing water sheen. Props ride the relief via heightAt. All pure
 f(cells, mapSeed) — the 16G/ambients precedent. 3 model tests;
 smoke + acceptance green.
+
+## slice-art-p2: WOODS WITH SPECIES + GROUND LIFE (2026-08-03, phase 2)
+
+Per-profile tree species (frontier mixed conifer/deciduous, blackwood
+old-growth talls, riverline round crowns, sawtooth/caldera scrub) by
+hash from the same 2c cadence; forest EDGES soften with bushes on
+adjacent open cells; sparse tonal ground PATCHES give open terrain
+the faint field feel. LOW-DETAIL mode (auto on touch, ?lowdetail=1,
+window.__mfLowDetail) drops the dressing, never the readability props.
+Pure model (props_model), deterministic-pinned. Suite green, smoke +
+acceptance OK.

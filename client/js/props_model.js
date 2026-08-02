@@ -46,6 +46,11 @@ export function baseCompound(base, eastSide = false) {
 
 // Small integer hash — NOT the engine PRNG (this is presentation, but we
 // still want cross-client determinism and zero Math.random).
+function cellAtIs(cells, width, height, x, y, t) {
+  if (x < 0 || y < 0 || x >= width || y >= height) return false;
+  return cells[y * width + x] === t;
+}
+
 function cellHash(x, y) {
   let h = (x * 374761393 + y * 668265263) >>> 0;
   h = (h ^ (h >>> 13)) >>> 0;
@@ -60,7 +65,20 @@ const BRIDGE_ROWS = [[20, 23], [62, 65], [104, 107]];
 
 // Props for a map: [{kind, x, y, scale, rotation}] in cell coordinates
 // (x/y are cell centers plus a deterministic jitter).
-export function propsFor(cells, width, height, profile = "frontier_corridor") {
+// Art phase 2 (prompt 157): each profile grows its own WOODS — a
+// species mix chosen per tree by hash. Kinds map to distinct
+// geometries in the renderer; densities stay the 2c cadence.
+const SPECIES = Object.freeze({
+  frontier_corridor: ["tree", "tree", "tree_round"],
+  blackwood: ["tree", "tree_tall", "tree"],
+  riverline: ["tree_round", "tree", "tree_round"],
+  sawtooth: ["tree_scrub", "tree_scrub", "tree"],
+  caldera: ["tree_scrub", "tree", "tree_tall"],
+});
+
+export function propsFor(cells, width, height, profile = "frontier_corridor", opts = {}) {
+  const low = opts.lowDetail === true;
+  const species = SPECIES[profile] ?? SPECIES.frontier_corridor;
   const props = [];
   for (let cy = 0; cy < height; cy++) {
     for (let cx = 0; cx < width; cx++) {
@@ -71,7 +89,8 @@ export function propsFor(cells, width, height, profile = "frontier_corridor") {
       const rot = (((h >>> 16) & 0xff) / 255) * Math.PI * 2;
       if (terrain === T_FOREST && h % 3 === 0) {
         props.push({
-          kind: "tree", x: cx + 0.5 + jx, y: cy + 0.5 + jy,
+          kind: species[(h >>> 5) % species.length],
+          x: cx + 0.5 + jx, y: cy + 0.5 + jy,
           scale: 0.7 + ((h >>> 24) & 0xff) / 255 * 0.6, rotation: rot,
         });
       } else if (terrain === T_ROUGH && h % 5 === 0) {
@@ -101,6 +120,27 @@ export function propsFor(cells, width, height, profile = "frontier_corridor") {
           kind: "rut", x: cx + 0.5 + jx * 0.3, y: cy + 0.5 + jy * 0.3,
           scale: 0.8, rotation: rot,
         });
+      } else if (terrain === 0 && !low) {
+        // Phase 2: forest EDGES soften with bushes; open ground gets
+        // sparse tonal PATCHES (the faint field feel). Both skipped in
+        // low-detail mode.
+        const nearForest =
+          cellAtIs(cells, width, height, cx + 1, cy, T_FOREST) ||
+          cellAtIs(cells, width, height, cx - 1, cy, T_FOREST) ||
+          cellAtIs(cells, width, height, cx, cy + 1, T_FOREST) ||
+          cellAtIs(cells, width, height, cx, cy - 1, T_FOREST);
+        if (nearForest && h % 6 === 0) {
+          props.push({
+            kind: "bush", x: cx + 0.5 + jx, y: cy + 0.5 + jy,
+            scale: 0.35 + ((h >>> 24) & 0xff) / 255 * 0.25, rotation: rot,
+          });
+        } else if (!nearForest && h % 23 === 0) {
+          props.push({
+            kind: (h >>> 9) & 1 ? "patch_a" : "patch_b",
+            x: cx + 0.5, y: cy + 0.5,
+            scale: 1.6 + ((h >>> 24) & 0xff) / 255 * 0.8, rotation: 0,
+          });
+        }
       }
     }
   }

@@ -1494,13 +1494,49 @@ function buildTerrain() {
   }
   // Art round 2c (prompt 25): instanced battlefield props — forest reads
   // as trees, rough as rocks, trails as trodden ruts, at a glance.
-  const props = propsFor(cells, size, size, cachedMap.profile);
-  const byKind = { tree: [], rock: [], rut: [], water: [], rail: [], reed: [], dash: [], bush: [] };
+  // Phase 2: low-detail mode (mobile auto / ?lowdetail=1) thins the
+  // dressing — never the readability props (trees/rocks stay).
+  const lowDetail = window.__mfLowDetail ??
+    (new URLSearchParams(location.search).has("lowdetail") || "ontouchstart" in window);
+  window.__mfLowDetail = lowDetail;
+  const props = propsFor(cells, size, size, cachedMap.profile, { lowDetail });
+  const byKind = { tree: [], tree_tall: [], tree_round: [], tree_scrub: [],
+    rock: [], rut: [], water: [], rail: [], reed: [], dash: [], bush: [],
+    patch_a: [], patch_b: [] };
   for (const pr of props) byKind[pr.kind]?.push(pr);
   const PROP_GEO = {
     tree: () => {
       const g = new THREE.ConeGeometry(0.28, 0.85, 6);
       g.translate(0, 0.5, 0);
+      return g;
+    },
+    tree_tall: () => { // phase 2: the old-growth conifer (blackwood)
+      const g = new THREE.ConeGeometry(0.24, 1.25, 6);
+      g.translate(0, 0.7, 0);
+      return g;
+    },
+    tree_round: () => { // deciduous crown on a trunk
+      const g = new THREE.SphereGeometry(0.3, 6, 5);
+      g.scale(1, 0.85, 1);
+      g.translate(0, 0.62, 0);
+      return g;
+    },
+    tree_scrub: () => { // sawtooth/caldera hardy scrub
+      const g = new THREE.SphereGeometry(0.24, 5, 4);
+      g.scale(1, 0.5, 1);
+      g.translate(0, 0.16, 0);
+      return g;
+    },
+    patch_a: () => {
+      const g = new THREE.CircleGeometry(0.5, 7);
+      g.rotateX(-Math.PI / 2);
+      g.translate(0, 0.015, 0);
+      return g;
+    },
+    patch_b: () => {
+      const g = new THREE.CircleGeometry(0.5, 7);
+      g.rotateX(-Math.PI / 2);
+      g.translate(0, 0.015, 0);
       return g;
     },
     rock: () => {
@@ -1541,9 +1577,11 @@ function buildTerrain() {
     },
   };
   const PROP_COLOR = {
-    tree: 0x1f3a1f, rock: 0x6a6a5e, rut: 0x574a34,
+    tree: 0x1f3a1f, tree_tall: 0x16301b, tree_round: 0x2e5426, tree_scrub: 0x4d5a34,
+    rock: 0x6a6a5e, rut: 0x574a34,
     water: 0x2a4a66, rail: 0x4a4136, reed: 0x3d5a2e,
     dash: 0xa8a184, bush: 0x2c4a26, // 14G
+    patch_a: 0x46603f, patch_b: 0x3a5a44, // phase 2 ground patches
   };
   const m = new THREE.Matrix4();
   const q = new THREE.Quaternion();
