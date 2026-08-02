@@ -208,7 +208,7 @@ handle_job() { # $1 = JSON body
       # new job kind per map. Optional "uniques":1 runs the LIVE game
       # config (16B crewing on) — default stays 0 so old batteries remain
       # comparable; label gains _uq so the two configs never mix in a CSV.
-      local mp mp_mirror mp_uq mp_swap mp_stale mp_op
+      local mp mp_mirror mp_uq mp_swap mp_stale mp_op mp_h
       mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
       mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
       mp_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',0))" "$body")
@@ -216,9 +216,10 @@ handle_job() { # $1 = JSON body
       # Q69 rung: "stalemate":0 disables the prompt-136 grind for A/B.
       mp_stale=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('stalemate',1))" "$body")
       mp_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
-      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale ORDERPARITY=$mp_op run_sweep \
+      mp_h=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('handicap',''))" "$body")
+      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale ORDERPARITY=$mp_op HANDICAP=$mp_h run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
-        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_op" = 1 ] && echo _op)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_op" = 1 ] && echo _op)$([ -n "$mp_h" ] && echo _h$mp_h)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror

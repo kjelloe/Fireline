@@ -20,7 +20,7 @@ case "${1:-}" in
   mirror) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"mirror\",\"count\":${2:-100}}" ;;
   factionswap) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"factionswap\",\"count\":${2:-100}}" ;;
   riverline) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"riverline\",\"count\":${2:-100}}" ;;
-  map)    $AM queue add --for batch-pc --as dev --body "{\"kind\":\"map\",\"map\":\"${2:?usage: batch_send.sh map <profile> [count] [mirror] [uniques] [swap] [stalemate]}\",\"count\":${3:-300},\"mirror\":${4:-0},\"uniques\":${5:-0},\"swap\":${6:-0},\"stalemate\":${7:-1},\"orderparity\":${8:-0}}" ;;
+  map)    $AM queue add --for batch-pc --as dev --body "{\"kind\":\"map\",\"map\":\"${2:?usage: batch_send.sh map <profile> [count] [mirror] [uniques] [swap] [stalemate]}\",\"count\":${3:-300},\"mirror\":${4:-0},\"uniques\":${5:-0},\"swap\":${6:-0},\"stalemate\":${7:-1},\"orderparity\":${8:-0},\"handicap\":\"${9:-}\"}" ;;
   uniques) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"uniques\",\"count\":${2:-300},\"swap\":${3:-0},\"mirror\":${4:-0}}" ;;
   pool)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pool\",\"ticketPool\":${2:?usage: batch_send.sh pool <ticketPool> [count] [map]},\"count\":${3:-300},\"map\":\"${4:-frontier_corridor}\"}" ;;
   skimtrail) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"skimtrail\",\"speed\":${2:?usage: batch_send.sh skimtrail <speed> [count] [mirror]},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;

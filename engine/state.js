@@ -20,6 +20,7 @@ import { speedMultiplier } from "./terrain.js";
 import { getUnitStats } from "./units.js";
 import { createStandards } from "./standards.js";
 import { createMission } from "./mission.js";
+import { ticketOffsetFor } from "./premium.js";
 
 export const OP_ABSENT = 0;
 export const OP_ACTIVE = 1;
@@ -509,10 +510,15 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     standards, // 8A: physical Command Standards
     mapProfile: typeof mapArg === "string" ? mapArg : "frontier_corridor", // 11M
     rules: mergedRules, // 13F: hashed session rules (+ map laws above)
-    tickets: [
-      (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
-      (rules?.ticketPool ?? DEFAULT_RULES.ticketPool),
-    ], // 13H: per-team pools, hashed
+    tickets: (() => {
+      const pool = rules?.ticketPool ?? DEFAULT_RULES.ticketPool;
+      const t = [pool, pool];
+      // D+C ruling (prompt 154): the measured, disclosed ticket offset.
+      const off = ticketOffsetFor(
+        typeof mapArg === "string" ? mapArg : "frontier_corridor", mergedRules);
+      if (off) t[off.team] += off.tickets;
+      return t;
+    })(), // 13H: per-team pools, hashed (+ the map's measured offset)
     overtime: 0, // prompt 136: ticks an empty pool was held open (B3 cap)
     downed: [], // 9B: operators on foot
     manufacture: [0, 0], // 9D: Slow Manufacture timers per team

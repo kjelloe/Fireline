@@ -9,7 +9,9 @@ import { apply, createInitialState } from "../engine/reducer.js";
 import { MAP_LAYOUTS } from "../engine/state.js";
 
 function riverlineWar(owners) {
-  const s = createInitialState(2026, "riverline", {});
+  // handicap:false — these tests pin BLEED mechanics on symmetric
+  // pools; the D+C measured offset (prompt 154) is its own suite.
+  const s = createInitialState(2026, "riverline", { handicap: false });
   for (const [id, owner] of Object.entries(owners)) s.sites[Number(id)].owner = owner;
   return s;
 }
@@ -110,7 +112,7 @@ test("overtime cap: the reducer counts held-open ticks (hashed)", () => {
 });
 
 test("stalemate: MODE wars never grind (mission suspends all bleed)", () => {
-  let s = createInitialState(2026, "riverline", { mode: 1, modeAttacker: 0 });
+  let s = createInitialState(2026, "riverline", { mode: 1, modeAttacker: 0, handicap: false });
   assert.ok(s.mission, "convoy mission is live");
   s.sites[0].owner = 0;
   s.sites[1].owner = 1;

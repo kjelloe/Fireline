@@ -34,6 +34,29 @@ export const MAP_PREMIUM = Object.freeze({
   riverline: 1,
 });
 
+// D+C ruling (prompt 154): MEASURED TICKET OFFSETS — the outcome-side
+// sibling of the premium. On a map where the battery convicts the
+// unique pair beyond the band, the DISADVANTAGED team starts with +N
+// tickets. GENERATED like the premium (battery ladder tunes N until
+// the map reads in band), DISCLOSED in the briefing, and retired
+// map-by-map as real mechanism fixes land. rules.handicap === false
+// disables (HANDICAP=0); rules.handicapTickets overrides N (the
+// ladder's knob).
+// profile -> { team: the team that RECEIVES the offset, tickets: N }.
+// Seeds below are FIRST GUESSES pending the ladder verdict.
+export const MAP_TICKET_OFFSET = Object.freeze({
+  sawtooth: Object.freeze({ team: 1, tickets: 40 }),  // pair worth ~+13 pts A
+  riverline: Object.freeze({ team: 1, tickets: 30 }), // pair worth ~+16 pts agg A
+});
+
+export function ticketOffsetFor(mapProfile, rules) {
+  if (rules?.handicap === false) return null;
+  const entry = MAP_TICKET_OFFSET[mapProfile];
+  if (!entry) return null;
+  const n = rules?.handicapTickets ?? entry.tickets;
+  return n > 0 ? { team: entry.team, tickets: n } : null;
+}
+
 export function premiumPoints(points, team, mapProfile) {
   if (MAP_PREMIUM[mapProfile] === team) {
     return ((points * PREMIUM_NUM) / PREMIUM_DEN) | 0;

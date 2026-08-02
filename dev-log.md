@@ -5100,3 +5100,20 @@ order: it is POW-mechanics-specific and team-keyed. RAIDPARTY=0 pair
 queued (the party doctrine once carried a team-keyed lane split —
 2fd5444 fixed one; a sibling may remain). This is the game's last
 unexplained number.
+
+## slice-ticket-offset — THE D+C RULING (2026-08-03, prompt 154)
+
+"Measured, disclosed ticket offsets for outcome; premium for reward."
+MAP_TICKET_OFFSET in engine/premium.js (the premium's outcome-side
+sibling): the disadvantaged team STARTS +N tickets on battery-
+convicted maps — seeds sawtooth B+40, riverline B+30 (first guesses;
+the ladder tunes). Applied at war creation (hashed pools, no new
+field); rules.handicap=false disables, rules.handicapTickets
+overrides (HANDICAP env; map-job handicap field, _h<N> labels).
+DISCLOSED in the briefing both directions, both locales — the
+premium's own law ("hidden handicaps read as favouritism the day
+someone finds them"). Tests: convicted-maps-only, fair-maps-never,
+switch+knob, table-hygiene; bleed suites pinned to handicap:false
+(they test mechanics on symmetric pools). Suite 769/769 x2, smoke OK.
+LADDER QUEUED: sawtooth h20/h40/h60 + riverline h15/h30/h45 (normal
+world n=300 each) — pick in-band, then mirror-confirm the winner.

@@ -250,6 +250,8 @@ export const CATALOGS = {
     "site.kind.1": "RADAR RELAY", "site.kind.2": "DEPOT RELAY", "site.kind.3": "FACTORY RELAY", "site.kind.4": "THE VAULT",
     // Underdog premium disclosure (prompt-68: measured lean, disclosed)
     "brief.premium_underdog": "UNDERDOG PREMIUM — this map measurably favours the enemy. Your recognition earns +25% here.",
+    "brief.offset_underdog": "MEASURED OFFSET — your side fields +{n} tickets on this map (the imbalance is measured, and disclosed).",
+    "brief.offset_favoured": "The enemy fields +{n} tickets here — this map measurably favours your side, and the offset is disclosed.",
     "splash.tagline": "Join the battle. Turn the front.",
     "splash.preparing": "Preparing the front…",
     "splash.boot1": "FRONT SYNC: ACTIVE",
@@ -636,6 +638,8 @@ export const CATALOGS = {
     "site.kind.1": "RADARRELÉ", "site.kind.2": "DEPOTRELÉ", "site.kind.3": "FABRIKKRELÉ", "site.kind.4": "HVELVET",
     // Underdog premium disclosure (prompt-68)
     "brief.premium_underdog": "UNDERDOG-PREMIE — dette kartet favoriserer målbart fienden. Din anerkjennelse gir +25% her.",
+    "brief.offset_underdog": "MÅLT UTLIGNING — din side stiller med +{n} billetter på dette kartet (skjevheten er målt, og opplyst).",
+    "brief.offset_favoured": "Fienden stiller med +{n} billetter her — kartet favoriserer målbart din side, og utligningen er opplyst.",
     "splash.tagline": "Bli med i slaget. Snu fronten.",
     "splash.preparing": "Forbereder fronten…",
     "splash.boot1": "FRONTSYNK: AKTIV",

@@ -1,5 +1,5 @@
 import { t } from "./strings.js";
-import { MAP_PREMIUM } from "../../engine/premium.js";
+import { MAP_PREMIUM, MAP_TICKET_OFFSET } from "../../engine/premium.js";
 // client/js/objective_model.js — "what do I do now?" (post-playtest slice).
 // Pure view-derived guidance: standard status lines, relay tally, and one
 // prioritized hint. Born from LAN playtest #1: "did not understand what was
@@ -81,6 +81,7 @@ export function briefingText(myTeam, faction = null, mapProfile = null, mission 
     ? `${faction.name.toUpperCase()} — ${faction.tacticalIdentity}`
     : myTeam === 0 ? "GREEN (west)" : "RED (east)";
   const premiumTeam = mapProfile != null ? MAP_PREMIUM[mapProfile] : undefined;
+  const offset = mapProfile != null ? MAP_TICKET_OFFSET[mapProfile] : undefined;
   return [
     t("brief.fight_for", { name: teamName }),
     ...(faction ? [faction.line] : []),
@@ -94,6 +95,8 @@ export function briefingText(myTeam, faction = null, mapProfile = null, mission 
     t("brief.clicks"),
     ...(premiumTeam === myTeam ? [t("brief.premium_underdog")] : []),
     ...(premiumTeam !== undefined && premiumTeam !== myTeam ? [t("brief.premium_favoured")] : []),
+    ...(offset?.team === myTeam ? [t("brief.offset_underdog", { n: offset.tickets })] : []),
+    ...(offset !== undefined && offset.team !== myTeam ? [t("brief.offset_favoured", { n: offset.tickets })] : []),
   ].join("\n");
 }
 
