@@ -46,10 +46,14 @@ order, NOT the raid party (RAIDPARTY=0 read 26.1/21.5 — identical).
 Remaining rungs QUEUED: ALARMRESPONSE=0 pair + POWARC=0-with-POWS=2
 pair (does captivity alone lean?). Also open: the small convoy
 east-pusher residual (+7-13 same-unique).
-OFFSET-ERA MEASUREMENT LAW (prompt 154): convicted maps (sawtooth,
-riverline) now carry MAP_TICKET_OFFSET in live config — batteries on
-them measure the OFFSET game. HANDICAP=0 for mechanism reads;
-the ladder knob is HANDICAP=<n> / the map job's handicap field. THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
+OFFSET-ERA MEASUREMENT LAW (prompt 154, hardened 2026-08-03 after
+the SAME mistake twice): an offset ladder is valid ONLY against a
+SAME-BUILD h0 baseline pair — never a remembered era number. The
+table sits EMPTY until a same-build pair convicts (sawtooth: inert;
+riverline: the ladder's baseline was pre-escort-wall — the current
+build reads 41.0% A mirror with NO offset). HANDICAP=0/<n> is the
+knob; when the table gains an entry, live batteries measure the
+offset game. THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
 1. UNDESIGNED root FOUND+FIXED: frontier terrain was never
    cell-symmetric (1,615/8,192 pairs/seed) — mirror-by-construction
    since cff77cb; test/map_symmetry.test.js pins all profiles. EVERY
