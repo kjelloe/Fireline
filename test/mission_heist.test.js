@@ -82,3 +82,24 @@ test("141: the heist doctrine block is NEVER nested inside the convoy branch", a
       `heist doctrine must be at plan scope, got: "${l.slice(0, 24)}..."`);
   }
 });
+
+test("Q70: the getaway carry rule — heist attacker scouts only", async () => {
+  const { standardTakeableBy } = await import("../engine/standards.js");
+  const { cellToWorld } = await import("../shared/fixedmath.js");
+  const mk = (team, type, cellX, cellY) => ({
+    team, type, state: 0, x: cellToWorld(cellX), y: cellToWorld(cellY),
+  });
+  const std = { team: 1, status: 0 /* AT_BASE */, x: cellToWorld(40), y: cellToWorld(40) };
+  const base = { standards: [std] };
+  // Heist, attacker 0: the attacker's scout may take it.
+  const heist = { ...base, mission: { kind: 2, attacker: 0 }, rules: {} };
+  assert.ok(standardTakeableBy(heist, mk(0, 1, 40, 40)), "attacker scout carries in heist");
+  assert.equal(standardTakeableBy(heist, mk(1, 1, 40, 40)), null, "defender scout never");
+  assert.ok(standardTakeableBy(heist, mk(0, 4, 40, 40)), "carriers still work");
+  // GETAWAY=0 reverts.
+  const off = { ...base, mission: { kind: 2, attacker: 0 }, rules: { heistGetaway: false } };
+  assert.equal(standardTakeableBy(off, mk(0, 1, 40, 40)), null, "kill-switch restores 9A");
+  // Standard wars: 9A carrier-exclusivity untouched.
+  const standard = { ...base, mission: null, rules: {} };
+  assert.equal(standardTakeableBy(standard, mk(0, 1, 40, 40)), null, "no scouts outside heist");
+});

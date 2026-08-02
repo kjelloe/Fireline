@@ -246,6 +246,12 @@ npm start                              # host machine
   seat is held (AI drives your hull meanwhile), and coming back
   reclaims it automatically, even from a new tab or after the screen
   locks. The reconnect fires the moment the tab becomes visible.
+- Road walls (Q53/145): trucks can now sandbag ON roads — the build
+  refuses only when it would leave fewer than two open lanes in that
+  road's cross-section. Caltrops remain the only full-road denial.
+- Heist getaway car (Q70/145): in heist wars the ATTACKING team's
+  scouts can carry the Asset — grab it with the fast hull and run.
+  (Carriers still work; every other war keeps carrier-only carrying.)
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

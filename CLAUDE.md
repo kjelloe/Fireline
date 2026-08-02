@@ -89,7 +89,16 @@ outcome. Renderer presents fog-filtered views only.
   `state.mission` null in standard wars, hashed only when live (the
   bridges pattern, no repin); mode wars spawn NO standards and tickets
   neither bleed nor win (mercy/Last Convoy would fire mid-mission
-  otherwise); reasons 6/7. CONVOY ESCORT v1: one truck to the enemy
+  otherwise); reasons 6/7. HEIST GETAWAY (Q70, prompt 145): the ATTACKER'S SCOUT
+  may carry the Asset in heist wars — the ruled exception to 9A
+  carrier-exclusivity (standards.js, GETAWAY=0/rules.heistGetaway
+  reverts); HUMAN-facing only — the AI scout-raider trial read 1%
+  attacker (suicide doctrine) and was reverted; siege prep is the
+  named next lever, awaiting GO. WEAPONS CACHE (Q64-66): KIND_CACHE=5
+  reload aura (R5, -25%, fireReloadTicks in the reducer, CACHE=0
+  switch) — engine-complete, sandbox-tested, on NO live map (the
+  sawtooth trial was exonerated of the 68% read but pulled anyway;
+  judge specials ONLY by same-build kill-switch A/Bs). CONVOY ESCORT v1: one truck to the enemy
   compound's near-edge gate, 9000-tick clock, defender radio ping
   every 300, RESTART law (truck beside the wreck 8 s → half hull, in
   place; the convoy wreck is never towed), driver rolls only escorted
@@ -128,7 +137,11 @@ outcome. Renderer presents fog-filtered views only.
   on `stalemateBleedTicks` — plus heart-relay bleed [bridge pair =
   majority-equivalent; AI-war-redundant by geometry, kept for human
   mutual-crossings]; horn 34%→0 local, post-ladder battery pair
-  pending) + `sawtooth` (battery passed, HELD for the human playtest
+  pending) + `sawtooth` (HELD — reads ~68% A since the escort-wall fix
+  let raids EXPRESS its structural lean (56.2 pre vs 64.1 post, same
+  seeds, conviction 2026-08-03); the fix is correct, the map's
+  unique-pair mechanism hunt owns the lean; premium B = disclosure;
+  original battery-pass read is OBSOLETE. HELD for the human playtest
   per ruling). B3 overtime is CAPPED (prompt 136): hashed `overtime`
   counter, 600 ticks total (rules.overtimeCapTicks), fixture v67 —
   an empty pool can no longer be held open forever by capture churn.
@@ -171,7 +184,9 @@ outcome. Renderer presents fog-filtered views only.
   slow-only 30%/45s patches, hashed racks+list, truck rake)/
   build_sandbag (Q50: trucks, 5s channel → T_BLOCKING via the bridges
   terrain-mutation precedent; placement law in engine/sandbags.js
-  incl. the two-lane run cap 4; destruction restores ground)/ping/
+  incl. ROADS allowed under the TWO-LANE LAW since prompt 145 — a
+  road build must leave >=2 open road cells in its column
+  cross-section; destruction restores ground)/ping/
   board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
   fire(...) also takes `targetBridgeId` (13E, siege chassis only)
