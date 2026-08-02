@@ -54,9 +54,20 @@ export function assetCarries(state, assetId) {
 // The standard (if any) lying on the asset's cell that this asset may pick up:
 // only the ENEMY standard, only when grounded, and ONLY by a Command Carrier
 // (ruling: carrying is Carrier-exclusive as of 9A).
+// Q70 EXPERIMENT (prompt 145: "is a faster getaway car sufficient?"):
+// in a HEIST war the ATTACKER'S SCOUT may also carry — the getaway
+// car whose 56 speed matches the pursuit that killed every 24-speed
+// carrier escape (~150 ticks after the grab, every trace). Mode-
+// scoped, attacker-scoped; GETAWAY=0 (rules.heistGetaway=false) is
+// the A/B switch. Standard wars keep 9A carrier-exclusivity intact.
 export function standardTakeableBy(state, asset) {
   if (isWreck(asset)) return null;
-  if (!getUnitStats(asset.type).canCarryStandard) return null;
+  const stats = getUnitStats(asset.type);
+  const getaway = state.mission?.kind === 2 &&
+    asset.team === state.mission.attacker &&
+    asset.type === 1 /* UNIT_SCOUT */ &&
+    state.rules?.heistGetaway !== false;
+  if (!stats.canCarryStandard && !getaway) return null;
   const cellX = sampleCellX(asset.x);
   const cellY = worldToCellFloor(asset.y);
   return state.standards.find(

@@ -4967,3 +4967,25 @@ mirror-pair enumeration + aura on/off/enemy/edge/kill-switch (sandbox
 761/761 x2. Gates green (frontier + sawtooth 5-seed). Battery pair +
 CACHE=0 A/B queued — sawtooth's HELD verdict gets re-judged with the
 cache live.
+
+## Q70 ANSWERED WITH DATA: speed alone is NOT sufficient (2026-08-02)
+
+The experiment, in rungs: (1) heist mode rule — the ATTACKER'S SCOUT
+may carry (standards.js, GETAWAY=0 switch; 9A carrier-exclusivity
+intact in standard wars); AI designates the scout as the getaway car.
+(2) First probe: the scout OUTRUNS ITS OWN ESCORTS — the group-attack
+window never opens for it (stalled at 27 cells). (3) Lurker doctrine
+(dive when the vault thins, no abort thrash): the 3-guard garrison
+NEVER thins — lurked at 8 forever. (4) Always-dive: the scout reaches
+5 CELLS and dies there, every run (autopsy: shot at the garrisoned
+gate approach, 5-11 cells out — by=asset).
+
+VERDICT for the owner: the carrier-era failure was the ESCAPE (killed
+~150 ticks post-grab by faster pursuit); the getaway car solves that
+phase and then dies at the ENTRY instead. Sufficient = getaway car +
+something that OPENS the vault: the visible lever is siege prep (an
+attacker artillery role shelling the garrison before the dive) —
+next slice if the mode should be AI-viable; human attackers may
+already open vaults naturally (coordination the AI lacks). The rule
+STAYS (it demonstrably fixes the escape phase; humans benefit now).
+Battery pair queued for the scale read. Suite 761/761 x2.
