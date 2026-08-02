@@ -4926,3 +4926,12 @@ channel exists in mission wars. Next rungs: convoy FACTIONSWAP pair
 (does the residual gap follow the unique pair or the team ids?) +
 an audit of team-shared-resource tie-breaks (drop-ring races, role
 designation on ascending ids). Sequenced after the cache slice.
+
+## prompt-146: --mode joins --map as a first-class argument (2026-08-02)
+
+`npm start -- --mode heist` / `--mode convoy --attacker 1`; CLI beats
+MODE/MODEATTACKER env beats default; a mistyped mode refuses to start
+with the real list (the 11M silent-fallback lesson, applied to modes
+before it could bite). start:convoy / start:heist scripts; banner
+names the mode; app-layer precedence pinned (session_rules.test.js);
+the start-script lint extended to modes. Suite 755/755 x2. Smoke OK.

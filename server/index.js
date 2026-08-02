@@ -91,12 +91,15 @@ export function createAppServer(options = {}) {
       ...(process.env.POWS ? { powPreplaced: Number(process.env.POWS) } : {}),
       // Asymmetric modes: MODE=convoy serves Convoy Escort;
       // MODEATTACKER=1 flips which team escorts (default team 0).
-      ...(process.env.MODE === "convoy"
-        ? { mode: 1, modeAttacker: process.env.MODEATTACKER === "1" ? 1 : 0 }
-        : {}),
-      ...(process.env.MODE === "heist"
-        ? { mode: 2, modeAttacker: process.env.MODEATTACKER === "1" ? 1 : 0 }
-        : {}),
+      // Prompt 146: options.mode (from --mode) beats the MODE env.
+      ...(() => {
+        const envMode = process.env.MODE === "convoy" ? 1 : process.env.MODE === "heist" ? 2 : 0;
+        const mode = options.mode ?? envMode;
+        if (!mode) return {};
+        const attacker = options.modeAttacker ??
+          (process.env.MODEATTACKER === "1" ? 1 : 0);
+        return { mode, modeAttacker: attacker };
+      })(),
     },
   });
   const transport = new NetworkTransport(gameServer, wss);
@@ -309,6 +312,8 @@ function parseCliArgs(argv) {
     const take = () => (inlineValue !== null ? inlineValue : argv[++i]);
     switch (key) {
       case "--map": case "-m": out.map = take(); break;
+      case "--mode": out.mode = take(); break;           // prompt 146
+      case "--attacker": out.attacker = take(); break;   // convoy/heist side
       case "--seed": out.seed = take(); break;
       case "--port": case "-p": out.port = take(); break;
       case "--rules": out.rules = take(); break;
@@ -320,6 +325,18 @@ function parseCliArgs(argv) {
     }
   }
   return out;
+}
+
+// Prompt 146: --mode joins --map as a first-class argument. Same
+// contract: CLI beats env beats default, and a mistyped mode refuses
+// to start with the real list — never a silent standard war.
+const MODE_NAMES = { standard: 0, convoy: 1, heist: 2 };
+function resolveMode(requested) {
+  if (!requested) return 0;
+  const key = String(requested).toLowerCase();
+  if (key in MODE_NAMES) return MODE_NAMES[key];
+  console.error(`unknown mode: ${requested} (valid: ${Object.keys(MODE_NAMES).join(", ")})`);
+  process.exit(2);
 }
 
 function resolveMapProfile(requested) {
@@ -366,9 +383,10 @@ if (isMain) {
   npm run maps                       # list the maps
   npm run pick                       # interactive picker
 
-options: --map|-m <profile>  --seed <n>  --port|-p <n>  --rules <preset>
+options: --map|-m <profile>  --mode <standard|convoy|heist>  --attacker <0|1>
+         --seed <n>  --port|-p <n>  --rules <preset>
          --difficulty <0|1|2>  --list-maps  --help
-env (still honoured, CLI wins): MAP, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
+env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
     process.exit(0);
   }
   if (cli.listMaps) {
@@ -384,8 +402,10 @@ env (still honoured, CLI wins): MAP, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
   const aiDifficulty = Number(cli.difficulty ?? process.env.AI_DIFFICULTY ?? 1);
   const mapProfile = resolveMapProfile(cli.map ?? process.env.MAP ?? null); // 11M
   const rules = rulesForPreset(cli.rules ?? process.env.RULES ?? "normal"); // 13G presets
+  const mode = resolveMode(cli.mode ?? process.env.MODE ?? null); // prompt 146
+  const modeAttacker = Number(cli.attacker ?? (process.env.MODEATTACKER === "1" ? 1 : 0)) === 1 ? 1 : 0;
   const appServer = createAppServer({
-    mapSeed, aiDifficulty, mapProfile, rules,
+    mapSeed, aiDifficulty, mapProfile, rules, mode, modeAttacker,
     // Discovery (colocation ruling): MASTER_URL points at the index,
     // PUBLIC_ADDR is host:port as the INTERNET reaches us (behind TLS:
     // the public port, not the process port), PUBLIC_NAME optional.
@@ -395,7 +415,8 @@ env (still honoured, CLI wins): MAP, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
   });
   appServer.start(port).then((addr) => {
     console.log(`Fireline Command server on http://localhost:${addr.port}`);
-    console.log(`  map ${mapProfile} · seed ${mapSeed} · AI ${aiDifficulty} · rules ${cli.rules ?? process.env.RULES ?? "normal"}`);
+    const modeName = Object.keys(MODE_NAMES)[mode] ?? "standard";
+    console.log(`  map ${mapProfile} · mode ${modeName}${mode ? ` (attacker ${modeAttacker})` : ""} · seed ${mapSeed} · AI ${aiDifficulty} · rules ${cli.rules ?? process.env.RULES ?? "normal"}`);
   });
   for (const signal of ["SIGTERM", "SIGINT"]) {
     process.once(signal, () => {

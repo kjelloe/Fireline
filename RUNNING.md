@@ -23,6 +23,9 @@ npm run pick                     # interactive: lists the maps, pick a number
 npm run start:blackwood          # or straight to one
 npm run start:frontier | start:riverline | start:sawtooth
 npm start -- --map blackwood     # the general form
+npm start -- --mode heist        # asymmetric modes (146): standard|convoy|heist
+npm start -- --mode convoy --attacker 1   # team B escorts instead
+npm run start:convoy | start:heist        # same, less typing
 npm run maps                     # what is registered
 npm start -- --help              # every option
 ```
@@ -33,8 +36,8 @@ real one (`--map blackwod` -> "did you mean: blackwood?") rather than
 quietly serving the default. The startup banner always names the map you
 actually got.
 
-Environment (still honoured): `PORT` (default 8080), `MAP_SEED` (default
-2026), `MAP`, `RULES`, `AI_DIFFICULTY`.
+Environment (still honoured, CLI wins): `PORT` (default 8080), `MAP_SEED`
+(default 2026), `MAP`, `MODE`, `MODEATTACKER`, `RULES`, `AI_DIFFICULTY`.
 Open two browser windows and join opposite teams for a local skirmish.
 Controls: pick team → "Next asset" to take an asset → click ground to move,
 click a visible enemy to fire. Return to base to resupply.

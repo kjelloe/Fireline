@@ -24,7 +24,9 @@
     "sprites": "node tools/bake_sprites.mjs",
     "simwar": "node test/headless/sim_standard_war.js",
     "simv1": "node -e \"import('./test/headless/soak_v1.js').then(({runV1Soak})=>{const r=runV1Soak(2026,3000);console.log(JSON.stringify({activeOperators:r.activeOperators,captures:r.captures,disables:r.disables,replayOk:r.liveHash===r.replayHash,ticksPerSecond:r.ticksPerSecond,scores:r.server.state.teamScores},null,1))})\"",
-    "test": "node --test --test-concurrency=4 test/*.test.js"
+    "test": "node --test --test-concurrency=4 test/*.test.js",
+    "start:convoy": "node server/index.js --mode convoy",
+    "start:heist": "node server/index.js --mode heist"
   },
   "license": "MIT",
   "description": "Fireline Command \u2014 join the battle, turn the front. A deterministic, server-authoritative tactical wargame (new IP)."

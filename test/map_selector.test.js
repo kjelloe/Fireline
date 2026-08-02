@@ -51,15 +51,23 @@ test("76: an unknown OPTION is refused rather than ignored", () => {
   assert.match(out, /unknown option/);
 });
 
-test("76: every npm start:<map> script names a registered profile", () => {
+test("76/146: every npm start:<x> script names a registered profile or mode", () => {
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
   const starts = Object.entries(pkg.scripts).filter(([k]) => k.startsWith("start:"));
   assert.ok(starts.length >= 2, "expected per-map start scripts");
+  const MODES = ["standard", "convoy", "heist"];
   for (const [name, cmd] of starts) {
     const m = cmd.match(/--map\s+(\S+)/);
-    assert.ok(m, `${name} should pass --map`);
-    assert.ok(mapProfileNames().includes(m[1]),
-      `${name} points at "${m[1]}", which is not a registered profile`);
+    const mo = cmd.match(/--mode\s+(\S+)/);
+    assert.ok(m || mo, `${name} should pass --map or --mode`);
+    if (m) {
+      assert.ok(mapProfileNames().includes(m[1]),
+        `${name} points at "${m[1]}", which is not a registered profile`);
+    }
+    if (mo) {
+      assert.ok(MODES.includes(mo[1]),
+        `${name} points at mode "${mo[1]}", which is not a mode`);
+    }
   }
 });
 
