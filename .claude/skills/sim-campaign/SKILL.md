@@ -40,9 +40,12 @@ THE TEAM-KEYED REMAINDER, LARGELY DISSOLVED (2026-08-03): the convoy
 gap, sawtooth's lean, and riverline's lean are ALL the unique pair
 (factionswap/uniques-off squares). VAULTS=2 on clean terrain STILL
 convicts (41.7/42.3% A — the vault's harm was never terrain luck; it
-stays pulled). Still open: POWS=2 at 25-28% A (uniques-off pair QUEUED via the ab
-kind — the last unexplained out-of-band read) and the small
-east-pusher residual (+7-13 in convoy same-unique squares). THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
+stays pulled). Still open — THE LAST ANOMALY: POWS=2 at 25-28% A is NOT uniques
+(uniques-off pair read 25.3/22.7 — identical), not terrain, not
+command order. It is POW-mechanics-specific and team-keyed. Rung
+queued: RAIDPARTY=0 pair (the party doctrine once carried a
+team-keyed +10/+6 split — 2fd5444's sibling may remain). Also open:
+the small convoy east-pusher residual (+7-13 same-unique). THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
 1. UNDESIGNED root FOUND+FIXED: frontier terrain was never
    cell-symmetric (1,615/8,192 pairs/seed) — mirror-by-construction
    since cff77cb; test/map_symmetry.test.js pins all profiles. EVERY

@@ -5091,3 +5091,12 @@ out-of-band read). CLAUDE.md's KNOWN OPEN rewritten: the team-keyed
 remainder is DISSOLVED into unique economics — one coherent design
 conversation (per-map unique laws / tunes / premiums) instead of
 three separate map mysteries.
+
+## POWS=2: uniques EXONERATED — the last anomaly stands alone (2026-08-03)
+
+Uniques-off pair: 25.3/22.7% A — identical to uniques-on (25.4/27.7).
+The POWS imbalance is NOT unique economics, NOT terrain, NOT command
+order: it is POW-mechanics-specific and team-keyed. RAIDPARTY=0 pair
+queued (the party doctrine once carried a team-keyed lane split —
+2fd5444 fixed one; a sibling may remain). This is the game's last
+unexplained number.
