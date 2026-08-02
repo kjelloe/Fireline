@@ -213,13 +213,16 @@ outcome. Renderer presents fog-filtered views only.
   cell-for-cell — the invariant is now tested at the level it is
   claimed. Every pre-cff77cb frontier measurement describes a map
   that no longer exists. DESIGNED remainder: the col-64 centre
-  anchors (ruled half-cell). KNOWN OPEN — THE TEAM-KEYED REMAINDER
-  (top of the queue): convoy attackers 39%(A)/64%(B) BOTH directions
-  (mirror pair exonerates direction), POWS=2 at 25-28% A on clean
-  terrain (the old 47% rested on terrain luck), frontier default
-  46.2/45.5 in-band but non-flipping. Prime suspect: Q18
-  execution-order first-strike — the tick-parity command-order fix
-  is proposed and AWAITING THE OWNER'S GO. powPreplaced SETTLED at 0
+  anchors (ruled half-cell). THE TEAM-KEYED
+  REMAINDER, DISSOLVED INTO UNIQUE ECONOMICS (2026-08-03, prompt 151
+  squares at n=1200): the convoy gap (Skimmer-led attacks +~35 pts
+  over Sentinel-led, any team/direction), sawtooth's 68% (uniques-off
+  = dead fair), and riverline's lean are ALL the unique pair.
+  Tick-parity ruled INERT (Q18 dead); the vault convicts on clean
+  terrain too (never terrain luck). KNOWN OPEN: POWS=2 at 25-28% A
+  (uniques-off rung queued) + the small convoy east-pusher residual
+  (+7-13 same-unique). Heist attackers 12.7/9.3% post-siege-prep
+  (Q72) — a dial, not a wall; the bar is the designer's. powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
   POWS=2 = the human-session flavour; the POW-era doctrine tempo and
   a POW×unique×ring caldera coupling both dissolved at 0).

@@ -5079,3 +5079,15 @@ the line little; pure geometry+chassis condition (mirror-safe).
 rules.landshipAI === true enables (LANDSHIPAI=1 in sweeps); the
 DEFAULT stays OFF per the standing ruling — the owner's playtest
 feel decides the flip. Test pins both sides of the switch.
+
+## Q72 at scale + the review round (2026-08-03, prompt 152)
+
+Heist siege battery (n=600): attackers 8.0/3.7 -> **12.7/9.3%** —
+siege prep CONFIRMED; the mode is a dial now, not a wall. The next
+rung if the designer wants more: the unique axis (a Skimmer-led
+heist — the prompt-151 squares say that lever is worth ~+35 pts in
+convoy). POWS=2 uniques-off pair queued (the last unexplained
+out-of-band read). CLAUDE.md's KNOWN OPEN rewritten: the team-keyed
+remainder is DISSOLVED into unique economics — one coherent design
+conversation (per-map unique laws / tunes / premiums) instead of
+three separate map mysteries.

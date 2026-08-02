@@ -131,11 +131,12 @@ re-baseline) are archived in the skill and dev-log.
 
 ## What is actually open
 
-1. **THE TEAM-KEYED REMAINDER** (the residue's last component — the
-   undesigned terrain root is FIXED, tick-parity ruled INERT):
-   POWS=2 at 25-28% A, convoy's 25-pt attacker gap, sawtooth's
-   expression. Next rungs: convoy FACTIONSWAP pair + the
-   shared-resource tie-break audit (Q73 sets sawtooth's priority).
+1. **UNIQUE ECONOMICS is the one balance axis left**: the convoy
+   gap, sawtooth's 68%, and riverline's lean all dissolved into the
+   Sentinel/Skimmer pair (prompt-151 squares). Remaining rungs:
+   POWS=2 uniques-off pair (queued) + the small convoy east-pusher
+   residual. The design response (per-map unique laws / tunes /
+   premiums) is a single coherent conversation now.
 2. **Heist AI viability** — Q72 (siege prep) with you; humans have
    the getaway car already.
 3. **Specials ladder** — both vault and cache engine-complete and
@@ -165,5 +166,5 @@ All five were delegated (prompt 151) and EXECUTED on data:
 | Q47 | The gap is THE UNIQUE PAIR (factionswap square, n=1200): Skimmer-led attacks +~35 pts regardless of team/direction (Sentinel 39/32, Skimmer 78/65). The BAR itself remains yours — but the axes are now honest: chassis value, not team bias |
 | Q56 | BUILT, default OFF: light-hull regents within 12 cells claim the fortress under `rules.landshipAI` / LANDSHIPAI=1 — your playtest feel flips it |
 | Q67 | ANSWERED: VAULTS=2 on symmetric terrain still convicts (41.7/42.3% A) — the vault's harm was never terrain luck; it stays pulled, ladder parked |
-| Q72 | LANDED: the siege battery (indirect tubes stand 9 off the vault, escorts spot, hold-short carrier dives on thin; SIEGE=0 A/Bs). First SCORED heist wins in any probe; battery pair pending |
+| Q72 | LANDED + MEASURED: the siege battery took heist attackers 8.0/3.7 → **12.7/9.3%** (n=600) — confirmed at scale; a tuning dial now, not a wall. Next rung if wanted: the unique axis (Skimmer-led heist) |
 | Q73 | ANSWERED: uniques-off sawtooth is DEAD FAIR (48.5/45.1); factionswap fair (52.5/49.2) — the 68% is entirely the pair on home sides. Lever choice (per-map unique law / tune / premium-as-is) is a design call with clean data |
