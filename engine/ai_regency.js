@@ -1127,6 +1127,25 @@ export class AIRegency {
       }
       if (operator.state !== OP_ACTIVE || operator.assetId === -1) continue;
       const asset = state.assets[operator.assetId];
+      // Q56 (prompt 151, DEFAULT OFF — rules.landshipAI === true
+      // enables; the owner's playtest feel decides the flip): an
+      // OPPORTUNISTIC landship claim. A regent driving a LIGHT hull
+      // (bike/scout) within 12 cells of the uncrewed neutral fortress
+      // steps across — select IS the capture (Q42), and the light hull
+      // it abandons costs the line little. Condition is pure geometry
+      // + chassis, so it commutes with the mirror.
+      if (state.rules?.landshipAI === true) {
+        const ls = state.assets[32];
+        if (ls && ls.team === -1 && ls.operatorId === -1 && !isWreck(ls) &&
+            (asset.type === 1 || asset.type === 5)) {
+          const d = Math.max(Math.abs(sampleCellX(asset.x, AI_W) - sampleCellX(ls.x, AI_W)),
+                             Math.abs(worldToCellFloor(asset.y) - worldToCellFloor(ls.y)));
+          if (d <= 12) {
+            commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: 32, confirm: true });
+            continue;
+          }
+        }
+      }
       // The AI never evicts humans or drives assets it does not operate.
       if (!asset || asset.operatorId !== operatorId || isWreck(asset)) continue;
 

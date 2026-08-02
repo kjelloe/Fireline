@@ -155,3 +155,27 @@ test("A-keyed hunt: a CAPTURED landship is a camper like any hull", () => {
   for (let i = 0; i < 400; i++) s = apply(s, { type: "advance_tick" });
   assert.ok(s.assets[32].campTicks > 0, "the exemption is for NEUTRAL only");
 });
+
+test("Q56: regents claim the fortress ONLY under rules.landshipAI (default off)", async () => {
+  const { GameServer } = await import("../engine/server.js");
+  const { cellToWorld } = await import("../shared/fixedmath.js");
+  const place = (server) => {
+    // park team 0's AI-DRIVEN scout beside the berth (regents crew
+    // carrier/truck/scout/tank — bikes are human-only)
+    const scout = server.state.assets.find((a) =>
+      a.team === 0 && a.type === 1 && a.operatorId >= 16);
+    const ls = server.state.assets[32];
+    scout.x = ls.x + 256; scout.y = ls.y;
+  };
+  const off = new GameServer({ mapSeed: 2026, enableAi: true });
+  for (let t = 0; t < 5; t++) off.step(); // regents take their seats first
+  place(off);
+  for (let t = 0; t < 200; t++) off.step();
+  assert.equal(off.state.assets[32].team, -1, "default: the AI never claims");
+  const on = new GameServer({ mapSeed: 2026, enableAi: true, rules: { landshipAI: true } });
+  for (let t = 0; t < 5; t++) on.step();
+  place(on);
+  let claimed = false;
+  for (let t = 0; t < 400 && !claimed; t++) { on.step(); claimed = on.state.assets[32].team !== -1; }
+  assert.ok(claimed, "landshipAI: a nearby light regent steps across");
+});

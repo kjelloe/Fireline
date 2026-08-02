@@ -5069,3 +5069,13 @@ non-elimination heist wins any probe has produced; att=0 still 0/5
 (the team-keyed curse configuration, consistent with everything).
 Standard wars untouched (all gating mission-scoped): suite 765/765
 x2, gate 5/5. Heist battery pair queued behind the ruling slate.
+
+## Q56 built, DEFAULT OFF (2026-08-03, prompt 151 delegation)
+
+Opportunistic AI landship claim: a regent driving a LIGHT hull
+(scout; bikes are human-only seats) within 12 cells of the uncrewed
+fortress steps across — select-is-capture, the abandoned hull costs
+the line little; pure geometry+chassis condition (mirror-safe).
+rules.landshipAI === true enables (LANDSHIPAI=1 in sweeps); the
+DEFAULT stays OFF per the standing ruling — the owner's playtest
+feel decides the flip. Test pins both sides of the switch.

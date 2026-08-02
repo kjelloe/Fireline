@@ -48,6 +48,7 @@ const ORDERPARITY = process.env.ORDERPARITY === "1"; // Q71 trial: tick-parity c
 const CACHE = process.env.CACHE !== "0"; // Q64 aura kill-switch
 const GETAWAY = process.env.GETAWAY !== "0"; // Q70 heist getaway-car experiment
 const SIEGE = process.env.SIEGE !== "0"; // Q72 heist siege-prep switch
+const LANDSHIPAI = process.env.LANDSHIPAI === "1"; // Q56 trial: regents may claim the fortress
 // Band retune (2026-07-31): SKIMTRAIL=384 ladders the ruled Skimmer
 // trail-speed lever the same way. Set once, before any war is built.
 import { setPathSpeedAmphibious } from "../engine/terrain.js";
@@ -64,7 +65,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
     alarmResponse: ALARMRESPONSE, orderParity: ORDERPARITY,
-    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
           ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
@@ -75,7 +76,8 @@ for (let seed = 1; seed <= COUNT; seed++) {
           ...(!DROPS ? { drops: false } : {}),
           ...(!CACHE ? { cacheAura: false } : {}),
           ...(!GETAWAY ? { heistGetaway: false } : {}),
-          ...(!SIEGE ? { heistSiege: false } : {}) }
+          ...(!SIEGE ? { heistSiege: false } : {}),
+          ...(LANDSHIPAI ? { landshipAI: true } : {}) }
       : null,
   });
   // Config-plumbing self-check (the crewing-bug lesson): say what the
