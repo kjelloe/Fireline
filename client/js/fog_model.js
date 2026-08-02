@@ -61,5 +61,15 @@ export function fogMask(view, myTeam, mapSeed, tick, width, height) {
     const r = storm ? RELAY_FOG_CELLS >> 1 : RELAY_FOG_CELLS;
     paint(mask, width, height, s.cellX, s.cellY, r);
   }
+  // Prompt 160 item 2: the compound watches itself — your own base
+  // rect (+1 verge) is always lit, matching engine/los.js exactly.
+  const ownBase = (view.bases ?? []).find((b) => b.team === myTeam);
+  if (ownBase) {
+    for (let y = Math.max(0, ownBase.y - 1); y <= Math.min(height - 1, ownBase.y + ownBase.height); y++) {
+      for (let x = Math.max(0, ownBase.x - 1); x <= Math.min(width - 1, ownBase.x + ownBase.width); x++) {
+        mask[y * width + x] = 1;
+      }
+    }
+  }
   return mask;
 }

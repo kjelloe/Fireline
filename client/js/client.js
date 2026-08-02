@@ -3148,7 +3148,15 @@ function updateWarDressing(view) {
     tank_fuel: { geo: () => new THREE.CylinderGeometry(0.45, 0.45, 1.1, 8), y: 0.55 },
     mast: { geo: () => new THREE.CylinderGeometry(0.06, 0.1, 2.6, 5), y: 1.3 },
     pad: { geo: () => new THREE.CylinderGeometry(1.1, 1.1, 0.06, 10), y: 0.03 },
-    post: { geo: () => new THREE.BoxGeometry(0.18, 0.7, 0.18), y: 0.35 },
+    // Prompt 160 item 2: corner posts are GUARD TOWERS now — tall
+    // stalk, cabin, and a searchlight cone that sweeps (animated in
+    // animate(); the sweep is pure theatre — the VISION comes from the
+    // engine's compound-watches-itself law).
+    post: { geo: () => {
+      const g = new THREE.BoxGeometry(0.22, 1.6, 0.22);
+      g.translate(0, 0.8, 0);
+      return g;
+    }, y: 0 },
     // Item 13: the supply depot — long warehouse + crate stacks.
     warehouse: { geo: () => new THREE.BoxGeometry(2.8, 1.0, 1.4), y: 0.5 },
     crates: { geo: () => new THREE.BoxGeometry(0.7, 0.5, 0.7), y: 0.25 },
@@ -3185,6 +3193,20 @@ function updateWarDressing(view) {
       mesh.position.set(piece.x, spec.y, piece.y);
       mesh.rotation.y = piece.rotation;
       dressingGroup.add(mesh);
+      if (piece.kind === "post") { // the tower's cabin + sweeping light
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.28, 0.4), wall);
+        cabin.position.set(piece.x, 1.7, piece.y);
+        dressingGroup.add(cabin);
+        const beam = new THREE.Mesh(
+          new THREE.ConeGeometry(0.5, 2.6, 6, 1, true),
+          new THREE.MeshBasicMaterial({ color: 0xfff2b0, transparent: true, opacity: 0.14, depthWrite: false })
+        );
+        beam.name = "searchlight";
+        beam.rotation.z = Math.PI / 2.4; // tilted outward, swept in animate()
+        beam.position.set(piece.x, 1.6, piece.y);
+        beam.userData.phase = (piece.x * 7 + piece.y * 13) % 6.28;
+        dressingGroup.add(beam);
+      }
       if (piece.kind === "hq") { // a roof cap in the faction identity color
         const cap = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.7), roof);
         cap.position.set(piece.x, 1.36, piece.y);
@@ -3337,6 +3359,14 @@ function animate() {
   // Phase-1 water sheen: a slow opacity breath (visual only).
   const sheen = terrainMesh?.getObjectByName?.("water-sheen");
   if (sheen) sheen.material.opacity = 0.30 + 0.07 * Math.sin(performance.now() / 1400);
+  // Item 2: the guard towers sweep their searchlights back and forth.
+  if (dressingGroup) {
+    for (const child of dressingGroup.children) {
+      if (child.name === "searchlight") {
+        child.rotation.y = Math.sin(performance.now() / 2600 + child.userData.phase) * 1.1;
+      }
+    }
+  }
   renderer.render(scene, camera);
 }
 

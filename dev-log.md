@@ -5219,3 +5219,16 @@ Suite 773/773 x2, smoke + acceptance OK. REMAINING from prompt 160:
 item 2 (guard towers + base vision), item 4 (end-screen + live vote
 counts), item 6 fuller carrier-respawn UX, item 9 (Low/Med/High
 visual tiers). Next pass.
+
+## slice-playtest-11 part 2: THE COMPOUND WATCHES ITSELF (item 2)
+
+Engine law: an enemy inside (or hard against, +1 verge) your base
+rect is ALWAYS seen — guard towers on the walls, storm or no storm.
+Mirror-safe (bases mirror); whole-map sandbox bases excluded by the
+no-walls-no-compound guard (10 fog pins survived unchanged after it).
+fog_model lights the compound identically (engine/fog agree by test).
+Visually: corner posts became WATCHTOWERS (stalk, cabin, and a
+translucent searchlight cone sweeping on a per-tower phase — pure
+theatre; the vision is the engine's). Suite 774/774 x2, gate 5/5,
+smoke + acceptance OK. Battery note: a vision change shifts balance —
+the queued frontier pair doubles as this slice's outcome check.

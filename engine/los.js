@@ -67,7 +67,17 @@ export function computeVisible(state, team) {
     const radarBonus = state.sites.some((s) =>
       s.owner === team && s.kind === KIND_RADAR && (s.hp ?? 1) > 0)
       ? RADAR_BONUS_CELLS : 0;
-    const seen =
+    // Prompt 160 item 2: THE COMPOUND WATCHES ITSELF — guard towers on
+    // the walls mean an enemy inside (or hard against) your base rect
+    // is always seen, storm or no storm. Mirror-safe (bases mirror).
+    // (Sandbox states use WHOLE-MAP bases for supply neutrality — a
+    // base spanning the map has no walls and is no compound.)
+    const ownBase = state.bases?.find((b) => b.team === team &&
+      b.width < (state.map?.width ?? 128));
+    const inCompound = ownBase &&
+      assetCellX >= ownBase.x - 1 && assetCellX <= ownBase.x + ownBase.width &&
+      assetCellY >= ownBase.y - 1 && assetCellY <= ownBase.y + ownBase.height;
+    const seen = inCompound ||
       sensors.some((s) => chebyshevCells(s, asset) <= (storm ? sensorRadius(s) >> 1 : sensorRadius(s)) + radarBonus) ||
       siteSensors.some((s) => {
         const dx = absI32(s.cellX - assetCellX);

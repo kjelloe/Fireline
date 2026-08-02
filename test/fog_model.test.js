@@ -50,3 +50,21 @@ test("fog: the storm halves the square; wrecks light nothing; spectators see all
   const spec = fogMask(view, -1, 7, 0, 128, 128);
   assert.equal(at(spec, 0, 0), 1, "spectators see everything");
 });
+
+test("160.2: the compound watches itself — base rect always lit, engine and fog agree", async () => {
+  const { computeVisible } = await import("../engine/los.js");
+  const { cellToWorld } = await import("../shared/fixedmath.js");
+  const state = {
+    assets: [
+      { id: 0, team: 0, state: 0, x: cellToWorld(60), y: cellToWorld(60), suppressedTimer: 0 },
+      { id: 1, team: 1, state: 0, x: cellToWorld(10), y: cellToWorld(60), suppressedTimer: 0 },
+    ],
+    sites: [], bases: [{ team: 0, x: 6, y: 54, width: 18, height: 20 }],
+    mapSeed: 7, tick: 0,
+  };
+  assert.ok(computeVisible(state, 0).has(1), "intruder in the compound is seen from anywhere");
+  const fogView = { friendlyAssets: [], sites: [], bases: state.bases };
+  const m = fogMask(fogView, 0, 7, 0, 128, 128);
+  assert.equal(m[60 * 128 + 10], 1, "fog model lights the compound");
+  assert.equal(m[60 * 128 + 40], 0, "outside stays fog");
+});
