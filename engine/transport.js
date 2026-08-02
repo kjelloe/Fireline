@@ -188,6 +188,9 @@ export class NetworkTransport {
                 if (!Number.isInteger(choice) || choice < 0 || choice >= this.voteCandidates.length) return;
                 session.vote = choice;
                 session.send("s_vote_ack", { choice });
+                // Prompt 160 item 4: LIVE tallies — every voter sees the
+                // count grow on the map tiles.
+                this.broadcastVoteCounts();
                 return;
             }
 
@@ -270,6 +273,17 @@ export class NetworkTransport {
         for (const session of this.sessions.values()) {
             session.vote = undefined;
             if (session.authenticated) session.send("s_vote_open", { candidates });
+        }
+    }
+
+    broadcastVoteCounts() {
+        if (!this.voteCandidates) return;
+        const counts = this.voteCandidates.map(() => 0);
+        for (const s of this.sessions.values()) {
+            if (s.authenticated && !s.spectator && Number.isInteger(s.vote)) counts[s.vote] += 1;
+        }
+        for (const s of this.sessions.values()) {
+            if (s.authenticated) s.send("s_vote_update", { counts });
         }
     }
 

@@ -34,6 +34,7 @@ import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
 import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
 import { UNIT_STATS } from "../../engine/units.js";
+import { MAP_PROFILES } from "../../engine/state.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
   arrowDrive, ARROW_BRADS, classifyTouch, pinchFactor, isTouchDevice,
@@ -783,6 +784,8 @@ function connect() {
     } else if (msg.type === "s_vote_open") {
       // Q49: map+mode pair vote on the end screen.
       showVote(msg.candidates ?? []);
+    } else if (msg.type === "s_vote_update") {
+      updateVoteCounts(msg.counts ?? []); // item 4: live tallies on the tiles
     } else if (msg.type === "s_vote_ack") {
       const el = document.getElementById("vote-title");
       if (el) el.textContent = t("vote.locked");
@@ -1405,14 +1408,32 @@ function showEndScreen() {
   const summary = summarizeGameOver(view, joined?.team);
   if (!summary) return;
   const el = document.getElementById("end-overlay");
-  document.getElementById("end-title").innerText = summary.title;
+  // Prompt 160 item 4: the screen reads like a RESULT, not a log —
+  // huge verdict, clear sections, honors boxed apart.
+  const titleEl = document.getElementById("end-title");
+  titleEl.innerText = summary.title;
+  titleEl.style.fontSize = "52px";
   const honors = topOperators(view);
   const awards = categoryHonors(view); // B4: per-category honors
-  document.getElementById("end-reason").innerText = summary.reason +
-    (honors.length ? "\n\nHONORS\n" + honors.join("\n") : "") +
-    (awards.length ? "\n\n" + awards.join("\n") : "");
-  document.getElementById("end-scores").innerText =
-    `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
+  const reasonEl = document.getElementById("end-reason");
+  reasonEl.innerHTML = "";
+  const mkSection = (heading, lines, color) => {
+    if (!lines.length) return;
+    const d = document.createElement("div");
+    d.style.cssText = "margin-top:14px;padding:10px 18px;border:1px solid #444;border-radius:8px;text-align:center;";
+    d.innerHTML = `<div style="color:${color};font-weight:bold;letter-spacing:2px;font-size:17px;margin-bottom:6px;">${heading}</div>` +
+      lines.map((l) => `<div style="font-size:15px;">${l}</div>`).join("");
+    reasonEl.appendChild(d);
+  };
+  const rd = document.createElement("div");
+  rd.style.cssText = "font-size:19px;color:#ddd;";
+  rd.innerText = summary.reason;
+  reasonEl.appendChild(rd);
+  mkSection(t("end.sec_honors"), honors, "#f5e96b");
+  mkSection(t("end.sec_awards"), awards, "#9fd8ff");
+  const scoresEl = document.getElementById("end-scores");
+  scoresEl.innerText = `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
+  scoresEl.style.fontSize = "26px";
   el.style.opacity = "1";
   el.style.transition = "";
   el.style.display = "flex";
@@ -1437,6 +1458,27 @@ function showEndScreen() {
 }
 
 // Q49: render the postgame vote — one button per (map, mode) pair.
+// Prompt 160 item 4: candidates are MAP TILES — a mini-thumbnail
+// painted from the profile's own generator (the client imports engine
+// modules freely; seed 2026 = a representative face), the name below,
+// and a LIVE vote count that lands as a big number on the tile.
+const TERRAIN_HEX = ["#3e5a3e", "#8a8a72", "#274427", "#5e5240", "#2b2b33", "#6e5f42", "#2a4a66"];
+function paintMapThumb(canvas, profileName) {
+  try {
+    const gen = MAP_PROFILES[profileName];
+    if (!gen) return;
+    const map = gen(2026);
+    const ctx = canvas.getContext("2d");
+    const s = canvas.width / map.width;
+    for (let y = 0; y < map.height; y += 2) {
+      for (let x = 0; x < map.width; x += 2) {
+        ctx.fillStyle = TERRAIN_HEX[map.cells[y * map.width + x]] ?? "#333";
+        ctx.fillRect(x * s, y * s, s * 2, s * 2);
+      }
+    }
+  } catch { /* thumb is a nicety */ }
+}
+
 function showVote(candidates) {
   const box = document.getElementById("vote-box");
   const buttons = document.getElementById("vote-buttons");
@@ -1444,16 +1486,37 @@ function showVote(candidates) {
   if (!box || !buttons || !title) return;
   title.textContent = t("vote.title");
   buttons.innerHTML = "";
+  buttons.style.cssText = "display:flex;gap:14px;justify-content:center;";
   candidates.forEach((c, i) => {
     const b = document.createElement("button");
     b.className = "btn";
+    b.style.cssText = "display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;position:relative;";
+    const cv = document.createElement("canvas");
+    cv.width = 96; cv.height = 96;
+    cv.style.cssText = "border-radius:6px;border:1px solid #555;";
+    paintMapThumb(cv, c.map);
+    const label = document.createElement("div");
     const mapName = t(`map.${c.map}`) !== `map.${c.map}` ? t(`map.${c.map}`) : c.map;
-    b.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName })
+    label.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName })
       : c.mode === 2 ? t("vote.heist_on", { map: mapName }) : mapName;
+    const count = document.createElement("div");
+    count.className = "vote-count";
+    count.dataset.idx = String(i);
+    count.style.cssText = "position:absolute;top:6px;right:10px;font:bold 30px sans-serif;" +
+      "color:#f5e96b;text-shadow:0 0 6px #000;display:none;";
+    b.append(cv, label, count);
     b.onclick = () => send({ type: "c_vote", choice: i });
     buttons.appendChild(b);
   });
   box.style.display = "block";
+}
+
+function updateVoteCounts(counts) {
+  for (const el of document.querySelectorAll(".vote-count")) {
+    const n = counts[Number(el.dataset.idx)] ?? 0;
+    el.textContent = String(n);
+    el.style.display = n > 0 ? "block" : "none";
+  }
 }
 
 function hideEndScreen() {

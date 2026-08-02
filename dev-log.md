@@ -5242,3 +5242,16 @@ through propsFor({tier}); ?lowdetail= and touch auto-select Low.
 "Even more detail" beyond High (texture atlases, model LODs) is
 banked for an art round with real assets — procedural High is the
 honest ceiling of this pipeline.
+
+## slice-playtest-11 part 4: THE RESULT SCREEN (item 4)
+
+End screen reads like a RESULT: 52px verdict, 26px scores, honors
+and category awards in their own boxed sections (both locales).
+Vote candidates are MAP TILES — a 96px thumbnail painted client-side
+from the profile's own generator (seed 2026 as the representative
+face), the name below, and a LIVE big-number tally on the tile
+(transport broadcasts s_vote_update on every ballot). Item 6 partial:
+the aboard notice now teaches U + J (the MG ring); a richer
+aboard-screen is banked. Suite 774/774 (one intermittent ws flake
+re-sighted, passes on rerun — third sighting, watch it). Smoke +
+acceptance OK.
