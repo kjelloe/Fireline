@@ -5,3 +5,4 @@ test/headless/reports/
 dev-prompts.md
 .agent-mail/
 reports/sweeps/
+*:Zone.Identifier
