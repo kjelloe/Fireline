@@ -9,6 +9,14 @@ sawtooth's lane chokepoints (44,63)/(83,63), aura R5 -25% integer
 test/cache.test.js. Site count 6→8, ticket majority 4→5 — the battery
 pair + a CACHE=0 A/B judge the map.
 
+**PULLED the same night**: the battery read 65.5/70.2% A (the held
+55-56 became 68) — the aura snowballs whoever already holds the
+lanes. THE SPECIALS-LADDER LAW (vault, then cache): personality
+nodes amplify the map's existing lean; ship them only on maps that
+measure FAIR (frontier post-terrain-symmetry is the candidate) or as
+underdog-side compensating singles. The mechanism remains
+engine-complete behind CACHE=0.
+
 ## What it is
 
 A **site personality**, not a new system: `site.kind = 4` on the B2

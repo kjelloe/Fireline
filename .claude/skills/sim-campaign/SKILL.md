@@ -50,7 +50,15 @@ THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
    suspect: Q18 execution-order first-strike (tick-parity command
    order fix proposed night 2, AWAITING the owner's GO). Instruments:
    convoy A/B pair (25-pt signal, ~6 min PC), POWS pair (20-pt).
-| sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays |
+| sawtooth (post-ladder re-battery) | **56.3 / 54.7% A** (n=600) — the held lean PERSISTS unchanged | HELD; premium stays. Cache-pair trial read 65.5/70.2 and was PULLED same night |
+
+THE SPECIALS-LADDER LAW (twice observed — vault 2026-07-31, cache
+2026-08-03): a personality node AMPLIFIES the map's existing lean
+(the aura/income compounds for whoever already holds ground). Ship
+specials only on maps that measure FAIR, or as an UNDERDOG-side
+single (premium-style compensation) — never neutral pairs on a
+leaning map. Battery gate MANDATORY before a special survives a
+night.
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the
