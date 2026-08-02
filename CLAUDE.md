@@ -193,7 +193,11 @@ outcome. Renderer presents fog-filtered views only.
   and `targetSandbagId` (ANY gun — bags are cover, not
   infrastructure). ALARM GUARDS (Q38): prison.alarmTicks hashed; the
   watchman is NOT an entity — toTeam ping kind prison_alarm on a 30s
-  cooldown + defender response doctrine in ai_regency. VOTING
+  cooldown + defender response doctrine in ai_regency. LOBBY
+  (prompt 149): transport-level s_lobby broadcast (live per-team human
+  counts + server config) to EVERY socket incl. pre-join; fresh joins
+  refused at a 2-human imbalance (token reclaims exempt);
+  SPECTATE=0/REPLAYS=0 disable the booth + archive end-to-end. VOTING
   (Q49/Q54): transport-level c_vote/s_vote_open (nothing hashed);
   the pump applies the plurality pick via
   resetWar(seed, {mapProfile, modeRules}); the pool lives in
