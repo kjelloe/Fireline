@@ -274,7 +274,15 @@ test("14G map detailing: dashes on road, bushes in forest, compounds mirror", as
   const bushes = props.filter((p) => p.kind === "bush");
   assert.ok(dashes.length > 50 && bushes.length > 100, "the field is detailed");
   for (const d of dashes) assert.equal(at(d.x, d.y), 1, "dashes only on road");
-  for (const b of bushes) assert.equal(at(b.x, b.y), 2, "bushes only in forest");
+  for (const b of bushes) {
+    // Phase 2 (prompt 157): forest EDGES grow verge bushes on the
+    // adjacent open cell — in forest, or touching it, never elsewhere.
+    const t = at(b.x, b.y);
+    const cx = Math.floor(b.x), cy = Math.floor(b.y);
+    const nearForest = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(
+      ([dx, dy]) => map.cells[(cy + dy) * map.width + (cx + dx)] === 2);
+    assert.ok(t === 2 || (t === 0 && nearForest), "bushes in forest or on its verge");
+  }
 
   // Compounds: deterministic, inside the rect, and the east base is the
   // exact mirror of the west one (both HQs face the front line).
