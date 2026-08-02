@@ -33,6 +33,7 @@ import { codexFor, codexAll, MECHANICS_PAGES } from "./codex.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
 import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
+import { UNIT_STATS } from "../../engine/units.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
   arrowDrive, ARROW_BRADS, classifyTouch, pinchFactor, isTouchDevice,
@@ -1129,8 +1130,21 @@ function whereAmI(view) {
 // Item 29: the button now reports failure instead of quietly following
 // someone else. Item 25: riding a carrier counts as "me".
 function centreOnMe() {
-  const me = whereAmI(interpolator.latest());
-  if (!me) { flashNotice(t("notice.no_position")); return; }
+  const view = interpolator.latest();
+  const me = whereAmI(view);
+  if (!me) {
+    // Prompt 160 item 10 (the stranded seat): your hull died, then
+    // your carrier died — you are RESPAWNING, not lost. Centre falls
+    // back to your base and says what to do next.
+    const zone = view?.bases?.find((b) => b.team === joined?.team);
+    if (zone) {
+      freeCam.jumpTo(zone.x + zone.width / 2, zone.y + zone.height / 2);
+      flashNotice(t("notice.respawn_base"), 3600, "#9fe89f", true);
+    } else {
+      flashNotice(t("notice.no_position"));
+    }
+    return;
+  }
   freeCam.jumpTo(me.x / CELL, me.y / CELL);
   freeCam.followMode(true);
   spawnRingUntil = performance.now() + 2000; // "you are HERE"
@@ -1660,10 +1674,29 @@ function upsertAssetMesh(a, friendly) {
     // reported heading by more than ~45°, face the motion (the wheels go
     // where the hull goes); the smoother hides the handover.
     let target = brads !== null ? Math.PI / 2 - (brads * Math.PI * 2) / 256 : null;
-    const motion = typeof a.motionHeading === "number"
+    let motion = typeof a.motionHeading === "number"
       ? Math.PI / 2 - a.motionHeading : null;
-    if (motion !== null && (target === null || Math.abs(angleDelta(target, motion)) > Math.PI / 4)) {
-      target = motion;
+    // Prompt 160 item 3 (the wobble): diagonal travel on a 16-dir grid
+    // zigzags its per-tick motion vector, so the raw motion heading
+    // flaps ±45° and the old hard 45° switch flip-flopped every frame.
+    // Fix: EMA the motion heading, and make the handover HYSTERETIC —
+    // switch to motion-facing only past 60° of persistent disagreement,
+    // switch back only under 25°.
+    if (motion !== null) {
+      const prevM = mesh.userData.emaMotion;
+      motion = prevM === undefined ? motion : prevM + angleDelta(prevM, motion) * 0.18;
+      mesh.userData.emaMotion = motion;
+    } else {
+      mesh.userData.emaMotion = undefined;
+    }
+    if (target === null) {
+      if (motion !== null) target = motion;
+    } else if (motion !== null) {
+      const d = Math.abs(angleDelta(target, motion));
+      const wasMotion = mesh.userData.facingMotion === true;
+      const useMotion = wasMotion ? d > Math.PI / 7.2 : d > Math.PI / 3;
+      mesh.userData.facingMotion = useMotion;
+      if (useMotion) target = motion;
     }
     if (target !== null) {
       const prev = mesh.userData.smoothedHeading ?? target;
@@ -1674,8 +1707,47 @@ function upsertAssetMesh(a, friendly) {
   }
   if (friendly && a.operatorId === joined?.operatorId) {
     mesh.scale.setScalar(1.15);
-  } else if (a.state !== STATE_DISABLED) {
-    mesh.scale.setScalar(1);
+    // Prompt 160 item 1: the YOU marker — a small green low-poly
+    // diamond floating over the hull, bobbing and slowly spinning.
+    if (!mesh.userData.ownMarker) {
+      const d = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.14, 0),
+        new THREE.MeshBasicMaterial({ color: 0x5aff7a, transparent: true, opacity: 0.9 })
+      );
+      d.name = "own-marker";
+      mesh.add(d);
+      mesh.userData.ownMarker = d;
+    }
+    const om = mesh.userData.ownMarker;
+    om.position.y = 1.15 + 0.08 * Math.sin(performance.now() / 320);
+    om.rotation.y = performance.now() / 800;
+    om.visible = true;
+  } else {
+    if (mesh.userData.ownMarker) mesh.userData.ownMarker.visible = false;
+    if (a.state !== STATE_DISABLED) mesh.scale.setScalar(1);
+  }
+  // Prompt 160 item 8: SEAT PIPS — a cyan ring over any friendly hull
+  // with a free seat beyond the driver (carrier bunks, empty stations).
+  if (friendly) {
+    const stats = UNIT_STATS[a.type];
+    const freeSeat =
+      ((stats?.capacity ?? 0) > 0 && (a.aboard1 === -1 || a.aboard2 === -1)) ||
+      (stats?.station && (a.stationOp ?? -1) === -1);
+    if (freeSeat && a.operatorId !== joined?.operatorId && a.state !== STATE_DISABLED) {
+      if (!mesh.userData.seatPip) {
+        const pip = new THREE.Mesh(
+          new THREE.TorusGeometry(0.12, 0.035, 5, 8),
+          new THREE.MeshBasicMaterial({ color: 0x6fd8e8, transparent: true, opacity: 0.85 })
+        );
+        pip.rotation.x = -Math.PI / 2;
+        pip.position.y = 0.95;
+        mesh.add(pip);
+        mesh.userData.seatPip = pip;
+      }
+      mesh.userData.seatPip.visible = true;
+    } else if (mesh.userData.seatPip) {
+      mesh.userData.seatPip.visible = false;
+    }
   }
   // 14C: recoil — a fired hull kicks back along its own barrel line
   // (forward is +z after rotation.y), then eases exactly home.
@@ -2458,10 +2530,11 @@ function updateTaskStrip(view) {
 // (item 30), the weather turning (26), and the war clock (27). Distinct
 // from the mission toast (reward) and the action banner (a thing to do).
 let noticeUntil = 0;
-function flashNotice(text, ms = 2600, color = "#ffd75e") {
+function flashNotice(text, ms = 2600, color = "#ffd75e", big = false) {
   const el = document.getElementById("centre-notice");
   if (!el) return;
   el.textContent = text;
+  el.style.fontSize = big ? "34px" : ""; // prompt 160 item 5: announcements land LARGE
   el.style.color = color;
   el.style.display = "block";
   el.style.opacity = "1";
@@ -2488,7 +2561,7 @@ function updateWarClock(view) {
   for (const [frac, key] of [[0.5, "clock.half"], [0.25, "clock.quarter"], [0.1, "clock.tenth"]]) {
     if (!clockMarks.has(key) && left <= TIME_LIMIT_TICKS * frac) {
       clockMarks.add(key);
-      flashNotice(t(key, { m: Math.round(left / 600) }), 3000);
+      flashNotice(t(key, { m: Math.round(left / 600) }), 3600, "#ffd75e", true);
     }
   }
   if (secs <= 30 && secs !== lastCountdownSecond) {

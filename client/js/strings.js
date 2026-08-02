@@ -288,7 +288,8 @@ export const CATALOGS = {
     "toast.mission": "MISSION COMPLETE  +{n} pts",
     // ── playtest 8: centre notices ──
     "notice.on_foot": "You are on foot — click the ground to crawl, or REDEPLOY (R)",
-    "notice.aboard": "You are riding a carrier — UNBOARD (U) to take an asset",
+    "notice.aboard": "You are riding a carrier — UNBOARD (U) to take an asset, or J mans the MG ring",
+    "notice.respawn_base": "Respawning — this is your base. NEXT ASSET picks a new hull.",
     "notice.no_free_asset": "No other asset is free right now",
     "notice.spectating": "Spectating — join a side to command",
     "notice.no_position": "Nothing to centre on yet",
@@ -676,7 +677,8 @@ export const CATALOGS = {
     "toast.mission": "OPPDRAG FULLFØRT  +{n} pts",
     // ── playtest 8: midtvarsler ──
     "notice.on_foot": "Du er til fots — klikk på bakken for å krype, eller REDEPLOY (R)",
-    "notice.aboard": "Du sitter på en vogn — GÅ AV (U) for å ta en enhet",
+    "notice.aboard": "Du sitter på en vogn — GÅ AV (U) for å ta en enhet, eller J bemanner MG-ringen",
+    "notice.respawn_base": "Gjenoppstår — dette er basen din. NESTE ENHET velger et nytt kjøretøy.",
     "notice.no_free_asset": "Ingen andre enheter er ledige nå",
     "notice.spectating": "Tilskuer — velg en side for å kommandere",
     "notice.no_position": "Ingenting å sentrere på ennå",

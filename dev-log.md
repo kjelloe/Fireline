@@ -5196,3 +5196,26 @@ semantics), so the EMPTY table is the correct verdict, reached
 honestly. The east curse (riverline + convoy, ~9 pts) is now the one
 remaining side-keyed mystery; the POWS captivity lean the one
 team-keyed.
+
+## slice-playtest-11 part 1 (2026-08-03, prompt 160 items 1/3/5/7/8/10)
+
+- Item 7 (ENGINE): enemy hulls are OBSTACLES — axis-ordered
+  slide-around (the wall-slide law applied to body collision; full
+  box-in still stalls). Probe residual class unchanged; frontier
+  outcome pair queued.
+- Item 3: THE WOBBLE — diagonal grid travel flaps the raw motion
+  vector ±45° and the hard 45° facing-handover flip-flopped every
+  frame. Fixed: EMA'd motion heading + hysteretic handover (>60° in,
+  <25° out).
+- Item 1: the YOU marker — green low-poly diamond, bobbing + spinning
+  over your hull.
+- Item 8: SEAT PIPS — a cyan ring over any friendly hull with a free
+  seat beyond the driver (carrier bunks, empty stations).
+- Item 5: war-clock announcements (half/quarter/tenth) land at 34px.
+- Item 10: the STRANDED SEAT — centre now falls back to your base
+  with "this is your base, NEXT ASSET picks a new hull" when you have
+  no hull/walker/ride; aboard notice teaches U and J.
+Suite 773/773 x2, smoke + acceptance OK. REMAINING from prompt 160:
+item 2 (guard towers + base vision), item 4 (end-screen + live vote
+counts), item 6 fuller carrier-respawn UX, item 9 (Low/Med/High
+visual tiers). Next pass.
