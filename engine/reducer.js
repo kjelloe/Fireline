@@ -1428,6 +1428,10 @@ function driveStep(asset, map, supplied, carrying, towing, others, slowed = fals
   asset.targetY = asset.y;
 }
 
+// Merged-hunt instrument (prompt 162): rules.enemySlide === false
+// restores the pre-160.7 hard stall for A/B attribution of the
+// frontier band drift. Wired via a module flag set per-tick from
+// rules (stepAsset has no rules access; the advance path sets it).
 function stepAsset(asset, map, supplied, carrying, towing, others, slowed = false) {
   const cellX = sampleCellX(asset.x, map.width); // boundary-parity law
   const cellY = worldToCellFloor(asset.y);
@@ -1475,7 +1479,7 @@ function stepAsset(asset, map, supplied, carrying, towing, others, slowed = fals
   let sdx = truncDivI32(step * DIR_COS[dir], 256);
   let sdy = truncDivI32(step * DIR_SIN[dir], 256);
   let v = collisionVerdict(others, asset, asset.x + sdx, asset.y + sdy);
-  if (v === 0) {
+  if (v === 0 && asset._noSlide !== true && stepAsset._slideEnabled !== false) {
     // Prompt 160 item 7 (the four-hulls-behind-one-truck stall): an
     // enemy hull is an OBSTACLE, not a spell — try the same
     // axis-ordered slides the wall rule uses (x-only then y-only,
@@ -1492,6 +1496,8 @@ function stepAsset(asset, map, supplied, carrying, towing, others, slowed = fals
     } else {
       return; // truly boxed in: keep trying
     }
+  } else if (v === 0) {
+    return; // SLIDE=0 (the merged-hunt A/B): the pre-160.7 stall
   }
   if (v === 2) { sdx = truncDivI32(sdx, 2); sdy = truncDivI32(sdy, 2); } // friendly press
   [sdx, sdy] = slideAlongWall(map, asset, sdx, sdy, stats); // 18B/18E
@@ -1521,6 +1527,7 @@ function applyAdvanceTick(next) {
   // ground — alternate iteration direction by tick parity so neither
   // team owns the first move (the Q18 lesson, physics edition). Timer
   // decrements in this loop are per-asset and order-independent.
+  stepAsset._slideEnabled = next.rules?.enemySlide !== false; // SLIDE=0 A/B
   const marchOrder = (next.tick & 1) === 0
     ? next.assets
     : [...next.assets].reverse();
