@@ -130,14 +130,41 @@ different game — never mix their rows into standard baselines.
 Earlier eras (cell-centre reset, pool ladder, crewing bug, people-era
 re-baseline) are archived in the skill and dev-log.
 
+## OMISSIONS REVIEW (prompt 163 — the step-back audit)
+
+What the product has: a deterministic fair-measured engine, 5 maps,
+11 chassis + factions, 3 modes, the POW arc, honors/premium/offsets,
+voting, replays, spectator, discovery, mobile touch + resilience, fog
+sheen, direct control, the detail-era art, i18n, a11y, encyclopedia,
+lobby balance, and an industrial measurement lane. What it does NOT
+have, in the order I would worry:
+
+| # | Omission | Why it matters | Size |
+|---|---|---|---|
+| O1 | **Sound.** One AudioContext call exists; the ruled synth-first SFX manifest was never built. Wars are essentially SILENT | The single biggest experiential gap; also blocks the composer integration landing well | M (engine-free) |
+| O2 | **Player names.** Operators are numbers; honors, kill feed, and the end screen celebrate "Operator 3" | Identity is what makes recognition WORK — the game's core tenet pays into an anonymous ledger | S |
+| O3 | **First-war onboarding.** The 60-second tenet is served by auto-crew + briefing, but a first-time player gets no guided first minute (tutorial war vs gentle bots, or a coach overlay) | The tenet IS the design bar; new-player funnel is unmeasured | M |
+| O4 | Difficulty preset UX — AI_DIFFICULTY exists as env only; no host-facing picker | LAN hosts can't tune without docs | S |
+| O5 | War persistence across server restart (graceful shutdown archives; a crash loses the live war) | LAN acceptable; public servers not | M |
+| O6 | Public-server deploy playbook (discovery exists; no firepower ssh-deploy/hosting doc like the sibling project has) | The multiciv pattern is proven — port it | S |
+| O7 | Text chat (comm wheel + pings exist) | Probably FINE for v2 — pings were the ruled design; note only | — |
+| O8 | Native perf numbers (runner works, numbers never collected — user-side since July) | Perf claims are still vibes | user |
+
+Recommended order: O2 (names — small, immediately warms every existing
+system) → O1 (the SFX manifest; music integration follows the composer)
+→ O3 (onboarding) → O4/O6 (host QoL) → O5.
+
 ## What is actually open
 
-1. **UNIQUE ECONOMICS is the one balance axis left**: the convoy
-   gap, sawtooth's 68%, and riverline's lean all dissolved into the
-   Sentinel/Skimmer pair (prompt-151 squares). Remaining rungs:
-   POWS=2 uniques-off pair (queued) + the small convoy east-pusher
-   residual. The design response (per-map unique laws / tunes /
-   premiums) is a single coherent conversation now.
+1. **THE MERGED TEAM-KEYED HUNT** (top): one B-favoring mechanism —
+   frontier 42.8/44.0 (below band; the obstacle-slide's interaction
+   density costs ~3.5 pts, attributed by the SLIDE=0 pair 46.8/46.3),
+   POWS=2 at ~26% A. CENSUS SHAPE: B penetrates deep-west and
+   survives; A loses the centre 2:1 under POWs. Exonerated: terrain,
+   uniques, order, party, alarm, capture arc, path equivariance (that
+   family was real — horizon 5,444). Next: killer-team census, VERIFY
+   aiMirrored's patrol swap, the t=5,444 thread. Sawtooth bench and
+   heist bar decisions ride on the same conversation.
 2. **Heist AI viability** — Q72 (siege prep) with you; humans have
    the getaway car already.
 3. **Specials ladder** — both vault and cache engine-complete and

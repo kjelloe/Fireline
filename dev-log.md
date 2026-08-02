@@ -5336,3 +5336,14 @@ mirror pairs and doesn't; verify that swap ACTUALLY swaps), and the
 trade math at contact (who shoots first at meeting engagements).
 Next instruments: killer-team/chassis census + SLIDE=0 pair (in
 flight) + verify aiMirrored's patrol swap end-to-end.
+
+## SLIDE attribution + the omissions review (2026-08-03, prompt 163)
+
+SLIDE=0 pair: 46.8/46.3 (vs 42.8/44.0 with the slide) — the
+obstacle-slide's interaction density costs ~3.5 pts toward B;
+attribution confirmed, the underlying channel still tilts ~46.5.
+OMISSIONS AUDIT filed in plan-version2: O1 sound (the ruled SFX
+manifest never built — wars are silent), O2 player names (recognition
+pays an anonymous ledger), O3 first-war onboarding, O4 difficulty UX,
+O5 crash persistence, O6 deploy playbook, O8 perf numbers.
+Recommended order O2→O1→O3.
