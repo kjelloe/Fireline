@@ -5359,3 +5359,14 @@ boot is init3d() inside try/catch — any throw tears down partial 3D
 state, shows an honest 12s banner (both locales: "restart the
 browser / enable hardware acceleration usually restores 3D"), and
 boots the 2D fallback. Suite 775/775, smoke + acceptance OK.
+
+## O1: THE BATTLEFIELD SOUNDS (2026-08-03, prompt 164)
+
+client/js/sfx.js — the ruled synth-first manifest, built: 12 WebAudio
+patches (osc + envelope + filtered noise; no samples, no network),
+one master bus, concurrency cap 8 so barrages never mush. Event map:
+fire (light/heavy by damage), explosions (disables, breaches),
+capture chime, standard taken/scored, respawn, pings, prison alarm,
+drone whine, sandbag hits. ⚙ Sound-effects toggle (persisted,
+window.__mfSfxOff), separate from the Music toggle (which awaits the
+composer). Suite 775/775, smoke + acceptance OK.

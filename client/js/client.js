@@ -34,6 +34,7 @@ import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
 import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
 import { UNIT_STATS } from "../../engine/units.js";
+import { sfx } from "./sfx.js";
 import { MAP_PROFILES } from "../../engine/state.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
@@ -603,6 +604,15 @@ function init3d() {
     // Soundtrack toggle (prompt 135) — shipped AHEAD of the tracks so
     // the composer integration lands into a ready switch. The music
     // bus consults window.__musicEnabled; nothing plays yet.
+    const sfxEl = document.getElementById("opt-sfx");
+    if (sfxEl) {
+      sfxEl.checked = localStorage.getItem("mf_sfx") !== "0";
+      window.__mfSfxOff = !sfxEl.checked;
+      sfxEl.onchange = () => {
+        window.__mfSfxOff = !sfxEl.checked;
+        try { localStorage.setItem("mf_sfx", sfxEl.checked ? "1" : "0"); } catch { /* private */ }
+      };
+    }
     const musicEl = document.getElementById("opt-music");
     if (musicEl) {
       musicEl.checked = localStorage.getItem("mf_music") !== "0";
@@ -1389,8 +1399,24 @@ function onPointerDown(event) {
   send(cmd);
 }
 
+// O1 (prompt 164): the battlefield finally SOUNDS — event -> patch.
+const SFX_MAP = {
+  fire_resolved: (e) => (e.hpDelta >= 25 ? "fire_heavy" : "fire_gun"),
+  asset_disabled: () => "explode",
+  site_captured: () => "capture",
+  standard_taken: () => "std_taken",
+  standard_scored: () => "std_scored",
+  operator_redeployed: () => "respawn",
+  ping: (e) => (e.kind === "prison_alarm" ? "alarm" : "ping"),
+  drone_launched: () => "drone",
+  sandbag_destroyed: () => "hit",
+  bridge_breached: () => "explode",
+};
+
 function handleEvents(events) {
   for (const e of events) {
+    const sfxKind = SFX_MAP[e.type]?.(e);
+    if (sfxKind) sfx(sfxKind);
     const line = describeEvent(e, joined?.team);
     if (line) pushEvent(line);
     // B7: MY asset going down gets the recap — what killed me, from
