@@ -459,8 +459,14 @@ function applyMoveOrder(next, command) {
   if (command.queue !== true) {
     const stats = getUnitStats(asset.type);
     if (segmentBlocked(next.map, asset.x, asset.y, legX, legY, stats)) {
+      // BOUNDARY-PARITY LAW (the POWS-hunt find, prompt 161): the A*
+      // START CELL is a decision keyed to a continuous x — the one
+      // x-floor site that escaped the 78-site sweep (18i landed after
+      // it). At an exact boundary, plain floor sent the two mirror
+      // worlds down DIFFERENT paths (t=17, seed 777, POWS=2 — the
+      // parked reserves forced the reroute that exposed it).
       const path = findCellPath(
-        next.map, worldToCellFloor(asset.x), worldToCellFloor(asset.y),
+        next.map, sampleCellX(asset.x, next.map.width), worldToCellFloor(asset.y),
         command.targetCellX, command.targetCellY, stats);
       const legs = pathToWaypoints(next.map, path, stats, MAX_WAYPOINTS);
       if (legs.length > 0) {

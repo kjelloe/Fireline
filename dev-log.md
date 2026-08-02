@@ -5273,3 +5273,22 @@ sides, collision verdicts at the target) in both worlds and replicate
 the step by hand — the non-antisymmetric operation falls out in one
 sitting, the terrain-find's exact method. Seed 777, POWS=2, frontier;
 reproduces in seconds.
+
+## THE POWS ROOT: one token (2026-08-03, prompt 161 continuation)
+
+The hand computation closed it in one sitting, exactly as the opener
+predicted: at t=16 both worlds mirrored perfectly; t=17's mirror-equal
+move_orders produced DIFFERENT A* paths because reducer.js:463 fed
+findCellPath a `worldToCellFloor(asset.x)` START CELL — the one
+x-floor decision site that escaped the 78-site boundary-parity sweep
+(item 39's grid A* landed AFTER it). At an exact cell boundary
+(x=2048 / mirror 30720) plain floor gave cells 8/120; the law gives
+8/119 (true mirrors). The POWS config exposed it because the
+captive-crew reserves sit PARKED in the spawn columns, forcing early
+reroutes across boundary-parked traffic. Fix: sampleCellX. Divergence
+horizon t=17 -> t=3,976 (the remainder is a later plan-level event —
+next probe target). Suite 774/774 x2, gate 5/5, no repin (the 1A
+script never paths from a boundary). POWS=2 battery pair queued — the
+outcome question: does 25-28% A recover?
+LINT GAP: boundary_law.test.js scans pathfind.js but this caller
+lived in reducer.js in a form the lint pattern missed — tighten next.

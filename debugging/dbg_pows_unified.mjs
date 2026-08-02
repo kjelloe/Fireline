@@ -42,6 +42,19 @@ const mirrorCmd = (c) => {
   return out;
 };
 for (let t = 0; t < 9000; t++) {
+  if (n.state.tick === 16) {
+    for (const [name, s] of [["N16", n.state], ["M16", m.state]]) {
+      const a = s.assets[0];
+      const cell = (w) => w >> 8;
+      console.log(name, JSON.stringify({
+        x: a.x, y: a.y, tx: a.targetX, ty: a.targetY, h: a.heading,
+        mp: a.moveProgress, st: a.state, sup: a.suppressedTimer,
+        wp: a.waypoints, fuel: a.fuel,
+        cellT: s.map.cells[cell(a.y) * 128 + cell(a.x)],
+        dxdy: Math.abs(a.targetX - a.x) + Math.abs(a.targetY - a.y),
+      }));
+    }
+  }
   n.step(); m.step();
   const pa = JSON.stringify((n.lastPlan ?? []).map(mirrorCmd));
   const pb = JSON.stringify(m.lastPlan ?? []);
@@ -62,6 +75,10 @@ for (let t = 0; t < 9000; t++) {
   }
   if (bad) {
     console.log(`STATE diverges at tick ${n.state.tick} (plans were mirror-equal): ${bad}`);
+    console.log("N plan:", JSON.stringify((n.lastPlan ?? []).filter((c) => c.operatorId === 16)));
+    console.log("M plan:", JSON.stringify((m.lastPlan ?? []).filter((c) => c.operatorId === 16)));
+    console.log("N rejects:", JSON.stringify(n.state.events.filter((e) => e.type === "rejected").slice(0, 4)));
+    console.log("M rejects:", JSON.stringify(m.state.events.filter((e) => e.type === "rejected").slice(0, 4)));
     for (const [name, s] of [["normal", n.state], ["mirror", m.state]]) {
       const a = s.assets[0];
       console.log(name, JSON.stringify({ x: a.x, y: a.y, tx: a.targetX, ty: a.targetY, h: a.heading, mp: a.moveProgress }));
