@@ -32,11 +32,17 @@ path shapes; everything older is a different game):
 | frontier DEFAULT (SYMMETRIC-TERRAIN era, cff77cb) | **46.2 / 45.5% A** (n=600) — in band; edge does NOT flip = a small TEAM-keyed B tilt | FAIR — the new era baseline (pre-fix 48.8/53.5 is a DIFFERENT MAP) |
 | frontier POWS=2 (SYMMETRIC-TERRAIN era) | **25.4 / 27.7% A** (n=600) — the old 47.1% "fairness" RESTED on asymmetric terrain compensating a B-favoring mechanism | **OUT OF BAND — flag for human sessions (POWS=2 is the human flavour!)**; the team-keyed hunt owns this |
 | caldera (classic default) | **54.3 / 51.7% A** — in band; but 13.1-min medians, 63% ELIMINATIONS (death circle — Q63 identity question) | fairness PASSES |
-| convoy (SYMMETRIC-TERRAIN era, cff77cb) | attackers **39.1% (A) / 64.0% (B)** | the gap follows the TEAM, not the direction (mirror pair: A ~41-45 both directions, B ~65 both; uniques-off keeps 11 pts) — TEAM-KEYED, terrain-independent. The hunt's prime suspect: Q18 execution-order first-strike (tick-parity fix AWAITING GO since night 2) |
+| convoy (SYMMETRIC-TERRAIN era) | attackers: Sentinel-led **39.1(A)/32.3(B)**, Skimmer-led **78.0(A)/64.7(B)** | THE GAP IS THE UNIQUE PAIR (factionswap square, n=1200): a Skimmer-led attack is worth ~+35 pts regardless of team/direction (trail-affinity mobility vs the defensive turtle). Small residual: east-pusher +7-13 within same-unique. Q47's bar discussion now has the real axes |
 | heist (post-doctrine, 849fb27) | attackers **8.0% east / 3.7% west** (was ~0.3) | alive but under any bar — the getaway is physics (Q70 levers with the owner) |
 | riverline (post-pacing + farm fix) | **54.5 / 59.3% A** uniques-ON; **47.2 / 34.7%** uniques-OFF (n=600 each) | Q69 rungs DONE: stalemate exonerated (56.8% without it); UNIQUES CONVICTED — the pair swings ~16 pts toward A on the water map (sawtooth seat-economics' sibling). Beneath it, uniques-off shows an EAST-SIDE curse (~-9 pts both worlds) = the directional residue |
 
-THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
+THE TEAM-KEYED REMAINDER, LARGELY DISSOLVED (2026-08-03): the convoy
+gap, sawtooth's lean, and riverline's lean are ALL the unique pair
+(factionswap/uniques-off squares). VAULTS=2 on clean terrain STILL
+convicts (41.7/42.3% A — the vault's harm was never terrain luck; it
+stays pulled). Still open: POWS=2 at 25-28% A (uniques rung not yet
+run) and the small east-pusher residual (+7-13 in convoy same-unique
+squares). THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
 1. UNDESIGNED root FOUND+FIXED: frontier terrain was never
    cell-symmetric (1,615/8,192 pairs/seed) — mirror-by-construction
    since cff77cb; test/map_symmetry.test.js pins all profiles. EVERY
@@ -50,7 +56,7 @@ THE RESIDUE, RESOLVED INTO ITS PARTS (2026-08-02):
    suspect: Q18 execution-order first-strike (tick-parity command
    order fix proposed night 2, AWAITING the owner's GO). Instruments:
    convoy A/B pair (25-pt signal, ~6 min PC), POWS pair (20-pt).
-| sawtooth (2026-08-03 pair, cache REMOVED, on f20ce07) | **69.3 / 67.1% A** — REGRESSED from 56.3/54.7; the CONFIRM pair EXONERATED the cache (with-cache read the same 65.5/70.2) | HELD harder; premium stays; CONVICTED same night: the ESCORT-WALL FIX span (0cb8cda 56.2% -> HEAD 64.1%, same 64 seeds) — the fix is CORRECT (a real deadlock); working raids AMPLIFY sawtooth's own persistent lean (unique-pair seat economics). The fix stays; sawtooth's mechanism hunt inherits the urgency; premium (B) stays as the disclosure |
+| sawtooth (2026-08-03 pair, cache REMOVED, on f20ce07) | **69.3 / 67.1% A** — REGRESSED from 56.3/54.7; the CONFIRM pair EXONERATED the cache (with-cache read the same 65.5/70.2) | HELD harder; premium stays; Q73 discriminators DONE (n=1200): UNIQUES=0 reads **48.5/45.1 — dead fair**; FACTIONSWAP reads 52.5/49.2 — fair. Sawtooth's 68% is ENTIRELY the unique pair on its home sides. Designer levers now clean: per-map unique disable (map law), a sawtooth-specific unique tune, or premium-as-is |
 
 THE SPECIALS-LADDER CAUTION (down from "law" — the cache observation
 was VOID, a cross-build comparison; the config-drift class caught by

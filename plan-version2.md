@@ -158,10 +158,12 @@ restored), Q69 (riverline premium accepted), Q70 (getaway: speed alone
 insufficient — carry rule kept), Q71 (tick-parity inert), Q53 (two-lane
 road walls landed), Q58 (cache brief delivered).
 
-| # | Question | Owner | Blocked by |
-|---|---|---|---|
-| Q47 | Convoy asymmetric bar: attackers now 39%(A)/64%(B) post-escort-wall — what band is "fair", and does the team-keyed gap fold into the hunt first? | you + designer | playtest |
-| Q56 | AI landship doctrine: should regents claim/crew the neutral fortress? (human-only for now, re-affirmed prompt 145) | you | playtest feel |
-| Q67 | Vault re-test timing (VAULTS=2 rung): before any cache re-placement, or park the specials ladder until a map measures fair? | you | — |
-| **Q72** | **SIEGE-PREP GO?** Attacker artillery shells the vault garrison before the dive — the named lever for AI-viable heist | **you** | — |
-| **Q73** | **Sawtooth priority**: hunt the unique-pair mechanism now, after your playtest, or retire sawtooth to the bank? (~68% A while held) | **you** | — |
+All five were delegated (prompt 151) and EXECUTED on data:
+
+| # | Verdict |
+|---|---|
+| Q47 | The gap is THE UNIQUE PAIR (factionswap square, n=1200): Skimmer-led attacks +~35 pts regardless of team/direction (Sentinel 39/32, Skimmer 78/65). The BAR itself remains yours — but the axes are now honest: chassis value, not team bias |
+| Q56 | BUILT, default OFF: light-hull regents within 12 cells claim the fortress under `rules.landshipAI` / LANDSHIPAI=1 — your playtest feel flips it |
+| Q67 | ANSWERED: VAULTS=2 on symmetric terrain still convicts (41.7/42.3% A) — the vault's harm was never terrain luck; it stays pulled, ladder parked |
+| Q72 | LANDED: the siege battery (indirect tubes stand 9 off the vault, escorts spot, hold-short carrier dives on thin; SIEGE=0 A/Bs). First SCORED heist wins in any probe; battery pair pending |
+| Q73 | ANSWERED: uniques-off sawtooth is DEAD FAIR (48.5/45.1); factionswap fair (52.5/49.2) — the 68% is entirely the pair on home sides. Lever choice (per-map unique law / tune / premium-as-is) is a design call with clean data |
