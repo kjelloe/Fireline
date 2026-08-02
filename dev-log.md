@@ -5347,3 +5347,15 @@ manifest never built — wars are silent), O2 player names (recognition
 pays an anonymous ledger), O3 first-war onboarding, O4 difficulty UX,
 O5 crash persistence, O6 deploy playbook, O8 perf numbers.
 Recommended order O2→O1→O3.
+
+## hotfix: the WebGL corpse (2026-08-03, prompt 165 — live playtest catch)
+
+The 14D probe passes with a bare-canvas context while THREE's real
+context creation can still fail (ANGLE "BindToCurrentSequence" — a
+transient NVIDIA/D3D9Ex driver state, seen live on the owner's
+MX550). That threw UNCAUGHT at init and left a dead black app with
+no message — the 2D fallback existed and never engaged. Now: the 3D
+boot is init3d() inside try/catch — any throw tears down partial 3D
+state, shows an honest 12s banner (both locales: "restart the
+browser / enable hardware acceleration usually restores 3D"), and
+boots the 2D fallback. Suite 775/775, smoke + acceptance OK.

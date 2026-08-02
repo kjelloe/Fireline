@@ -297,6 +297,31 @@ function init() {
     init2dFallback();
     return;
   }
+  // Prompt 165 (playtest): the trivial probe can pass while THREE's
+  // REAL context creation fails (ANGLE "BindToCurrentSequence" — a
+  // transient driver state on some NVIDIA/D3D9Ex stacks). That threw
+  // UNCAUGHT and left a dead black app with no message. Any throw in
+  // the 3D boot now lands in the 2D fallback with a visible, honest
+  // notice — never a silent corpse.
+  try {
+    init3d();
+  } catch (err) {
+    console.error("3D boot failed — falling back to 2D:", err);
+    const container = document.getElementById("canvas-container");
+    if (container) container.innerHTML = "";
+    scene = null; renderer = null;
+    const warn = document.createElement("div");
+    warn.style.cssText = "position:absolute;top:44px;left:50%;transform:translateX(-50%);" +
+      "background:#7a2a1a;color:#fff;padding:10px 22px;border-radius:8px;z-index:12;" +
+      "font:bold 15px sans-serif;text-align:center;max-width:520px;";
+    warn.textContent = t("page.webgl_failed");
+    document.body.appendChild(warn);
+    setTimeout(() => warn.remove(), 12000);
+    init2dFallback();
+  }
+}
+
+function init3d() {
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x101018);
 
