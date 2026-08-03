@@ -7,3 +7,4 @@ dev-prompts.md
 reports/sweeps/
 *:Zone.Identifier
 data/autosave.json
+tools/deploy.env

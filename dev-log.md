@@ -5546,3 +5546,40 @@ NEXT OPENER: the mid-war ledger (what event opens the t≈4250 run:
 prison raids, POW captures, capture-arc pushes; per-event census in
 the 4000-5250 window, 5 seeds, then the A/B kill-switch that names
 it).
+
+## THE MID-WAR LEDGER: the rebuild overshoot (2026-08-04, prompt 172)
+
+The ledger (dbg_midwar_ledger.mjs — run window 4000-5250 v control
+2500-3750, POWS=2): the A-loss run is B ARTILLERY farming A's soft
+hulls at the centre (carrier x4, scout x3, mortar/logistics/sentinel
+x2 each — 14 arty kills v A's ~5), and the switch-on signature is
+crawl_ordered/A 0 → 42: A's carrier deaths dump rescued operators
+into a downed-crawl spiral (downs 24v10, move orders collapse
+337→261). A's operators already downed ~2:1 in the CONTROL window
+(15v8) on even hull losses — A loses CREWED hulls, B empty ones.
+
+The artillery census (dbg_arty_census.mjs) inverts the story: A WINS
+the artillery war early (B loses 4 tubes by bucket 1000; A out-shoots
+21/4, 13/0) — then B's early wipe triggers its MPG wave sooner and
+from t≈3000 B's FRESH replacement tubes dominate A's worn survivors
+(alive 1.6 v 0.9, shots 21/5). THE REBUILD OVERSHOOT: losing your
+army early buys a fresh synchronized wave that outguns the winner's
+attrition-worn hulls; under POW density the carrier/crawl spiral
+converts dominance into a rout. CONTROL: at POWS=0 the cycle stays
+COUPLED (both sides lose 4/4 early, rebuild together, no overshoot)
+— the POW arc is the decoupler. Queued same-build (a81477c):
+pows2 ab baseline + RAIDPARTY=0 + POWARC=0 (the old "no change"
+raid-party read is last-era). Filed as Q76 (designer): is the MPG
+wave overshoot (fresh wave > worn survivors) intended comeback
+depth, or should wave strength scale down with the pool difference?
+
+## O6: the deploy playbook (2026-08-04, prompt 172)
+
+DEPLOYING.md + tools/ssh-deploy.sh — the sibling project's seven
+deploy guards ported to Fireline's shape (one Node process, /health,
+data/replays+autosave.json are runtime state, data/units.json is a
+generated deployable): allowlist rsync, SSH mux, provenance guard,
+shared-box sanity, the sleep+health deploy guard, content-honest
+public verification, systemd/nginx templates. Host identity lives in
+gitignored tools/deploy.env — nothing invented, nothing public in
+the repo. Remaining O-item: O8 perf numbers (user-side).

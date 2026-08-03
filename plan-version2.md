@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-03 (suite 778/778, fixture v68 — the CONTACT-LAW era). HTML twin:
+*Updated 2026-08-04 (suite 780/780, fixture v68 — the CONTACT-LAW era). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -149,7 +149,7 @@ have, in the order I would worry:
 | O3 | ✅ SHIPPED (164): the first-war coach — four timed beats, once ever, both locales | — | — |
 | O4 | ✅ SHIPPED (171): `--difficulty easy|normal|hard` named presets + the join screen shows the host's AI level (s_lobby, both locales) | — | — |
 | O5 | ✅ SHIPPED (164): 30s autosave + opt-in CLI resume (<10 min), hash-roundtrip pinned | — | — |
-| O6 | Public-server deploy playbook (discovery exists; no firepower ssh-deploy/hosting doc like the sibling project has) | The multiciv pattern is proven — port it | S |
+| O6 | ✅ SHIPPED (172): DEPLOYING.md playbook + tools/ssh-deploy.sh (multiciv's seven guards ported; host identity in gitignored deploy.env) | — | — |
 | O7 | Text chat (comm wheel + pings exist) | Probably FINE for v2 — pings were the ruled design; note only | — |
 | O8 | Native perf numbers (runner works, numbers never collected — user-side since July) | Perf claims are still vibes | user |
 
