@@ -244,13 +244,23 @@ outcome. Renderer presents fog-filtered views only.
   (collisionVerdict._prevX, set in applyAdvanceTick); mutual closers
   may undershoot the block radius one step each, symmetrically;
   pinned by test/collision_mirror.test.js (the 19-cell scout
-  skew-window geometry, verified red pre-fix). SURVIVING RESIDUE:
-  within-tick command order (the twin trucks still die 546/547;
-  orderParity default OFF was trialed inert BEFORE this fix —
-  re-arm it in batteries); MPG wave-timing asymmetry (B refills
-  earlier despite fewer losses) noted open. Same-build battery
-  pairs (frontier_uq, POWS=2, each ± ORDERPARITY) queued — the
-  outcome verdict is theirs, never the 5-seed gate's.
+  skew-window geometry, verified red pre-fix). b5b5a69 batteries
+  read FLAT (frontier_uq 39.7/40.3, POWS=2 25.9/28.3 — correct fix,
+  not the outcome channel) and the ORDERPARITY arms were
+  BIT-IDENTICAL → DEAD-SWITCH LAW (sim-campaign skill): Q71's
+  partition was a no-op all along (plan() already sorts emission by
+  lead team since Q18) — the old "tick-parity inert" verdict judged
+  a dead switch. SECOND CONVICTION, same class (a81477c): the Q18
+  lead-team law was RAW TICK PARITY and mirror-synchronized
+  exchanges land on a fixed parity — one team led every dominant
+  simultaneous exchange (the 546/547 duel). Fixed: lead team =
+  seeded hash bit of (tick, mapSeed) (ai_regency ~985; AI-only,
+  nothing hashed; tick_parity.test.js pins the hash law). THE
+  PHASE-LOCK CLASS now has two members (march order, emission
+  order) — audit any parity-alternated order against
+  mirror-synchronized events. a81477c re-baseline pairs queued;
+  still filed: MPG wave-timing asymmetry (B refills earlier despite
+  fewer losses).
   Also open: the east-pusher residual (+7-13 side-keyed);
   heist attackers 12.7/9.3% (a dial — the bar is the designer's). powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,

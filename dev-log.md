@@ -5477,3 +5477,35 @@ inert BEFORE this fix — the trial read a channel drowned by parking
 skew). Batteries queued same-build: frontier_uq + POWS=2 pairs, each
 with an ORDERPARITY=1 arm. The 5-seed line still leans B early —
 judgement belongs to the n=300 pairs, not 5 seeds.
+
+## THE PHASE LOCK, EMISSION EDITION (2026-08-03, prompt 171)
+
+The b5b5a69 batteries came back FLAT: frontier_uq 39.7/40.3% A,
+POWS=2 25.9/28.3% A — the meeting-stop fix is correct by
+construction (the mirror pin proves it) but was not the outcome
+channel. The tell was the ORDERPARITY arms: BIT-IDENTICAL counts
+(119/180 and 77/220 twice each). Config-drift law said check the
+plumbing — the flag reaches the regency fine; the partition is a
+NO-OP because plan() has ALREADY sorted emission by lead team since
+the Q18 fix (ai_regency ~978), and Q71's partition enforces the
+same order. INSTRUMENT LAW (new): a bit-identical A/B arm means the
+switch is dead — no-op or unplumbed; verify the mechanism engages
+before recording "inert".
+
+Post-fix re-trace of the centre duel: the trucks now park EXACT
+mirror (16296+16472=2x16384) and both artilleries range at t=540 —
+yet A still died 546 with its shot queued. Root, one layer up: the
+Q18 lead-team law is RAW TICK PARITY, and mirror-SYNCHRONIZED
+exchanges land on the same tick parity every war — one fixed team
+led every dominant simultaneous exchange. Same structural flaw as
+the meeting-stop law, in the emission order. FIX (a81477c): lead
+team = seeded integer-hash bit of (tick, mapSeed) — deterministic,
+team-symmetric in expectation, decorrelated from every synchronized
+cadence. AI-only, nothing hashed, no fixture risk.
+tick_parity.test.js repinned to the hash law + a lead-mix balance
+assertion. Behavioral check: seed 9001's first blood now flips to
+B's truck dying first — the lock is broken. 778/778 x2, gate
+healthy (mixed winners/reasons). Re-baseline pairs queued on
+a81477c: frontier_uq ± mirror, POWS=2 ± mirror. If POWS=2 stays
+~26%, the next instrument is the loss ledger BETWEEN t=546 and the
+first divergence bucket under the new law.

@@ -23,9 +23,16 @@ SEED=2026 node debugging/sim_wave1_systems.mjs # which systems actually fired
 node debugging/sim_11e_gate.mjs               # per-seed tows/rescues/downs table
 ```
 
-Healthy war, CURRENT baseline (**POST-LADDER era, n=600/config on
-0328573, 2026-08-02** — the eight-rung equivariance ladder changed
-path shapes; everything older is a different game):
+Healthy war, CURRENT baseline era: **THE CONTACT-LAW ERA opens at
+b5b5a69/a81477c (2026-08-03)** — the meeting-stop snapshot fix
+(b5b5a69) changed contact geometry for every hull, and the seeded
+lead-team hash (a81477c) changed emission order every tick;
+everything older is a different game. First same-build reads on
+b5b5a69 (pre-a81477c): frontier_uq **39.7/40.3% A**, POWS=2
+**25.9/28.3% A** — the meeting-stop fix alone did NOT move outcomes;
+a81477c pairs queued. (Previous era: POST-LADDER n=600 on 0328573,
+2026-08-02, table below still cites it — treat those rows as
+last-era context until the a81477c pairs land.)
 
 | config (live) | A-rate | verdict |
 |---|---|---|
@@ -74,6 +81,24 @@ was VOID, a cross-build comparison; the config-drift class caught by
 its own confirm battery): the vault remains the single observation
 that a personality node can compound a lean. Ship specials with a
 SAME-BUILD kill-switch A/B, never judged against an older baseline.
+
+THE DEAD-SWITCH LAW (2026-08-03, the ORDERPARITY lesson): an A/B arm
+that returns BIT-IDENTICAL counts to its baseline is not "inert" —
+the switch is dead (a no-op or unplumbed). Verify the mechanism
+actually engages (probe the emission/branch directly) before
+recording an inert verdict. ORDERPARITY was a no-op ALL ALONG:
+plan() has sorted emission by lead team since the Q18 fix, and the
+Q71 partition enforced the sort's own order — so the original
+"tick-parity inert" verdict judged a switch that did nothing.
+
+THE PHASE-LOCK CLASS (two convictions, 2026-08-03): alternating an
+order by RAW TICK PARITY is NOT fair for mirror-SYNCHRONIZED events
+— symmetric routes put both twins' decisive moment on the SAME tick
+every war, so a fixed side wins every dominant synchronized contest.
+Convicted twice: the meeting-stop march (fixed by snapshot collision
+verdicts, b5b5a69) and the lead-team emission order (fixed by the
+seeded (tick, mapSeed) hash bit, a81477c). Audit any future
+parity-alternated order for the same flaw.
 | blackwood (post-fix battery) | **51.0 / 48.3% A** (n=600 on c51a557) — edge flips, FAIR both worlds | RESTORED — the farm was the whole regression; promotion stands, Q68 dissolved |
 
 POWS-era pacing history (why powPreplaced settled at 0): at 2 the

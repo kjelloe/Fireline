@@ -169,12 +169,17 @@ system) → O1 (the SFX manifest; music integration follows the composer)
    tick's first mover park one speed quantum deeper (88 v 143 from
    the boundary) and eat mirror-support artillery 2 ticks early.
    Fixed: verdicts read start-of-tick snapshots; mirror-pair pin in
-   test/collision_mirror.test.js (red pre-fix). AWAITING the n=300
-   same-build pairs (frontier_uq, POWS=2, each ± ORDERPARITY — the
-   within-tick command order is the surviving residue channel; the
-   twin trucks still die 546/547). MPG wave-timing asymmetry (B
-   refills earlier despite fewer losses) filed. Sawtooth bench and
-   heist bar decisions ride on the post-battery numbers.
+   test/collision_mirror.test.js (red pre-fix). The b5b5a69 pairs
+   read FLAT (39.7/40.3 frontier_uq, 25.9/28.3 POWS=2) — correct
+   fix, not the outcome channel — and exposed a SECOND phase-lock:
+   Q18's lead-team emission was raw tick parity (fixed team led
+   every mirror-synchronized exchange; Q71's partition was a dead
+   switch enforcing the sort's own order). Fixed at a81477c: lead
+   team = seeded hash bit of (tick, mapSeed); first blood now flips
+   sides by seed. AWAITING the a81477c pairs. MPG wave-timing
+   asymmetry (B refills earlier despite fewer losses) filed.
+   Sawtooth bench and heist bar decisions ride on the post-battery
+   numbers.
 2. **Heist AI viability** — Q72 (siege prep) with you; humans have
    the getaway car already.
 3. **Specials ladder** — both vault and cache engine-complete and
