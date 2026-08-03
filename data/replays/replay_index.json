@@ -530,6 +530,15 @@
       "reason": 0,
       "finalHash": "3937dde0a9ef6907",
       "finishedAt": "2026-08-02T19:02:37.911Z"
+    },
+    {
+      "id": "war-2026-cb2f4a66290a",
+      "mapSeed": 2026,
+      "ticks": 8629,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "c5317bbe92397f9e",
+      "finishedAt": "2026-08-02T23:39:16.349Z"
     }
   ]
 }

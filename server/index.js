@@ -4,7 +4,7 @@
 // broadcast. All game logic stays in engine/.
 
 import http from "node:http";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -102,6 +102,20 @@ export function createAppServer(options = {}) {
       })(),
     },
   });
+  // O5: resume a crashed war if a fresh autosave exists (<10 min old).
+  // OPT-IN (options.resume — the CLI main passes it): a stray autosave
+  // must never leak into tests or embedded servers.
+  if (options.resume === true && process.env.RESUME !== "0") {
+    try {
+      const savePath = path.join(ROOT_DIR, "data", "autosave.json");
+      const raw = JSON.parse(readFileSync(savePath, "utf8"),
+        (k, v) => (v && v.__u8 ? Uint8Array.from(v.__u8) : v));
+      if (raw.savedAt && Date.now() - raw.savedAt < 600000 && raw.state?.tick > 0) {
+        gameServer.state = raw.state;
+        console.log(`resumed the autosaved war (tick ${raw.state.tick}, saved ${Math.round((Date.now() - raw.savedAt) / 1000)}s ago)`);
+      }
+    } catch { /* no autosave: a fresh war */ }
+  }
   const transport = new NetworkTransport(gameServer, wss, {
     // Prompt 149: SPECTATE=0 / REPLAYS=0 (or options) disable the booth
     // and the archive for this server.
@@ -272,9 +286,27 @@ export function createAppServer(options = {}) {
         announceOnce();
         announceTimer = setIntervalFn(announceOnce, options.announceIntervalMs ?? 60000);
       }
+      // O5 (prompt 164): CRASH PERSISTENCE — the live war autosaves
+      // every 30 s; a crashed server resumes it on boot (RESUME=0 or
+      // options.autosave false disables; tests default off via the
+      // injected clock). Graceful shutdown already archives; this
+      // covers the ungraceful kind.
+      if (options.resume === true && options.autosave !== false && !clockOptions.setIntervalFn) {
+        const savePath = path.join(ROOT_DIR, "data", "autosave.json");
+        this.autosaveTimer = setInterval(() => {
+          try {
+            const s = gameServer.state;
+            const body = JSON.stringify({ savedAt: Date.now(), state: s },
+              (k, v) => (v instanceof Uint8Array ? { __u8: Array.from(v) } : v));
+            writeFileSync(savePath, body);
+          } catch (err) { console.error("autosave failed:", err.message); }
+        }, options.autosaveMs ?? 30000);
+        this.autosaveTimer.unref?.(); // never hold the event loop open
+      }
       return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));
     },
     async stop() {
+      if (this.autosaveTimer) clearInterval(this.autosaveTimer);
       gameServer.stop();
       this.clearHeartbeat?.();
       if (announceTimer) clearInterval(announceTimer);
@@ -414,6 +446,7 @@ env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, 
   const modeAttacker = Number(cli.attacker ?? (process.env.MODEATTACKER === "1" ? 1 : 0)) === 1 ? 1 : 0;
   const appServer = createAppServer({
     mapSeed, aiDifficulty, mapProfile, rules, mode, modeAttacker,
+    resume: true, // O5: the CLI server resumes a crashed war
     // Discovery (colocation ruling): MASTER_URL points at the index,
     // PUBLIC_ADDR is host:port as the INTERNET reaches us (behind TLS:
     // the public port, not the process port), PUBLIC_NAME optional.

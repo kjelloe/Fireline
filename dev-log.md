@@ -5370,3 +5370,18 @@ capture chime, standard taken/scored, respawn, pings, prison alarm,
 drone whine, sandbag hits. ⚙ Sound-effects toggle (persisted,
 window.__mfSfxOff), separate from the Music toggle (which awaits the
 composer). Suite 775/775, smoke + acceptance OK.
+
+## O3 + O5 (2026-08-03, prompt 164 completion)
+
+O3 FIRST-WAR COACH: four timed beats for a brand-new player (move ->
+fire -> supply -> the game's soul: "rescues earn more than kills"),
+once ever (mf_coached), big-font notices, both locales — the
+60-second tenet finally instrumented.
+O5 CRASH PERSISTENCE: the CLI server autosaves the live war every
+30 s (Uint8Array-safe JSON) and RESUMES it on boot if the save is
+<10 min old (RESUME=0 skips). Hash-roundtrip pinned byte-identical.
+TWO honest stumbles, both fixed in-flight: the autosave interval
+held node's event loop open (suites hung — unref + clear in stop);
+then a stray autosave leaked into every test's server (resume is now
+OPT-IN via the CLI path only; the gitignore keeps the save out of
+the repo). Suite 776/776 x2, smoke OK.

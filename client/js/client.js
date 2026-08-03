@@ -842,6 +842,18 @@ function connect() {
       document.getElementById("join-overlay").style.display = "none";
       pushEvent(t("ui.spectating"));
     } else if (msg.type === "s_joined") {
+      // O3 (prompt 164): the FIRST-WAR COACH — four timed beats for a
+      // brand-new player, once ever (mf_coached). The 60-second tenet,
+      // finally instrumented: move, fire, supply, and the game's soul.
+      let coached = null;
+      try { coached = localStorage.getItem("mf_coached"); } catch { /* private */ }
+      if (!coached && !msg.rejoined) {
+        try { localStorage.setItem("mf_coached", "1"); } catch { /* private */ }
+        setTimeout(() => flashNotice(t("coach.move"), 5200, "#9fe89f", true), 4000);
+        setTimeout(() => flashNotice(t("coach.fire"), 5200, "#ffd75e", true), 14000);
+        setTimeout(() => flashNotice(t("coach.supply"), 5200, "#9fd8ff", true), 26000);
+        setTimeout(() => flashNotice(t("coach.soul"), 6200, "#f5c84a", true), 40000);
+      }
       const resumed = msg.rejoined === true && joined !== null;
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";

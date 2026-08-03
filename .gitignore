@@ -6,3 +6,4 @@ dev-prompts.md
 .agent-mail/
 reports/sweeps/
 *:Zone.Identifier
+data/autosave.json

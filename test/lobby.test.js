@@ -92,3 +92,17 @@ test("O2: names ride the join and land in everyone's lobby packet", async () => 
     a.ws.close(); b.ws.close();
   });
 });
+
+test("O5: the autosave roundtrip preserves the state hash exactly", async () => {
+  const { createInitialState } = await import("../engine/state.js");
+  const { apply } = await import("../engine/reducer.js");
+  const { hashState } = await import("../engine/snapshot.js");
+  let s = createInitialState(2026, "frontier_corridor", {});
+  for (let i = 0; i < 50; i++) s = apply(s, { type: "advance_tick" });
+  const body = JSON.stringify({ savedAt: 1, state: s },
+    (k, v) => (v instanceof Uint8Array ? { __u8: Array.from(v) } : v));
+  const back = JSON.parse(body, (k, v) => (v && v.__u8 ? Uint8Array.from(v.__u8) : v)).state;
+  assert.equal(hashState(back), hashState(s), "byte-identical war after the roundtrip");
+  const s2 = apply(back, { type: "advance_tick" });
+  assert.equal(typeof s2.tick, "number", "the revived war ticks");
+});
