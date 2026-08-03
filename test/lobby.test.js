@@ -106,3 +106,27 @@ test("O5: the autosave roundtrip preserves the state hash exactly", async () => 
   const s2 = apply(back, { type: "advance_tick" });
   assert.equal(typeof s2.tick, "number", "the revived war ticks");
 });
+
+test("O4: the lobby packet carries the host's AI difficulty", async () => {
+  await withServer({ aiDifficulty: 2 }, async (app, port) => {
+    const c = await connect(port);
+    assert.ok(await until(() => lastLobby(c) !== undefined), "lobby arrives");
+    assert.equal(lastLobby(c).difficulty, 2, "hard reaches the join screen");
+    c.ws.close();
+  });
+  await withServer({}, async (app, port) => {
+    const c = await connect(port);
+    assert.ok(await until(() => lastLobby(c) !== undefined), "lobby arrives");
+    assert.equal(lastLobby(c).difficulty, 1, "normal is the default");
+    c.ws.close();
+  });
+});
+
+test("O4: --difficulty accepts names and numbers, numbers stay valid", async () => {
+  const { resolveDifficulty } = await import("../server/index.js");
+  assert.equal(resolveDifficulty("easy"), 0);
+  assert.equal(resolveDifficulty("Normal"), 1);
+  assert.equal(resolveDifficulty("HARD"), 2);
+  assert.equal(resolveDifficulty("2"), 2);
+  assert.equal(resolveDifficulty(null), 1, "unset means normal");
+});

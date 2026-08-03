@@ -22,6 +22,7 @@ export class NetworkTransport {
         // spectator booth and the replay archive.
         this.spectateEnabled = options.spectate !== false;
         this.replaysEnabled = options.replays !== false;
+        this.difficulty = options.difficulty ?? 1; // O4: shown on the join screen
 
         this.wss.on("connection", (ws) => {
             ws.on("message", (raw) => this.handleMessage(ws, raw));
@@ -54,6 +55,7 @@ export class NetworkTransport {
             humans: this.humanCounts(),
             spectate: this.spectateEnabled,
             replays: this.replaysEnabled,
+            difficulty: this.difficulty, // O4: 0 easy / 1 normal / 2 hard
             names: Object.fromEntries(this.names), // O2: opId -> name
         });
         const targets = oneWs ? [oneWs] : [...this.wss.clients];

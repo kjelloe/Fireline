@@ -795,6 +795,12 @@ function connect() {
       if (spec) spec.style.display = msg.spectate === false ? "none" : "";
       const rep = document.getElementById("link-replays");
       if (rep) rep.style.display = msg.replays === false ? "none" : "";
+      // O4: the host's AI difficulty, so players know the war they join.
+      const diff = document.getElementById("join-difficulty");
+      if (diff && msg.difficulty !== undefined) {
+        const key = ["page.ai_easy", "page.ai_normal", "page.ai_hard"][msg.difficulty] ?? "page.ai_normal";
+        diff.textContent = t(key);
+      }
       return;
     }
     if (msg.type === "s_map") {

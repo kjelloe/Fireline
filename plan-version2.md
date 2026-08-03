@@ -1,7 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-03 (suite 765/765, fixture v68 — the SYMMETRIC-TERRAIN
-era). HTML twin:
+*Updated 2026-08-03 (suite 778/778, fixture v68 — the CONTACT-LAW era). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -148,7 +147,7 @@ have, in the order I would worry:
 | O1 | ✅ SHIPPED (164): sfx.js — 12 synth patches wired to the event stream, ⚙ toggle | — | — |
 | O2 | ✅ SHIPPED (164): join-screen name field, transport registry via s_lobby, honors celebrate people | — | — |
 | O3 | ✅ SHIPPED (164): the first-war coach — four timed beats, once ever, both locales | — | — |
-| O4 | Difficulty preset UX — AI_DIFFICULTY exists as env only; no host-facing picker | LAN hosts can't tune without docs | S |
+| O4 | ✅ SHIPPED (171): `--difficulty easy|normal|hard` named presets + the join screen shows the host's AI level (s_lobby, both locales) | — | — |
 | O5 | ✅ SHIPPED (164): 30s autosave + opt-in CLI resume (<10 min), hash-roundtrip pinned | — | — |
 | O6 | Public-server deploy playbook (discovery exists; no firepower ssh-deploy/hosting doc like the sibling project has) | The multiciv pattern is proven — port it | S |
 | O7 | Text chat (comm wheel + pings exist) | Probably FINE for v2 — pings were the ruled design; note only | — |

@@ -25,6 +25,7 @@ npm run start:frontier | start:riverline | start:sawtooth
 npm start -- --map blackwood     # the general form
 npm start -- --mode heist        # asymmetric modes (146): standard|convoy|heist
 npm start -- --mode convoy --attacker 1   # team B escorts instead
+npm start -- --difficulty hard   # O4: easy|normal|hard (or 0|1|2); shown on the join screen
 npm run start:convoy | start:heist        # same, less typing
 npm run maps                     # what is registered
 npm start -- --help              # every option

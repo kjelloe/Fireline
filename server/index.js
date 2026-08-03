@@ -121,6 +121,7 @@ export function createAppServer(options = {}) {
     // and the archive for this server.
     spectate: options.spectate ?? process.env.SPECTATE !== "0",
     replays: options.replays ?? process.env.REPLAYS !== "0",
+    difficulty: options.aiDifficulty ?? 1, // O4: the join screen shows it
   });
 
   // 5A: match history. A finished war is archived exactly once.
@@ -371,6 +372,17 @@ function parseCliArgs(argv) {
 // contract: CLI beats env beats default, and a mistyped mode refuses
 // to start with the real list — never a silent standard war.
 const MODE_NAMES = { standard: 0, convoy: 1, heist: 2 };
+// O4 (prompt 171): hosts say "hard", not "2". Numbers stay valid so
+// existing scripts and AI_DIFFICULTY env usage keep working.
+export const DIFFICULTY_NAMES = { easy: 0, normal: 1, hard: 2 };
+export function resolveDifficulty(requested) {
+  if (requested === null || requested === undefined || requested === "") return 1;
+  const key = String(requested).toLowerCase();
+  if (key in DIFFICULTY_NAMES) return DIFFICULTY_NAMES[key];
+  if (["0", "1", "2"].includes(key)) return Number(key);
+  console.error(`unknown difficulty: ${requested} (valid: ${Object.keys(DIFFICULTY_NAMES).join(", ")}, 0, 1, 2)`);
+  process.exit(2);
+}
 function resolveMode(requested) {
   if (!requested) return 0;
   const key = String(requested).toLowerCase();
@@ -425,7 +437,7 @@ if (isMain) {
 
 options: --map|-m <profile>  --mode <standard|convoy|heist>  --attacker <0|1>
          --seed <n>  --port|-p <n>  --rules <preset>
-         --difficulty <0|1|2>  --list-maps  --help
+         --difficulty <easy|normal|hard|0|1|2>  --list-maps  --help
 env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
     process.exit(0);
   }
@@ -439,7 +451,7 @@ env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, 
   }
   const port = Number(cli.port ?? process.env.PORT ?? 8080);
   const mapSeed = Number(cli.seed ?? process.env.MAP_SEED ?? 2026);
-  const aiDifficulty = Number(cli.difficulty ?? process.env.AI_DIFFICULTY ?? 1);
+  const aiDifficulty = resolveDifficulty(cli.difficulty ?? process.env.AI_DIFFICULTY ?? null);
   const mapProfile = resolveMapProfile(cli.map ?? process.env.MAP ?? null); // 11M
   const rules = rulesForPreset(cli.rules ?? process.env.RULES ?? "normal"); // 13G presets
   const mode = resolveMode(cli.mode ?? process.env.MODE ?? null); // prompt 146

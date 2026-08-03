@@ -5509,3 +5509,13 @@ healthy (mixed winners/reasons). Re-baseline pairs queued on
 a81477c: frontier_uq ± mirror, POWS=2 ± mirror. If POWS=2 stays
 ~26%, the next instrument is the loss ledger BETWEEN t=546 and the
 first divergence bucket under the new law.
+
+## O4: the difficulty picker (2026-08-03, prompt 171)
+
+`--difficulty easy|normal|hard` (numbers stay valid; env unchanged;
+`resolveDifficulty` exported + tested), the transport carries the
+host's level in s_lobby, and the join screen shows it in both
+locales (#join-difficulty). Players now know the war they are
+joining before they click a flag. 780/780 x2, smoke (incl 2D join)
++ acceptance green. Remaining O-items: O6 deploy playbook, O8 perf
+numbers (user-side).
