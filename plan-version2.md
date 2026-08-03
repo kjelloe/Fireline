@@ -127,8 +127,12 @@ expression of its structural lean); caldera 54.3/51.7 in band;
 POWS=2 **25-28% A (OUT OF BAND — the old 47% rested on terrain
 luck)**; convoy attackers 39/64% (team-keyed). MODE WARS are a
 different game — never mix their rows into standard baselines.
-Earlier eras (cell-centre reset, pool ladder, crewing bug, people-era
-re-baseline) are archived in the skill and dev-log.
+**A NEW ERA OPENS AT b5b5a69 (2026-08-03, the meeting-stop fix)**:
+contact geometry changed for every hull on every map — all
+pre-b5b5a69 numbers are last-era; the re-baseline pairs are queued
+on the PC lane. Earlier eras (cell-centre reset, pool ladder,
+crewing bug, people-era re-baseline) are archived in the skill and
+dev-log.
 
 ## OMISSIONS REVIEW (prompt 163 — the step-back audit)
 
@@ -156,15 +160,21 @@ system) → O1 (the SFX manifest; music integration follows the composer)
 
 ## What is actually open
 
-1. **THE MERGED TEAM-KEYED HUNT** (top): one B-favoring mechanism —
-   frontier 42.8/44.0 (below band; the obstacle-slide's interaction
-   density costs ~3.5 pts, attributed by the SLIDE=0 pair 46.8/46.3),
-   POWS=2 at ~26% A. CENSUS SHAPE: B penetrates deep-west and
-   survives; A loses the centre 2:1 under POWs. Exonerated: terrain,
-   uniques, order, party, alarm, capture arc, path equivariance (that
-   family was real — horizon 5,444). Next: killer-team census, VERIFY
-   aiMirrored's patrol swap, the t=5,444 thread. Sawtooth bench and
-   heist bar decisions ride on the same conversation.
+1. **THE MERGED TEAM-KEYED HUNT — ROOT CONVICTED AND FIXED
+   (prompt 170, b5b5a69)**: the line instrument proved pre-contact
+   advance symmetric to a decimal and put the mover at FIRST
+   CONTACT; the first-blood drill found every seed's first kill at
+   t=546 on the exact centre column; the micro-trace convicted the
+   MEETING-STOP LAW — sequential collision checks let the decisive
+   tick's first mover park one speed quantum deeper (88 v 143 from
+   the boundary) and eat mirror-support artillery 2 ticks early.
+   Fixed: verdicts read start-of-tick snapshots; mirror-pair pin in
+   test/collision_mirror.test.js (red pre-fix). AWAITING the n=300
+   same-build pairs (frontier_uq, POWS=2, each ± ORDERPARITY — the
+   within-tick command order is the surviving residue channel; the
+   twin trucks still die 546/547). MPG wave-timing asymmetry (B
+   refills earlier despite fewer losses) filed. Sawtooth bench and
+   heist bar decisions ride on the post-battery numbers.
 2. **Heist AI viability** — Q72 (siege prep) with you; humans have
    the getaway car already.
 3. **Specials ladder** — both vault and cache engine-complete and
