@@ -5433,3 +5433,47 @@ track the mean contact-x over time from tick 0 — the first tick the
 line leaves 63.5 names the subsystem that moved it (first-contact
 resolution, advance pacing, MPG rebuild geometry, or supply reach).
 The mechanism that moves the LINE is the last mechanism.
+
+## THE LINE ROOT: the meeting-stop law (2026-08-03, prompt 170)
+
+The line instrument (debugging/dbg_line.mjs — per-250-tick advance
+from own edge, forwardmost hull, contact-x, disables, manufactures;
+5 seeds x POWS=0/2) delivered the epoch in one run: PRE-CONTACT
+ADVANCE IS SYMMETRIC TO ONE DECIMAL (dAdv -0.0 through bucket 250,
+both configs) — advance pacing, supply reach, and path geometry all
+exonerated at the level they act. The line leaves 63.5 AT FIRST
+CONTACT: POWS=0 opening exchange 31v18 against A by t=1000; POWS=2
+first blood 8-0 against A. MPG rebuild is an AMPLIFIER (B's waves
+land ~t=2250/2500 vs A's ~3000 despite fewer losses — noted, open).
+
+First-blood drill (dbg_first_blood.mjs): EVERY seed's first kill is
+t=546, A's logistics #9 at (63,63) — the centre column — with its
+mirror twin B#21 at (64,63) dying at t=548 or surviving outright.
+Micro-trace (dbg_centre_duel.mjs): the twins duel in perfect
+lockstep; the kill is decided by SUPPORT — B's artillery ranges A's
+truck at t=540, A's mirror artillery only at t=542, because the
+trucks PARKED OFF-MIRROR: A stopped 88 units from the boundary, B
+143. THE ROOT: collisionVerdict checked mid-march positions, so
+whoever stepped first in the decisive tick claimed the last legal
+step and parked one speed quantum deeper into enemy support range.
+Parity march order (17) only alternated WHICH team — a mirror-pair
+meeting has a FIXED decisive-tick parity, so the same twin parked
+deep in every seed. Team-keyed (id order is team-keyed on both map
+sides), B-favoring in the dominant meetings, density-scaled — the
+merged hunt's whole profile.
+
+FIX: collision verdicts now read START-OF-TICK snapshot positions
+(applyAdvanceTick freezes prevX/prevY; collisionVerdict._prevX) —
+march order can no longer decide parking depth; mutual closers may
+undershoot the block radius by one step each, symmetrically. Pinned
+by test/collision_mirror.test.js (scout pair on the 19-cell mirror
+gap — the skew-window geometry; verified RED on the pre-fix reducer,
+green after). Suite 778/778 x2; 1A fixture UNCHANGED (no contact in
+its 14 steps). Post-fix: artillery mirror twins die the SAME tick
+(814/814, 819/819, 821/821 — was +1/+2 A-first). SURVIVING RESIDUE:
+the trucks still die 546/547 — within-tick COMMAND order (B's fire
+resolves first; orderParity exists for this, default OFF, trialed
+inert BEFORE this fix — the trial read a channel drowned by parking
+skew). Batteries queued same-build: frontier_uq + POWS=2 pairs, each
+with an ORDERPARITY=1 arm. The 5-seed line still leans B early —
+judgement belongs to the n=300 pairs, not 5 seeds.

@@ -1275,13 +1275,27 @@ export const ENEMY_BLOCK_RADIUS = 192; // world units (0.75 cell)
 export const FRIEND_SOFT_RADIUS = 128; // closing inside this = half speed
 
 // 0 = blocked, 1 = full step, 2 = half step (friendly compression).
+// THE LINE ROOT (prompt 170): verdicts read START-OF-TICK positions
+// (the _prevX/_prevY snapshot set by applyAdvanceTick), never mid-march
+// ones. Sequential checks let whoever stepped first in the decisive
+// tick claim the last legal step — the first-mover parked one speed
+// quantum deeper at every head-on meeting (88 v 143 from the boundary,
+// measured), entered enemy support range ~2 ticks early, and lost the
+// opening exchange war-wide; parity march order only alternated WHICH
+// team, and mirror-pair meetings have a fixed decisive parity. Snapshot
+// verdicts make the meeting-stop commute with the mirror; mutual
+// closers may undershoot the radius by one step each, symmetrically.
 function collisionVerdict(assets, self, nx, ny) {
+  const px = collisionVerdict._prevX;
+  const py = collisionVerdict._prevY;
   let half = false;
   for (const o of assets) {
     if (o.id === self.id) continue;
     if (o.state === ASSET_DISABLED || o.state === ASSET_SALVAGED) continue;
-    const dOld = Math.max(absI32(o.x - self.x), absI32(o.y - self.y));
-    const dNew = Math.max(absI32(o.x - nx), absI32(o.y - ny));
+    const ox = px !== null && px[o.id] !== undefined ? px[o.id] : o.x;
+    const oy = px !== null && py[o.id] !== undefined ? py[o.id] : o.y;
+    const dOld = Math.max(absI32(ox - self.x), absI32(oy - self.y));
+    const dNew = Math.max(absI32(ox - nx), absI32(oy - ny));
     if (dNew >= dOld) continue; // separating — never constrained
     if (o.team !== self.team) {
       if (dNew < ENEMY_BLOCK_RADIUS) return 0;
@@ -1291,6 +1305,8 @@ function collisionVerdict(assets, self, nx, ny) {
   }
   return half ? 2 : 1;
 }
+collisionVerdict._prevX = null;
+collisionVerdict._prevY = null;
 
 // Heading -> 16-direction snap. A heading EXACTLY between two sectors
 // (h ≡ 8 mod 16) used to round clockwise, which is not mirror-safe: 248
@@ -1528,6 +1544,13 @@ function applyAdvanceTick(next) {
   // team owns the first move (the Q18 lesson, physics edition). Timer
   // decrements in this loop are per-asset and order-independent.
   stepAsset._slideEnabled = next.rules?.enemySlide !== false; // SLIDE=0 A/B
+  // Prompt 170: freeze the collision geometry at tick start so march
+  // order cannot decide who parks deeper at a meeting (the line root).
+  const prevX = [];
+  const prevY = [];
+  for (const a of next.assets) { prevX[a.id] = a.x; prevY[a.id] = a.y; }
+  collisionVerdict._prevX = prevX;
+  collisionVerdict._prevY = prevY;
   const marchOrder = (next.tick & 1) === 0
     ? next.assets
     : [...next.assets].reverse();

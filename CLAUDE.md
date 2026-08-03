@@ -232,15 +232,26 @@ outcome. Renderer presents fog-filtered views only.
   over Sentinel-led, any team/direction), sawtooth's 68% (uniques-off
   = dead fair), and riverline's lean are ALL the unique pair.
   Tick-parity ruled INERT (Q18 dead); the vault convicts on clean
-  terrain too (never terrain luck). KNOWN OPEN — THE MERGED
-  TEAM-KEYED HUNT (top): ONE unidentified mechanism, B-favoring,
-  ~6.6 pts on default frontier (now BELOW BAND 42.8/44.0 after the
-  obstacle-slide era raised interaction density) and ~24 pts under
-  POWS=2 density; exonerated: terrain, uniques, command order, raid
-  party, alarm, capture arc, pathfinding equivariance (that family
-  was real — horizon 5,444 — but not the outcome channel).
-  Instruments filed: SLIDE=0 A/B, per-team loss census, the t=5,444
-  thread. Also open: the east-pusher residual (+7-13 side-keyed);
+  terrain too (never terrain luck). THE MERGED TEAM-KEYED HUNT,
+  ROOT CONVICTED (2026-08-03, prompt 170 — the line instrument):
+  pre-contact advance symmetric to a decimal; the line moves at
+  FIRST CONTACT because sequential collisionVerdict checks let the
+  first mover of the decisive tick park one speed quantum deeper
+  (88 v 143 from the boundary, measured) and eat mirror-support
+  artillery ~2 ticks early; parity march only alternated WHICH team
+  and mirror-pair meetings have fixed decisive parity. FIXED:
+  verdicts read START-OF-TICK snapshot positions
+  (collisionVerdict._prevX, set in applyAdvanceTick); mutual closers
+  may undershoot the block radius one step each, symmetrically;
+  pinned by test/collision_mirror.test.js (the 19-cell scout
+  skew-window geometry, verified red pre-fix). SURVIVING RESIDUE:
+  within-tick command order (the twin trucks still die 546/547;
+  orderParity default OFF was trialed inert BEFORE this fix —
+  re-arm it in batteries); MPG wave-timing asymmetry (B refills
+  earlier despite fewer losses) noted open. Same-build battery
+  pairs (frontier_uq, POWS=2, each ± ORDERPARITY) queued — the
+  outcome verdict is theirs, never the 5-seed gate's.
+  Also open: the east-pusher residual (+7-13 side-keyed);
   heist attackers 12.7/9.3% (a dial — the bar is the designer's). powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
   POWS=2 = the human-session flavour; the POW-era doctrine tempo and
