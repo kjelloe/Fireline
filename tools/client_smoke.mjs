@@ -63,6 +63,32 @@ async function main() {
   await joinAs("btn-join-b", "Outliers");
   await joinAs("btn-spectate", "Spectator");
 
+  // Prompt 166 (the 2D join blocker): the fallback renderer must also
+  // let a player JOIN — the socket comes before the sprites now, and
+  // this gate keeps it that way.
+  const page2d = await browser.newPage({ viewport: { width: 640, height: 360 } });
+  const errors2d = [];
+  page2d.on("pageerror", (e) => errors2d.push(`2d: ${e.message}`));
+  await page2d.goto(`${url}?renderer=2d`, { waitUntil: "networkidle" });
+  await page2d.waitForTimeout(1200);
+  await page2d.evaluate(() => { const s = document.getElementById("splash-overlay"); if (s) s.style.display = "none"; });
+  await page2d.click("#btn-join-b");
+  let joined2d = false;
+  for (let i = 0; i < 20 && !joined2d; i++) {
+    await page2d.waitForTimeout(250);
+    joined2d = await page2d.evaluate(() =>
+      document.getElementById("join-overlay")?.style.display === "none");
+  }
+  if (!joined2d) {
+    const dbg = await page2d.evaluate(() => ({
+      socket: window.__mfDebug?.socketState ?? "n/a",
+      overlay: document.getElementById("join-overlay")?.style.display,
+      hasCanvas: !!document.querySelector("#canvas-container canvas"),
+    }));
+    console.error("2D FALLBACK: join did not complete", JSON.stringify(dbg));
+    process.exit(1);
+  }
+  if (errors2d.length) { console.error("2D errors:", errors2d.join(" | ")); process.exit(1); }
   await browser.close();
   await appServer.stop();
   if (failures.length) {
@@ -70,7 +96,7 @@ async function main() {
     for (const f of failures) console.error("  - " + f);
     process.exit(1);
   }
-  console.log("client smoke OK: both factions join, briefing shows, war ticks, zero page errors");
+  console.log("client smoke OK: both factions join, briefing shows, war ticks, zero page errors, 2D fallback joins");
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -5385,3 +5385,18 @@ held node's event loop open (suites hung — unref + clear in stop);
 then a stray autosave leaked into every test's server (resume is now
 OPT-IN via the CLI path only; the gitignore keeps the save out of
 the repo). Suite 776/776 x2, smoke OK.
+
+## hotfix 2: THE 2D FALLBACK JOINS (2026-08-03, prompt 166)
+
+The owner's second Chrome report: the fallback ENGAGED but the fight
+was unjoinable. TWO roots: (1) init2dFallback only connect()ed after
+the sprite sheet loaded (a stall = dead socket) — connect comes FIRST
+now, sprites are a nicety; (2) THE REAL ONE: the prompt-165 init3d
+split had orphaned ALL join-screen wiring on the 2D path — dead
+buttons. wireJoinUi() is shared by both renderers now, and the smoke
+gate grew a 2D-JOIN pass (boots ?renderer=2d, clicks join, requires
+s_joined) so the class can never ship silent again. ALSO prompt 166:
+square FACTION FLAG join buttons (insignia + JOIN superimposed,
+faction gradients; i18n touches only the caption), and the name field
+documents its default ("blank = Operator N" — nameOf() already
+resolves it). Suite 776/776, smoke (incl. 2D) + acceptance OK.

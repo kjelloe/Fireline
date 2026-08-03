@@ -82,14 +82,34 @@
         <!-- Prompt 149: BIG team buttons (2x, short text), spectate +
              replays on a smaller line below; disabled state carries a
              tooltip when the balance gate holds a side closed. -->
-        <input id="join-name" maxlength="16" placeholder="Your name / Ditt navn"
+        <input id="join-name" maxlength="16" placeholder="Name (blank = Operator N) / Navn"
           style="font-size:16px; padding:8px 14px; border-radius:6px; border:1px solid #555;
                  background:#181820; color:#dde; text-align:center;">
-        <div style="display:flex; gap:18px;">
+        <!-- Prompt 166: square FACTION FLAG buttons — insignia as the
+             flag, JOIN superimposed. Colors are the factions' own. -->
+        <div style="display:flex; gap:22px;">
             <button class="btn team-a" id="btn-join-a"
-              style="font-size:26px; padding:22px 44px; letter-spacing:1px;">JOIN THE DIRECTORATE</button>
+              style="width:170px; height:170px; padding:0; position:relative;
+                     background:linear-gradient(160deg,#5a6472,#39414c); border:2px solid #4a7dc9;">
+              <img src="assets/icons/svg/team_shield.svg" alt=""
+                   style="width:96px; height:96px; opacity:0.85; margin-top:-14px;">
+              <span style="position:absolute; left:0; right:0; bottom:14px;
+                     font-size:22px; letter-spacing:2px; font-weight:bold;
+                     text-shadow:0 0 8px #000;">JOIN</span>
+              <span style="position:absolute; left:0; right:0; top:6px; font-size:12px;
+                     letter-spacing:1px; color:#bfe3e8;">THE DIRECTORATE</span>
+            </button>
             <button class="btn team-b" id="btn-join-b"
-              style="font-size:26px; padding:22px 44px; letter-spacing:1px;">JOIN THE OUTLIERS</button>
+              style="width:170px; height:170px; padding:0; position:relative;
+                     background:linear-gradient(160deg,#c96a4a,#8f4a34); border:2px solid #e8c95e;">
+              <img src="assets/icons/svg/team_arrow.svg" alt=""
+                   style="width:96px; height:96px; opacity:0.85; margin-top:-14px;">
+              <span style="position:absolute; left:0; right:0; bottom:14px;
+                     font-size:22px; letter-spacing:2px; font-weight:bold;
+                     text-shadow:0 0 8px #000;">JOIN</span>
+              <span style="position:absolute; left:0; right:0; top:6px; font-size:12px;
+                     letter-spacing:1px; color:#f5e9c8;">THE OUTLIERS</span>
+            </button>
         </div>
         <div id="join-balance-note" style="font-size:13px; color:#c9a; min-height:16px;"></div>
         <div style="display:flex; gap:12px;">

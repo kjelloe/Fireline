@@ -551,18 +551,7 @@ function init3d() {
     );
     freeCam.jumpTo(cellX, cellY);
   });
-  const jn = document.getElementById("join-name");
-  if (jn) { try { jn.value = localStorage.getItem("mf_name") ?? ""; } catch { /* private */ } }
-  document.getElementById("btn-join-a").onclick = () => joinTeam(0);
-  const dBtn = document.getElementById("btn-direct");
-  if (dBtn) dBtn.onclick = () => setDirectMode(true);
-  const dExit = document.getElementById("btn-direct-exit");
-  if (dExit) dExit.onclick = () => setDirectMode(false);
-  document.getElementById("btn-join-b").onclick = () => joinTeam(1);
-  document.getElementById("btn-spectate").onclick = spectate; // 10A
-  document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
-  // 15B part 3: the static page speaks the active locale too.
-  applyPageStrings();
+  wireJoinUi();
 
   // 14K: the field encyclopedia (playtest 6.1's "option button").
   const encBtn = document.getElementById("btn-encyclopedia");
@@ -986,8 +975,12 @@ function applyPageStrings() {
   setText("game-tagline", "page.tagline");
   const pitch = document.querySelector("#join-overlay p:not(#game-tagline)");
   if (pitch) pitch.textContent = t("page.pitch");
-  setText("btn-join-a", "page.join_a");
-  setText("btn-join-b", "page.join_b");
+  // Prompt 166: the flag buttons carry structured markup — i18n only
+  // touches the small faction-name caption inside them.
+  for (const [btn, key] of [["btn-join-a", "page.join_a"], ["btn-join-b", "page.join_b"]]) {
+    const cap = document.querySelector(`#${btn} span:last-child`);
+    if (cap) cap.textContent = t(key).replace(/^JOIN THE |^BLI MED I /, "THE ");
+  }
   setText("btn-spectate", "page.spectate");
   setText("btn-briefing-ok", "page.move_out");
   setText("btn-next-asset", "page.next_asset");
@@ -1033,6 +1026,7 @@ function renderBindRows(container) {
 
 let lastJoin = null; // prompt 139: last join intent (team number or "spectate")
 function joinTeam(team) {
+  if (window.__mfDebug) window.__mfDebug.socketState = socket ? socket.readyState : "null";
   if (!socket || socket.readyState !== 1) return;
   lastJoin = team;
   const nameEl = document.getElementById("join-name");
@@ -3517,7 +3511,26 @@ function animate() {
 // Spectator-grade (orders need the 3D picker); beats a black screen on
 // machines without WebGL, and it is the seed of the minimap unit icons.
 let sprite2d = null;
+// Prompt 166 (the 2D join blocker's ROOT): the init3d split orphaned
+// ALL join-screen wiring on the fallback path — a 2D player had dead
+// buttons. Shared now; both renderers call it.
+function wireJoinUi() {
+  const jn = document.getElementById("join-name");
+  if (jn) { try { jn.value = localStorage.getItem("mf_name") ?? ""; } catch { /* private */ } }
+  document.getElementById("btn-join-a").onclick = () => joinTeam(0);
+  const dBtn = document.getElementById("btn-direct");
+  if (dBtn) dBtn.onclick = () => setDirectMode(true);
+  const dExit = document.getElementById("btn-direct-exit");
+  if (dExit) dExit.onclick = () => setDirectMode(false);
+  document.getElementById("btn-join-b").onclick = () => joinTeam(1);
+  document.getElementById("btn-spectate").onclick = spectate; // 10A
+  document.getElementById("action-banner").onclick = () => bannerAction?.(); // 11U
+  // 15B part 3: the static page speaks the active locale too.
+  applyPageStrings();
+}
+
 function init2dFallback() {
+  wireJoinUi();
   const container = document.getElementById("canvas-container");
   const canvas = document.createElement("canvas");
   container.appendChild(canvas);
@@ -3529,9 +3542,13 @@ function init2dFallback() {
     canvas,
     terrainColors: TERRAIN_COLORS.map((c) => `#${c.toString(16).padStart(6, "0")}`),
   });
-  sprite2d.load().then(() => {
-    connect();
-    animate2d();
+  // Prompt 166 (the 2D join blocker): CONNECT FIRST — the join buttons
+  // need the socket regardless of sprites; a stalled or failed sheet
+  // load must never lock a player out of the war.
+  connect();
+  sprite2d.load().then(() => animate2d()).catch((err) => {
+    console.error("2D sprite load failed — joining still works:", err);
+    animate2d(); // colored rects beat a locked door
   });
 }
 

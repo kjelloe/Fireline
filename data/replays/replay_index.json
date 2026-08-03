@@ -539,6 +539,24 @@
       "reason": 0,
       "finalHash": "c5317bbe92397f9e",
       "finishedAt": "2026-08-02T23:39:16.349Z"
+    },
+    {
+      "id": "war-2026-009e2889d7e5",
+      "mapSeed": 2026,
+      "ticks": 9540,
+      "winner": 0,
+      "reason": 5,
+      "finalHash": "7cdee36e9089a0e6",
+      "finishedAt": "2026-08-03T01:02:46.073Z"
+    },
+    {
+      "id": "war-1188793051-e7e0fc3cc7e0",
+      "mapSeed": 1188793051,
+      "ticks": 7860,
+      "winner": 0,
+      "reason": 5,
+      "finalHash": "0343de9fe80ce341",
+      "finishedAt": "2026-08-03T01:16:35.510Z"
     }
   ]
 }
