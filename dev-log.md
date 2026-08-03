@@ -5400,3 +5400,22 @@ square FACTION FLAG join buttons (insignia + JOIN superimposed,
 faction gradients; i18n touches only the caption), and the name field
 documents its default ("blank = Operator N" — nameOf() already
 resolves it). Suite 776/776, smoke (incl. 2D) + acceptance OK.
+
+## The hunt narrows to SCOUTS (2026-08-03, prompt 168)
+
+Killer-chassis census (5 seeds/config): B's SCOUTS kill 22 of A's
+hulls vs A's scouts killing 8 (POWS=0) — a ~3x lethality asymmetry;
+artillery/tanks trade roughly even. Consistent with the census shape
+(deep-west penetration = scout raids). PATROLS VERIFIED EXACT
+MIRRORS (routes + direction; the ancient "B crosses the centre"
+comment describes both teams symmetrically — each crosses its own
+mid relay) and plan-equality under the mirror probe to t≈4-5k
+already proved the swap machinery sound. NEXT PROBE (the narrow
+question): why are B's scouts 3x deadlier — trace scout-vs-scout and
+scout-vs-soft encounters (who shoots first, fire-window phase at
+meetings, target-selection order); the fire-window cadence
+(tick % (2*reload) < reload — GLOBAL-tick keyed) is the standing
+suspect for a phase-locked edge that mirroring cannot flip.
+QUEUE REMAINING (next session): the scout-encounter trace, O4
+difficulty picker, O6 deploy playbook, the ws flake (4 sightings),
+music scaffolding.

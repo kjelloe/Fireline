@@ -25,6 +25,11 @@ for (const pows of [2, 0]) {
         const rec = agg[a.team];
         rec.total++;
         rec.byKiller[e.by] = (rec.byKiller[e.by] ?? 0) + 1;
+        if (e.byType >= 0) {
+          const kn = getUnitStats(e.byType)?.name ?? e.byType;
+          rec.byKillerChassis = rec.byKillerChassis ?? {};
+          rec.byKillerChassis[kn] = (rec.byKillerChassis[kn] ?? 0) + 1;
+        }
         const col = a.x >> 8;
         rec.byBand[col < 43 ? 0 : col < 85 ? 1 : 2]++;
         const name = getUnitStats(a.type).name;
@@ -36,6 +41,6 @@ for (const pows of [2, 0]) {
   console.log(`=== POWS=${pows} (5 seeds) ===`);
   for (const team of [0, 1]) {
     const r = agg[team];
-    console.log(`team ${team}: ${r.total} losses | bands W/C/E: ${r.byBand.join("/")} | killers: ${JSON.stringify(r.byKiller)} | types: ${JSON.stringify(r.byType)}`);
+    console.log(`team ${team}: ${r.total} losses | bands W/C/E: ${r.byBand.join("/")} | killed by chassis: ${JSON.stringify(r.byKillerChassis ?? {})}`);
   }
 }
