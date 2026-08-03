@@ -202,6 +202,14 @@ WSL Playwright is SwiftShader-only and useless for FPS numbers
 
 ## 7. Greatest-hits gotcha list (quick reference)
 
+-2. Splitting an init function splits its WIRING: the init3d split
+   orphaned every join-button handler on the 2D path (dead buttons in
+   the field, caught by the owner). Shared UI wiring lives in its own
+   function; every renderer path gets a smoke gate that actually
+   JOINS. Related: a real setInterval in server code must be unref'd
+   AND cleared in stop(), or test runners hang; and anything a server
+   writes to disk (autosave) must be OPT-IN or it leaks into every
+   test's boot.
 -1. A claimed invariant needs a test AT THE LEVEL IT IS CLAIMED. The
    mirror invariant was pinned for relays/spawns/patrols while
    frontier's TERRAIN CELLS were never symmetric (1,615 asymmetric

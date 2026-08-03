@@ -280,6 +280,14 @@ npm start                              # host machine
   wobbles; war-clock announcements land big; centre always has
   somewhere to take you; ⚙ Visuals Low/Medium/High; and the result
   screen got real sections + map-tile voting with LIVE tallies.
+- The O-batch (164-166): enter a NAME on the join screen (blank =
+  Operator N) — honors celebrate people now; the battlefield has
+  SOUND (synthesized — ⚙ toggle, separate from Music); a first-war
+  COACH walks brand-new players through move/fire/supply/rescue once;
+  the server autosaves the live war and RESUMES it after a crash
+  (RESUME=0 skips); join buttons are square faction FLAGS; and if 3D
+  graphics fail (driver WebGL errors), the game tells you and drops
+  into a playable 2D fallback instead of a black screen.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens
