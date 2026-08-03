@@ -5419,3 +5419,17 @@ suspect for a phase-locked edge that mirroring cannot flip.
 QUEUE REMAINING (next session): the scout-encounter trace, O4
 difficulty picker, O6 deploy playbook, the ws flake (4 sightings),
 music scaffolding.
+
+## THE REFRAME: the front line sits WEST (2026-08-03, prompt 169)
+
+Scout-shot geography: ALL scout combat happens centre-west — B fires
+131 centre shots to A's 52, and the EAST band is 0/0 for both teams.
+B's scout lethality (3x), the deep-west penetration, the centre
+out-trading — every signature is one fact: THE FRONT LINE SITS WEST
+OF CENTRE. B advances further than A with mirror-exact patrols,
+paths, plans, and step arithmetic (all proven this week). Fire-window
+phase: exonerated (even halves). NEXT OPENER (the line instrument):
+track the mean contact-x over time from tick 0 — the first tick the
+line leaves 63.5 names the subsystem that moved it (first-contact
+resolution, advance pacing, MPG rebuild geometry, or supply reach).
+The mechanism that moves the LINE is the last mechanism.
