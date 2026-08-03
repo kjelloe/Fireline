@@ -973,9 +973,20 @@ export class AIRegency {
     // Question 18 fix: commands used to resolve in ascending operator order
     // every tick, so team A's seats always struck first — a ~6-point edge
     // that survived full world reflection AND faction-swapping (nightly
-    // census, 1500 wars). The lead team now alternates by tick parity;
-    // within a team, ascending operator id keeps iteration stable.
-    const leadTeam = state.tick & 1;
+    // census, 1500 wars). Within a team, ascending operator id keeps
+    // iteration stable.
+    // PROMPT 171 (the phase-lock lesson, emission edition): raw tick
+    // parity is NOT fair for mirror-SYNCHRONIZED exchanges — symmetric
+    // routes put both twins' mutual-lethal moment on the SAME tick every
+    // war, so one fixed team led every dominant simultaneous exchange
+    // (the 546/547 truck duel: B led, A died with its shot still queued;
+    // the same structural flaw the meeting-stop law had). The lead team
+    // is now a seeded integer-hash bit of (tick, mapSeed): deterministic,
+    // team-symmetric in expectation, and decorrelated from every cadence
+    // the war clock synchronizes. (Q71's downstream partition was a
+    // no-op all along — it enforced the old parity sort's own order.)
+    const mixed = Math.imul((state.tick ^ (state.map.seed | 0)) + 0x9e3779b1, 0x85ebca6b);
+    const leadTeam = (mixed >>> 16) & 1;
     const emitOrder = [...controlled.entries()].sort((a, b) => {
       const ta = state.operators[a[0]].team === leadTeam ? 0 : 1;
       const tb = state.operators[b[0]].team === leadTeam ? 0 : 1;
