@@ -141,11 +141,11 @@ have, in the order I would worry:
 
 | # | Omission | Why it matters | Size |
 |---|---|---|---|
-| O1 | **Sound.** One AudioContext call exists; the ruled synth-first SFX manifest was never built. Wars are essentially SILENT | The single biggest experiential gap; also blocks the composer integration landing well | M (engine-free) |
-| O2 | **Player names.** Operators are numbers; honors, kill feed, and the end screen celebrate "Operator 3" | Identity is what makes recognition WORK — the game's core tenet pays into an anonymous ledger | S |
-| O3 | **First-war onboarding.** The 60-second tenet is served by auto-crew + briefing, but a first-time player gets no guided first minute (tutorial war vs gentle bots, or a coach overlay) | The tenet IS the design bar; new-player funnel is unmeasured | M |
+| O1 | ✅ SHIPPED (164): sfx.js — 12 synth patches wired to the event stream, ⚙ toggle | — | — |
+| O2 | ✅ SHIPPED (164): join-screen name field, transport registry via s_lobby, honors celebrate people | — | — |
+| O3 | ✅ SHIPPED (164): the first-war coach — four timed beats, once ever, both locales | — | — |
 | O4 | Difficulty preset UX — AI_DIFFICULTY exists as env only; no host-facing picker | LAN hosts can't tune without docs | S |
-| O5 | War persistence across server restart (graceful shutdown archives; a crash loses the live war) | LAN acceptable; public servers not | M |
+| O5 | ✅ SHIPPED (164): 30s autosave + opt-in CLI resume (<10 min), hash-roundtrip pinned | — | — |
 | O6 | Public-server deploy playbook (discovery exists; no firepower ssh-deploy/hosting doc like the sibling project has) | The multiciv pattern is proven — port it | S |
 | O7 | Text chat (comm wheel + pings exist) | Probably FINE for v2 — pings were the ruled design; note only | — |
 | O8 | Native perf numbers (runner works, numbers never collected — user-side since July) | Perf claims are still vibes | user |
