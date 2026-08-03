@@ -27,10 +27,15 @@ Healthy war, CURRENT baseline era: **THE CONTACT-LAW ERA opens at
 b5b5a69/a81477c (2026-08-03)** — the meeting-stop snapshot fix
 (b5b5a69) changed contact geometry for every hull, and the seeded
 lead-team hash (a81477c) changed emission order every tick;
-everything older is a different game. First same-build reads on
-b5b5a69 (pre-a81477c): frontier_uq **39.7/40.3% A**, POWS=2
-**25.9/28.3% A** — the meeting-stop fix alone did NOT move outcomes;
-a81477c pairs queued. (Previous era: POST-LADDER n=600 on 0328573,
+everything older is a different game. CONTACT-LAW ERA VERDICT (a81477c pairs, n=300 each):
+frontier_uq **54.0/52.9% A — IN BAND BOTH WORLDS** (upper half —
+watch the slight A lean); POWS=2 **39.4/36.4% A** (was 25.9/28.3 —
+the emission lock carried ~half the deficit; still below band).
+The b5b5a69-only reads (39.7/40.3, 25.9/28.3) proved the two
+phase-lock channels INTERACT — the meeting-stop fix alone read
+worse than baseline. POWS=2 residual epoch (line instrument on
+a81477c): even to t=4000, then a one-sided A-loss run t≈4250-5000
+— the mid-war ledger is the next instrument. (Previous era: POST-LADDER n=600 on 0328573,
 2026-08-02, table below still cites it — treat those rows as
 last-era context until the a81477c pairs land.)
 

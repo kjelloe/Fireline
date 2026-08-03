@@ -175,10 +175,12 @@ system) → O1 (the SFX manifest; music integration follows the composer)
    every mirror-synchronized exchange; Q71's partition was a dead
    switch enforcing the sort's own order). Fixed at a81477c: lead
    team = seeded hash bit of (tick, mapSeed); first blood now flips
-   sides by seed. AWAITING the a81477c pairs. MPG wave-timing
-   asymmetry (B refills earlier despite fewer losses) filed.
-   Sawtooth bench and heist bar decisions ride on the post-battery
-   numbers.
+   sides by seed. VERDICT (a81477c, n=300 pairs): frontier_uq
+   **54.0/52.9% A — IN BAND BOTH WORLDS**; POWS=2 **39.4/36.4**
+   (was ~26; residual epoch now a mid-war A-loss run t≈4250-5000 —
+   the mid-war ledger is the next instrument). MPG wave-timing
+   asymmetry filed. Sawtooth bench and heist bar decisions can now
+   ride on a fair default baseline.
 2. **Heist AI viability** — Q72 (siege prep) with you; humans have
    the getaway car already.
 3. **Specials ladder** — both vault and cache engine-complete and

@@ -5519,3 +5519,30 @@ locales (#join-difficulty). Players now know the war they are
 joining before they click a flag. 780/780 x2, smoke (incl 2D join)
 + acceptance green. Remaining O-items: O6 deploy playbook, O8 perf
 numbers (user-side).
+
+## THE CONTACT-LAW VERDICT (2026-08-03, prompt 171, a81477c pairs)
+
+The n=300 pairs on a81477c: frontier_uq **54.0 / 52.9% A — IN BAND,
+BOTH WORLDS** (was 39.7/40.3 on b5b5a69 alone, 42.8/44.0 last era).
+POWS=2 **39.4 / 36.4% A** (was 25.9/28.3) — a ~12-point recovery.
+The two phase-lock fixes TOGETHER restored the default map to
+fairness (the meeting-stop fix alone had read WORSE — the two
+channels interacted); the emission lock was carrying roughly half
+the POWS deficit. THE DEFAULT WAR IS FAIR FOR THE FIRST TIME SINCE
+THE OBSTACLE-SLIDE ERA. Note for the band watch: frontier now sits
+in the UPPER half (54/53 — a slight A lean, inside tolerance).
+STILL OPEN: the POWS=2 residual (~12 pts below band) — the POW-era
+density amplifies whatever remains; next instrument is the line
+epoch under the new law (run below). The MPG wave-timing note and
+the east curse stay filed.
+
+Line instrument on a81477c (POWS=2): symmetric to a decimal through
+bucket 750 (four buckets — was two), first blood EVEN (5/5), and
+cumulative disables EVEN through t=4000 (36v32). The residual's
+epoch MOVED: a sharp one-sided run at t≈4250-5000 (A loses 17 to
+B's 4) followed by A's lone MPG wave. Under POW density, a mid-war
+switch-on at that hour smells like the raid/capture arc engaging —
+NEXT OPENER: the mid-war ledger (what event opens the t≈4250 run:
+prison raids, POW captures, capture-arc pushes; per-event census in
+the 4000-5250 window, 5 seeds, then the A/B kill-switch that names
+it).

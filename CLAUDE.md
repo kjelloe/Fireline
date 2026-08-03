@@ -258,9 +258,15 @@ outcome. Renderer presents fog-filtered views only.
   nothing hashed; tick_parity.test.js pins the hash law). THE
   PHASE-LOCK CLASS now has two members (march order, emission
   order) — audit any parity-alternated order against
-  mirror-synchronized events. a81477c re-baseline pairs queued;
-  still filed: MPG wave-timing asymmetry (B refills earlier despite
-  fewer losses).
+  mirror-synchronized events. VERDICT (a81477c pairs, n=300):
+  frontier_uq 54.0/52.9% A — IN BAND BOTH WORLDS (first time since
+  the obstacle-slide era; upper half, watch the slight A lean);
+  POWS=2 39.4/36.4 (was ~26 — still below band). The b5b5a69-only
+  flat reads prove the two channels INTERACT. POWS residual epoch:
+  even to t=4000, then a one-sided A-loss run t≈4250-5000 — the
+  MID-WAR LEDGER is the next instrument (what event opens the run:
+  raids/POW captures/capture pushes). Still filed: MPG wave-timing
+  asymmetry (B refills earlier despite fewer losses).
   Also open: the east-pusher residual (+7-13 side-keyed);
   heist attackers 12.7/9.3% (a dial — the bar is the designer's). powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
