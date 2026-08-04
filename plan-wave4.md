@@ -36,7 +36,7 @@ First battle = no anti-camping drone, per the mf_coached ruling.
   echo of the join flag. Gate: 5-seed sim (AI ops are never rookies —
   sims unchanged).
 
-## W4-3 · Mission cards: the hidden systems (S) — client (+1 event)
+## W4-3 · Mission cards: the hidden systems (S) — ✅ SHIPPED (client-only, no event needed)
 
 - "A POW IS HELD AT THEIR PRISON — raid it" (team knows its own
   captured operator; card targets the enemy prison; appears when

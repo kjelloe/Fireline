@@ -184,3 +184,75 @@ test("Q31 seat-swap: a regent abandons a unique that earned nothing", async () =
   const stay = ai2.plan(earn).find((c) => c.type === "select_asset" && c.operatorId === 16);
   assert.equal(stay, undefined, "recognition earned = the seat is justified");
 });
+
+// W4-3 (prompt 174): the two systems a player could never find. Both
+// cards derive from what the team LEGITIMATELY knows — prisons are
+// public landmarks by design (headcount + identities ride the view),
+// and a team--1 hull is unclaimed by definition because capture
+// reassigns the team (Q42: select IS the capture).
+
+const CELL_W43 = 256;
+function w43View(opts = {}) {
+  return {
+    team: 0,
+    friendlyAssets: [
+      { id: 0, type: 3, operatorId: 7, x: 20 * CELL_W43, y: 20 * CELL_W43, state: 0, hp: 100 },
+    ],
+    visibleEnemies: opts.visibleEnemies ?? [],
+    operators: opts.operators ?? [],
+    prisons: opts.prisons ?? [],
+    downedOperators: [], sites: [], standards: [], drops: [], mines: [],
+  };
+}
+
+test("W4-3: a teammate in the enemy prison raises a RAID card at the prison", () => {
+  const tasks = tasksFor(w43View({
+    prisons: [{ team: 1, cellX: 90, cellY: 60, pows: [{ id: 4 }, { id: 9 }], raidTicks: 0 }],
+    operators: [{ id: 4, team: 0 }, { id: 9, team: 0 }],
+  }), 7);
+  const card = tasks.find((c) => c.kind === "raid_prison");
+  assert.ok(card, "the card exists");
+  assert.equal(card.cellX, 90);
+  assert.equal(card.cellY, 60);
+  assert.match(card.label, /2/, "it names how many are held");
+});
+
+test("W4-3: our OWN prison holding THEIR people raises nothing", () => {
+  const tasks = tasksFor(w43View({
+    prisons: [{ team: 0, cellX: 10, cellY: 60, pows: [{ id: 20 }], raidTicks: 0 }],
+    operators: [{ id: 20, team: 1 }],
+  }), 7);
+  assert.equal(tasks.find((c) => c.kind === "raid_prison"), undefined);
+});
+
+test("W4-3: an enemy prison holding only THEIR OWN people raises nothing", () => {
+  // Re-secured enemy POWs sit in their own compound — not our problem.
+  const tasks = tasksFor(w43View({
+    prisons: [{ team: 1, cellX: 90, cellY: 60, pows: [{ id: 21 }], raidTicks: 0 }],
+    operators: [{ id: 21, team: 1 }],
+  }), 7);
+  assert.equal(tasks.find((c) => c.kind === "raid_prison"), undefined);
+});
+
+test("W4-3: a visible unclaimed LANDSHIP raises a claim card", () => {
+  const tasks = tasksFor(w43View({
+    visibleEnemies: [{ id: 32, type: 9, team: -1, state: 0, x: 64 * CELL_W43, y: 40 * CELL_W43 }],
+  }), 7);
+  const card = tasks.find((c) => c.kind === "claim_landship");
+  assert.ok(card, "the card exists");
+  assert.equal(card.cellX, 64);
+});
+
+test("W4-3: a CLAIMED landship raises nothing (capture reassigns the team)", () => {
+  const tasks = tasksFor(w43View({
+    visibleEnemies: [{ id: 32, type: 9, team: 1, state: 0, x: 64 * CELL_W43, y: 40 * CELL_W43 }],
+  }), 7);
+  assert.equal(tasks.find((c) => c.kind === "claim_landship"), undefined);
+});
+
+test("W4-3: a WRECKED neutral hull is a tow job, not a prize", () => {
+  const tasks = tasksFor(w43View({
+    visibleEnemies: [{ id: 32, type: 9, team: -1, state: 2, x: 64 * CELL_W43, y: 40 * CELL_W43 }],
+  }), 7);
+  assert.equal(tasks.find((c) => c.kind === "claim_landship"), undefined);
+});

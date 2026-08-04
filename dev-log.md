@@ -5726,3 +5726,27 @@ Tests: both premium pins rewritten to assert the EMPTY table across
 all five live maps, plus a mechanism test proving the machinery
 still pays +25% (floored) the moment a map earns an entry —
 emptying the table must never rot the generator. 789/789 x2, smoke.
+
+## W4-3: the hidden systems get cards (2026-08-05, prompt 174)
+
+Two of the most dramatic systems in the game were nearly invisible in
+a normal war — a player could finish a hundred wars without learning
+either exists. Both now raise mission cards, and both derive ONLY
+from what the team legitimately knows:
+
+- "RAID THEIR PRISON — N of ours are held there" (priority 3, beside
+  rescue: a captive is a teammate fully out of the war). Prisons are
+  public landmarks BY DESIGN — position, headcount and prisoner
+  identities already ride the view ("the day-one objective must be
+  findable"), so the card cost nothing in fog terms.
+- "THE LANDSHIP STANDS UNCLAIMED" (priority 5 — an opportunity, not
+  an emergency). No new projection was needed: capture REASSIGNS the
+  hull's team (Q42, select IS the capture), so a visible team--1 hull
+  is unclaimed by definition. Wrecked neutrals are excluded — that is
+  a tow job, not a prize.
+
+Client-only, nothing hashed. Six tests pin the derivations including
+the three ways the cards must STAY SILENT (our own compound holding
+their people; an enemy compound holding only their own re-secured
+POWs; a claimed or wrecked landship). Both locales. 795/795 x2,
+smoke + acceptance.

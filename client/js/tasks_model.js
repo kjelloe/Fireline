@@ -179,6 +179,39 @@ export function tasksFor(view, myOperatorId = null) {
       cellX: cellOf(d.x), cellY: cellOf(d.y), ping: "rally",
     });
   }
+  // W4-3 (prompt 174): SURFACE THE HIDDEN SYSTEMS. Two of the game's
+  // most dramatic systems were nearly invisible in a normal war — a
+  // player could finish a hundred wars without learning either exists.
+  //
+  // A teammate held prisoner. Prisons are public landmarks BY DESIGN
+  // (position, headcount and prisoner identities all ride the view —
+  // "the day-one objective must be findable"), so this card is
+  // fog-legitimate for free.
+  for (const p of (view?.prisons ?? [])) {
+    if (p.team === myTeam) continue; // our own compound holds THEIR people
+    const mine = (p.pows ?? []).filter((pw) => {
+      const seat = (view?.operators ?? []).find((o) => o.id === pw.id);
+      return seat ? seat.team === myTeam : false;
+    });
+    if (mine.length === 0) continue;
+    tasks.push({
+      kind: "raid_prison", priority: 3,
+      label: t("task.raid_prison", { count: mine.length }),
+      cellX: p.cellX, cellY: p.cellY, ping: "attack",
+    });
+  }
+  // The LANDSHIP standing unclaimed. Capture REASSIGNS the hull's team
+  // (Q42: select is the capture), so a visible team--1 hull is by
+  // definition nobody's — no extra projection and no fog cheat needed.
+  for (const a of (view?.visibleEnemies ?? [])) {
+    if (a.team !== -1) continue;
+    if (a.state === 2 || a.state === 3) continue; // a wreck is a tow job, not a prize
+    tasks.push({
+      kind: "claim_landship", priority: 5,
+      label: t("task.claim_landship"),
+      cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "rally",
+    });
+  }
   // Own relays being flipped by the enemy: defend.
   for (const s of (view?.sites ?? [])) {
     if (s.owner === myTeam && s.capturingTeam !== -1 && s.capturingTeam !== myTeam) {
