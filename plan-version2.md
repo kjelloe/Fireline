@@ -159,6 +159,13 @@ system) → O1 (the SFX manifest; music integration follows the composer)
 
 ## What is actually open
 
+**WAVE 4 RULED (prompt 174) — see `plan-wave4.md`**: co-op-by-default,
+rookie drone grace, POW/Landship mission cards, placement ghost,
+direct-control juice, smoke screens, the UAV recognition-sink test,
+POW-creating events (Q78), careers, night wars, Frontline Push.
+Plan only — implementation awaits the Q77-Q81 sub-rulings and the
+PC lane's era re-baseline verdicts.
+
 1. **THE MERGED TEAM-KEYED HUNT — ROOT CONVICTED AND FIXED
    (prompt 170, b5b5a69)**: the line instrument proved pre-contact
    advance symmetric to a decimal and put the mover at FIRST
