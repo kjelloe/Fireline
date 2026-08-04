@@ -6,23 +6,20 @@ and two bigger swings (night wars, Frontline Push). Every slice below
 names its layer, hashed-state impact, tests, and gate. Sequenced so
 schema repins batch and the cheap wins land first.
 
-## W4-1 · Co-op mode, THE DEFAULT (S) — transport + client + docs
+## W4-1 · Team balance OFF by default (S) — transport + client + docs
+### RULED Q77 (prompt 175): no button change — unrestricted same-team joining
 
-Humans vs the Regency is the front door; PvP is the opt-in.
-- `npm start` default: co-op. The lobby balance gate is OFF; the join
-  screen leads with ONE big button — "JOIN THE WAR (co-op vs the
-  Regency)" — seating every human on team A; a small link underneath:
-  "…or join the other side (PvP)". `--pvp` / `PVP=1` restores the
-  classic two-flag screen WITH the gate.
+- The join screen stays EXACTLY as it is (two faction flags). The
+  2-human balance gate becomes a SETTING, default OFF: friends stack
+  a team freely and the Regency holds the other side.
+- `TEAMBALANCE=1` / `--teambalance` restores the gate for competitive
+  hosts. s_lobby carries the setting so the client only greys/locks
+  buttons when balance is actually enforced (head-counts still shown).
 - Nothing hashed changes (the gate lives in the transport; AI already
   fills all empty seats). Mirror batteries untouched.
-- Note: humans landing on team A rides the band's upper half (54/53 A)
-  — mildly rookie-friendly, worth stating in the briefing.
-- Tests: lobby test (gate off in co-op, on in pvp); smoke covers the
-  one-button join path. RUNNING/DEPLOYING note (unit file example
-  gains `--pvp` for competitive hosts).
-- **Q77 (sub-ruling)**: one-button + small PvP link (recommended), or
-  keep two faction flags with the gate simply removed?
+- Tests: lobby test — gate refused-join case moves under
+  `{teamBalance: true}`; new default-case test pins unrestricted
+  stacking. RUNNING/DEPLOYING note the flag for competitive hosts.
 
 ## W4-2 · Rookie drone grace (S) — engine + transport + client
 
@@ -100,10 +97,9 @@ The measured counter to artillery farming (the mid-war ledger).
 - Economy honesty: deeds and HONORS judge recognition EARNED (running
   total untouched); spending draws from a separate `recogAvailable`.
   The scoreboard shows earned; the call-in button shows available.
-- Defaults: ON in co-op, OFF in PvP until a battery says otherwise
-  (`rules.uavSweep`, UAV=0) — "test" means: land it, sandbox it,
-  playtest it in co-op, and run the PvP battery before any PvP
-  default flips.
+- RULED Q79 (prompt 175): price 25; ON when team balance is off
+  (the co-op posture), OFF in balanced/PvP wars until a battery says
+  otherwise (`rules.uavSweep`, UAV=0).
 - los.js + fog_model parity again; ws echo; ammo-style rejects
   ("not enough recognition").
 
@@ -120,10 +116,13 @@ question — which events should create POWs — my slate:
 | d. Convoy driver | The convoy truck's driver, if the wreck sits undefended 60 s, is captured | Maybe — convoy already has the restart law; could double-punish |
 | e. Boxed-in surrender | Surrounded + out of ammo = crew surrenders | Against the fights-on grain — do not recommend |
 
-a+b are the recommendation: one per mode, one universal, both using
-`OP_CAPTIVE` + prisons exactly as built. Hashed impact: none new
-(state transitions only) — but event stream changes, so the reducer
-tests pin the new transitions. The abduction counterplay law
+RULED Q78 (prompt 175): **a, b, c, d all land** (e rejected). One per
+mode (a), one universal (b), raid risk (c), convoy capture (d — the
+double-punish caveat was noted and overruled; keep the 60 s
+undefended window generous so the restart law still matters). All
+use `OP_CAPTIVE` + prisons exactly as built. Hashed impact: none new
+(state transitions only) — but the event stream changes, so reducer
+tests pin each new transition. The abduction counterplay law
 (suppression pauses) applies wherever sensible.
 
 ## W4-9 · Persistent operator record (S-M) — server + client, NOT hashed
@@ -141,9 +140,8 @@ tests pin the new transitions. The abduction counterplay law
 - `rules.nightWar` / `--night`: sensors ×0.5 all war (the weather
   machinery, held constant), headlight cone visual + darkened
   lighting on the client, storm-sun precedent for the dimmer.
-- Enters the VOTE POOL as a variant so rotation surfaces it
-  (**Q80**: always-available flag + vote entry, or seed-scheduled
-  every Nth war?).
+- RULED Q80 (prompt 175): always-available `--night` flag + a vote
+  pool entry so rotation surfaces it. No seed scheduling.
 - Battery: night pair (should read as a symmetric sensor change —
   fairness invariant by construction, verify anyway).
 
@@ -160,8 +158,8 @@ tests pin the new transitions. The abduction counterplay law
   pair — the capture-seek machinery retargeted), mission cards, mode
   banner, `batch_send.sh push` battery lane, MODEATTACKER n/a
   (symmetric mode — both push).
-- **Q81**: confirm the win shape (final-pair hold vs full-chain
-  sweep) before build.
+- RULED Q81 (prompt 175): FINAL-PAIR HOLD — hold the enemy's last
+  relay pair for 60 s to win; tickets on the stall clock otherwise.
 - Last in the wave: biggest, and it inherits every fairness law the
   wave hardens.
 
@@ -181,10 +179,12 @@ slices: smoke + acceptance. The contact-law re-baseline slate and
 POWS bisections currently on the PC lane finish first — their
 verdicts (and Q74-Q76) may reorder the tail of this wave.
 
-## Open sub-rulings queued for you
+## Sub-rulings — ALL RESOLVED (prompt 175)
 
-- **Q77** co-op join screen: one-button + PvP link (rec) vs two flags
-- **Q78** POW creators: a+b recommended; c/d optional; e rejected
-- **Q79** UAV price (rec 25) + PvP default (rec OFF until battery)
-- **Q80** night wars: flag + vote entry (rec) vs seed-scheduled
-- **Q81** Frontline Push win shape: final-pair hold (rec) vs full sweep
+- **Q77** teambalance=off default, join screen unchanged
+- **Q78** POW creators a, b, c, d land; e rejected
+- **Q79** UAV: 25 recognition; off in balanced wars until a battery
+- **Q80** night wars: flag + vote entry
+- **Q81** Frontline Push: final-pair hold
+The wave is fully ruled — implementation proceeds in the planned
+order (W4-1 first).
