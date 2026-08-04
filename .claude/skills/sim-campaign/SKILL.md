@@ -30,7 +30,10 @@ lead-team hash (a81477c) changed emission order every tick;
 everything older is a different game. CONTACT-LAW ERA VERDICT (a81477c pairs, n=300 each) — FULL SLATE:
 frontier_uq **54.0/52.9**, blackwood **52.8/51.1**, riverline
 **47.0/51.0**, **sawtooth 54.8/54.4 (the 68-69%% is GONE — in band)**,
-caldera 45.0 (one world). Modes: convoy attackers **16.3/14.3**
+caldera **45.0/44.5** (the ONLY profile leaning to B, and its mirror
+arm sits just under the band floor — small, team-keyed, and pointing
+opposite to every corridor map's slight A lean; filed as evidence for
+Q74, not chased). Modes: convoy attackers **16.3/14.3**
 (the 25-pt TEAM gap collapsed to 2 — symmetric now, but
 defender-dominant: a DIAL, not a bias), heist attackers 13.7/10.7.
 POWS=2 **39.4% baseline -> 54.2%% with RAIDPARTY=0** — THE RAID PARTY

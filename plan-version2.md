@@ -69,7 +69,7 @@ plus three experimental maps that have not earned promotion.
 | `riverline` | ⚠️ EXPERIMENTAL — **pacing SOLVED** (stalemate attrition + overtime cap: horn 41%→0, median ~19 min); **now measures FAIR (47.0/51.0 on a81477c)** — the Q69 lean is gone and its premium was pulled; east curse down to ~4 pts |
 | `blackwood` | ✅ PROMOTED — briefly regressed to 62% by the LANDSHIP FARM bug, fixed + restored to **51.0/48.3 (fair)** |
 | `sawtooth` | ✅ **FIXED BY THE PHASE-LOCK FIXES (2026-08-05)** — 54.8/54.4 on a81477c (was 69.3/67.1). Its tight chokes made the most head-on meetings, so it amplified the two contact-law bugs hardest. HOLD CAN LIFT (Q75 answered by measurement). **The +25% premium is now a lie about the map — pulling it is the next slice** |
-| `caldera` (circle map, item 40) | ✅ FIXED + **IDENTITY BLESSED (Q63)** — raider's clause off by map law; 54.3/51.7% in band; the 13-min elimination brawl IS the map |
+| `caldera` (circle map, item 40) | ✅ IDENTITY BLESSED (Q63) — raider's clause off by map law; the 13-min elimination brawl IS the map. **Contact-law re-baseline: 45.0/44.5** — the only profile leaning to B, mirror arm a hair under the band floor. WATCH (evidence for Q74, not a chase) |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ✅ Q49/Q54 — end-screen map+mode pair voting, configurable pool (VOTE_MAPS/VOTE_MODES + /rotation) |
 

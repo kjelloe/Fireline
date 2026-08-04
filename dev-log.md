@@ -5750,3 +5750,23 @@ the three ways the cards must STAY SILENT (our own compound holding
 their people; an enemy compound holding only their own re-secured
 POWs; a claimed or wrecked landship). Both locales. 795/795 x2,
 smoke + acceptance.
+
+## Caldera's mirror closes the slate (2026-08-05, prompt 178)
+
+**45.0 / 44.5% A** (n=300 each, a81477c). Both worlds favour B by
+~5.5 pts, so it is TEAM-keyed by the analyzer's own semantic, and the
+mirror arm (44.5) sits a hair BELOW the 45-point band floor.
+
+Two things make it a watch item rather than an emergency. It is small
+(~5 pts vs the 15-30 the era's real bugs produced), and it points the
+OTHER WAY: frontier 54.0/52.9, sawtooth 54.8/54.4, blackwood
+52.8/51.1 all lean slightly to A, and caldera alone leans to B. That
+asymmetry is itself evidence — whatever gives A its ~3-point house
+edge on the corridor maps either does not operate on the ring, or
+reverses there. Caldera is the odd geometry (a circle, raider's
+clause off by map law, 63% eliminations), so a mechanism that keys on
+front-line geometry would behave exactly like this.
+
+FILED, not chased: the raid-party census owns the instrument queue,
+and Q74 (the house lean) should be answered with caldera's reversal
+as part of the evidence.
