@@ -775,7 +775,9 @@ function connect() {
       // and go, so waiting for your favourite team works.
       setOperatorNames(msg.names ?? {}); // O2: names ride the lobby packet
       const [ha, hb] = msg.humans ?? [0, 0];
-      const gate = (mine, theirs) => mine >= theirs + 2;
+      // W4-1 (Q77): the gate greys buttons ONLY when the server
+      // enforces balance — the default war lets friends stack a team.
+      const gate = (mine, theirs) => msg.balance === true && mine >= theirs + 2;
       const btnA = document.getElementById("btn-join-a");
       const btnB = document.getElementById("btn-join-b");
       const note = document.getElementById("join-balance-note");

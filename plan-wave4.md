@@ -6,7 +6,7 @@ and two bigger swings (night wars, Frontline Push). Every slice below
 names its layer, hashed-state impact, tests, and gate. Sequenced so
 schema repins batch and the cheap wins land first.
 
-## W4-1 · Team balance OFF by default (S) — transport + client + docs
+## W4-1 · Team balance OFF by default (S) — ✅ SHIPPED (prompt 175)
 ### RULED Q77 (prompt 175): no button change — unrestricted same-team joining
 
 - The join screen stays EXACTLY as it is (two faction flags). The

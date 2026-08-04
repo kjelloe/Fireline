@@ -1,7 +1,8 @@
 // test/lobby.test.js — prompt 149: the join screen's live data. s_lobby
 // broadcasts team head-counts + server config on connection and every
-// seat change; fresh joins are refused at a 2-human imbalance (token
-// reclaims exempt); spectate honours the server config.
+// seat change; the 2-human balance gate is OPT-IN since W4-1 (Q77 —
+// friends stack a team by default, the Regency holds the other side);
+// token reclaims are always exempt; spectate honours the server config.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { WebSocket } from "ws";
@@ -41,8 +42,8 @@ test("149: s_lobby arrives on connection and updates on every join", async () =>
   });
 });
 
-test("149: a 2-human imbalance refuses fresh joins; reclaims still land", async () => {
-  await withServer({}, async (app, port) => {
+test("149/W4-1: with the gate ON, a 2-human imbalance refuses fresh joins; reclaims still land", async () => {
+  await withServer({ teamBalance: true }, async (app, port) => {
     const socks = [];
     for (let i = 0; i < 2; i++) {
       const c = await connect(port);
@@ -62,6 +63,30 @@ test("149: a 2-human imbalance refuses fresh joins; reclaims still land", async 
     assert.ok(await until(() => back.messages.some((m) => m.type === "s_joined")),
       "reclaim is exempt from the balance gate");
     for (const c of [ ...socks, late, back]) c.ws.close();
+  });
+});
+
+test("W4-1 (Q77): the default war lets friends stack one team, and says so in s_lobby", async () => {
+  await withServer({}, async (app, port) => {
+    const socks = [];
+    for (let i = 0; i < 3; i++) {
+      const c = await connect(port);
+      c.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: `s${i}` }));
+      socks.push(c);
+    }
+    assert.ok(await until(() => lastLobby(socks[2])?.humans?.[0] === 3),
+      "three humans stacked team 0 with zero on team 1");
+    assert.equal(socks.every((c) => c.messages.some((m) => m.type === "s_joined")), true,
+      "nobody was refused");
+    assert.equal(lastLobby(socks[2]).balance, false,
+      "s_lobby tells the client the gate is off (no greying)");
+    for (const c of socks) c.ws.close();
+  });
+  await withServer({ teamBalance: true }, async (app, port) => {
+    const c = await connect(port);
+    assert.ok(await until(() => lastLobby(c) !== undefined), "lobby arrives");
+    assert.equal(lastLobby(c).balance, true, "competitive hosts advertise the gate");
+    c.ws.close();
   });
 });
 

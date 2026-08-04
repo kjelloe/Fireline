@@ -122,6 +122,8 @@ export function createAppServer(options = {}) {
     spectate: options.spectate ?? process.env.SPECTATE !== "0",
     replays: options.replays ?? process.env.REPLAYS !== "0",
     difficulty: options.aiDifficulty ?? 1, // O4: the join screen shows it
+    // W4-1 (Q77): balance gate is opt-in for competitive hosts.
+    teamBalance: options.teamBalance ?? process.env.TEAMBALANCE === "1",
   });
 
   // 5A: match history. A finished war is archived exactly once.
@@ -359,6 +361,7 @@ function parseCliArgs(argv) {
       case "--port": case "-p": out.port = take(); break;
       case "--rules": out.rules = take(); break;
       case "--difficulty": out.difficulty = take(); break;
+      case "--teambalance": out.teambalance = true; break; // W4-1: competitive gate
       case "--list-maps": out.listMaps = true; break;
       case "--help": case "-h": out.help = true; break;
       default:
@@ -437,7 +440,7 @@ if (isMain) {
 
 options: --map|-m <profile>  --mode <standard|convoy|heist>  --attacker <0|1>
          --seed <n>  --port|-p <n>  --rules <preset>
-         --difficulty <easy|normal|hard|0|1|2>  --list-maps  --help
+         --difficulty <easy|normal|hard|0|1|2>  --teambalance  --list-maps  --help
 env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
     process.exit(0);
   }
@@ -458,6 +461,7 @@ env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, 
   const modeAttacker = Number(cli.attacker ?? (process.env.MODEATTACKER === "1" ? 1 : 0)) === 1 ? 1 : 0;
   const appServer = createAppServer({
     mapSeed, aiDifficulty, mapProfile, rules, mode, modeAttacker,
+    teamBalance: cli.teambalance === true || undefined, // W4-1: env fallback in createAppServer
     resume: true, // O5: the CLI server resumes a crashed war
     // Discovery (colocation ruling): MASTER_URL points at the index,
     // PUBLIC_ADDR is host:port as the INTERNET reaches us (behind TLS:

@@ -5583,3 +5583,15 @@ shared-box sanity, the sleep+health deploy guard, content-honest
 public verification, systemd/nginx templates. Host identity lives in
 gitignored tools/deploy.env — nothing invented, nothing public in
 the repo. Remaining O-item: O8 perf numbers (user-side).
+
+## W4-1: team balance is a setting, default OFF (2026-08-04, prompt 175)
+
+Q77 ruling: no join-screen change — friends stack a team unrestricted
+and the Regency holds the other side. The prompt-149 gate is now
+opt-in: `TEAMBALANCE=1` / `--teambalance` for competitive hosts;
+s_lobby carries `balance` so the client greys buttons only when the
+gate is real. Transport-level only — nothing hashed, batteries
+untouched. Lobby suite: gate case pinned under {teamBalance:true},
+new default-case pins three humans stacking team 0 with nobody
+refused. Wave-4 order continues: W4-2 rookie grace + W4-6 smoke +
+W4-7 UAV share the next fixture repin batch.

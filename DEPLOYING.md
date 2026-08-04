@@ -54,6 +54,7 @@ User=fireline
 WorkingDirectory=/opt/fireline
 # Session config lives HERE, not in the code: map/mode/difficulty/rules.
 ExecStart=/usr/bin/node server/index.js --map frontier_corridor --difficulty normal
+# Competitive public host? add --teambalance (default lets friends stack one team vs the AI)
 Restart=on-failure
 RestartSec=3
 Environment=PORT=8080

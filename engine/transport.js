@@ -23,6 +23,7 @@ export class NetworkTransport {
         this.spectateEnabled = options.spectate !== false;
         this.replaysEnabled = options.replays !== false;
         this.difficulty = options.difficulty ?? 1; // O4: shown on the join screen
+        this.teamBalance = options.teamBalance === true; // W4-1: gate OFF by default
 
         this.wss.on("connection", (ws) => {
             ws.on("message", (raw) => this.handleMessage(ws, raw));
@@ -56,6 +57,7 @@ export class NetworkTransport {
             spectate: this.spectateEnabled,
             replays: this.replaysEnabled,
             difficulty: this.difficulty, // O4: 0 easy / 1 normal / 2 hard
+            balance: this.teamBalance, // W4-1: the client greys only when enforced
             names: Object.fromEntries(this.names), // O2: opId -> name
         });
         const targets = oneWs ? [oneWs] : [...this.wss.clients];
@@ -160,10 +162,16 @@ export class NetworkTransport {
                 // humans than the other. Token reclaims never pass here
                 // (the knownOperator path returns above): you always
                 // get your own seat back.
-                const counts = this.humanCounts();
-                if (counts[team] >= counts[team === 0 ? 1 : 0] + 2) {
-                    ws.send(JSON.stringify({ type: "s_rejected", reason: "team full" }));
-                    return;
+                // W4-1 (Q77 ruling, prompt 175): the gate is a SETTING,
+                // default OFF — friends stack a team freely and the
+                // Regency holds the other side. TEAMBALANCE=1 restores
+                // it for competitive hosts.
+                if (this.teamBalance) {
+                    const counts = this.humanCounts();
+                    if (counts[team] >= counts[team === 0 ? 1 : 0] + 2) {
+                        ws.send(JSON.stringify({ type: "s_rejected", reason: "team full" }));
+                        return;
+                    }
                 }
                 const picked = this.pickOperatorId(msg.operatorId);
                 if (picked.error) {
