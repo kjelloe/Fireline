@@ -47,7 +47,7 @@ First battle = no anti-camping drone, per the mf_coached ruling.
   existing cards. Pure client derivation from fog-legit state — no
   hashed change.
 
-## W4-4 · Placement ghost (S-M) — client + parity test
+## W4-4 · Placement ghost (S-M) — ✅ SHIPPED (reuses the engine law, not a mirror; exposed a dead sandbag button)
 
 Green/red build preview before the channel, for sandbags (two-lane
 law), caltrops, and mines.

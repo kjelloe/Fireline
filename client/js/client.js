@@ -26,6 +26,7 @@ import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
 import { createSplash } from "./splash_model.js";
 import { compassOctant } from "../../engine/reducer.js";
 import { tasksFor } from "./tasks_model.js";
+import { placementVerdict, ghostColor } from "./build_model.js";
 import { propsFor, baseCompound } from "./props_model.js";
 import { updateGhosts, ghostOpacity } from "./ghosts_model.js";
 import { statusFor } from "./status_model.js";
@@ -212,7 +213,13 @@ function updateDirectSpecials() {
   const me = interpolator.latest()?.friendlyAssets?.find(
     (a) => a.operatorId === joined?.operatorId);
   const rows = [];
-  if ((me?.minesLeft ?? 0) > 0) rows.push(["ui.sp_mine", () => send({ type: "deploy_mine" })]);
+  if ((me?.minesLeft ?? 0) > 0) rows.push(["ui.sp_mine", () => {
+    const meNow = interpolator.latest()?.friendlyAssets?.find(
+      (a) => a.operatorId === joined?.operatorId);
+    if (!meNow) return;
+    if (!ghostCheck("mine", Math.floor(meNow.x / CELL), Math.floor(meNow.y / CELL))) return;
+    send({ type: "deploy_mine" });
+  }]);
   if ((me?.caltropsLeft ?? 0) > 0) rows.push(["ui.sp_caltrops", () => send({ type: "deploy_caltrops" })]);
   if ((me?.sandbagsLeft ?? 0) > 0) rows.push(["ui.sp_sandbag", () => {
     const cx = Math.floor(me.x / CELL);
@@ -220,7 +227,10 @@ function updateDirectSpecials() {
     const brads = me.heading ?? 0;
     const dx = Math.round(Math.cos((brads / 256) * Math.PI * 2));
     const dy = Math.round(Math.sin((brads / 256) * Math.PI * 2));
-    send({ type: "build_sandbag", targetCellX: cx + dx, targetCellY: cy + (dy || (dx === 0 ? 1 : 0)) });
+    const tx = cx + dx;
+    const ty = cy + (dy || (dx === 0 ? 1 : 0));
+    if (!ghostCheck("sandbag", tx, ty)) return;
+    send({ type: "build_sandbag", targetCellX: tx, targetCellY: ty });
   }]);
   if (me?.type === 7) rows.push(["ui.sp_hardpoint", () =>
     send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" })]);
@@ -488,7 +498,11 @@ function init3d() {
         const brads = meNow.heading ?? 0;
         const dx = Math.round(Math.cos((brads / 256) * Math.PI * 2));
         const dy = Math.round(Math.sin((brads / 256) * Math.PI * 2));
-        send({ type: "build_sandbag", targetCellX: cx + dx, targetCellY: cy + (dy || (dx === 0 ? 1 : 0)) });
+        const tx = cx + dx;
+        const ty = cy + (dy || (dx === 0 ? 1 : 0));
+        if (ghostCheck("sandbag", tx, ty)) {
+          send({ type: "build_sandbag", targetCellX: tx, targetCellY: ty });
+        }
       }
     }
     // B5: hold Q for the comm wheel (release sends, centre = cancel).
@@ -3022,6 +3036,37 @@ function makeOrderMarker(kind) {
     g.add(ring);
   }
   return g;
+}
+// W4-4 (prompt 174): THE PLACEMENT GHOST. A refused build used to be
+// SILENT — you held the key and nothing happened, and the two-lane road
+// law is invisible from the cockpit. Now the client asks the ENGINE's own
+// placement law first (build_model), drops a green/red ground marker at
+// the target cell, and names the reason when it refuses. Nothing doomed
+// is ever sent.
+function ghostCheck(kind, cellX, cellY) {
+  const view = interpolator.latest();
+  const me = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  const verdict = placementVerdict(view, cachedMap, me, kind, cellX, cellY);
+  spawnGhostMarker(cellX, cellY, ghostColor(verdict));
+  if (!verdict.ok) {
+    // The engine's rejection strings are the single source of truth; the
+    // catalogue translates the ones players actually hit and falls back
+    // to the engine's own (readable, English) wording otherwise.
+    const key = `build.${(verdict.reason ?? "").replace(/[^a-z]+/g, "_")}`;
+    const localized = t(key);
+    flashNotice(localized === key ? verdict.reason : localized, 3000, "#ff9060", true);
+  }
+  return verdict.ok;
+}
+function spawnGhostMarker(cellX, cellY, color) {
+  if (!scene) return;
+  const marker = new THREE.Mesh(
+    new THREE.RingGeometry(0.32, 0.48, 16).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85, depthWrite: false })
+  );
+  marker.position.set(cellX + 0.5, 0.06, cellY + 0.5);
+  scene.add(marker);
+  orderMarkers.push({ marker, bornMs: performance.now(), aimed: false, cellX, cellY });
 }
 const ORDER_KIND = {
   move_order: "move", crawl_order: "crawl", fire_order: "fire",

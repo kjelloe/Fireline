@@ -5770,3 +5770,42 @@ front-line geometry would behave exactly like this.
 FILED, not chased: the raid-party census owns the instrument queue,
 and Q74 (the house lean) should be answered with caldera's reversal
 as part of the evidence.
+
+## W4-4: the placement ghost — and a DEAD BUTTON it exposed
+## (2026-08-05, prompt 174)
+
+A refused build used to be SILENT: you held the key, nothing appeared,
+and the two-lane road law is invisible from the cockpit. Now the
+client asks the placement law FIRST, drops a green/red ring at the
+target cell, and names the reason when it refuses — nothing doomed is
+ever sent. 18 rejection reasons localized both ways, falling back to
+the engine's own (readable) wording if a new one appears.
+
+PLAN DEVIATION, deliberately: the plan said mirror the rules into a
+pure client model the way fog_model mirrors LOS. It doesn't. fog_model
+MUST duplicate because LOS needs the full asset list the client cannot
+have; placement law needs only PUBLIC geography (terrain, bases,
+sites, prisons, standard homes, the mission gate, and structures that
+are public by ruling) — all of it already in the view. So
+build_model.js calls the ENGINE'S OWN `buildRejection`/`deployRejection`
+with a view-shaped state: one implementation, one truth, nothing to
+drift. The parity test's real job becomes proving the view still
+carries every input those predicates read.
+
+IT EARNED ITS KEEP IMMEDIATELY. The sweep failed on cell one: the view
+NEVER PROJECTED `sandbagsLeft`. The engine checks
+`truck.sandbagsLeft ?? 0` — so the ghost saw an empty rack everywhere.
+Worse, the CLIENT had the same blindness: both build paths gate on
+`(me?.sandbagsLeft ?? 0) > 0`, which was always 0, so **the sandbag
+button and its keybind have been dead since Q50 shipped** — a whole
+ruled feature reachable only by AI. One line in view.js repaired the
+ghost, the button, the keybind, and any future rack HUD at once.
+
+BUG CLASS (worth the audit): a client gate on a field the view never
+sends fails CLOSED and silently — no error, no log, the feature simply
+never appears. Grep every `?? 0`/`?? -1` client gate against the view
+projection. Tests: 4 (a 361-cell engine-vs-ghost sweep across four
+distinct rejection reasons; the invisible two-lane law; mines; and
+agreement after a build MUTATES the terrain to T_BLOCKING — where the
+buildable-ground check fires before the occupancy check, which the
+test now documents). 799/799 x2, smoke + acceptance.

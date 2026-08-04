@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-05 (suite 795/795, fixture v69 — the CONTACT-LAW era). HTML twin:
+*Updated 2026-08-05 (suite 799/799, fixture v69 — the CONTACT-LAW era). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:

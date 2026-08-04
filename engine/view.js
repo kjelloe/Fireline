@@ -50,6 +50,7 @@ export function buildSpectatorView(state) {
     towedBy: a.towedBy, recoverTimer: a.recoverTimer,
     reloadTimer: a.reloadTimer,
     heading: a.heading, minesLeft: a.minesLeft, caltropsLeft: a.caltropsLeft ?? 0,
+      sandbagsLeft: a.sandbagsLeft ?? 0, // W4-4: your own rack (the ghost + the HUD need it)
     aboard1: a.aboard1, aboard2: a.aboard2,
   }));
   return {
@@ -101,6 +102,7 @@ export function buildView(state, team) {
       towedBy: a.towedBy, recoverTimer: a.recoverTimer,
       reloadTimer: a.reloadTimer,
       heading: a.heading, minesLeft: a.minesLeft, caltropsLeft: a.caltropsLeft ?? 0,
+      sandbagsLeft: a.sandbagsLeft ?? 0, // W4-4: your own rack (the ghost + the HUD need it)
       aboard1: a.aboard1, aboard2: a.aboard2, // 10B: takeover context
       materiel: a.materiel, // 11F
       driveThrottle: a.driveThrottle, driveTurn: a.driveTurn, // 11L
