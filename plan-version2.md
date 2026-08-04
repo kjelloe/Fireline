@@ -68,7 +68,7 @@ plus three experimental maps that have not earned promotion.
 | `frontier_corridor` | ✅ DEFAULT — **terrain mirror-BY-CONSTRUCTION since prompt 143** (it never was, cell-level; ~1,600 asymmetric pairs/seed for 5 weeks); symmetric-era baseline **46.2/45.5% A (in band)** |
 | `riverline` | ⚠️ EXPERIMENTAL — **pacing SOLVED** (stalemate attrition + overtime cap: horn 41%→0, median ~19 min); unique-pair lean ACCEPTED with premium disclosure (Q69) |
 | `blackwood` | ✅ PROMOTED — briefly regressed to 62% by the LANDSHIP FARM bug, fixed + restored to **51.0/48.3 (fair)** |
-| `sawtooth` | 🔴 HELD — now ~**68% A**: the escort-wall fix lets working raids EXPRESS the structural lean (convicted same-seeds: 56.2 pre / 64.1 post). Q73 = hunt priority. Premium disclosed |
+| `sawtooth` | ✅ **FIXED BY THE PHASE-LOCK FIXES (2026-08-05)** — 54.8/54.4 on a81477c (was 69.3/67.1). Its tight chokes made the most head-on meetings, so it amplified the two contact-law bugs hardest. HOLD CAN LIFT (Q75 answered by measurement). **The +25% premium is now a lie about the map — pulling it is the next slice** |
 | `caldera` (circle map, item 40) | ✅ FIXED + **IDENTITY BLESSED (Q63)** — raider's clause off by map law; 54.3/51.7% in band; the 13-min elimination brawl IS the map |
 | The 6-map bank | 📝 designed, unbuilt: archipelago, rail junction, urban grid, salt flat, highland ridge, fortress breach |
 | Map rotation / voting | ✅ Q49/Q54 — end-screen map+mode pair voting, configurable pool (VOTE_MAPS/VOTE_MODES + /rotation) |

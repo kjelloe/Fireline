@@ -27,10 +27,15 @@ Healthy war, CURRENT baseline era: **THE CONTACT-LAW ERA opens at
 b5b5a69/a81477c (2026-08-03)** — the meeting-stop snapshot fix
 (b5b5a69) changed contact geometry for every hull, and the seeded
 lead-team hash (a81477c) changed emission order every tick;
-everything older is a different game. CONTACT-LAW ERA VERDICT (a81477c pairs, n=300 each):
-frontier_uq **54.0/52.9% A — IN BAND BOTH WORLDS** (upper half —
-watch the slight A lean); POWS=2 **39.4/36.4% A** (was 25.9/28.3 —
-the emission lock carried ~half the deficit; still below band).
+everything older is a different game. CONTACT-LAW ERA VERDICT (a81477c pairs, n=300 each) — FULL SLATE:
+frontier_uq **54.0/52.9**, blackwood **52.8/51.1**, riverline
+**47.0/51.0**, **sawtooth 54.8/54.4 (the 68-69%% is GONE — in band)**,
+caldera 45.0 (one world). Modes: convoy attackers **16.3/14.3**
+(the 25-pt TEAM gap collapsed to 2 — symmetric now, but
+defender-dominant: a DIAL, not a bias), heist attackers 13.7/10.7.
+POWS=2 **39.4% baseline -> 54.2%% with RAIDPARTY=0** — THE RAID PARTY
+IS THE POWS ROOT (POWARC=0 only reaches 41.5%%); mirror confirm
+queued.
 The b5b5a69-only reads (39.7/40.3, 25.9/28.3) proved the two
 phase-lock channels INTERACT — the meeting-stop fix alone read
 worse than baseline. POWS=2 residual epoch (line instrument on
@@ -86,6 +91,13 @@ was VOID, a cross-build comparison; the config-drift class caught by
 its own confirm battery): the vault remains the single observation
 that a personality node can compound a lean. Ship specials with a
 SAME-BUILD kill-switch A/B, never judged against an older baseline.
+
+THE STALE-EXONERATION LAW (2026-08-05): a kill-switch verdict is
+only valid IN THE ERA IT WAS MEASURED. RAIDPARTY=0 read "identical,
+exonerated" last era (26.1/21.5) because the two phase-lock channels
+dominated and MASKED it; on the fixed build the same switch moves
+POWS=2 by ~15 points and convicts. After any root fix, RE-RUN every
+exoneration the old era produced — an innocence verdict decays.
 
 THE DEAD-SWITCH LAW (2026-08-03, the ORDERPARITY lesson): an A/B arm
 that returns BIT-IDENTICAL counts to its baseline is not "inert" —

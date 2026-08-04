@@ -5648,3 +5648,56 @@ resets. War two is a warning, not a cold shock. Both locales.
 Tests: rookie_grace.test.js (veteran stung / rookie spared / flag is
 per-operator / absence = veteran / campTicks projected) + a ws echo
 in lobby.test.js. 787/787 x2, sim gate, smoke, acceptance.
+
+## THE CONTACT-LAW RE-BASELINE + THE POWS ROOT (2026-08-05, prompt 176)
+
+The whole slate came back on a81477c (n=300 each, uniques ON).
+
+MAPS — every profile re-measured under the fixed contact laws:
+| profile | world 1 | mirror | verdict |
+|---|---|---|---|
+| blackwood | 52.8 | 51.1 | FAIR, flips — promotion holds |
+| riverline | 47.0 | 51.0 | FAIR-ish; the east curse fell ~9 pts -> ~4 |
+| **sawtooth** | **54.8** | **54.4** | **IN BAND — the 68-69% is GONE** |
+| caldera | 45.0 | (mirror queued) | lower band edge, one world only |
+
+**SAWTOOTH IS FIXED BY THE PHASE-LOCK FIXES.** It read 69.3/67.1 on
+f20ce07 and was HELD with a disclosed premium; it now reads
+54.8/54.4 — the same upper-half band position as frontier. Q73's
+finding stands and is REFRAMED: the unique pair was never the
+generator, it was the AMPLIFIED party. Sawtooth's tight chokes make
+the most head-on meetings per war, so the meeting-stop skew and the
+emission phase-lock compounded hardest there. Q75 is answered by
+measurement: the bench ruling can be lifted. THE PREMIUM MUST NOW
+BE REVIEWED — a +25% underdog premium on a fair map is a lie about
+the map (premium.js's own law); pulling it is the next slice, and it
+needs its own same-build pair.
+
+MODES — the team-keyed gap DISSOLVED, and a tuning problem replaced
+a fairness problem:
+- convoy attackers **16.3% (A) / 14.3% (B)** — was 39/64. The 25-pt
+  TEAM gap is now 2 pts (noise). The mode is symmetric and the
+  defender is dominant; that is a dial, and the bar is the
+  designer's (Q47 lives here).
+- heist attackers **13.7% / 10.7%** — was 12.7/9.3. Unchanged, still
+  fair-ish, still a dial.
+
+**THE POWS RESIDUAL IS CONVICTED: THE RAID PARTY.**
+| POWS=2 arm | A-rate |
+|---|---|
+| baseline | 39.4% (reproduces the earlier same-build read exactly) |
+| **RAIDPARTY=0** | **54.2% — IN BAND** |
+| POWARC=0 | 41.5% (barely moves) |
+
+Killing the AI prison-raid party recovers the ENTIRE remaining
+deficit (~15 pts); the POW arc itself is nearly innocent. Note the
+era lesson AGAIN: last era RAIDPARTY=0 read 26.1/21.5, i.e.
+"identical, exonerated" — the phase-lock channels were dominating
+and MASKING it. A kill-switch verdict is only valid in the era it
+was measured; re-run every exoneration after a root fix.
+Mirror confirm queued (a single world never convicts alone).
+NEXT INSTRUMENT once the mirror lands: a raid-party census under
+POWS=2 — hulls committed per team, party lifetime, losses while the
+party is live — to name what inside the party is team-keyed. The
+mid-war ledger's REBUILD OVERSHOOT (A's carrier/crawl spiral, B's
+earlier MPG wave) is very likely downstream of this.

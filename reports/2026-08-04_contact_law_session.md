@@ -71,3 +71,48 @@ b5b5a69-only column is the proof the batteries had to be same-build.
   that comeback depth intended, or should wave strength/timing scale
   with the pool difference? Same-build RAIDPARTY/POWARC bisections
   are queued to name the decoupler precisely.
+
+
+## THE FULL RE-BASELINE (2026-08-05, a81477c, n=300 each)
+
+| profile | world 1 | mirror | verdict |
+|---|---|---|---|
+| frontier | 54.0 | 52.9 | in band |
+| blackwood | 52.8 | 51.1 | fair, flips |
+| riverline | 47.0 | 51.0 | fair-ish (east curse ~9 -> ~4 pts) |
+| **sawtooth** | **54.8** | **54.4** | **the 68-69% is GONE** |
+| caldera | 45.0 | queued | lower band edge |
+
+Modes: convoy attackers **16.3 / 14.3%** (the 25-point TEAM gap
+collapsed to 2 — symmetric, but defender-dominant), heist attackers
+13.7 / 10.7% (unchanged).
+
+**Sawtooth was never a broken map.** Its tight chokes produce the most
+head-on meetings per war, so it amplified the meeting-stop skew and the
+emission phase-lock harder than anywhere else. Q75 is therefore
+answered by measurement, not by a judgement call: the HOLD can lift.
+**But the +25% underdog premium on sawtooth is now a lie about the
+map** — by premium.js's own law an entry needs a live conviction.
+Pulling it (and re-measuring same-build) is the next balance slice.
+
+**POWS=2 root convicted: THE RAID PARTY.** baseline 39.4% ->
+RAIDPARTY=0 **54.2%**; POWARC=0 only 41.5%. The AI prison-raid party
+carries the entire remaining deficit. Mirror confirm queued.
+Note the era lesson: last era this same switch read "identical,
+exonerated" — the phase-lock channels were masking it. Recorded as
+THE STALE-EXONERATION LAW in the sim-campaign skill.
+
+## Questions, updated
+
+- **Q74** (frontier's upper-half lean): now a whole-slate pattern —
+  frontier 54.0/52.9, sawtooth 54.8/54.4, blackwood 52.8/51.1 all sit
+  in the band's upper half. Accept as tolerance, or is a ~3-point
+  house lean worth one more hunt?
+- **Q75**: ANSWERED by the re-baseline — sawtooth is in band; the hold
+  can lift. Remaining decision: pull the premium (recommended) and
+  whether to re-open it for the human playtest first.
+- **Q76** (rebuild overshoot): still open, but likely DOWNSTREAM of the
+  raid party — the census will say.
+- **Q82 (new)**: convoy attackers now win ~15% both directions. Fair,
+  but is 15% the intended bar for an asymmetric escort mission? The
+  axes are honest now; the number is yours.
