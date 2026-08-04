@@ -5809,3 +5809,14 @@ distinct rejection reasons; the invisible two-lane law; mines; and
 agreement after a build MUTATES the terrain to T_BLOCKING — where the
 buildable-ground check fires before the occupancy check, which the
 test now documents). 799/799 x2, smoke + acceptance.
+
+The audit the entry above recommends was RUN, not just filed:
+`sandbagsLeft` was the class's only other member, and
+`test/view_contract.test.js` now makes the check permanent (a source
+lint: every own-asset field client.js reads must appear in the
+per-team projection, plus a by-name pin on the four rack/timer fields
+the build UI gates on). Verified red by deleting the field from the
+per-team block and green on restore — the FIRST attempt at that check
+passed while deleting it from the SPECTATOR projection, which is a
+neat demonstration of why "I wrote the lint" is not the same as "the
+lint bites".

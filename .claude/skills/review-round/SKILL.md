@@ -42,3 +42,16 @@ changed. Only genuinely new artifacts (a skill, a big doc) need asking.
   bugs" in tests.
 - Suite counts are double-run; ws tests use poll-waits, never fixed
   settles under load.
+
+## The view-contract class (added 2026-08-05, W4-4)
+
+A client gate on a field the view never projects fails CLOSED and
+SILENTLY — no error, no log, the feature simply never appears. The
+sandbag button and keybind were dead from the day Q50 shipped because
+`buildView` never sent `sandbagsLeft`; no unit test could see it, and
+only a client-vs-engine parity sweep exposed it.
+
+`test/view_contract.test.js` now lints this automatically. When adding
+any client feature gated on asset state, check the projection FIRST —
+and remember there are TWO projections (per-team and spectator);
+adding a field to one is not adding it to the other.
