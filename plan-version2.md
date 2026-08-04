@@ -151,7 +151,7 @@ have, in the order I would worry:
 | O5 | ✅ SHIPPED (164): 30s autosave + opt-in CLI resume (<10 min), hash-roundtrip pinned | — | — |
 | O6 | ✅ SHIPPED (172): DEPLOYING.md playbook + tools/ssh-deploy.sh (multiciv's seven guards ported; host identity in gitignored deploy.env) | — | — |
 | O7 | Text chat (comm wheel + pings exist) | Probably FINE for v2 — pings were the ruled design; note only | — |
-| O8 | Native perf numbers (runner works, numbers never collected — user-side since July) | Perf claims are still vibes | user |
+| O8 | 🔶 HALF SHIPPED (176): first honest 4070 numbers — locked 144 Hz, min 143, and the art-detail era CUT triangles 65% (227k -> 79k) while raising the frame floor. Still vsync-capped: headroom + weak-hardware (MX550) runs outstanding | Numbers in tools/perf_native.md | user |
 
 Recommended order: O2 (names — small, immediately warms every existing
 system) → O1 (the SFX manifest; music integration follows the composer)

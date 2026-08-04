@@ -88,6 +88,40 @@ raise the refresh rate) to get headroom. A capped run now warns about
 this on the way out, and the summary records `uncapped: true|false` so a
 capped reading can never be quoted as headroom later.
 
+## THE MEASURED RESULTS (recorded here because reports/sweeps/ is gitignored)
+
+| Run | Build | uncapped | fps med / p5 / min | draw calls | triangles |
+|---|---|---|---|---|---|
+| 2026-07-29 | pre-art-detail | (field absent) | 61 / 60 / 59 | 263-265 | ~222,900 |
+| 2026-07-30 | pre-art-detail | false | 145 / 144 / **138-140** | ~290 | **227,418** |
+| **2026-08-04** | **f7edce5 (art-detail era + wave 4 W4-1)** | false | **145 / 144 / 143** | 309 (431 at war start) | **78,804** |
+
+Scene in every run: the worst-case theatre — 33 assets (32 + landship),
+33 operable, 24 mines, 8 drones, 4 downed, labels on. Card: RTX 4070
+via ANGLE D3D11, 30 s measured, seed 2026.
+
+**THE FINDING (2026-08-04): the art-detail era made the renderer
+CHEAPER, not dearer.** Triangles fell 227,418 -> 78,804 (**-65%**)
+while the game got visibly more detailed (terrain mesh v2, species,
+verges, patches, compound v2, detail kits, typed-node dressing). The
+cause is terrain_mesh.js: one vertex-coloured ground mesh replaced
+~16k per-cell flat boxes, and it more than paid for every prop added on
+top. The frame FLOOR improved with it (min 138-140 -> 143 on the same
+144 Hz cap) — the worst frames, which are what players feel, got
+better. Draw calls rose slightly at war START (431, the prop/detail
+kit) and fall through the war as hulls die (309 by t=30 s).
+
+**What is still NOT known: headroom.** All three runs are vsync
+readings (`uncapped: false` — 143-145 on a 144 Hz panel is the panel,
+not the ceiling). The claim these numbers support is exactly: *"a full
+late-war scene holds a locked 144 Hz on a mid-range 2023 GPU and never
+drops below 143."* They say nothing about a laptop iGPU — and the
+owner's own MX550 is the machine that produced the WebGL-context bug
+(prompt 165), so weak-hardware behaviour is a live question, not a
+theoretical one. Next: `-Uncapped` (vsync off in the driver too) for
+the headroom multiple, and ideally one run ON the weak laptop, which is
+the only true answer for the 14D fallback floor.
+
 ## What to do with the numbers
 
 The open question these unblock: whether the 2D sprite fallback's

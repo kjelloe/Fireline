@@ -5595,3 +5595,34 @@ untouched. Lobby suite: gate case pinned under {teamBalance:true},
 new default-case pins three humans stacking team 0 with nobody
 refused. Wave-4 order continues: W4-2 rookie grace + W4-6 smoke +
 W4-7 UAV share the next fixture repin batch.
+
+## O8: the FIRST honest GPU numbers (2026-08-05, prompt 176)
+
+The owner ran the native harness on the gaming PC against f7edce5
+(RTX 4070, ANGLE D3D11, 30 s, seed 2026, worst-case theatre: 33
+assets / 24 mines / 8 drones / 4 downed / labels). Numbers recorded
+in tools/perf_native.md — reports/sweeps/ is GITIGNORED, so a number
+that lives only there is a number we will lose.
+
+fps 145 med / 144 p5 / 143 min; 309 draw calls (431 at war start);
+**78,804 triangles**.
+
+THE FINDING: the art-detail era made the renderer CHEAPER. Against
+the 2026-07-30 pre-art run on the same card: triangles 227,418 ->
+78,804 (**-65%**) while the game got visibly MORE detailed, and the
+frame FLOOR rose 138-140 -> 143. terrain_mesh.js is the cause — one
+vertex-coloured ground mesh replaced ~16k per-cell boxes and paid for
+every prop, verge, species and detail kit added on top of it. Draw
+calls rose slightly at war start (431) and fall as hulls die (309).
+The pretty pass was also the optimisation pass; that is worth
+knowing before anyone "optimises" the art back out.
+
+CAVEAT ON RECORD: `uncapped: false` — 143-145 on a 144 Hz panel is
+the PANEL, not the ceiling. Supported claim: "a full late-war scene
+holds a locked 144 Hz on a mid-range 2023 GPU, never below 143."
+NOT supported: any headroom or weak-hardware claim. The 14D 2D-
+fallback fps floor stays a placeholder until an -Uncapped run (and,
+better, a run on the owner's MX550 — the card that produced the
+WebGL-context bug, so weak-hardware behaviour is a live question).
+O8 is therefore HALF closed: the honest mid-range claim exists; the
+headroom rung is one PowerShell flag away and is the user's to run.
