@@ -5626,3 +5626,25 @@ better, a run on the owner's MX550 — the card that produced the
 WebGL-context bug, so weak-hardware behaviour is a live question).
 O8 is therefore HALF closed: the honest mid-range claim exists; the
 headroom rung is one PowerShell flag away and is the user's to run.
+
+## W4-2: the rookie's first war draws no drone (2026-08-05, prompt 174)
+
+The 60-second tenet, enforced against our own anti-camping rule: new
+players idle out of supply while reading the UI, and 30 s later a
+drone is biting them. Hashed `operator.rookie` (fixture **v69**) set
+from the client's mf_coached flag at join; the camp pass zeroes a
+rookie's clock instead of launching. Absence means veteran, so AI
+regents and old clients are unaffected — the 5-seed gate came back
+TICK-IDENTICAL (31337 5653, 4242 12680, 9001 14600, same winners and
+reasons), which is the proof the exemption cannot touch sims.
+
+Trust caveat ruled acceptable in the plan: a client can lie, but the
+flag only ever REMOVES a pest — it buys nothing competitive.
+
+Complement (everyone, every war): `campTicks` now rides the per-team
+view, and the client flashes "you are camping out of supply — a drone
+is coming, MOVE" at 200 ticks (20 s), re-arming when the clock
+resets. War two is a warning, not a cold shock. Both locales.
+Tests: rookie_grace.test.js (veteran stung / rookie spared / flag is
+per-operator / absence = veteran / campTicks projected) + a ws echo
+in lobby.test.js. 787/787 x2, sim gate, smoke, acceptance.

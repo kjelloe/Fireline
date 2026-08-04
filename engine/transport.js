@@ -179,7 +179,10 @@ export class NetworkTransport {
                     return;
                 }
                 const operatorId = picked.operatorId;
-                const result = this.server.enqueue({ type: "join_operator", operatorId, team });
+                // W4-2: the client's first-war flag rides the join.
+                const result = this.server.enqueue({
+                    type: "join_operator", operatorId, team, rookie: msg.rookie === true,
+                });
                 if (result.accepted) {
                     this.reserved.add(operatorId);
                     if (playerId != null) this.players.set(playerId, operatorId);

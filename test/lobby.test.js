@@ -132,6 +132,23 @@ test("O5: the autosave roundtrip preserves the state hash exactly", async () => 
   assert.equal(typeof s2.tick, "number", "the revived war ticks");
 });
 
+test("W4-2: the rookie flag rides the join over the wire", async () => {
+  await withServer({}, async (app, port) => {
+    const rookie = await connect(port);
+    rookie.ws.send(JSON.stringify({ type: "c_join", team: 0, playerId: "r1", rookie: true }));
+    await until(() => rookie.messages.some((m) => m.type === "s_joined"));
+    const rId = rookie.messages.find((m) => m.type === "s_joined").operatorId;
+    const vet = await connect(port);
+    vet.ws.send(JSON.stringify({ type: "c_join", team: 1, playerId: "v1" }));
+    await until(() => vet.messages.some((m) => m.type === "s_joined"));
+    const vId = vet.messages.find((m) => m.type === "s_joined").operatorId;
+    app.gameServer.step(); // the test pump is stubbed: drain the queued joins
+    assert.equal(app.gameServer.state.operators[rId].rookie, 1, "flag reached hashed state");
+    assert.equal(app.gameServer.state.operators[vId].rookie, 0, "omitted means veteran");
+    rookie.ws.close(); vet.ws.close();
+  });
+});
+
 test("O4: the lobby packet carries the host's AI difficulty", async () => {
   await withServer({ aiDifficulty: 2 }, async (app, port) => {
     const c = await connect(port);

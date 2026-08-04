@@ -108,6 +108,7 @@ export function buildView(state, team) {
       cargoFuel: a.cargoFuel, cargoAmmo: a.cargoAmmo, // 13A
       stationOp: a.stationOp ?? -1, stationAmmo: a.stationAmmo ?? 0, // prompt-100
       stationReload: a.stationReload ?? 0,
+      campTicks: a.campTicks ?? 0, // W4-2: the client warns before the drone
     }));
 
   const visible = computeVisible(state, team);

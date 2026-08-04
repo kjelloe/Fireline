@@ -21,7 +21,7 @@ schema repins batch and the cheap wins land first.
   `{teamBalance: true}`; new default-case test pins unrestricted
   stacking. RUNNING/DEPLOYING note the flag for competitive hosts.
 
-## W4-2 · Rookie drone grace (S) — engine + transport + client
+## W4-2 · Rookie drone grace (S) — ✅ SHIPPED (fixture v69)
 
 First battle = no anti-camping drone, per the mf_coached ruling.
 - Client sends `rookie: !localStorage.mf_coached` on join → operator

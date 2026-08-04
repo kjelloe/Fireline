@@ -362,6 +362,11 @@ function applyJoinOperator(next, command) {
   if (operator.state !== OP_ABSENT) return reject(next, command, "operator already active");
   operator.state = OP_ACTIVE;
   operator.team = command.team;
+  // W4-2: a player in their FIRST war is spared the anti-camping drone
+  // (the client sets this from the mf_coached flag). Trust caveat is
+  // ruled acceptable — the drone is anti-camp QoL, not competitive
+  // integrity, and a rookie flag buys nothing but freedom from a pest.
+  operator.rookie = command.rookie === true ? 1 : 0;
   next.events.push({ type: "operator_joined", operatorId: operator.id, team: operator.team });
   return next;
 }
@@ -1748,6 +1753,11 @@ function applyAdvanceTick(next) {
     // 1000-tick respawn loop, every map, all war (blackwood read 62%
     // A). Anti-camping punishes CAMPERS; a neutral fortress isn't one.
     if (asset.team === -1) { asset.campTicks = 0; continue; }
+    // W4-2 (prompt 174): a rookie's first war draws no drone. New
+    // players idle out of supply while reading the UI; being stung for
+    // it is the worst possible 60-second impression. AI regents are
+    // never rookies, so sims are unchanged.
+    if (next.operators[asset.operatorId]?.rookie === 1) { asset.campTicks = 0; continue; }
     const atTheWheel = asset.driveThrottle !== 0 || asset.driveTurn !== 0; // 11L
     if (asset.state === ASSET_IDLE && !atTheWheel && !inSupply(next, asset)) {
       asset.campTicks += 1;

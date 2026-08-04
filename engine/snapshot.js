@@ -20,6 +20,7 @@ export function hashState(state) {
     w.writeU8(o.autoRescue ?? 1); // added 11G
     w.writeI32LE(o.respawnTicks ?? 0); w.writeI32LE(o.carrierSpawnAt ?? 0); // added 15/15F
     for (const d of o.deeds ?? []) w.writeI32LE(d); // added B4 (7 deed counters)
+    w.writeU8(o.rookie ?? 0); // added W4-2 (first-war drone grace)
   }
   for (const a of state.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);

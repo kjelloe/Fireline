@@ -1040,7 +1040,13 @@ function joinTeam(team) {
   const nameEl = document.getElementById("join-name");
   const name = (nameEl?.value ?? "").trim().slice(0, 16);
   try { if (name) localStorage.setItem("mf_name", name); } catch { /* private */ }
-  socket.send(JSON.stringify({ type: "c_join", team, playerId: myPlayerId(), name }));
+  // W4-2: a player who has never been coached is in their FIRST war —
+  // the server spares them the anti-camping drone for it.
+  let coachedBefore = null;
+  try { coachedBefore = localStorage.getItem("mf_coached"); } catch { /* private mode */ }
+  socket.send(JSON.stringify({
+    type: "c_join", team, playerId: myPlayerId(), name, rookie: !coachedBefore,
+  }));
 }
 
 // ── 15A: the touch layer (ruling Q10) ───────────────────────────────────
@@ -2797,6 +2803,7 @@ function updateTargetRings(view) {
 
 // 14I: the lower-center status panel — the "why am I not firing" answers.
 let statusKey = "";
+let droneWarned = false; // W4-2: one drone warning per camping stint
 function updateStatusPanel(view) {
   const el = document.getElementById("status-panel");
   if (!el) return;
@@ -2804,6 +2811,15 @@ function updateStatusPanel(view) {
   if (!me || joined?.spectator) {
     if (statusKey !== "") { el.style.display = "none"; statusKey = ""; }
     return;
+  }
+  // W4-2: warn BEFORE the anti-camping drone launches (CAMP_TICKS=300).
+  // Every player gets this — the rookie grace only covers war one, so
+  // war two must not be a cold shock.
+  if ((me.campTicks ?? 0) >= 200 && !droneWarned) {
+    droneWarned = true;
+    flashNotice(t("coach.drone"), 5000, "#ffb060", true);
+  } else if ((me.campTicks ?? 0) === 0 && droneWarned) {
+    droneWarned = false; // moved or resupplied — re-arm the warning
   }
   const s = statusFor(me, { inSupplyNow: isSupplied(view, me) });
   const key = JSON.stringify([s.hp, s.ammo, s.fuel, s.reasons, s.cargo]);
