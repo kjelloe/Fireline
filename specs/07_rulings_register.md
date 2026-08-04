@@ -348,3 +348,75 @@ premium stays for REWARD fairness. A stays only as targeted mechanism
 fixes; B's unique-bench only as a temporary measure if a lean is
 intolerable pre-tuning. Mode-role counterweights ride mode rules
 (the defender-MPG precedent).
+
+## Prompts 174-175 rulings (2026-08-04/05) — WAVE 4, the FUN wave
+
+The design-review slate (prompt 173 review; full plan in
+`plan-wave4.md`). All five sub-rulings resolved in prompt 175.
+
+- **Q77 — team stacking**: NO join-screen change. The 2-human balance
+  gate becomes a SETTING, **default OFF** — friends stack a team
+  freely and the Regency holds the other side. `TEAMBALANCE=1` /
+  `--teambalance` restores the competitive gate; `s_lobby` carries
+  `balance` so the client greys buttons only when it is enforced.
+  SHIPPED (W4-1).
+- **Q78 — what else creates POWs**: **a, b, c and d all land**; e is
+  rejected.
+  a. failed heist — the Asset carrier disabled inside the defender's
+     half is CAPTURED, not downed (the vault's guards take them);
+  b. deep-down capture law — a downed operator whose timer expires
+     inside the enemy COMPOUND becomes captive (the universal one,
+     and the reason standard wars will finally grow POWs);
+  c. failed prison raid — raiders downed inside the raid radius while
+     the alarm is live are captured;
+  d. convoy driver — the truck's driver is captured if the wreck sits
+     undefended 60 s (keep the window generous so the RESTART law
+     still matters);
+  e. boxed-in surrender — REJECTED, it fights the fights-on grain.
+  All four reuse `OP_CAPTIVE` + prisons as built; no new hashed
+  fields, but the event stream changes so each transition needs a
+  reducer pin. PLANNED (W4-8).
+- **Q79 — the recognition sink**: UAV sweep costs **25** recognition
+  for a 10 s radius-8 reveal. ON when team balance is off (the co-op
+  posture), OFF in balanced/PvP wars until a battery says otherwise.
+  Honesty rule: honors keep judging recognition EARNED; spending
+  draws from a separate available pool. PLANNED (W4-7).
+- **Q80 — night wars**: an always-available `--night` flag PLUS a
+  vote-pool entry. No seed scheduling. PLANNED (W4-10).
+- **Q81 — Frontline Push win shape**: **final-pair hold** — hold the
+  enemy's last relay pair for 60 s; tickets on the stall clock
+  otherwise. Not a full-chain sweep. PLANNED (W4-11).
+
+## Measurement-driven rulings (2026-08-05, prompt 176-177)
+
+These were decided BY DATA under the era's own laws, not by taste —
+recorded here because they reverse or retire earlier rulings.
+
+- **Q75 — sawtooth's hold: ANSWERED BY MEASUREMENT.** The map reads
+  **54.8/54.4 on a81477c** (was 69.3/67.1). The lean was the two
+  phase-lock bugs, which sawtooth's tight chokes amplified hardest by
+  producing the most head-on meetings per war. The HOLD LIFTS. Every
+  pre-a81477c sawtooth number is last-era, including the Q73
+  "uniques-linked" attribution.
+- **THE PREMIUM TABLE EMPTIES (both entries pulled).** sawtooth 54.6
+  aggregate (under the generator's 55 threshold) and riverline 49.0
+  (fair) no longer convict. `MAP_PREMIUM` is empty by its own law: an
+  entry without a live conviction is a lie the briefing repeats to
+  every player. **Q69 is SPENT, not overturned** — it accepted
+  disclosure of a measured lean that has since been engineered away;
+  one line restores it. Outcome-neutral (recognition only, never
+  teamScores), so no battery was required.
+- **THE POWS ROOT: the AI raid party.** POWS=2 baseline 39.4/36.4 ->
+  RAIDPARTY=0 **54.2/51.2, in band in BOTH worlds**; POWARC=0 reaches
+  only 41.5%. The POW arc itself is nearly innocent. Open follow-up:
+  the raid-party census (hulls committed per team, party lifetime,
+  losses while live) to name what inside the party is team-keyed.
+- **Q82 (NEW, for the designer)**: convoy attackers now win
+  **16.3% (A) / 14.3% (B)** — the 25-point TEAM gap collapsed to 2
+  points of noise, so the mode is symmetric but defender-dominant.
+  That is a DIAL, not a bias. Is ~15% the intended bar for an
+  asymmetric escort mission?
+- **Q74 (open)**: frontier 54.0/52.9, sawtooth 54.8/54.4, blackwood
+  52.8/51.1 — the whole slate now sits in the band's UPPER half.
+  Accept a ~3-point house lean as tolerance, or hunt once more after
+  the raid-party census?

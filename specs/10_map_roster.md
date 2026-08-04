@@ -332,7 +332,36 @@ the current lever values — NO retune was needed.
 Riverline stays experimental (its 300-war battery is still owed);
 sawtooth stays HELD for the human playtest per the designer ruling.
 
-## 4f. Sawtooth — the live-config verdict (2026-07-31): 69% A, HELD
+## 4f. Sawtooth — VERDICT OVERTURNED (2026-08-05): 54.8/54.4, IN BAND
+
+**READ THIS FIRST — the section below is LAST-ERA and kept only as the
+record of how the map was misread.** On a81477c (the contact-law era,
+after both phase-lock fixes) sawtooth measures **54.8 / 54.4% A at
+n=300 mirrored — in band, the same upper-half position as frontier.**
+
+The 69% was never the unique pair. It was the two phase-lock bugs
+(the meeting-stop skew, b5b5a69; the raw-tick-parity emission order,
+a81477c), and sawtooth's tight canyon chokes amplified them harder
+than any other profile because they produce the most head-on meetings
+per war. That also explains the escort-wall "regression" (56.2 -> 64.1
+same-seeds): working raids simply generated MORE meetings, so they fed
+the bug harder. The fix was correct; the map was innocent.
+
+Consequences: the HOLD LIFTS (Q75, answered by measurement); the
+underdog premium was PULLED (an entry without a live conviction is a
+lie the briefing repeats to every player); the Q73 "uniques-linked"
+attribution is retired. The rectification menu below is PARKED — the
+Skimmer/Sentinel seat-economics question is still real design work,
+but it is no longer a balance emergency on this map.
+
+LESSON FOR THE ROSTER: a map that amplifies an engine bug looks
+exactly like a map with a structural lean. Before convicting terrain,
+check whether the profile merely maximises the frequency of whatever
+the engine gets wrong.
+
+<details>
+<summary>LAST-ERA record — the 2026-07-31 live-config verdict (69% A, HELD)</summary>
+
 
 The first uniques-ON sawtooth battery ever run (all earlier ones were
 uniques-OFF): **A 414 / B 186 across 300+300 mirrored = 69.0% A,
@@ -364,6 +393,8 @@ earning — touches the open field-swap design question); (3) Sentinel
 stat changes are the WRONG lever (it is individually weak). Interim:
 the underdog premium is LIVE for team B here (prompt-68), disclosed in
 the join briefing. The map stays HELD for the human playtest.
+
+</details>
 
 ## 4e. BANKED (playtest-10 item 40): `caldera` — the circle map
 
