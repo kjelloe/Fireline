@@ -5701,3 +5701,28 @@ POWS=2 — hulls committed per team, party lifetime, losses while the
 party is live — to name what inside the party is team-keyed. The
 mid-war ledger's REBUILD OVERSHOOT (A's carrier/crawl spiral, B's
 earlier MPG wave) is very likely downstream of this.
+
+## THE PREMIUM TABLE EMPTIES AGAIN (2026-08-05, prompt 177)
+
+Both entries pulled. The re-baseline retired both convictions:
+sawtooth 69.3/67.1 -> **54.8/54.4** (aggregate 54.6, UNDER the
+55-point threshold the generator convicts at) and riverline
+54.5/59.3 -> **47.0/51.0** (aggregate 49.0, dead fair). By the
+table's own generator law — "an entry without a measured lean is a
+lie about the map" — neither may keep one, and the lie was not
+theoretical: the briefing states it to every player in both locales
+("this map measurably favours the enemy").
+
+Q69 ACCEPTED riverline's premium in prompt 145; that ruling is not
+overturned so much as SPENT — it accepted disclosure for a lean the
+phase-lock fixes have since engineered away. One line restores
+either entry if the owner disagrees.
+
+Outcome-neutral by construction: premiumPoints touches operator
+Recognition only, never teamScores, so no battery is needed and no
+win rate can move. The client shares the engine table by import, so
+the false briefing line disappeared with the entries.
+Tests: both premium pins rewritten to assert the EMPTY table across
+all five live maps, plus a mechanism test proving the machinery
+still pays +25% (floored) the moment a map earns an entry —
+emptying the table must never rot the generator. 789/789 x2, smoke.

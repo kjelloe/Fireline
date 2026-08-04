@@ -80,6 +80,10 @@ npm start                              # host machine
   damage + suppression). Your team always sees its own mines; enemy scouts
   within 3 cells auto-MARK them for their team, and a truck adjacent to a
   marked (or own) mine clears it with C.
+- **Your FIRST war draws no drone (W4-2)**: the anti-camping rule is
+  waived for a brand-new player, so you can read the UI in peace.
+  From war two on it applies — and everyone now gets a 20-second
+  "a drone is coming, MOVE" warning before one launches.
 - Anti-camping drone (9G): idle outside your supply umbrella for 30s and the
   enemy's nearest owned relay launches a drone at you — fast, terrain-blind,
   visible to everyone. It stings for light damage until you MOVE (or get back

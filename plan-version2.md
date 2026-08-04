@@ -58,7 +58,7 @@ plus three experimental maps that have not earned promotion.
 | Neutral supply drop (B6) | ✅ `slice-b6` — mirror-line placement, 10 s exclusive hold, +15 tickets |
 | **Grid pathfinding (item 39)** | ✅ `slice-18i` — A* around walls into the waypoint queue, humans+AI, mirror-equivariant |
 | **Base walls + gates (item 38)** | ✅ `slice-18i` — Fireball homage on all maps; destructible walls BANKED |
-| Underdog premium (58/68) | ✅ LIVE on sawtooth AND riverline (Q69 accepted — the unique pair is worth ~16 pts A on water); team B +25%, disclosed in the briefing |
+| Underdog premium (58/68) | ✅ MECHANISM LIVE, **TABLE EMPTY AGAIN (2026-08-05)** — the phase-lock fixes retired both convictions (sawtooth 54.8/54.4, riverline 47.0/51.0), so both entries were pulled; a premium without a live lean is a lie the briefing repeats. Outcome-neutral (recognition only) |
 | Fog ghosts / convoys | ⬜ V2.x |
 
 ## Track C — Maps
@@ -66,7 +66,7 @@ plus three experimental maps that have not earned promotion.
 | Profile | Status |
 |---|---|
 | `frontier_corridor` | ✅ DEFAULT — **terrain mirror-BY-CONSTRUCTION since prompt 143** (it never was, cell-level; ~1,600 asymmetric pairs/seed for 5 weeks); symmetric-era baseline **46.2/45.5% A (in band)** |
-| `riverline` | ⚠️ EXPERIMENTAL — **pacing SOLVED** (stalemate attrition + overtime cap: horn 41%→0, median ~19 min); unique-pair lean ACCEPTED with premium disclosure (Q69) |
+| `riverline` | ⚠️ EXPERIMENTAL — **pacing SOLVED** (stalemate attrition + overtime cap: horn 41%→0, median ~19 min); **now measures FAIR (47.0/51.0 on a81477c)** — the Q69 lean is gone and its premium was pulled; east curse down to ~4 pts |
 | `blackwood` | ✅ PROMOTED — briefly regressed to 62% by the LANDSHIP FARM bug, fixed + restored to **51.0/48.3 (fair)** |
 | `sawtooth` | ✅ **FIXED BY THE PHASE-LOCK FIXES (2026-08-05)** — 54.8/54.4 on a81477c (was 69.3/67.1). Its tight chokes made the most head-on meetings, so it amplified the two contact-law bugs hardest. HOLD CAN LIFT (Q75 answered by measurement). **The +25% premium is now a lie about the map — pulling it is the next slice** |
 | `caldera` (circle map, item 40) | ✅ FIXED + **IDENTITY BLESSED (Q63)** — raider's clause off by map law; 54.3/51.7% in band; the 13-min elimination brawl IS the map |

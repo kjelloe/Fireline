@@ -144,12 +144,13 @@ outcome. Renderer presents fog-filtered views only.
   on `stalemateBleedTicks` — plus heart-relay bleed [bridge pair =
   majority-equivalent; AI-war-redundant by geometry, kept for human
   mutual-crossings]; horn 34%→0 local, post-ladder battery pair
-  pending) + `sawtooth` (HELD — reads ~68% A since the escort-wall fix
-  let raids EXPRESS its structural lean (56.2 pre vs 64.1 post, same
-  seeds, conviction 2026-08-03); the fix is correct, the map's
-  unique-pair mechanism hunt owns the lean; premium B = disclosure;
-  original battery-pass read is OBSOLETE. HELD for the human playtest
-  per ruling). B3 overtime is CAPPED (prompt 136): hashed `overtime`
+  pending) + `sawtooth` (**HOLD LIFTS 2026-08-05**:
+  54.8/54.4 on a81477c, IN BAND — the 68-69% was the two phase-lock
+  bugs, which its tight chokes amplified hardest by producing the most
+  head-on meetings per war. Every pre-a81477c sawtooth number is
+  last-era. ITS +25% PREMIUM IS NOW UNCONVICTED and must be pulled —
+  premium.js's own law: an entry without a live conviction is a lie
+  about the map). B3 overtime is CAPPED (prompt 136): hashed `overtime`
   counter, 600 ticks total (rules.overtimeCapTicks), fixture v67 —
   an empty pool can no longer be held open forever by capture churn.
   Design of record + hard profile constraints + 6-map bank:
@@ -190,6 +191,14 @@ outcome. Renderer presents fog-filtered views only.
   contest), siege (11R — only artillery breaches sites), deployable
   (12B Sentinel), amphibious (12C Skimmer), raider (Q31 — double
   capture speed on unguarded flags only).
+- W4 (the FUN wave, plan-wave4.md): W4-1 TEAM BALANCE is a transport
+  SETTING, default OFF (friends stack a team vs the Regency;
+  TEAMBALANCE=1/--teambalance restores the competitive gate; s_lobby
+  carries `balance`). W4-2 hashed `operator.rookie` (fixture v69) —
+  a first-war player draws no anti-camping drone (client sets it
+  from mf_coached; absence = veteran, so AI sims are tick-identical),
+  and `campTicks` rides the view so every player gets a 20 s
+  "drone incoming" warning.
 - Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
   fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
@@ -263,10 +272,17 @@ outcome. Renderer presents fog-filtered views only.
   the obstacle-slide era; upper half, watch the slight A lean);
   POWS=2 39.4/36.4 (was ~26 — still below band). The b5b5a69-only
   flat reads prove the two channels INTERACT. POWS residual epoch:
-  even to t=4000, then a one-sided A-loss run t≈4250-5000 — the
-  MID-WAR LEDGER is the next instrument (what event opens the run:
-  raids/POW captures/capture pushes). Still filed: MPG wave-timing
-  asymmetry (B refills earlier despite fewer losses).
+  even to t=4000, then a one-sided A-loss run t≈4250-5000. ROOT
+  CONVICTED 2026-08-05: **THE AI RAID PARTY** — POWS=2 baseline
+  39.4% -> RAIDPARTY=0 **54.2/51.2% (in band BOTH worlds)**, while
+  POWARC=0 reaches only 41.5%. Next: a raid-party census (hulls
+  committed per team, party lifetime, losses while live) to name
+  what inside the party is team-keyed; the mid-war REBUILD OVERSHOOT
+  is likely downstream. STALE-EXONERATION LAW (sim-campaign skill):
+  this same switch read "identical, exonerated" last era because the
+  phase locks masked it — re-run every exoneration after a root fix.
+  Still filed: MPG wave-timing asymmetry (B refills earlier despite
+  fewer losses).
   Also open: the east-pusher residual (+7-13 side-keyed);
   heist attackers 12.7/9.3% (a dial — the bar is the designer's). powPreplaced SETTLED at 0
   (the full arc 2→1→0, prompts 130/131/133: classic tempo default,
@@ -279,8 +295,9 @@ outcome. Renderer presents fog-filtered views only.
   game and every 5-seed gate running uncrewed since 16B, while sweeps
   measured crewing-ON; when a probe and a sweep disagree, CHECK THE
   CONFIG PLUMBING first). UNIQUES=0 disables (sweeps + server env).
-  Band at 416/pool-315: 52.9-55.2% A frontier; SAWTOOTH 69% A
-  uniques-linked = HELD (specs/10 §4f). Weather fronts (16G): seed-scheduled sensor-halving
+  Band at 416/pool-315: 52.9-55.2% A frontier; sawtooth's old
+  "69% uniques-linked" verdict is DEAD (it was the phase locks —
+  see the map block). Weather fronts (16G): seed-scheduled sensor-halving
   in `engine/los.js weatherWindow` — pure function, never hashed.
   Re-pin the 1A fixture with `node tools/repin_1a.mjs "<reason>"` — it
   aborts on event drift (a NEW event inside the 14 steps is drift too:

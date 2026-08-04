@@ -114,17 +114,16 @@ test("Q26 escorts get paid when the rescue they guarded succeeds", async () => {
   assert.equal(s.operators[2].deeds[DEED_ESCORT], 0, "20 cells away guarded nothing");
 });
 
-test("underdog premium: fair maps pay flat; the convicted map pays team B 25% more", async () => {
+test("underdog premium: EVERY live map pays flat — the table is empty", async () => {
   const { premiumPoints, MAP_PREMIUM } = await import("../engine/premium.js");
-  // Convictions: sawtooth (2026-07-31, 69% A) and riverline (Q69
-  // ACCEPTED prompt 145 — the unique pair on the water map, 56.9%
-  // agg). Team B (1) earns the premium on both. Every other live map
-  // measured fair and stays absent from the table.
-  assert.deepEqual(MAP_PREMIUM, { sawtooth: 1, riverline: 1 });
-  assert.equal(premiumPoints(8, 1, "riverline"), 10, "riverline underdog pays 10");
-  assert.equal(premiumPoints(8, 0, "frontier_corridor"), 8);
-  assert.equal(premiumPoints(8, 1, "frontier_corridor"), 8);
-  assert.equal(premiumPoints(8, 1, "sawtooth"), 10, "the underdog's tow pays 10");
-  assert.equal(premiumPoints(8, 0, "sawtooth"), 8, "the favourite's pays 8");
-  assert.equal(premiumPoints(5, 1, "sawtooth"), 6, "floors, never rounds up");
+  // 2026-08-05: sawtooth's and riverline's convictions EXPIRED with the
+  // phase-lock fixes (sawtooth 69.3/67.1 -> 54.8/54.4; riverline
+  // 54.5/59.3 -> 47.0/51.0). A premium that outlives its conviction is
+  // a lie the briefing repeats to every player, so both were pulled.
+  assert.deepEqual(MAP_PREMIUM, {});
+  for (const profile of ["sawtooth", "riverline", "frontier_corridor", "blackwood", "caldera"]) {
+    for (const team of [0, 1]) {
+      assert.equal(premiumPoints(8, team, profile), 8, `${profile}/team ${team} pays flat`);
+    }
+  }
 });
