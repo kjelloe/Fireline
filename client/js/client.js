@@ -24,6 +24,10 @@ import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors, setOperatorNames } from "./feedback_model.js";
 import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
 import { createSplash } from "./splash_model.js";
+import {
+  createTutorial, TOUR_STOPS, QUESTS,
+  PHASE_INTRO, PHASE_TOUR, PHASE_QUESTS, PHASE_DONE,
+} from "./tutorial_model.js";
 import { compassOctant } from "../../engine/reducer.js";
 import { tasksFor } from "./tasks_model.js";
 import { placementVerdict, ghostColor } from "./build_model.js";
@@ -184,6 +188,7 @@ const driveHeld = { w: false, a: false, s: false, d: false };
 function setDirectMode(on) {
   if (on === directMode) return;
   directMode = on;
+  if (on) tutUi("direct"); // W4-12
   if (!on) { for (const k in driveHeld) driveHeld[k] = false; }
   sendDriveIntent();
   pushEvent(on ? t("ui.direct_on") : t("ui.direct_off"));
@@ -739,6 +744,15 @@ function init3d() {
   document.getElementById("btn-settings-close").onclick = () => {
     settingsOverlay.style.display = "none";
   };
+  // W4-12: re-arm the tutorial on demand (a long break, a friend's PC).
+  const tutReplayBtn = document.getElementById("btn-tutorial-replay");
+  if (tutReplayBtn) {
+    tutReplayBtn.onclick = () => {
+      settingsOverlay.style.display = "none";
+      if (joined && !joined.spectator) armTutorial();
+      else flashNotice(t("notice.spectating"));
+    };
+  }
   document.getElementById("opt-auto-rescue").onchange = (e) => {
     send({ type: "set_option", option: "auto_rescue", value: e.target.checked ? 1 : 0 });
   };
@@ -917,18 +931,13 @@ function connect() {
       document.getElementById("join-overlay").style.display = "none";
       pushEvent(t("ui.spectating"));
     } else if (msg.type === "s_joined") {
-      // O3 (prompt 164): the FIRST-WAR COACH — four timed beats for a
-      // brand-new player, once ever (mf_coached). The 60-second tenet,
-      // finally instrumented: move, fire, supply, and the game's soul.
-      let coached = null;
-      try { coached = localStorage.getItem("mf_coached"); } catch { /* private */ }
-      if (!coached && !msg.rejoined) {
-        try { localStorage.setItem("mf_coached", "1"); } catch { /* private */ }
-        setTimeout(() => flashNotice(t("coach.move"), 5200, "#9fe89f", true), 4000);
-        setTimeout(() => flashNotice(t("coach.fire"), 5200, "#ffd75e", true), 14000);
-        setTimeout(() => flashNotice(t("coach.supply"), 5200, "#9fd8ff", true), 26000);
-        setTimeout(() => flashNotice(t("coach.soul"), 6200, "#f5c84a", true), 40000);
-      }
+      // W4-12: a first-timer gets the tutorial quest-line (armed once the
+      // briefing closes, so the two overlays never stack). Skipping it
+      // falls back to the O3 four-beat coach — the guided path replaces
+      // the beats, it never removes the minimum.
+      let tutSeen = null;
+      try { tutSeen = localStorage.getItem("mf_tutorial"); } catch { /* private */ }
+      if (!tutSeen && !msg.rejoined) tutorialPending = true;
       const resumed = msg.rejoined === true && joined !== null;
       joined = { operatorId: msg.operatorId, team: msg.team };
       document.getElementById("join-overlay").style.display = "none";
@@ -951,6 +960,7 @@ function connect() {
       updateNextAssetButton(msg.view); // item 22
       updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
+      if (tut) { tut.noteEvents(msg.view.events ?? [], tutorialCtx(msg.view)); tutorialSync(); } // W4-12
       announceContacts(msg.view); // B5: fog reveals become callouts
       splashAssetsReady(); // splash: belt-and-braces (open handler is primary)
       // B7: track the asset I drive AFTER the event pass — on the death
@@ -1071,6 +1081,7 @@ function applyPageStrings() {
   setText("btn-briefing-ok", "page.move_out");
   setText("btn-next-asset", "page.next_asset");
   setText("btn-recenter", "page.center");
+  setText("btn-tutorial-replay", "tut.replay");
   setText("hint-bar", "page.hints");
   const replayLink = document.querySelector('a[href="/replay.html"]');
   if (replayLink) replayLink.textContent = t("page.replays");
@@ -1250,6 +1261,7 @@ function spectate() { // 10A
 function send(cmd) {
   if (!socket || socket.readyState !== 1 || !joined) return;
   socket.send(JSON.stringify(cmd));
+  if (tut) { tut.noteCommand(cmd); tutorialSync(); } // W4-12
 }
 
 // Playtest-8 items 25/29: WHERE AM I, honestly. "Centre on me" used to
@@ -1282,6 +1294,7 @@ function whereAmI(view) {
 // Item 29: the button now reports failure instead of quietly following
 // someone else. Item 25: riding a carrier counts as "me".
 function centreOnMe() {
+  tutUi("recenter"); // W4-12: F/Center both land here
   const view = interpolator.latest();
   const me = whereAmI(view);
   if (!me) {
@@ -1337,6 +1350,7 @@ function updateNextAssetButton(view) {
 }
 
 function selectNextAsset() {
+  tutUi("next-asset"); // W4-12
   const view = interpolator.latest();
   if (!view) return;
   const blocked = selectBlockedReason(view);
@@ -2249,6 +2263,153 @@ function upsertStandardMesh(st) {
   mesh.rotation.y = performance.now() / 900;
 }
 
+// ── W4-12: the tutorial quest-line. All decisions live in the pure
+// controller (tutorial_model.js); this layer renders phases, anchors
+// arrows to the REAL HUD elements (a lint pins every targetId to
+// index.html), and feeds the model what the player actually did.
+let tut = null;
+let tutorialPending = false;
+let tutorialResizeWired = false;
+
+function tutUi(action) {
+  if (!tut) return;
+  tut.noteUi(action);
+  tutorialSync();
+}
+
+function tutorialCtx(view) {
+  const where = whereAmI(view);
+  const driving = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  return {
+    team: joined?.team,
+    myAssetId: driving?.id ?? null,
+    myPos: where ? { cx: Math.floor(where.x / 256), cy: Math.floor(where.y / 256) } : null,
+    sites: view?.sites ?? [],
+  };
+}
+
+function maybeRunCoachBeats() {
+  let coached = null;
+  try { coached = localStorage.getItem("mf_coached"); } catch { /* private */ }
+  if (coached) return;
+  try { localStorage.setItem("mf_coached", "1"); } catch { /* private */ }
+  setTimeout(() => flashNotice(t("coach.move"), 5200, "#9fe89f", true), 4000);
+  setTimeout(() => flashNotice(t("coach.fire"), 5200, "#ffd75e", true), 14000);
+  setTimeout(() => flashNotice(t("coach.supply"), 5200, "#9fd8ff", true), 26000);
+  setTimeout(() => flashNotice(t("coach.soul"), 6200, "#f5c84a", true), 40000);
+}
+
+function armTutorial() {
+  tut = createTutorial();
+  tut.arm();
+  const skipAll = () => { tut?.skipAll(); tutorialSync(); };
+  document.getElementById("btn-tut-skip").onclick = skipAll;
+  document.getElementById("btn-tut-quest-skip").onclick = skipAll;
+  document.getElementById("btn-tut-start").onclick = () => { tut?.startTour(); renderTutorial(); };
+  document.getElementById("btn-tut-next").onclick = () => { tut?.nextTour(); renderTutorial(); };
+  document.getElementById("tut-quest-skipstep").onclick = (e) => {
+    e.preventDefault(); tut?.skipStep(); tutorialSync();
+  };
+  document.getElementById("btn-tut-gotit").onclick = () => tutUi("acknowledge");
+  if (!tutorialResizeWired) {
+    tutorialResizeWired = true;
+    window.addEventListener("resize", () => { if (tut) renderTutorial(); });
+  }
+  renderTutorial();
+}
+
+function finishTutorial() {
+  try { localStorage.setItem("mf_tutorial", "1"); } catch { /* private */ }
+  if (tut.finishedClean()) {
+    try { localStorage.setItem("mf_coached", "1"); } catch { /* private */ }
+    flashNotice(t("tut.done"), 4200, "#9fe89f", true);
+  } else {
+    maybeRunCoachBeats(); // a skipper still gets the four-beat minimum
+  }
+  tut = null;
+  renderTutorial();
+}
+
+function tutorialSync() {
+  if (!tut) return;
+  const doneId = tut.consumeCompleted();
+  if (doneId && doneId !== "win") flashNotice(`✓ ${t(`tut.q.${doneId}`)}`, 2000, "#9fe89f");
+  if (tut.state.phase === PHASE_DONE) { finishTutorial(); return; }
+  renderTutorial();
+}
+
+function positionTutBubble(bubble, rect, side) {
+  const bw = bubble.offsetWidth, bh = bubble.offsetHeight, gap = 14;
+  let left, top;
+  if (side === "below") { left = rect.left; top = rect.bottom + gap; }
+  else if (side === "above") { left = rect.left; top = rect.top - bh - gap; }
+  else if (side === "left") { left = rect.left - bw - gap; top = rect.top; }
+  else { left = rect.right + gap; top = rect.top; }
+  left = Math.max(8, Math.min(left, window.innerWidth - bw - 8));
+  top = Math.max(8, Math.min(top, window.innerHeight - bh - 8));
+  bubble.style.left = `${left}px`;
+  bubble.style.top = `${top}px`;
+  const a = document.getElementById("tut-arrow");
+  const base = "position:absolute; width:0; height:0;";
+  if (side === "below") a.style.cssText = base + "top:-10px; left:24px; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:10px solid #f5e96b;";
+  else if (side === "above") a.style.cssText = base + "bottom:-10px; left:24px; border-left:8px solid transparent; border-right:8px solid transparent; border-top:10px solid #f5e96b;";
+  else if (side === "left") a.style.cssText = base + "right:-10px; top:16px; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:10px solid #f5e96b;";
+  else a.style.cssText = base + "left:-10px; top:16px; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:10px solid #f5e96b;";
+}
+
+function renderTutorial() {
+  const overlay = document.getElementById("tutorial-overlay");
+  const questCard = document.getElementById("tutorial-quest");
+  if (!overlay || !questCard) return;
+  if (!tut) { overlay.style.display = "none"; questCard.style.display = "none"; return; }
+  const phase = tut.state.phase;
+  const panel = document.getElementById("tut-panel");
+  const spot = document.getElementById("tut-spotlight");
+  const bubble = document.getElementById("tut-bubble");
+  document.getElementById("btn-tut-skip").textContent = t("tut.skip");
+  overlay.style.display = (phase === PHASE_INTRO || phase === PHASE_TOUR) ? "block" : "none";
+  questCard.style.display = phase === PHASE_QUESTS ? "block" : "none";
+  panel.style.display = phase === PHASE_INTRO ? "flex" : "none";
+  spot.style.display = "none";
+  bubble.style.display = "none";
+  if (phase === PHASE_INTRO) {
+    document.getElementById("tut-intro-title").textContent = t("tut.intro.title");
+    document.getElementById("tut-intro-body").textContent = t("tut.intro.body", { n: QUESTS.length });
+    document.getElementById("btn-tut-start").textContent = t("tut.intro.start");
+  } else if (phase === PHASE_TOUR) {
+    const stop = tut.currentStop();
+    const rect = document.getElementById(stop.targetId)?.getBoundingClientRect();
+    if (!rect || rect.width === 0 || rect.height === 0) {
+      tut.nextTour(); // target hidden on this device — never point at nothing
+      renderTutorial();
+      return;
+    }
+    const pad = 6;
+    spot.style.display = "block";
+    spot.style.left = `${rect.left - pad}px`;
+    spot.style.top = `${rect.top - pad}px`;
+    spot.style.width = `${rect.width + pad * 2}px`;
+    spot.style.height = `${rect.height + pad * 2}px`;
+    bubble.style.display = "block";
+    document.getElementById("tut-bubble-text").textContent = t(stop.textKey);
+    document.getElementById("btn-tut-next").textContent =
+      `${t("tut.next")} (${tut.state.tour + 1}/${TOUR_STOPS.length})`;
+    positionTutBubble(bubble, rect, stop.side);
+  } else if (phase === PHASE_QUESTS) {
+    const q = tut.currentQuest();
+    document.getElementById("tut-quest-head").textContent =
+      t("tut.q.title", { n: tut.state.quest + 1, total: QUESTS.length });
+    document.getElementById("tut-quest-text").textContent = t(q.textKey);
+    document.getElementById("btn-tut-quest-skip").textContent = t("tut.skip");
+    const skipStep = document.getElementById("tut-quest-skipstep");
+    const gotIt = document.getElementById("btn-tut-gotit");
+    skipStep.style.display = q.id === "win" ? "none" : "inline";
+    skipStep.textContent = t("tut.q.skipstep");
+    gotIt.style.display = q.id === "win" ? "inline-block" : "none";
+    gotIt.textContent = t("tut.q.gotit");
+  }
+}
+
 function showBriefing() {
   const el = document.getElementById("briefing-overlay");
   document.getElementById("briefing-text").innerText =
@@ -2256,7 +2417,10 @@ function showBriefing() {
       interpolator.latest()?.mapProfile ?? null,
       interpolator.latest()?.mission ?? null); // 12A/15B; premium + mode disclosure
   el.style.display = "flex";
-  const close = () => { el.style.display = "none"; window.removeEventListener("keydown", onKey); };
+  const close = () => {
+    el.style.display = "none"; window.removeEventListener("keydown", onKey);
+    if (tutorialPending) { tutorialPending = false; armTutorial(); } // W4-12
+  };
   const onKey = (e) => { if (e.key === "Enter" || e.key === "Escape") close(); };
   document.getElementById("btn-briefing-ok").onclick = close;
   window.addEventListener("keydown", onKey);

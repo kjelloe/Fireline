@@ -212,6 +212,7 @@
                 <option value="no">Norsk</option>
             </select>
         </label>
+        <button class="btn" id="btn-tutorial-replay">Replay tutorial</button>
         <button class="btn" id="btn-settings-close">Close (Esc)</button>
     </div>
     <div id="end-overlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); z-index:9; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
@@ -222,6 +223,29 @@
         <div id="vote-box" style="display:none; margin-top:10px; text-align:center;">
             <div id="vote-title" style="color:#cdc; font-size:14px; margin-bottom:6px;"></div>
             <div id="vote-buttons" style="display:flex; gap:8px; justify-content:center;"></div>
+        </div>
+    </div>
+    <div id="tutorial-overlay" style="display:none; position:absolute; inset:0; z-index:12;">
+        <div id="tut-spotlight" style="display:none; position:absolute; border:2px solid #f5e96b; border-radius:8px; box-shadow:0 0 0 9999px rgba(0,0,0,0.62); pointer-events:none;"></div>
+        <div id="tut-panel" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.62); flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center;">
+            <h2 id="tut-intro-title" style="margin:0; color:#f5e96b; letter-spacing:2px; font-family:sans-serif;"></h2>
+            <p id="tut-intro-body" style="margin:0; color:#dde; font:15px sans-serif; line-height:1.6; max-width:520px;"></p>
+            <button class="btn" id="btn-tut-start" style="font-size:16px;"></button>
+        </div>
+        <div id="tut-bubble" style="display:none; position:absolute; max-width:300px; background:rgba(12,14,20,0.95); color:#e8e8d8; border:1px solid #f5e96b; border-radius:8px; padding:10px 14px; font:14px sans-serif; line-height:1.5;">
+            <div id="tut-arrow" style="position:absolute; width:0; height:0;"></div>
+            <div id="tut-bubble-text"></div>
+            <button class="btn" id="btn-tut-next" style="margin-top:8px; font-size:13px;"></button>
+        </div>
+        <button class="btn" id="btn-tut-skip" style="position:absolute; right:18px; bottom:18px; background:#3a2c2c; border-color:#7a4a3a;"></button>
+    </div>
+    <div id="tutorial-quest" style="display:none; position:absolute; bottom:120px; left:50%; transform:translateX(-50%); z-index:6; background:rgba(12,14,20,0.92); border:1px solid #f5e96b; border-radius:8px; padding:8px 14px; max-width:420px; font:14px sans-serif; color:#e8e8d8; text-align:center;">
+        <div id="tut-quest-head" style="color:#f5e96b; font-weight:bold; font-size:12px; letter-spacing:1px;"></div>
+        <div id="tut-quest-text" style="margin-top:4px;"></div>
+        <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <a id="tut-quest-skipstep" href="#" style="color:#98a; font-size:12px;"></a>
+            <button class="btn" id="btn-tut-gotit" style="display:none; font-size:13px;"></button>
+            <button class="btn" id="btn-tut-quest-skip" style="font-size:11px; padding:2px 8px; background:#3a2c2c; border-color:#7a4a3a;"></button>
         </div>
     </div>
     <div id="event-feed"></div>

@@ -235,6 +235,16 @@ outcome. Renderer presents fog-filtered views only.
   night war is a STORM THAT NEVER LIFTS (weatherActive returns true
   unconditionally), reusing the 16G sensor halving wholesale so it
   inherits an already-tested fairness+mirror argument. Nothing hashed.
+  W4-12 TUTORIAL (prompt 192, client-only, nothing hashed):
+  `client/js/tutorial_model.js` pure controller — INTRO → 7-stop arrow
+  TOUR of real HUD ids → 12 sequential QUESTS detected from real play
+  (send() hook, UI actions, own-view events; fog-legit by construction);
+  mf_tutorial persists; SKIP falls back to the O3 coach beats; ⚙
+  replay. TWO LINTS in test/tutorial_model.test.js (tour targetIds
+  exist in index.html; tut.* keys in both locales incl. derived
+  `tut.q.<id>`); ui_acceptance walks the whole flow — its clickHud
+  force-hides tutorial-overlay, so tutorial buttons use an inline
+  hit-tester.
   CONVOY ROUTE (Q82): `CONVOY_ROUTE_SCALE` default 80 — the truck
   starts 20% forward, measured 38.3% attacker (classic 100 = 18.7%).
   The ladder is NOT monotonic (65 -> 15.3%): the knob moves the TRUCK

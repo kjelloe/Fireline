@@ -6498,3 +6498,42 @@ Good-neighbour detail: our block omits `http2` from its listen
 directives. The box already logs `protocol options redefined for
 [::]:443` from another site, and http2 is a per-SOCKET property — so we
 inherit it without adding a third redefinition to someone else's warning.
+
+## 2026-08-06 — W4-12: the tutorial quest-line (prompt 192)
+
+Feedback from the three.js-expert friend, ruled in four Q&As
+(comprehensive ladder / ⚙ replay entry / tutorial supersedes the coach
+with SKIP falling back to the four beats / client-side toast only —
+honors keep judging war deeds).
+
+CLIENT-ONLY BY DESIGN: the server is authoritative and multiplayer, so
+a tutorial cannot pause the war — it OBSERVES one. Nothing hashed, no
+repin. Three phases in a pure controller (`client/js/tutorial_model.js`,
+the splash_model pattern): INTRO ("looks like it's your first time",
+SKIP TUTORIAL lower-right) → TOUR (7 arrows anchored to the REAL HUD
+elements, spotlight via the huge-box-shadow trick, auto-skips a stop
+whose target is hidden on this device) → QUESTS (12 sequential field
+exercises: move, waypoint, camera, ping, fire, capture, switch hull,
+tow, board/redeploy, chassis special, direct drive, how-you-win).
+Completion is detected from what the player actually DID — commands
+sent (send() hook), UI actions (centreOnMe/selectNextAsset/
+setDirectMode), and events on their own fog-filtered view (noteEvents;
+fog-legit by construction: the model only ever sees the per-team view).
+State-dependent quests carry a per-step skip so the ladder never
+dead-ends. Arms AFTER the briefing closes (overlays never stack);
+mf_tutorial persists the decision; ⚙ "Replay tutorial" re-arms.
+
+LINTS BEFORE GATES (the standing preference), both verified to bite by
+reintroducing their bug: every tour targetId must exist in index.html
+(an arrow at nothing fails silently — the view-contract lesson applied
+up front), and every tutorial string key must exist in BOTH locales
+including the derived `tut.q.<id>` form the ✓ flash builds.
+
+Gates: suite 859 x2 green; client smoke OK; ui_acceptance walks the
+WHOLE flow in a real browser — intro arms for a fresh profile, tour
+shows spotlight+bubble, hands off to the ladder, a REAL Center click
+completes the camera quest (3/12 → 4/12), and SKIP TUTORIAL persists.
+The acceptance clickHud helper force-hides tutorial-overlay before
+hit-testing (so the overlay can never shadow later checks), which meant
+the tutorial's own buttons needed an inline hit-tester — clickHud would
+have hidden the button under test.

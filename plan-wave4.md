@@ -145,6 +145,19 @@ tests pin each new transition. The abduction counterplay law
 - Battery: night pair (should read as a symmetric sensor change —
   fairness invariant by construction, verify anyway).
 
+## W4-12 · Tutorial quest-line (M) — ✅ SHIPPED (prompt 192, client-only)
+
+- Friend feedback (the three.js expert): first-timers get "Looks like
+  it's your first time" → a 7-stop arrow TOUR of the real HUD →
+  12 sequential field-exercise QUESTS detected from real play (commands
+  sent, UI actions, own-view events — fog-legit by construction).
+  SKIP TUTORIAL lower-right throughout; skipping falls back to the O3
+  four-beat coach; per-step skip so state-dependent quests (tow,
+  carrier) never dead-end the ladder. ⚙ "Replay tutorial" re-arms.
+- Pure controller `tutorial_model.js` (splash_model pattern), nothing
+  hashed. Two new lints (tour targets exist in index.html; tutorial
+  keys in both locales) + full-flow browser acceptance.
+
 ## W4-11 · Frontline Push — the third mode (L) — full slice chain
 
 - `rules.mode = 3` (MODE=push): relays lock into a SEQUENCE (the

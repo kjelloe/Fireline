@@ -322,6 +322,14 @@ npm start                              # host machine
   (RESUME=0 skips); join buttons are square faction FLAGS; and if 3D
   graphics fail (driver WebGL errors), the game tells you and drops
   into a playable 2D fallback instead of a black screen.
+- TUTORIAL quest-line (W4-12): your very first join opens "Looks like
+  it's your first time" — take a 7-stop arrow tour of the screen, then
+  12 field exercises walk you through everything (move, waypoints,
+  camera, pings, firing, capturing, hull-switching, towing, riding the
+  carrier, your chassis special, direct drive, and how wars are won) —
+  completed by actually DOING them in the live war. SKIP TUTORIAL
+  (lower right) at any time falls back to the short coach; each
+  exercise also has its own skip. ⚙ "Replay tutorial" runs it again.
 - Fog of war SHEEN (147): unseen ground darkens under a translucent
   overlay whose edge IS the spotting edge (squares, honestly — sensors
   are chebyshev). Storms shrink your lit area; an owned RADAR widens

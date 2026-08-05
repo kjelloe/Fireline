@@ -56,7 +56,7 @@ async function main() {
   const clickHud = async (selector) => {
     const id = selector.replace("#", "");
     const top = await page.evaluate((elId) => {
-      for (const overlay of ["encyclopedia-overlay", "codex-panel"]) {
+      for (const overlay of ["encyclopedia-overlay", "codex-panel", "tutorial-overlay"]) {
         const o = document.getElementById(overlay);
         if (o) o.style.display = "none";
       }
@@ -73,6 +73,73 @@ async function main() {
     if (!top.ok) failures.push(`${selector} not clickable — ${top.why}`);
     return top.ok;
   };
+
+  // ── W4-12: the tutorial arms for a fresh profile, SKIP dismisses ──────
+  // This check MUST run first: this browser profile has no mf_tutorial,
+  // so the intro overlay is up right now — every later hit-test depends
+  // on SKIP actually clearing it.
+  const tutUp = await page.evaluate(() => {
+    const el = document.getElementById("tutorial-overlay");
+    return el && el.style.display !== "none";
+  });
+  check("tutorial intro arms for a first-time player", tutUp === true);
+  // NOT clickHud — that helper force-hides tutorial-overlay first, which
+  // would hide the very buttons under test. Same hit-test, done inline.
+  const clickTut = (elId) => page.evaluate((id) => {
+    const el = document.getElementById(id);
+    if (!el) return { ok: false, why: "missing" };
+    const r = el.getBoundingClientRect();
+    if (r.width === 0) return { ok: false, why: "zero-size" };
+    const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    if (!(hit === el || el.contains(hit))) return { ok: false, why: `covered by ${hit?.id || hit?.tagName}` };
+    el.click();
+    return { ok: true };
+  }, elId);
+  if (tutUp) {
+    const start = await clickTut("btn-tut-start");
+    check("tour starts from the intro", start.ok, start.why ?? "");
+    await page.waitForTimeout(200);
+    const tour = await page.evaluate(() => ({
+      spot: document.getElementById("tut-spotlight").style.display !== "none",
+      bubble: document.getElementById("tut-bubble").style.display !== "none",
+    }));
+    check("tour shows spotlight + arrow bubble", tour.spot && tour.bubble);
+    for (let i = 0; i < 12; i++) { // 7 stops + slack for auto-skipped ones
+      const open = await page.evaluate(() =>
+        document.getElementById("tutorial-overlay").style.display !== "none");
+      if (!open) break;
+      await clickTut("btn-tut-next");
+      await page.waitForTimeout(120);
+    }
+    const quests = await page.evaluate(() => ({
+      overlayGone: document.getElementById("tutorial-overlay").style.display === "none",
+      card: document.getElementById("tutorial-quest").style.display !== "none",
+      head: document.getElementById("tut-quest-head").textContent,
+    }));
+    check("tour hands off to the quest ladder", quests.overlayGone && quests.card,
+      `overlayGone=${quests.overlayGone} card=${quests.card}`);
+    // Skip past move/waypoint (need canvas clicks), then complete the
+    // CAMERA quest with the real Center button — a live completion.
+    await clickTut("tut-quest-skipstep");
+    await page.waitForTimeout(120);
+    await clickTut("tut-quest-skipstep");
+    await page.waitForTimeout(120);
+    await clickHud("#btn-recenter");
+    await page.waitForTimeout(250);
+    const advanced = await page.evaluate(() =>
+      document.getElementById("tut-quest-head").textContent);
+    check("a real action completes its quest (camera -> 4/12)",
+      /4\s*\/\s*12/.test(advanced), `head="${advanced}"`);
+    const skipRes = await clickTut("btn-tut-quest-skip");
+    check("SKIP TUTORIAL is topmost and clicks", skipRes.ok, skipRes.why ?? "");
+    await page.waitForTimeout(300);
+    const after = await page.evaluate(() => ({
+      card: document.getElementById("tutorial-quest").style.display !== "none",
+      flagged: localStorage.getItem("mf_tutorial") === "1",
+    }));
+    check("SKIP TUTORIAL dismisses and persists", after.card === false && after.flagged,
+      `card=${after.card} flagged=${after.flagged}`);
+  }
 
   // ── center-on-me (playtest 7 item 14) ─────────────────────────────────
   const before = await cam();
