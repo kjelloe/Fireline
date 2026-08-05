@@ -459,3 +459,25 @@ recorded here because they reverse or retire earlier rulings.
   tested for the next map that earns one.
 - **Q78/W4-8 POW creators: MEASURE AND TUNE** — implement a+b+c+d, then
   measure, rather than pre-tuning on intuition.
+
+
+## Prompt 184 outcomes (2026-08-05) — both open dials CLOSED on data
+
+- **Q82 SOLVED at rung 2.** `convoyRouteScale` 80 (20% shorter run)
+  reads **38.3% attacker** — inside the ruled 30-40% band, from 18.7%
+  at rung 1. The factory ladder bought 8 points across four steps and
+  was flattening; 20% off the route bought 20. The binding mechanism
+  was the DISTANCE, never the defender's rebuild rate. Recommended
+  default: scale 80 with the defender penalty held at 3 (it makes the
+  two directions symmetric). Awaiting the owner's word to make it the
+  shipped default.
+- **Q83's gate CONFIRMED.** POWS=2 with the carrier gate reads
+  **52.6% A** (ungated baseline 39.4%) — in band, and within noise of
+  RAIDPARTY=0's 54.2%. The gate recovers the full deficit WITHOUT
+  disabling the feature, which is why option (2) was the right ruling.
+- **Q84 (NEW, for the owner)**: W4-8's deep-down capture law fires
+  zero times in AI wars — an AI crew redeploys before the timer can
+  expire inside an enemy compound. Leave it as a rare human-only
+  drama, or move the trigger to down-time-inside-the-compound (which
+  fires constantly and reshapes every base assault)? A PLAYTEST is the
+  instrument, not a battery.

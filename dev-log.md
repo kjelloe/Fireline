@@ -6197,3 +6197,32 @@ label (`convoy_att0_r65`) so the arms can never mix — the collector
 overwrites by label, and an unlabelled arm would silently clobber the
 baseline. Ladder queued at 80% and 65%, plus the opposite attacker
 direction at 65% to confirm the shortening stays symmetric at scale.
+
+## TWO VERDICTS: Q82 lands in band, and Q83's gate WORKS
+## (2026-08-05, prompt 184)
+
+**Q82 rung 2 — SHORTENING THE ROUTE IS THE LEVER.** At
+`convoyRouteScale` 80 (a mere 20% shorter run) convoy attackers read
+**38.3%** — INSIDE the ruled 30-40% band, from 18.7% at rung 1. For
+scale: the entire factory ladder (penalty 2->5) bought 8 points and
+was flattening; twenty percent off the route bought TWENTY. That
+settles which mechanism was actually binding — it was never the
+defender's rebuild rate, it was that the truck could not survive the
+distance, exactly as the fiction suggested. RECOMMENDATION: adopt
+scale 80 as the convoy default and leave the defender penalty at 3
+(it earns its keep by making the two directions symmetric). The 65%
+arm is still running and is now expected to OVERSHOOT the band —
+which is itself useful, since it brackets the answer.
+
+**Q83's gate is CONFIRMED, on the right build this time.** POWS=2
+with the carrier gate reads **52.6% A** against a 39.4% ungated
+baseline — IN BAND, and within noise of what RAIDPARTY=0 achieved
+(54.2%). That is the result worth having: the gate recovers the whole
+deficit WITHOUT switching the feature off, which was the owner's
+stated preference and the reason option (2) beat option (3). The raid
+party survives as a system; it simply may no longer commit to a
+mission it cannot finish.
+
+Both numbers came from re-runs after a lane error was caught by
+reading the build hash — the first Q83 pair measured a pre-gate
+commit. The habit paid twice in one day.
