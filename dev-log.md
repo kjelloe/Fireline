@@ -6467,3 +6467,34 @@ THIRD LESSON, the same shape as the day's others: when a diagnostic
 returns nothing, ask whether the TOOL ran. `nginx -T | grep upgrade`
 returned "nothing" twice; both times the config was broken and -T was
 erroring. An empty result is not evidence of absence.
+
+## FIRELINE COMMAND IS LIVE (2026-08-05, prompt 190)
+
+https://fireline.kjell.today — serving over TLS, all five neighbours
+untouched. First public deployment.
+
+The certificate went onto the EXISTING shared lineage
+`multiciv.kjell.today-0001` (owner's call). I had recommended a separate
+lineage on blast-radius grounds and was half wrong: a FAILED certbot run
+leaves the old certificate in place, so neighbours cannot break from a
+failure — the real risk is only a wrong `-d` list, which is controllable
+by transcribing the exact existing set. Consistency with how the box is
+already run was the better argument, and pitfall is in that lineage too.
+Consequence now documented: renewal is shared, so six sites lose TLS
+together if it ever fails.
+
+THE SELF-ROLLBACK PATTERN EARNED ITS KEEP. `nginx -t || cp <bak>` caught
+my own error — I left the standalone cert path in the TLS block after we
+switched to the shared lineage — and restored the working HTTP-only file
+automatically. Second time today the "fail safe, roll back yourself"
+shape saved a shared box from sitting broken.
+
+Also learned: a 404 from a neighbour is not a failure signal. It is an
+APPLICATION response, which proves TLS + nginx + routing all worked; a
+bad certificate fails as a curl ERROR instead. servers.multiciv serves
+no root page, so 404 on `/` is its healthy state.
+
+Good-neighbour detail: our block omits `http2` from its listen
+directives. The box already logs `protocol options redefined for
+[::]:443` from another site, and http2 is a per-SOCKET property — so we
+inherit it without adding a third redefinition to someone else's warning.
