@@ -3,8 +3,10 @@ node_modules/
 test/headless/reports/
 **/*.zip
 dev-prompts.md
+dev-questions.md
 .agent-mail/
 reports/sweeps/
 *:Zone.Identifier
 data/autosave.json
 tools/deploy.env
+ops/*
