@@ -84,6 +84,32 @@ server {
 }
 ```
 
+## Shared-box hosting (the sibling's hard-won rules)
+
+If the target box already serves other sites, four of its failure modes
+take down EVERY site, not just yours — so they are worth naming here even
+though the script guards them:
+
+- `listen 443 ssl` with no certificate yet fails the WHOLE nginx config,
+  and certbot runs `nginx -t` first, so it cannot fix what blocks it.
+  **Ship the block HTTP-only** and let certbot add the TLS half.
+- `http2 on;` needs nginx 1.25.1+. Older boxes reject it as an unknown
+  directive — use `listen 443 ssl http2;`.
+- Redeclaring `map $http_upgrade $connection_upgrade` is a config error;
+  reference it, never redefine it.
+- certbot matches a lineage by its FULL name set. Ask for a subset and it
+  mints a SECOND certificate, and renewals diverge silently. Read
+  `sudo certbot certificates` first, then EXTEND with
+  `certonly --nginx --cert-name <lineage> -d <every existing> -d <yours>`.
+
+After any certificate work, curl every neighbour — the failure mode is
+that your site is perfect while a neighbour serves the wrong chain.
+
+Bind the game to **127.0.0.1** (`HOST=127.0.0.1`, which `server/index.js`
+honours) so nginx is the only public path; a `0.0.0.0` bind exposes the raw
+port through the firewall and bypasses TLS. And cap the unit's `MemoryMax`
+so one leak restarts your game instead of OOM-killing the whole machine.
+
 ## The deploy script
 
 `tools/ssh-deploy.sh` implements all seven principles. Host identity

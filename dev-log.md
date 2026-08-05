@@ -6308,3 +6308,35 @@ sun) but colder, deeper and permanently: moonlight at 0.22 intensity,
 fog closing at 10-42 units so sight dies sooner, a near-black sky.
 Reusing the storm's dials keeps one visual system instead of two, and
 the mode latch means it only redraws on a change.
+
+## The ops deploy lane (2026-08-05, prompt 186)
+
+`ops/` (gitignored) now holds the REAL host: `ssh-deploy.sh` ported from
+the sibling project's template + howto, `deploy/fireline.service` with
+the resource caps, and a README naming Fireline's slot. The generic,
+publishable twin stays at the repo root (DEPLOYING.md +
+tools/ssh-deploy.sh) — one names the box, the other teaches the pattern.
+
+Fireline's claim: **port 8131** (next free after Pitfall's 8130),
+`fireline.kjell.today`, loopback-only, runtime state at
+`/opt/fireline/state` outside the code dir so `--delete` cannot eat
+saved wars.
+
+THE PORT EXPOSED A REAL GAP. The howto is emphatic that a game must bind
+127.0.0.1 on a shared box — nginx is the only public path, and a 0.0.0.0
+bind hands the raw port through the firewall past TLS. `server/index.js`
+had NO WAY to do that: it always listened on every interface. Added
+`options.host` / `HOST` env, with the DEFAULT deliberately unchanged,
+because binding loopback by default would silently kill LAN play, which
+is the whole point of `npm start` on a home network. Pinned both
+directions by test.
+
+Everything else in the script is the sibling's scar tissue, carried over
+rather than rediscovered: an ALLOWLIST (an exclude list once shipped
+~28 MB of internal notes to a public host), one ControlMaster auth per
+run with `$HOME` not `~` (rsync/scp exec ssh with no shell, so a tilde
+arrives literal) and `-o Port=` not `-p`/`-P` (ssh and scp spell it
+differently), verification against the PUBLIC /health rather than
+loopback or `systemctl is-active`, and a `--neighbours` sweep because
+the classic failure is your site working perfectly while a neighbour
+quietly serves the wrong chain.

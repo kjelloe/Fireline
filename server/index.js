@@ -313,7 +313,15 @@ export function createAppServer(options = {}) {
         }, options.autosaveMs ?? 30000);
         this.autosaveTimer.unref?.(); // never hold the event loop open
       }
-      return new Promise((resolve) => httpServer.listen(port, () => resolve(httpServer.address())));
+      // HOST binding (ops, 2026-08-05): on a SHARED public box the game must
+      // bind LOOPBACK only — nginx is the sole thing reachable from outside,
+      // and a 0.0.0.0 bind would expose the raw port through the firewall and
+      // bypass TLS entirely. Default stays unbound so LAN play (the whole
+      // point of `npm start` on a home network) keeps working untouched.
+      const host = options.host ?? process.env.HOST ?? null;
+      return new Promise((resolve) => (host
+        ? httpServer.listen(port, host, () => resolve(httpServer.address()))
+        : httpServer.listen(port, () => resolve(httpServer.address()))));
     },
     async stop() {
       if (this.autosaveTimer) clearInterval(this.autosaveTimer);

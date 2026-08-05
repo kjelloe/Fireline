@@ -172,3 +172,17 @@ test("O4: --difficulty accepts names and numbers, numbers stay valid", async () 
   assert.equal(resolveDifficulty("2"), 2);
   assert.equal(resolveDifficulty(null), 1, "unset means normal");
 });
+
+test("ops: HOST binds loopback only (shared-box safety), default stays open for LAN", async () => {
+  // On the shared public box nginx is the only thing reachable from
+  // outside; a 0.0.0.0 bind would expose the raw port past TLS. The
+  // DEFAULT must stay unbound though, or `npm start` stops serving a LAN.
+  const a = createAppServer({ mapSeed: 42, enableAi: false, host: "127.0.0.1" });
+  const addr = await a.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+  assert.equal(addr.address, "127.0.0.1", "explicit host binds loopback");
+  await a.stop();
+  const b = createAppServer({ mapSeed: 42, enableAi: false });
+  const addr2 = await b.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+  assert.notEqual(addr2.address, "127.0.0.1", "the default still answers a LAN");
+  await b.stop();
+});
