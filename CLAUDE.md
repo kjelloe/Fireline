@@ -226,6 +226,20 @@ outcome. Renderer presents fog-filtered views only.
   must never cost a medal. The sweep BEATS smoke by design. The WALLET
   IS PRIVATE to its own team in the view (the scoreboard is public,
   what you can afford is not). UAV=0 / `rules.uavCost` knobs.
+  W4-8 POW CREATORS (Q78): deep-down capture law (nerve expiring INSIDE
+  an enemy compound), failed heist, failed raid (alarm-gated), convoy
+  driver (60 s undefended). No new hashed field — new routes to
+  OP_CAPTIVE. Q84 RULED: the deep-down law is HUMAN-ONLY DRAMA (0
+  firings in AI wars, accepted); note any change at the code site.
+  W4-10 NIGHT WARS (Q80): `rules.nightWar` / `--night` / NIGHT=1 — a
+  night war is a STORM THAT NEVER LIFTS (weatherActive returns true
+  unconditionally), reusing the 16G sensor halving wholesale so it
+  inherits an already-tested fairness+mirror argument. Nothing hashed.
+  CONVOY ROUTE (Q82): `CONVOY_ROUTE_SCALE` default 80 — the truck
+  starts 20% forward, measured 38.3% attacker (classic 100 = 18.7%).
+  The ladder is NOT monotonic (65 -> 15.3%): the knob moves the TRUCK
+  ALONE while escorts still rally at their own lines, so 80 is a local
+  optimum set by escort geometry.
 - A NEW COMMAND NEEDS FOUR ENTRIES (W4-6 lesson): the constant, the
   **`validate()` case in commands.js** (an ALLOWLIST — an unknown type
   is refused before the reducer's switch, event type `"rejected"`), the
