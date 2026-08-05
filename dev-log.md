@@ -6083,3 +6083,28 @@ Rejection texts for both new reasons in both locales (8H again).
 NOT YET: no AI doctrine calls a sweep (deliberate — the getaway
 lesson), and per Q79 it stays OFF in balanced/PvP wars until a battery
 speaks. The default-on-in-co-op wiring is the remaining rung.
+
+## Two battery verdicts, one measurement error (2026-08-05, prompt 182)
+
+**Q82 rung 1 — MEASURED, not enough.** convoyDefenderPenalty 2 -> 3
+(defender factory half rate -> a third) moved attackers
+**16.3/14.3% -> 18.7/19.7%** on e83a9ac. Two things happened: it
+bought ~+3 points, and it made the directions essentially IDENTICAL
+(18.7 v 19.7 — the mode is now symmetric to within noise, which is
+what the contact-law fixes started and this finishes). But the ruled
+target is 30-40%, so rung 1 falls well short. Ladder queued at
+penalty 4 and 5 (the knob is now plumbed through the batch lane);
+if the curve flattens before 30% then rung 2 — shortening the route
+or the clock — is the honest next lever rather than an ever-harsher
+factory penalty.
+
+**Q83's gate is STILL UNMEASURED — a lane error, caught by reading
+the build hash.** The queued pair ran on **382f94e**, which is the
+carry-home commit; the GATE landed one commit later in bcb709b. So
+those numbers (39.4/36.4 — identical to the ungated baseline) measure
+the carry-home fix alone, and they agree with what the census already
+showed: the seek fix changes nothing by itself. Re-queued on the
+current build. THE LESSON IS THE OLD ONE, EARNED AGAIN: always read
+the build hash in the result line before believing a battery. The
+config-drift law exists because this is easy to miss, and it was only
+visible here because the mail prints the commit.
