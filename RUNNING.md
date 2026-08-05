@@ -80,6 +80,16 @@ npm start                              # host machine
   damage + suppression). Your team always sees its own mines; enemy scouts
   within 3 cells auto-MARK them for their team, and a truck adjacent to a
   marked (or own) mine clears it with C.
+- **SMOKE SCREENS (W4-6)**: supply trucks and mortar carriers carry two
+  smoke pots — the SMOKE special in direct mode lays a 3x3 cloud on your
+  cell for 30 seconds. A hull inside smoke can only be seen from one cell
+  away, which is the answer to being shelled in the open: cover a rescue,
+  a convoy restart, or a POW walked home. It is BLIND TO TEAM — it hides
+  whoever stands in it, including you, and you cannot see out of it
+  either. Six clouds per team at once.
+- **Gun feel (W4-5)**: your own shot kicks the camera and every visible
+  shot draws a tracer. Turn Visuals to Low in ⚙ if you would rather not
+  have the shake.
 - **Build feedback (W4-4)**: a refused sandbag/mine now says WHY — a
   green or red ring lands on the target cell and the reason appears
   ("the road must keep two open lanes"). Nothing doomed is sent, so

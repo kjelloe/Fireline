@@ -208,7 +208,20 @@ outcome. Renderer presents fog-filtered views only.
   an unprojected field fails CLOSED and SILENTLY (the sandbag button
   was dead from Q50 until W4-4 found it). TWO projections exist
   (per-team + spectator); adding a field to one is not adding it to
-  the other.
+  the other. W4-5 juice (own-shot camera kick + tracers, clock-driven,
+  Low tier opts out). W4-6 SMOKE (`engine/smoke.js`, fixture v70):
+  hashed `smokes[]`/`nextSmokeId`/`smokeLeft`; trucks+mortars carry 2;
+  3x3 patch, 30 s, cap 6/team. CONCEALMENT, not line-blocking — LOS is
+  a Chebyshev radius, NOT a raycast, and a ray march would put the
+  equivariance ladder at risk; a hull in smoke is seen only from
+  SMOKE_SEE_CELLS, and a sensor in smoke reaches only that far. BLIND
+  TO TEAM by design. Truck-laid only so far: the mortar alt-fire,
+  SMOKE=0 and the battery pair are unfinished.
+- A NEW COMMAND NEEDS FOUR ENTRIES (W4-6 lesson): the constant, the
+  **`validate()` case in commands.js** (an ALLOWLIST — an unknown type
+  is refused before the reducer's switch, event type `"rejected"`), the
+  dispatch case, and the handler. Miss the validate case and the
+  command is a SILENT no-op.
 - Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
   fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
