@@ -27,6 +27,7 @@ export function makeAsset(id, spec) {
     minesLeft: spec.minesLeft ?? ((spec.type ?? 0) === 0 ? 2 : 0), // 9E
     caltropsLeft: spec.caltropsLeft ?? (getUnitStats(spec.type ?? 0).caltrops ?? 0), // Q45
     sandbagsLeft: spec.sandbagsLeft ?? (getUnitStats(spec.type ?? 0).canClearMines ? 2 : 0), // Q45/Q50
+    smokeLeft: spec.smokeLeft ?? (getUnitStats(spec.type ?? 0).smoke ?? 0), // W4-6
     campTicks: spec.campTicks ?? 0, // 9G
     materiel: spec.materiel ?? 0, // 11F
     cargoFuel: spec.cargoFuel ?? 0, cargoAmmo: spec.cargoAmmo ?? 0, // 13A

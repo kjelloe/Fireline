@@ -134,6 +134,7 @@ function makeFieldAsset(id, type, team, cellX, cellY) {
     reloadTimer: 0, // 8E fire cooldown
     minesLeft: getUnitStats(type).canMine ? MINES_PER_TANK : 0, // 9E mine rack
     caltropsLeft: getUnitStats(type).caltrops ?? 0, // Q45 chase-shaper rack
+    smokeLeft: getUnitStats(type).smoke ?? 0, // W4-6 smoke rack
     sandbagsLeft: getUnitStats(type).canClearMines ? SANDBAGS_PER_TRUCK : 0, // Q45/Q50
     campTicks: 0, // 9G: unsupplied-idle counter that draws a drone
     materiel: 0, // 11F: one repair-cargo slot (trucks load it in base)
@@ -532,6 +533,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     mines: [], // 9E: deployed mines
     nextMineId: 0,
     caltrops: [], // Q45: live chase-shaper patches
+    smokes: [], // W4-6: live smoke patches
+    nextSmokeId: 0,
     nextCaltropId: 0,
     sandbags: [], // Q45/Q50: player-built cover (walls with hp)
     nextSandbagId: 0,

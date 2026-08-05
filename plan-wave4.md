@@ -68,7 +68,7 @@ with throttle. All behind the visuals tier (Low skips shake).
 Acceptance: direct-mode fire produces tracer + shake hooks; smoke
 gate stays clean.
 
-## W4-6 · Smoke screens (M) — engine module + 2 commands + client
+## W4-6 · Smoke screens (M) — 🔶 TRUCK-LAID SHIPPED (fixture v70); mortar alt-fire, SMOKE=0 switch and the battery pair remain
 
 The measured counter to artillery farming (the mid-war ledger).
 - `engine/smoke.js`: hashed `smokes` [{x, y, expiresTick}] — REPIN.

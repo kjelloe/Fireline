@@ -42,6 +42,7 @@ function stateHash(s) {
     w.writeI32LE(a.aboard1); w.writeI32LE(a.aboard2); // added 9B
     w.writeU8(a.minesLeft); // added 9E
     w.writeU8(a.caltropsLeft ?? 0); // added Q45
+    w.writeU8(a.smokeLeft ?? 0); // added W4-6
     w.writeU8(a.sandbagsLeft ?? 0); // added Q45/Q50
     w.writeI32LE(a.campTicks); // added 9G
     w.writeU8(a.materiel ?? 0); // added 11F
@@ -101,6 +102,12 @@ function stateHash(s) {
     w.writeI32LE(c.id); w.writeI32LE(c.team);
     w.writeI32LE(c.cellX); w.writeI32LE(c.cellY);
     w.writeI32LE(c.ticksLeft);
+  }
+  w.writeI32LE(s.nextSmokeId ?? 0); // added W4-6
+  for (const p of (s.smokes ?? [])) {
+    w.writeI32LE(p.id); w.writeI32LE(p.team);
+    w.writeI32LE(p.cellX); w.writeI32LE(p.cellY);
+    w.writeI32LE(p.ticks);
   }
   w.writeI32LE(s.nextDroneId ?? 0); // added 9G
   for (const d of (s.drones ?? [])) {

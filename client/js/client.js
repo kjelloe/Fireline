@@ -221,6 +221,8 @@ function updateDirectSpecials() {
     send({ type: "deploy_mine" });
   }]);
   if ((me?.caltropsLeft ?? 0) > 0) rows.push(["ui.sp_caltrops", () => send({ type: "deploy_caltrops" })]);
+  // W4-6: the smoke screen — the answer to being shelled in the open.
+  if ((me?.smokeLeft ?? 0) > 0) rows.push(["ui.sp_smoke", () => send({ type: "deploy_smoke" })]);
   if ((me?.sandbagsLeft ?? 0) > 0) rows.push(["ui.sp_sandbag", () => {
     const cx = Math.floor(me.x / CELL);
     const cy = Math.floor(me.y / CELL);

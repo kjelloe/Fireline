@@ -57,6 +57,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: true, // 9E: trucks clear marked mines
     heavy: false, // 11N
     canCapture: true, siege: false, // 11R
+    smoke: 2, // W4-6: smoke rack
     deployable: false, // 12B
     amphibious: false, // 12C
   }),
@@ -153,6 +154,7 @@ export const UNIT_STATS = Object.freeze({
     canMine: false, canClearMines: false,
     heavy: false,
     canCapture: true, siege: false,
+    smoke: 2, // W4-6: smoke rack
     deployable: false, // 12B
     amphibious: false, // 12C
   }),

@@ -93,6 +93,7 @@
       "heavy": false,
       "canCapture": true,
       "siege": false,
+      "smoke": 2,
       "deployable": false,
       "amphibious": false
     },
@@ -167,6 +168,7 @@
       "heavy": false,
       "canCapture": true,
       "siege": false,
+      "smoke": 2,
       "deployable": false,
       "amphibious": false
     },

@@ -7,6 +7,7 @@ import { ASSET_DISABLED, ASSET_SALVAGED, isSuppressed } from "./state.js";
 import { sampleCellX } from "../shared/fixedmath.js";
 import { RELAY_FOG_CELLS, KIND_RADAR, RADAR_BONUS_CELLS } from "./sites.js";
 import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
+import { SMOKE_SEE_CELLS, smokeAt } from "./smoke.js";
 
 export const FOG_RADIUS_CELLS = 12;
 export const SUPPRESSED_RADIUS_CELLS = 6;
@@ -77,12 +78,29 @@ export function computeVisible(state, team) {
     const inCompound = ownBase &&
       assetCellX >= ownBase.x - 1 && assetCellX <= ownBase.x + ownBase.width &&
       assetCellY >= ownBase.y - 1 && assetCellY <= ownBase.y + ownBase.height;
+    // W4-6 SMOKE: concealment, not line-blocking (the LOS here is a
+    // Chebyshev radius, not a raycast — a ray march would put the
+    // equivariance ladder at risk for no extra gameplay). A hull inside
+    // smoke is seen only from SMOKE_SEE_CELLS away, and a sensor inside
+    // smoke reaches no further itself. Smoke is BLIND to team, so a
+    // careless screen hides the enemy from you too.
+    const hidden = (state.smokes?.length ?? 0) > 0 &&
+      smokeAt(state, assetCellX, assetCellY) !== null;
+    const reach = (s) => {
+      const base = storm ? sensorRadius(s) >> 1 : sensorRadius(s);
+      const blinded = (state.smokes?.length ?? 0) > 0 &&
+        smokeAt(state, sampleCellX(s.x), worldToCellFloor(s.y)) !== null;
+      const r = blinded ? SMOKE_SEE_CELLS : base + radarBonus;
+      return hidden ? (r < SMOKE_SEE_CELLS ? r : SMOKE_SEE_CELLS) : r;
+    };
     const seen = inCompound ||
-      sensors.some((s) => chebyshevCells(s, asset) <= (storm ? sensorRadius(s) >> 1 : sensorRadius(s)) + radarBonus) ||
+      sensors.some((s) => chebyshevCells(s, asset) <= reach(s)) ||
       siteSensors.some((s) => {
         const dx = absI32(s.cellX - assetCellX);
         const dy = absI32(s.cellY - assetCellY);
-        return (dx > dy ? dx : dy) <= (storm ? RELAY_FOG_CELLS >> 1 : RELAY_FOG_CELLS);
+        const base = storm ? RELAY_FOG_CELLS >> 1 : RELAY_FOG_CELLS;
+        const r = hidden ? SMOKE_SEE_CELLS : base;
+        return (dx > dy ? dx : dy) <= r;
       });
     if (seen) visible.add(asset.id);
   }

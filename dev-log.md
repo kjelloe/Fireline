@@ -5893,3 +5893,49 @@ see. Gates: client smoke + UI acceptance (the project's contract for
 client work — a headless SwiftShader run cannot judge a camera kick,
 so the gate proves the page still boots, joins and ticks with zero
 errors), plus 801/801 x2 to prove the engine is untouched.
+
+## W4-6: SMOKE SCREENS (2026-08-05, prompt 174) — fixture v70
+
+The measured counter to the artillery farming the mid-war ledger
+convicted: the game had no answer to indirect fire except leaving.
+`engine/smoke.js` + hashed `smokes[]`/`nextSmokeId`/`smokeLeft`.
+Trucks and mortars carry 2; one deployment is a 3x3 patch lasting
+30 s; six live patches per team.
+
+DESIGN DEVIATION, deliberate: the plan said "a sight line crossing a
+smoke cell stops there". This engine's LOS is NOT a raycast —
+computeVisible is a Chebyshev radius — so line-blocking would mean
+introducing a ray march into the one system the entire equivariance
+ladder exists to keep mirror-exact. Not worth it, and not needed.
+CONCEALMENT gives the same tactical function: a hull inside smoke is
+seen only from 1 cell away, and a sensor inside smoke reaches only 1
+cell itself. That is a pure per-cell property, so it commutes with
+the mirror for free — pinned by a mirrored-world test rather than
+argued.
+
+Smoke is BLIND TO TEAM. It conceals whoever stands in it, including
+the side that laid it, and it blinds them outward too. That is what
+makes laying one a decision instead of a free buff, and it is the
+rule that keeps a screen from becoming a wall you shoot through.
+
+VALIDATE-GATE LESSON: the command was dispatched and handled
+correctly and still did nothing — silently. `validate()` in
+commands.js is an allowlist, and an unknown type is refused before
+the reducer ever sees it, with an event type ("rejected") that my
+test was not looking for. A new command needs FOUR entries, not two:
+the constant, the validate case, the dispatch case, the handler.
+
+Gates: 8 tests (rack, concealment, blind-both-ways, adjacency,
+dispersal, cap/stack/rack refusals, no-rack chassis, mirror
+equivariance); 809/809 x2; the 5-seed sim gate came back
+TICK-IDENTICAL to the pre-smoke run (17977/5653/12680/14600, same
+winners and reasons) — smoke is byte-inert while the AI never lays
+it, which is exactly the required proof. Client: the SMOKE special
+in direct mode, both locales. data/units.json regenerated (the 3A
+mirror test caught it, as designed).
+
+STILL OPEN on this slice: the mortar's alt-fire (lay a patch at
+range) is specified but NOT implemented — the truck-laid version is
+the whole feature today. No AI doctrine by design (the getaway
+lesson); a SMOKE=0 kill-switch and a same-build battery pair are the
+next rungs before this can be called measured.

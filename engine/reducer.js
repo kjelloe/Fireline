@@ -13,6 +13,7 @@ import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_DEPLOY_CALTROPS, CMD_BUILD_SANDBAG, CMD_CLEAR_MINE, CMD_PING,
+  CMD_DEPLOY_SMOKE,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
@@ -35,6 +36,7 @@ import {
   DROP_HOLD_TICKS, DROP_RADIUS_CELLS, DROP_TICKET_PACKET, dropActive, dropWorld,
 } from "./drops.js";
 import { premiumPoints } from "./premium.js";
+import { SMOKE_TICKS, SMOKE_SEE_CELLS, smokeAt, smokeRejection, stepSmoke } from "./smoke.js";
 import {
   RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
   CAPTURE_HOLD_TICKS, RECOG_CAPTURE, RECOG_POW_HOLD, HOLD_PAY_TICKS, PRISON_CAPACITY,
@@ -1022,6 +1024,36 @@ function applyDeployMine(next, command) {
 // on its own cell; enemies crossing it run 30% slower for 45 s. No
 // damage, no arming, no stacking; any truck's clear-mine sweep also
 // rakes them up, and they expire on their own.
+// W4-6 (prompt 174): lay a smoke screen on your own cell. Instant (the
+// bottles go over the side), 30 s, one 3x3 patch. The mortar's version
+// rides the fire order instead — see applyFireOrder's `smoke` branch.
+function applyDeploySmoke(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (operator.assetId === -1) return reject(next, command, "no asset selected");
+  const asset = next.assets[operator.assetId];
+  if (!asset || asset.operatorId !== operator.id) {
+    return reject(next, command, "no asset selected");
+  }
+  if (asset.state === ASSET_DISABLED || asset.state === ASSET_SALVAGED) {
+    return reject(next, command, "asset not operable");
+  }
+  const cellX = sampleCellX(asset.x, next.map.width);
+  const cellY = worldToCellFloor(asset.y);
+  const why = smokeRejection(next, asset, getUnitStats(asset.type), cellX, cellY);
+  if (why) return reject(next, command, why);
+  asset.smokeLeft -= 1;
+  next.smokes.push({
+    id: next.nextSmokeId, team: asset.team, cellX, cellY, ticks: SMOKE_TICKS,
+  });
+  next.nextSmokeId += 1;
+  next.events.push({
+    type: "smoke_deployed", assetId: asset.id, team: asset.team,
+    cellX, cellY, smokeLeft: asset.smokeLeft,
+  });
+  return next;
+}
+
 function applyDeployCaltrops(next, command) {
   const operator = next.operators[command.operatorId];
   if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
@@ -1665,6 +1697,9 @@ function applyAdvanceTick(next) {
     for (const c of next.caltrops) c.ticksLeft -= 1;
     next.caltrops = next.caltrops.filter((c) => c.ticksLeft > 0);
   }
+  // W4-6 smoke: silent decay, same repin discipline as caltrops — a new
+  // per-tick event inside the fixture's 14 steps would read as drift.
+  if (next.smokes?.length) stepSmoke(next);
   // 9E mines: arm, then scout detection, then detonation on enemy entry.
   for (const mine of next.mines) {
     if (mine.armTimer > 0) mine.armTimer -= 1;
@@ -2705,6 +2740,7 @@ export function apply(state, command) {
     case CMD_EJECT_STATION: return applyEjectStation(next, command);
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_DEPLOY_CALTROPS: return applyDeployCaltrops(next, command);
+    case CMD_DEPLOY_SMOKE: return applyDeploySmoke(next, command);
     case CMD_BUILD_SANDBAG: return applyBuildSandbag(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);
