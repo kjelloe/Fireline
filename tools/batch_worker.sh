@@ -286,9 +286,10 @@ handle_job() { # $1 = JSON body
       cv_sw=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('swap',0))" "$body")
       cv_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
       cv_pen=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('cvpenalty',''))" "$body")
-      MODE=convoy MODEATTACKER=$cva UNIQUES=$cv_uq FACTIONSWAP=$cv_sw LANDSHIP=$cv_ls DROPS=$cv_dr ORDERPARITY=$cv_op CVPENALTY=$cv_pen run_sweep \
+      cv_rt=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('cvroute',''))" "$body")
+      MODE=convoy MODEATTACKER=$cva UNIQUES=$cv_uq FACTIONSWAP=$cv_sw LANDSHIP=$cv_ls DROPS=$cv_dr ORDERPARITY=$cv_op CVPENALTY=$cv_pen CVROUTE=$cv_rt run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',300))" "$body")" \
-        "$cv_mir" 1 "convoy_att${cva}$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)$([ "$cv_uq" = 0 ] && echo _nouq)$([ "$cv_sw" = 1 ] && echo _swap)$([ "$cv_op" = 1 ] && echo _op)$([ "$cv_mir" = 1 ] && echo _mirror)" ;;
+        "$cv_mir" 1 "convoy_att${cva}$([ -n "$cv_rt" ] && echo _r$cv_rt)$([ "$cv_ls" = 0 ] && echo _nols)$([ "$cv_dr" = 0 ] && echo _nodrop)$([ "$cv_uq" = 0 ] && echo _nouq)$([ "$cv_sw" = 1 ] && echo _swap)$([ "$cv_op" = 1 ] && echo _op)$([ "$cv_mir" = 1 ] && echo _mirror)" ;;
     ab)
       # Bisection rung: {"kind":"ab","raidparty":0,"powarc":1,
       # "count":300,"label":"ab_raidparty0"}. Whitelisted env only.

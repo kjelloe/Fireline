@@ -123,3 +123,38 @@ test("Q62: the push corridor is a real predicate (integer point-to-segment)", as
   const g = s.mission;
   assert.ok(g.gateCellX > 64, "attacker A pushes east");
 });
+
+test("Q82 rung 2: convoyRouteScale starts the truck further forward, mirror-safely", async () => {
+  // The ladder proved the defender-factory lever tops out near 24%; the
+  // real problem is that the truck cannot survive the distance. A
+  // shortened route must still commute with the mirror, so the two
+  // worlds' remaining runs have to match to the unit.
+  const { createInitialState } = await import("../engine/state.js");
+  const run = (scale, attacker) => {
+    const s = createInitialState(2026, "frontier_corridor",
+      { mode: 1, modeAttacker: attacker, convoyRouteScale: scale });
+    const truck = s.assets[s.mission.convoyId];
+    const gx = s.mission.gateCellX * 256 + 128;
+    return Math.abs(gx - truck.x);
+  };
+  const fullA = run(100, 0);
+  const shortA = run(65, 0);
+  assert.ok(shortA < fullA, `65% starts closer (${shortA} < ${fullA})`);
+  // 65% of the run should remain, within a cell of rounding.
+  assert.ok(Math.abs(shortA - Math.round(fullA * 0.65)) <= 256,
+    `about 65% of the route remains (${shortA} vs ${Math.round(fullA * 0.65)})`);
+  // Mirror: the other attacker's shortened run must match to the unit.
+  const fullB = run(100, 1);
+  const shortB = run(65, 1);
+  assert.equal(fullA, fullB, "the classic route is mirror-equal");
+  assert.equal(shortA, shortB, "and so is the shortened one");
+});
+
+test("Q82 rung 2: scale 100 is byte-identical to the classic route", async () => {
+  const { createInitialState } = await import("../engine/state.js");
+  const { hashState } = await import("../engine/snapshot.js");
+  const plain = createInitialState(2026, "frontier_corridor", { mode: 1, modeAttacker: 0 });
+  const scaled = createInitialState(2026, "frontier_corridor",
+    { mode: 1, modeAttacker: 0, convoyRouteScale: 100 });
+  assert.equal(hashState(scaled), hashState(plain), "the default changes nothing at all");
+});

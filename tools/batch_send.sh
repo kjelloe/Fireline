@@ -25,7 +25,7 @@ case "${1:-}" in
   pool)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pool\",\"ticketPool\":${2:?usage: batch_send.sh pool <ticketPool> [count] [map]},\"count\":${3:-300},\"map\":\"${4:-frontier_corridor}\"}" ;;
   skimtrail) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"skimtrail\",\"speed\":${2:?usage: batch_send.sh skimtrail <speed> [count] [mirror]},\"count\":${3:-300},\"mirror\":${4:-0}}" ;;
   pows)   $AM queue add --for batch-pc --as dev --body "{\"kind\":\"pows\",\"n\":${2:-2},\"count\":${3:-300},\"mirror\":${4:-0},\"orderparity\":${5:-0}}" ;;
-  convoy) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"convoy\",\"attacker\":${2:-0},\"count\":${3:-300},\"landship\":${4:-1},\"drops\":${5:-1},\"mirror\":${6:-0},\"uniques\":${7:-1},\"swap\":${8:-0},\"orderparity\":${9:-0},\"cvpenalty\":\"${10:-}\"}" ;;
+  convoy) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"convoy\",\"attacker\":${2:-0},\"count\":${3:-300},\"landship\":${4:-1},\"drops\":${5:-1},\"mirror\":${6:-0},\"uniques\":${7:-1},\"swap\":${8:-0},\"orderparity\":${9:-0},\"cvpenalty\":\"${10:-}\",\"cvroute\":\"${11:-}\"}" ;;
   heist)  $AM queue add --for batch-pc --as dev --body "{\"kind\":\"heist\",\"attacker\":${2:-0},\"count\":${3:-300}}" ;;
   ab)     $AM queue add --for batch-pc --as dev --body "{\"kind\":\"ab\",\"raidparty\":${2:-1},\"powarc\":${3:-1},\"count\":${4:-300},\"label\":\"${5:-ab}\",\"uniques\":${6:-1},\"pows\":\"${7:-}\",\"mirror\":${8:-0}}" ;;
   sendresults) $AM queue add --for batch-pc --as dev --body "{\"kind\":\"sendresults\"}" ;;

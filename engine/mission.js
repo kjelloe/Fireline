@@ -14,6 +14,8 @@
 // "match doesn't end when it stops; it ends if it cannot be restarted
 // in time"). Defenders win on timer expiry or an unrecoverable wreck.
 
+import { cellToWorld, truncDivI32 } from "../shared/fixedmath.js";
+
 export const MISSION_NONE = 0;
 export const MISSION_CONVOY = 1;
 export const MISSION_HEIST = 2; // Q52: the one-sided standard grab
@@ -67,12 +69,34 @@ export function createMission(rules, assets, bases, getStats) {
   // cells with the timer dead, every war. Geometry-derived (attacker
   // side decides the face), so it commutes with the mirror.
   const attackerEast = (home.x + ((home.width / 2) | 0)) > (gate.x + ((gate.width / 2) | 0));
+  const gateCellX = attackerEast ? gate.x + gate.width + 1 : gate.x - 2;
+  const gateCellY = gate.y + ((gate.height / 2) | 0);
+  // Q82 RUNG 2 (owner ruling, prompt 184): SHORTEN THE ROUTE. The
+  // ladder proved the defender-factory lever tops out around 24% — to
+  // reach the ruled 30-40% band it would have to switch the defender's
+  // rebuild off entirely, which destroys the mode's fiction. The real
+  // problem is simpler: the truck cannot survive the distance. So the
+  // convoy STARTS further forward. `convoyRouteScale` is the percentage
+  // of the full run it must still cover (100 = the classic route).
+  // Integer math with truncDiv, which is the mirror-symmetric rounding
+  // (plain floor hands west-bound movers a free unit — the riverline
+  // east-edge lesson), so a shortened route still commutes with the
+  // mirror.
+  const scale = rules.convoyRouteScale ?? 100;
+  if (scale < 100) {
+    const gx = cellToWorld(gateCellX);
+    const gy = cellToWorld(gateCellY);
+    truck.x += truncDivI32((gx - truck.x) * (100 - scale), 100);
+    truck.y += truncDivI32((gy - truck.y) * (100 - scale), 100);
+    truck.targetX = truck.x;
+    truck.targetY = truck.y;
+  }
   return {
     kind: MISSION_CONVOY,
     attacker,
     convoyId: truck.id,
-    gateCellX: attackerEast ? gate.x + gate.width + 1 : gate.x - 2,
-    gateCellY: gate.y + ((gate.height / 2) | 0),
+    gateCellX,
+    gateCellY,
     timerTicks: rules.convoyTimer ?? CONVOY_TIMER_TICKS,
     restartTicks: 0,
   };
