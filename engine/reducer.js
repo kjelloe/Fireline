@@ -2455,9 +2455,17 @@ function takePrisoner(next, body, holdingTeam, how) {
       d.x += ddx < 0 ? -mx : mx;
     }
     if (d.downTicks >= OPERATOR_AUTO_RETURN_TICKS) {
-      // W4-8b (Q78 ruling): THE DEEP-DOWN CAPTURE LAW — the universal
-      // POW creator, and the reason standard wars will finally grow
-      // prisoners at all. A crew that runs out of nerve INSIDE the
+      // W4-8b (Q78 ruling): THE DEEP-DOWN CAPTURE LAW.
+      // Q84 RULED (prompt 185): KEEP AS HUMAN-ONLY DRAMA. Measured at
+      // ZERO firings across five AI wars — an AI crew redeploys long
+      // before this timer can expire inside an enemy compound, so the
+      // law is reachable only by a human who stays down deep. That is
+      // accepted deliberately: it is a rare, dramatic event rather
+      // than a constant one. If a playtest reports it never fires for
+      // humans either, the alternative on record is retriggering on
+      // down-time-inside-the-compound — which would fire constantly
+      // and reshape every base assault, so it is a design change, not
+      // a tuning nudge. NOTE ANY CHANGE HERE. A crew that runs out of nerve INSIDE the
       // enemy compound does not stroll home; the garrison takes them.
       // Everywhere else the old auto-return stands.
       const capturedBy = capturingCompound(next, d);

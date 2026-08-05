@@ -461,6 +461,17 @@ recorded here because they reverse or retire earlier rulings.
   measure, rather than pre-tuning on intuition.
 
 
+## Prompt 185 rulings (2026-08-05)
+
+- **Q82 CLOSED**: scale 80 ADOPTED as the convoy default
+  (`CONVOY_ROUTE_SCALE`). `convoyRouteScale: 100` restores the classic
+  run. Defender penalty stays at 3.
+- **Q84 RULED**: the deep-down capture law stays HUMAN-ONLY DRAMA —
+  accepted as a rare event AI wars cannot produce. Noted at the code
+  site; any future change is to be recorded there. The alternative on
+  record (retrigger on down-time-inside-the-compound) is a design
+  change, not a tuning nudge.
+
 ## Prompt 184 outcomes (2026-08-05) — both open dials CLOSED on data
 
 - **Q82 SOLVED at rung 2.** `convoyRouteScale` 80 (20% shorter run)

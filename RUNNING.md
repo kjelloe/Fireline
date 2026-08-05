@@ -25,6 +25,8 @@ npm run start:frontier | start:riverline | start:sawtooth
 npm start -- --map blackwood     # the general form
 npm start -- --mode heist        # asymmetric modes (146): standard|convoy|heist
 npm start -- --mode convoy --attacker 1   # team B escorts instead
+# Convoy runs a SHORTENED route by default (measured: attackers 38% vs 19% on the full run).
+# --rules or RULES with convoyRouteScale:100 restores the classic full-map run.
 npm start -- --difficulty hard   # O4: easy|normal|hard (or 0|1|2); shown on the join screen
 npm start -- --teambalance   # W4-1: competitive gate (default OFF — friends stack a team vs the AI)
 # Public hosting: see DEPLOYING.md (allowlist ssh-deploy, systemd unit, nginx/TLS, health guards)

@@ -6255,3 +6255,17 @@ inside a system built on relative positions is not simple. The
 non-monotonicity was the system telling us the dial has a hidden
 second variable in it.
 RECOMMENDATION UNCHANGED and now better evidenced: adopt scale 80.
+
+## Q82 CLOSED + Q84 ruled (2026-08-05, prompt 185)
+
+Scale **80 adopted as the convoy default** (`CONVOY_ROUTE_SCALE`);
+`convoyRouteScale: 100` restores the classic run, and the test now
+pins that 100 is a DEPARTURE from the default rather than the default
+itself. Defender penalty stays at 3.
+
+Q84: the deep-down capture law **stays human-only drama**. It fires
+zero times in AI wars by measurement, and that is accepted rather
+than tuned around — a rare dramatic event is the intent. The ruling
+and its alternative are recorded AT THE CODE SITE, because that is
+where the next person will be standing when they wonder why a law
+that never fires in sims is still in the reducer.

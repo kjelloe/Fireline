@@ -150,11 +150,23 @@ test("Q82 rung 2: convoyRouteScale starts the truck further forward, mirror-safe
   assert.equal(shortA, shortB, "and so is the shortened one");
 });
 
-test("Q82 rung 2: scale 100 is byte-identical to the classic route", async () => {
+test("Q82: the DEFAULT is now the measured scale 80 (owner ruling, prompt 185)", async () => {
+  const { createInitialState } = await import("../engine/state.js");
+  const { CONVOY_ROUTE_SCALE } = await import("../engine/mission.js");
+  assert.equal(CONVOY_ROUTE_SCALE, 80, "the measured band-hitting value");
+  const dflt = createInitialState(2026, "frontier_corridor", { mode: 1, modeAttacker: 0 });
+  const explicit = createInitialState(2026, "frontier_corridor",
+    { mode: 1, modeAttacker: 0, convoyRouteScale: 80 });
+  const { hashState } = await import("../engine/snapshot.js");
+  assert.equal(hashState(dflt), hashState(explicit), "the default IS 80");
+});
+
+test("Q82 rung 2: scale 100 restores the classic route", async () => {
   const { createInitialState } = await import("../engine/state.js");
   const { hashState } = await import("../engine/snapshot.js");
-  const plain = createInitialState(2026, "frontier_corridor", { mode: 1, modeAttacker: 0 });
-  const scaled = createInitialState(2026, "frontier_corridor",
+  const classic = createInitialState(2026, "frontier_corridor",
     { mode: 1, modeAttacker: 0, convoyRouteScale: 100 });
-  assert.equal(hashState(scaled), hashState(plain), "the default changes nothing at all");
+  const dflt = createInitialState(2026, "frontier_corridor", { mode: 1, modeAttacker: 0 });
+  assert.notEqual(hashState(classic), hashState(dflt),
+    "100 is now a DEPARTURE from the default, not the default");
 });

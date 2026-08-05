@@ -31,6 +31,9 @@ export const CONVOY_PING_TICKS = 300;
 // Default mission clock (rules.convoyTimer overrides): 12.5 minutes.
 // Tuned by probe, not by taste — see dev-log slice-convoy.
 export const CONVOY_TIMER_TICKS = 9000;
+// Q82 (prompt 185): the percentage of the full run the convoy must
+// still cover. 80 is the measured default — see makeConvoyMission.
+export const CONVOY_ROUTE_SCALE = 80;
 // The RESTART law (the spec's own verb: "it ends if it cannot be
 // restarted before the timer expires"): a friendly truck standing
 // beside the convoy WRECK this long restarts it at half hull, in
@@ -82,7 +85,15 @@ export function createMission(rules, assets, bases, getStats) {
   // (plain floor hands west-bound movers a free unit — the riverline
   // east-edge lesson), so a shortened route still commutes with the
   // mirror.
-  const scale = rules.convoyRouteScale ?? 100;
+  // ADOPTED AS THE DEFAULT (owner ruling, prompt 185). The ladder:
+  // 100 -> 18.7% attacker, 80 -> 38.3% (inside the ruled 30-40% band),
+  // 65 -> 15.3%. It is NOT monotonic — the knob moves the TRUCK alone
+  // while its escorts still rally at their own lines, so at 65 the
+  // convoy is teleported into the defender's half unescorted and dies
+  // before the party forms. 80 is a LOCAL OPTIMUM set by escort
+  // geometry; going shorter would need a formation change, not a
+  // smaller number. `convoyRouteScale: 100` restores the classic run.
+  const scale = rules.convoyRouteScale ?? CONVOY_ROUTE_SCALE;
   if (scale < 100) {
     const gx = cellToWorld(gateCellX);
     const gy = cellToWorld(gateCellY);
