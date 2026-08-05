@@ -49,6 +49,7 @@ const CACHE = process.env.CACHE !== "0";
 const SMOKE = process.env.SMOKE !== "0"; // W4-6 kill-switch
 const CVPENALTY = process.env.CVPENALTY ? Number(process.env.CVPENALTY) : null; // Q82 ladder
 const CVROUTE = process.env.CVROUTE ? Number(process.env.CVROUTE) : null; // Q82 rung 2
+const NIGHT = process.env.NIGHT === "1"; // W4-10
 const GETAWAY = process.env.GETAWAY !== "0"; // Q70 heist getaway-car experiment
 const SIEGE = process.env.SIEGE !== "0"; // Q72 heist siege-prep switch
 const LANDSHIPAI = process.env.LANDSHIPAI === "1"; // Q56 trial: regents may claim the fortress
@@ -72,12 +73,13 @@ for (let seed = 1; seed <= COUNT; seed++) {
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
     alarmResponse: ALARMRESPONSE, orderParity: ORDERPARITY,
-    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI || HANDICAP !== null || !SLIDE || !SMOKE || CVPENALTY !== null || CVROUTE !== null
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI || HANDICAP !== null || !SLIDE || !SMOKE || CVPENALTY !== null || CVROUTE !== null || NIGHT
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
           ...(SMOKE ? {} : { smoke: false }),
           ...(CVPENALTY !== null ? { convoyDefenderPenalty: CVPENALTY } : {}),
           ...(CVROUTE !== null ? { convoyRouteScale: CVROUTE } : {}),
+          ...(NIGHT ? { nightWar: true } : {}),
           ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
           ...(!POWARC ? { powArc: false } : {}),
           ...(!RAIDERCLAUSE ? { raiderClause: false } : {}),

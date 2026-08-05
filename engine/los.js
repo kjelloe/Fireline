@@ -34,6 +34,13 @@ export function weatherWindow(mapSeed) {
   return { start, end: start + WEATHER_DURATION_TICKS };
 }
 export function weatherActive(state) {
+  // W4-10 (Q80 ruling): a NIGHT WAR is a storm that never lifts. The
+  // sensor law is already exactly right for darkness — halve everything
+  // and let scouts, pings and standard runs matter more — so night
+  // reuses it wholesale rather than inventing a second dimming system.
+  // Pure function of rules + tick, so nothing new is hashed and replays
+  // are untouched.
+  if (state.rules?.nightWar === true) return true;
   const w = weatherWindow(state.mapSeed);
   return state.tick >= w.start && state.tick < w.end;
 }

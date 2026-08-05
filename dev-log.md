@@ -6269,3 +6269,22 @@ than tuned around — a rare dramatic event is the intent. The ruling
 and its alternative are recorded AT THE CODE SITE, because that is
 where the next person will be standing when they wonder why a law
 that never fires in sims is still in the reducer.
+
+## W4-10: night wars (2026-08-05, prompt 185)
+
+`rules.nightWar` / `--night` / `NIGHT=1`. A night war is a STORM THAT
+NEVER LIFTS: `weatherActive` returns true unconditionally, so the 16G
+sensor law does all the work — every sensor halves, and scouts, pings
+and standard runs matter more. That reuse is the whole design. A
+second dimming system would have needed its own fairness proof and its
+own mirror argument; borrowing the storm inherits both, already tested.
+
+Nothing new is hashed (rules are not hashed state), so a night war and
+a day war with the same seed are byte-identical in the record — night
+changes what you can SEE, never what happened. Pinned by test,
+alongside a symmetry assertion: the rule keys on nothing team-specific,
+so a mirrored pair reads identically.
+
+REMAINING on this slice: the Q80 vote-pool entry and a client-side
+visual dimmer. The mechanic is complete and playable now; those two
+are presentation and rotation, not the rule.

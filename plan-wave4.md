@@ -135,7 +135,7 @@ tests pin each new transition. The abduction counterplay law
 - No engine/hash surface. Tests: ws + http roundtrip; write-once-per-
   war (the archive-once pattern).
 
-## W4-10 · Night wars (S-M) — engine rules + client
+## W4-10 · Night wars (S-M) — ✅ SHIPPED (engine + CLI; the vote-pool entry and a client dimmer remain)
 
 - `rules.nightWar` / `--night`: sensors ×0.5 all war (the weather
   machinery, held constant), headlight cone visual + darkened

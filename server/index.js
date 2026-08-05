@@ -362,6 +362,7 @@ function parseCliArgs(argv) {
       case "--rules": out.rules = take(); break;
       case "--difficulty": out.difficulty = take(); break;
       case "--teambalance": out.teambalance = true; break; // W4-1: competitive gate
+      case "--night": out.night = true; break; // W4-10: a war fought in the dark
       case "--list-maps": out.listMaps = true; break;
       case "--help": case "-h": out.help = true; break;
       default:
@@ -440,7 +441,8 @@ if (isMain) {
 
 options: --map|-m <profile>  --mode <standard|convoy|heist>  --attacker <0|1>
          --seed <n>  --port|-p <n>  --rules <preset>
-         --difficulty <easy|normal|hard|0|1|2>  --teambalance  --list-maps  --help
+         --difficulty <easy|normal|hard|0|1|2>  --teambalance  --night
+         --list-maps  --help
 env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, AI_DIFFICULTY`);
     process.exit(0);
   }
@@ -457,6 +459,8 @@ env (still honoured, CLI wins): MAP, MODE, MODEATTACKER, MAP_SEED, PORT, RULES, 
   const aiDifficulty = resolveDifficulty(cli.difficulty ?? process.env.AI_DIFFICULTY ?? null);
   const mapProfile = resolveMapProfile(cli.map ?? process.env.MAP ?? null); // 11M
   const rules = rulesForPreset(cli.rules ?? process.env.RULES ?? "normal"); // 13G presets
+  // W4-10 (Q80): always-available flag; the vote pool carries it too.
+  if (cli.night === true || process.env.NIGHT === "1") rules.nightWar = true;
   const mode = resolveMode(cli.mode ?? process.env.MODE ?? null); // prompt 146
   const modeAttacker = Number(cli.attacker ?? (process.env.MODEATTACKER === "1" ? 1 : 0)) === 1 ? 1 : 0;
   const appServer = createAppServer({

@@ -29,6 +29,7 @@ npm start -- --mode convoy --attacker 1   # team B escorts instead
 # --rules or RULES with convoyRouteScale:100 restores the classic full-map run.
 npm start -- --difficulty hard   # O4: easy|normal|hard (or 0|1|2); shown on the join screen
 npm start -- --teambalance   # W4-1: competitive gate (default OFF — friends stack a team vs the AI)
+npm start -- --night         # W4-10: a war fought in the dark — every sensor halves
 # Public hosting: see DEPLOYING.md (allowlist ssh-deploy, systemd unit, nginx/TLS, health guards)
 npm run start:convoy | start:heist        # same, less typing
 npm run maps                     # what is registered
