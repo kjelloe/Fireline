@@ -80,6 +80,15 @@ npm start                              # host machine
   damage + suppression). Your team always sees its own mines; enemy scouts
   within 3 cells auto-MARK them for their team, and a truck adjacent to a
   marked (or own) mine clears it with C.
+- **Build feedback (W4-4)**: a refused sandbag/mine now says WHY — a
+  green or red ring lands on the target cell and the reason appears
+  ("the road must keep two open lanes"). Nothing doomed is sent, so
+  the 5-second build channel is never wasted. (This also revived the
+  sandbag button and its keybind, dead since the feature shipped.)
+- **Two more mission cards (W4-3)**: "RAID THEIR PRISON — N of ours
+  are held there" when the enemy holds your people, and "THE LANDSHIP
+  STANDS UNCLAIMED" when the neutral fortress is sitting free. Both
+  click-to-jump and ping the team like every other card.
 - **Your FIRST war draws no drone (W4-2)**: the anti-camping rule is
   waived for a brand-new player, so you can read the UI in peace.
   From war two on it applies — and everyone now gets a 20-second

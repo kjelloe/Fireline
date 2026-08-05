@@ -198,7 +198,17 @@ outcome. Renderer presents fog-filtered views only.
   a first-war player draws no anti-camping drone (client sets it
   from mf_coached; absence = veteran, so AI sims are tick-identical),
   and `campTicks` rides the view so every player gets a 20 s
-  "drone incoming" warning.
+  "drone incoming" warning. W4-3 mission cards for the two hidden
+  systems (prison raid / unclaimed landship — client-only, fog-legit).
+  W4-4 PLACEMENT GHOST: `client/js/build_model.js` calls the ENGINE'S
+  OWN buildRejection/deployRejection through a view-shaped state (NOT
+  a mirror — placement law needs only public geography, unlike LOS).
+  VIEW-CONTRACT LINT (test/view_contract.test.js): every own-asset
+  field client.js reads must be in the per-team projection — a gate on
+  an unprojected field fails CLOSED and SILENTLY (the sandbag button
+  was dead from Q50 until W4-4 found it). TWO projections exist
+  (per-team + spectator); adding a field to one is not adding it to
+  the other.
 - Commands: join/select(confirm)/move(+queue:true = waypoint leg, 34)/
   fire(asset|drone|site)/tow/crawl/
   redeploy(+carrierAssetId 15F)/respawn(15)/satchel(16F, downed AT
