@@ -20,6 +20,11 @@ import { MAP_PROFILES } from "../engine/state.js";
 import { createMetrics } from "./metrics.js";
 
 const ROOT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+// ops (2026-08-05): everything the server WRITES lives under one root, so a
+// hardened systemd unit can grant exactly one ReadWritePaths and a deploy
+// sync can never overwrite saved wars. Defaults to ./data so a dev checkout
+// and LAN play are unchanged; STATE_DIR=/opt/fireline/state in production.
+const STATE_DIR = process.env.STATE_DIR || path.join(ROOT_DIR, "data");
 const CLIENT_DIR = path.join(ROOT_DIR, "client");
 const NODE_MODULES_DIR = path.join(ROOT_DIR, "node_modules");
 
@@ -107,7 +112,7 @@ export function createAppServer(options = {}) {
   // must never leak into tests or embedded servers.
   if (options.resume === true && process.env.RESUME !== "0") {
     try {
-      const savePath = path.join(ROOT_DIR, "data", "autosave.json");
+      const savePath = path.join(STATE_DIR, "autosave.json");
       const raw = JSON.parse(readFileSync(savePath, "utf8"),
         (k, v) => (v && v.__u8 ? Uint8Array.from(v.__u8) : v));
       if (raw.savedAt && Date.now() - raw.savedAt < 600000 && raw.state?.tick > 0) {
@@ -128,7 +133,7 @@ export function createAppServer(options = {}) {
 
   // 5A: match history. A finished war is archived exactly once.
   const replayStore = createReplayStore(
-    options.replayDir ?? path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "data", "replays")
+    options.replayDir ?? path.join(STATE_DIR, "replays")
   );
   let archived = false;
   function archiveIfOver() {
@@ -302,7 +307,7 @@ export function createAppServer(options = {}) {
       // injected clock). Graceful shutdown already archives; this
       // covers the ungraceful kind.
       if (options.resume === true && options.autosave !== false && !clockOptions.setIntervalFn) {
-        const savePath = path.join(ROOT_DIR, "data", "autosave.json");
+        const savePath = path.join(STATE_DIR, "autosave.json");
         this.autosaveTimer = setInterval(() => {
           try {
             const s = gameServer.state;

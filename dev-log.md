@@ -6340,3 +6340,42 @@ differently), verification against the PUBLIC /health rather than
 loopback or `systemctl is-active`, and a `--neighbours` sweep because
 the classic failure is your site working perfectly while a neighbour
 quietly serves the wrong chain.
+
+## The deploy script, rebuilt on the PROVEN pattern (2026-08-05, prompt 187)
+
+Read both siblings (`multiciv/ssh-deploy.sh`, `multipitfall/ssh-deploy`)
+and rewrote ours to match what actually works there, discarding the more
+elaborate staging-directory variant I had ported from the template:
+they rsync STRAIGHT into `$APP` after chowning it to the deploy user, so
+no step needs sudo. Simpler and battle-tested beats clever and untried.
+
+Corrections the read produced:
+- our health endpoint is **`/health`**, not the siblings' `/healthz` —
+  copying their URL would have failed every verification.
+- `--bootstrap` now does what was asked: system user, `$APP`,
+  `$APP/state/replays`, ownership (code to the deploy user so rsync
+  needs no sudo; state to the SERVICE user so the hardened unit can
+  write), and installs the capped unit.
+- the public check is NON-FATAL when nginx/certbot are not up yet — on
+  a first deploy the game running privately on loopback is SUCCESS, not
+  failure, and saying otherwise would train someone to ignore the check.
+
+MY EARLIER "PERMISSION DENIED" WAS MY OWN PROBE'S FAULT. The key is
+fine; I tested with `BatchMode=yes`, which disables interactive auth,
+and the key has a PASSPHRASE — which the multiciv script says outright
+("an agent-less key prompts exactly once per deploy"). Reading the
+siblings first would have saved the wrong diagnosis.
+
+TWO REAL BLOCKERS FOUND AND FIXED, both from taking the hardened unit
+seriously rather than assuming it would work:
+1. `HOST` — the server could not bind 127.0.0.1 at all (it always
+   listened on every interface). On a shared box that hands the raw
+   port through the firewall past TLS. Added, default UNCHANGED so LAN
+   play still works.
+2. `STATE_DIR` — replays and the crash autosave were written INSIDE the
+   code directory. Under `ProtectSystem=strict` with one
+   `ReadWritePaths`, that fails; and a deploy sync could overwrite saved
+   wars. Both problems are one problem: everything the server writes now
+   lives under a single configurable root, `./data` in a checkout and
+   `/opt/fireline/state` in production.
+Both pinned by test.

@@ -186,3 +186,26 @@ test("ops: HOST binds loopback only (shared-box safety), default stays open for 
   assert.notEqual(addr2.address, "127.0.0.1", "the default still answers a LAN");
   await b.stop();
 });
+
+test("ops: STATE_DIR is the ONE writable root (hardened unit + safe deploys)", async () => {
+  // ProtectSystem=strict grants exactly one writable directory, and the
+  // deploy's rsync target must never contain runtime state or a sync can
+  // eat saved wars. Both needs are the same need: one configurable root.
+  const { mkdtempSync, existsSync } = await import("node:fs");
+  const os = await import("node:os");
+  const path = await import("node:path");
+  const dir = mkdtempSync(path.join(os.tmpdir(), "fireline-state-"));
+  const prev = process.env.STATE_DIR;
+  process.env.STATE_DIR = dir;
+  try {
+    // Re-import with the env set: the module reads STATE_DIR at load.
+    const mod = await import(`../server/index.js?state=${encodeURIComponent(dir)}`);
+    const app = mod.createAppServer({ mapSeed: 42, enableAi: false });
+    const addr = await app.start(0, { setIntervalFn: () => 0, clearIntervalFn: () => {} });
+    assert.ok(addr.port > 0, "the server starts with a relocated state root");
+    await app.stop();
+    assert.ok(existsSync(dir), "and the state root is where we pointed it");
+  } finally {
+    if (prev === undefined) delete process.env.STATE_DIR; else process.env.STATE_DIR = prev;
+  }
+});
