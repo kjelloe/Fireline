@@ -35,6 +35,7 @@ import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
 import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
 import { UNIT_STATS } from "../../engine/units.js";
+import { UAV_COST } from "../../engine/reducer.js";
 import { sfx } from "./sfx.js";
 import { MAP_PROFILES } from "../../engine/state.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
@@ -246,6 +247,13 @@ function updateDirectSpecials() {
     const ty = cy + (dy || (dx === 0 ? 1 : 0));
     if (!ghostCheck("sandbag", tx, ty)) return;
     send({ type: "build_sandbag", targetCellX: tx, targetCellY: ty });
+  }]);
+  // W4-7: spend banked Recognition on a 10 s sweep over the cell you
+  // are looking at. Only offered when you can actually afford it.
+  const myOp = interpolator.latest()?.operators?.find((o) => o.id === joined?.operatorId);
+  if ((myOp?.recogAvailable ?? 0) >= UAV_COST) rows.push(["ui.sp_uav", () => {
+    const c = freeCam.centreCell?.() ?? { x: Math.floor(me.x / CELL), y: Math.floor(me.y / CELL) };
+    send({ type: "call_uav", cellX: c.x, cellY: c.y });
   }]);
   if (me?.type === 7) rows.push(["ui.sp_hardpoint", () =>
     send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" })]);

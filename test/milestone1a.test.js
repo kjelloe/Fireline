@@ -27,6 +27,7 @@ function stateHash(s) {
     w.writeI32LE(o.respawnTicks ?? 0); w.writeI32LE(o.carrierSpawnAt ?? 0); // added 15/15F
     for (const d of o.deeds ?? []) w.writeI32LE(d); // added B4 (7 deed counters)
     w.writeU8(o.rookie ?? 0); // added W4-2 (first-war drone grace)
+    w.writeI32LE(o.recogAvailable ?? 0); // added W4-7 (the spendable pool)
   }
   for (const a of s.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);
@@ -102,6 +103,12 @@ function stateHash(s) {
     w.writeI32LE(c.id); w.writeI32LE(c.team);
     w.writeI32LE(c.cellX); w.writeI32LE(c.cellY);
     w.writeI32LE(c.ticksLeft);
+  }
+  w.writeI32LE(s.nextUavId ?? 0); // added W4-7
+  for (const u of (s.uavSweeps ?? [])) {
+    w.writeI32LE(u.id); w.writeI32LE(u.team);
+    w.writeI32LE(u.cellX); w.writeI32LE(u.cellY);
+    w.writeI32LE(u.ticks);
   }
   w.writeI32LE(s.nextSmokeId ?? 0); // added W4-6
   for (const p of (s.smokes ?? [])) {

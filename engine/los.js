@@ -8,6 +8,7 @@ import { sampleCellX } from "../shared/fixedmath.js";
 import { RELAY_FOG_CELLS, KIND_RADAR, RADAR_BONUS_CELLS } from "./sites.js";
 import { worldToCellFloor, absI32 } from "../shared/fixedmath.js";
 import { SMOKE_SEE_CELLS, smokeAt } from "./smoke.js";
+import { UAV_RADIUS_CELLS } from "./uav.js";
 
 export const FOG_RADIUS_CELLS = 12;
 export const SUPPRESSED_RADIUS_CELLS = 6;
@@ -93,7 +94,13 @@ export function computeVisible(state, team) {
       const r = blinded ? SMOKE_SEE_CELLS : base + radarBonus;
       return hidden ? (r < SMOKE_SEE_CELLS ? r : SMOKE_SEE_CELLS) : r;
     };
-    const seen = inCompound ||
+    // W4-7 UAV SWEEP: a bought reveal lights a radius-8 patch for the
+    // buying team. It beats smoke deliberately — you paid for it, and a
+    // screen that defeats an aircraft would make the sink worthless.
+    const swept = (state.uavSweeps ?? []).some((u) =>
+      u.team === team &&
+      Math.max(absI32(u.cellX - assetCellX), absI32(u.cellY - assetCellY)) <= UAV_RADIUS_CELLS);
+    const seen = swept || inCompound ||
       sensors.some((s) => chebyshevCells(s, asset) <= reach(s)) ||
       siteSensors.some((s) => {
         const dx = absI32(s.cellX - assetCellX);

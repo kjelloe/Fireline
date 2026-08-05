@@ -6051,3 +6051,35 @@ reason (seven added, both locales — including `target too close`,
 which the mortar's dead zone exposed and which had been reachable
 but textless before today), and the view-contract lint had already
 caught the smoke rack a slice earlier.
+
+## W4-7: the UAV sweep — recognition becomes a decision
+## (2026-08-05, prompt 182) — fixture v71
+
+Q79's ruled sink: 25 recognition buys a 10 s, radius-8 reveal for your
+whole team. Hashed `uavSweeps[]`/`nextUavId`/`operator.recogAvailable`.
+
+THE HONESTY RULE is the design's spine: honors and the scoreboard keep
+judging what you EARNED (`score`), while spending draws from a separate
+wallet (`recogAvailable`) that earning also fills. Buying a sweep can
+therefore never cost you a medal — which is the only version of a sink
+that does not quietly punish the generous player.
+
+The sweep BEATS smoke on purpose. A screen that defeated an aircraft
+would make the sink worthless, so the paid reveal wins; that is what
+the 25 points buy.
+
+Two design corrections found while wiring the client:
+- the WALLET is private to your own side. The scoreboard is public by
+  ruling (recognition is meant to be seen) but what you can still
+  AFFORD is not the enemy's business — caught by 11K's
+  "both teams read the same scoreboard" pin, which was right to fail.
+- the spectator booth sees every sweep; the per-team view sees only
+  its own.
+
+UAV=0 / `rules.uavSweep` kill-switch, `rules.uavCost` for the ladder.
+7 tests; 827/827 x2; sim gate healthy; smoke + acceptance green.
+Rejection texts for both new reasons in both locales (8H again).
+
+NOT YET: no AI doctrine calls a sweep (deliberate — the getaway
+lesson), and per Q79 it stays OFF in balanced/PvP wars until a battery
+speaks. The default-on-in-co-op wiring is the remaining rung.

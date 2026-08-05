@@ -9,6 +9,8 @@ export const CATALOGS = {
     // ── rejections (key = "rej." + engine reason, verbatim) ──
     "rej.operator already active": "That command seat is taken.",
     "rej.smoke disabled": "Smoke screens are switched off on this server.",
+    "rej.uav disabled": "UAV sweeps are switched off on this server.",
+    "rej.not enough recognition": "Not enough recognition banked for a sweep.",
     "rej.target too close": "Too close — an indirect tube has a dead zone.",
     "rej.this chassis carries no smoke": "This chassis carries no smoke pots.",
     "rej.this chassis fires no smoke": "Only an indirect tube fires smoke rounds.",
@@ -331,6 +333,7 @@ export const CATALOGS = {
     "ui.sp_mine": "⛭ MINE",
     "ui.sp_caltrops": "⛭ CALTROPS",
     "ui.sp_smoke": "SMOKE",
+    "ui.sp_uav": "UAV SWEEP (25)",
     "ui.sp_sandbag": "▦ SANDBAG",
     "ui.sp_hardpoint": "▲ HARDPOINT",
     "page.join_b": "JOIN THE OUTLIERS",
@@ -442,6 +445,8 @@ export const CATALOGS = {
   no: {
     "rej.operator already active": "Den kommandoplassen er opptatt.",
     "rej.smoke disabled": "Røykskjermer er slått av på denne serveren.",
+    "rej.uav disabled": "UAV-sveip er slått av på denne serveren.",
+    "rej.not enough recognition": "For lite anerkjennelse spart til et sveip.",
     "rej.target too close": "For nært — et indirekte rør har en dødsone.",
     "rej.this chassis carries no smoke": "Dette chassiset har ingen røykpotter.",
     "rej.this chassis fires no smoke": "Bare et indirekte rør skyter røykgranater.",
@@ -760,6 +765,7 @@ export const CATALOGS = {
     "ui.sp_mine": "⛭ MINE",
     "ui.sp_caltrops": "⛭ FOTANGLER",
     "ui.sp_smoke": "RØYK",
+    "ui.sp_uav": "UAV-SVEIP (25)",
     "ui.sp_sandbag": "▦ SANDSEKK",
     "ui.sp_hardpoint": "▲ FESTNINGSPUNKT",
     "page.join_b": "BLI MED I OUTLIERS",

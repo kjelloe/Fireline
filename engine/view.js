@@ -86,6 +86,8 @@ export function buildSpectatorView(state) {
     })),
     caltrops: (state.caltrops ?? []).map((c) => ({ ...c })), // Q45
     sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50: structures are public
+    smokes: (state.smokes ?? []).map((p) => ({ ...p })), // W4-6: clouds are visible to all
+    uavSweeps: (state.uavSweeps ?? []).map((u) => ({ ...u })), // W4-7: the booth sees every sweep
     drones: state.drones.map((d) => ({
       id: d.id, team: d.team, x: d.x, y: d.y, targetAssetId: d.targetAssetId,
     })),
@@ -164,7 +166,14 @@ export function buildView(state, team) {
   // 11K: the public scoreboard — recognition is meant to be SEEN.
   const operators = state.operators
     .filter((o) => o.state !== 0)
-    .map((o) => ({ id: o.id, team: o.team, score: o.score, respawnTicks: o.respawnTicks ?? 0, deeds: [...(o.deeds ?? [])] })); // 15; deeds B4
+    .map((o) => ({
+      id: o.id, team: o.team, score: o.score, respawnTicks: o.respawnTicks ?? 0,
+      deeds: [...(o.deeds ?? [])], // 15; deeds B4
+      // W4-7: the WALLET is private to your own side. The scoreboard is
+      // public by design (recognition is meant to be SEEN), but what you
+      // can still afford to spend is not the enemy's business.
+      ...(o.team === team ? { recogAvailable: o.recogAvailable ?? 0 } : {}),
+    }));
 
   return {
     tick: state.tick,
@@ -194,6 +203,8 @@ export function buildView(state, team) {
     mines,
     caltrops,
     sandbags: (state.sandbags ?? []).map((s) => ({ ...s })), // Q45/Q50: structures are public
+    smokes: (state.smokes ?? []).map((p) => ({ ...p })), // W4-6: clouds are visible to all
+    uavSweeps: (state.uavSweeps ?? []).filter((u) => u.team === team).map((u) => ({ ...u })), // W4-7: your own sweeps
     drones,
   };
 }

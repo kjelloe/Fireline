@@ -22,6 +22,7 @@ export const CMD_UNBOARD        = "unboard";       // 11G
 export const CMD_DEPLOY_MINE    = "deploy_mine"; // 9E
 export const CMD_DEPLOY_CALTROPS = "deploy_caltrops"; // Q45/Q50 chase-shapers
 export const CMD_DEPLOY_SMOKE = "deploy_smoke"; // W4-6 smoke screens
+export const CMD_CALL_UAV = "call_uav"; // W4-7 the recognition sink
 export const CMD_BUILD_SANDBAG  = "build_sandbag";   // Q45/Q50 player cover
 export const CMD_CLEAR_MINE     = "clear_mine";  // 9E
 export const CMD_CALL_MEDIC     = "call_medic";
@@ -188,6 +189,13 @@ export function validate(cmd) {
 
     case CMD_DEPLOY_SMOKE: // W4-6
       if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      return { ok: true };
+
+    case CMD_CALL_UAV: // W4-7
+      if (!isUint(cmd.operatorId, 31))  return { ok: false, reason: "invalid operatorId" };
+      if (!isCell(cmd.cellX) || !isCell(cmd.cellY)) {
+        return { ok: false, reason: "invalid target cell" };
+      }
       return { ok: true };
 
     case CMD_BUILD_SANDBAG:

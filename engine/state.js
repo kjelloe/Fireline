@@ -105,7 +105,7 @@ function createOperators() {
   for (let id = 0; id < OPERATOR_COUNT; id++) {
     // B4: deeds are per-CATEGORY recognition counts (indices are the
     // reducer's DEED_* constants) — the raw material of category honors.
-    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1, respawnTicks: 0, carrierSpawnAt: 0, deeds: [0, 0, 0, 0, 0, 0, 0, 0], rookie: 0 });
+    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1, respawnTicks: 0, carrierSpawnAt: 0, deeds: [0, 0, 0, 0, 0, 0, 0, 0], rookie: 0, recogAvailable: 0 });
   }
   return operators;
 }
@@ -535,6 +535,8 @@ export function createInitialState(mapSeed, mapArg = "frontier_corridor", rules 
     caltrops: [], // Q45: live chase-shaper patches
     smokes: [], // W4-6: live smoke patches
     nextSmokeId: 0,
+    uavSweeps: [], // W4-7: live UAV reveals
+    nextUavId: 0,
     nextCaltropId: 0,
     sandbags: [], // Q45/Q50: player-built cover (walls with hp)
     nextSandbagId: 0,

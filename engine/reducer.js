@@ -13,7 +13,7 @@ import {
   CMD_ADVANCE_TICK, CMD_JOIN_OPERATOR, CMD_SELECT_ASSET, CMD_MOVE_ORDER,
   CMD_FIRE_ORDER, CMD_TOW_ORDER, CMD_CRAWL_ORDER, CMD_REDEPLOY,
   CMD_DEPLOY_MINE, CMD_DEPLOY_CALTROPS, CMD_BUILD_SANDBAG, CMD_CLEAR_MINE, CMD_PING,
-  CMD_DEPLOY_SMOKE,
+  CMD_DEPLOY_SMOKE, CMD_CALL_UAV,
   CMD_SET_OPTION, CMD_BOARD_CARRIER, CMD_UNBOARD, CMD_DRIVE,
   CMD_DEPLOY_HARDPOINT, CMD_UNDEPLOY, CMD_TRANSFER_CARGO,
   CMD_CALL_MEDIC, CMD_RESPAWN, CMD_SATCHEL,
@@ -37,6 +37,7 @@ import {
 } from "./drops.js";
 import { premiumPoints } from "./premium.js";
 import { SMOKE_TICKS, SMOKE_SEE_CELLS, smokeAt, smokeRejection, stepSmoke } from "./smoke.js";
+import { UAV_RADIUS_CELLS } from "./uav.js";
 import {
   RAID_HOLD_TICKS, RAID_RADIUS_CELLS as PRISON_RAID_CELLS, RECOG_FREE_POW,
   CAPTURE_HOLD_TICKS, RECOG_CAPTURE, RECOG_POW_HOLD, HOLD_PAY_TICKS, PRISON_CAPACITY,
@@ -98,6 +99,13 @@ export const RECOG_TOW = 8;
 // fighting, it does not bring a wreck back.
 export const RECOG_FIELD_REPAIR = 4;
 export const RECOG_RESCUE = 10;
+// W4-7 (Q79 ruling, prompt 175): the recognition SINK. Recognition has
+// only ever been a tally; this makes it a decision. Honesty rule: the
+// honors and the scoreboard keep judging what you EARNED — spending
+// draws from a separate available pool, so buying a sweep can never
+// cost you a medal.
+export const UAV_COST = 25;
+export const UAV_TICKS = 250; // 10 s
 export const RECOG_STANDARD_RETURN = 10;
 export const RECOG_STANDARD_CAPTURE = 25;
 export const RECOG_RELAY = 10;
@@ -147,7 +155,11 @@ function awardOperator(next, operatorId, points, deed = -1) {
   // Underdog premium (58/68): a measured-disadvantaged team earns 25%
   // more Recognition on that map. Table is generated from batteries
   // and currently EMPTY (every live map measures fair) — dormant.
-  seat.score += premiumPoints(points, seat.team, next.mapProfile);
+  const paid = premiumPoints(points, seat.team, next.mapProfile);
+  seat.score += paid;
+  // W4-7: earning also fills the SPENDABLE pool. score is the record
+  // (honors judge it); recogAvailable is the wallet.
+  seat.recogAvailable = (seat.recogAvailable ?? 0) + paid;
   if (deed >= 0) seat.deeds[deed] += 1; // B4
 }
 
@@ -1059,6 +1071,30 @@ function applyDeployMine(next, command) {
 // on its own cell; enemies crossing it run 30% slower for 45 s. No
 // damage, no arming, no stacking; any truck's clear-mine sweep also
 // rakes them up, and they expire on their own.
+// W4-7 (Q79): spend Recognition on a UAV sweep — 10 s of vision over a
+// radius-8 patch, for the whole team. Priced at 25 by ruling.
+function applyCallUav(next, command) {
+  const operator = next.operators[command.operatorId];
+  if (operator.state !== OP_ACTIVE) return reject(next, command, "operator not active");
+  if (next.rules?.uavSweep === false) return reject(next, command, "uav disabled");
+  const cost = next.rules?.uavCost ?? UAV_COST;
+  if ((operator.recogAvailable ?? 0) < cost) return reject(next, command, "not enough recognition");
+  if (command.cellX >= next.map.width || command.cellY >= next.map.height) {
+    return reject(next, command, "off the map");
+  }
+  operator.recogAvailable -= cost;
+  next.uavSweeps.push({
+    id: next.nextUavId, team: operator.team,
+    cellX: command.cellX, cellY: command.cellY, ticks: UAV_TICKS,
+  });
+  next.nextUavId += 1;
+  next.events.push({
+    type: "uav_called", operatorId: operator.id, team: operator.team,
+    cellX: command.cellX, cellY: command.cellY,
+  });
+  return next;
+}
+
 // W4-6 (prompt 174): lay a smoke screen on your own cell. Instant (the
 // bottles go over the side), 30 s, one 3x3 patch. The mortar's version
 // rides the fire order instead — see applyFireOrder's `smoke` branch.
@@ -1736,6 +1772,11 @@ function applyAdvanceTick(next) {
   // W4-6 smoke: silent decay, same repin discipline as caltrops — a new
   // per-tick event inside the fixture's 14 steps would read as drift.
   if (next.smokes?.length) stepSmoke(next);
+  // W4-7: sweeps age out silently, same repin discipline.
+  if (next.uavSweeps?.length) {
+    for (const u of next.uavSweeps) u.ticks -= 1;
+    next.uavSweeps = next.uavSweeps.filter((u) => u.ticks > 0);
+  }
   // 9E mines: arm, then scout detection, then detonation on enemy entry.
   for (const mine of next.mines) {
     if (mine.armTimer > 0) mine.armTimer -= 1;
@@ -2784,6 +2825,7 @@ export function apply(state, command) {
     case CMD_DEPLOY_MINE: return applyDeployMine(next, command);
     case CMD_DEPLOY_CALTROPS: return applyDeployCaltrops(next, command);
     case CMD_DEPLOY_SMOKE: return applyDeploySmoke(next, command);
+    case CMD_CALL_UAV: return applyCallUav(next, command);
     case CMD_BUILD_SANDBAG: return applyBuildSandbag(next, command);
     case CMD_CLEAR_MINE: return applyClearMine(next, command);
     case CMD_REDEPLOY: return applyRedeploy(next, command);

@@ -88,7 +88,7 @@ The measured counter to artillery farming (the mid-war ledger).
   equivariance (smoke at x mirrors to W-1-x), fog parity, ws echoes
   for both commands. Gate: sim (unused = byte-inert) + battery pair.
 
-## W4-7 · UAV sweep — the recognition sink TEST (M) — engine + client
+## W4-7 · UAV sweep — the recognition sink TEST (M) — ✅ SHIPPED (fixture v71; PvP default + battery remain)
 
 - Command `call_uav {cellX, cellY}`: costs recognition (default 25 —
   **Q79**: confirm the price), reveals fog radius 8 for 10 s to the
