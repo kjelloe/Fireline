@@ -45,6 +45,8 @@ import {
 } from "./prisons.js";
 import { segmentBlocked, findCellPath, pathToWaypoints } from "./pathfind.js";
 import { MISSION_CONVOY, MISSION_HEIST, CONVOY_PING_TICKS, CONVOY_RESTART_TICKS } from "./mission.js";
+// W4-8d: 60 s of nobody coming before the driver is taken (Q78: keep it generous).
+export const CONVOY_DRIVER_CAPTURE_TICKS = 600;
 import {
   CALTROP_TICKS, CALTROP_SLOW_NUM, CALTROP_SLOW_DEN, caltropAt, enemyCaltropAt,
 } from "./caltrops.js";
@@ -2288,6 +2290,24 @@ function applyAdvanceTick(next) {
       } else if (next.mission.restartTicks > 0) {
         next.mission.restartTicks = Math.max(0, next.mission.restartTicks - 2);
       }
+      // W4-8d (Q78): THE CONVOY DRIVER. A convoy wreck left undefended
+      // long enough loses its driver to the enemy. The window is
+      // deliberately GENEROUS (the ruling's own caveat) so the RESTART
+      // law above stays the first answer — this only fires when nobody
+      // came at all, which is exactly when a capture is the honest
+      // outcome rather than a second punishment.
+      if (!mechanic) {
+        next.mission.driverAbandonTicks = (next.mission.driverAbandonTicks ?? 0) + 1;
+        if (next.mission.driverAbandonTicks >= CONVOY_DRIVER_CAPTURE_TICKS) {
+          next.mission.driverAbandonTicks = 0;
+          const body = next.downed.find((d) => d.team === convoy.team &&
+            Math.max(absI32(sampleCellX(d.x, next.map.width) - ccx),
+                     absI32(worldToCellFloor(d.y) - ccy)) <= 2);
+          if (body) takePrisoner(next, body, convoy.team === 0 ? 1 : 0, "convoy_driver");
+        }
+      } else {
+        next.mission.driverAbandonTicks = 0;
+      }
     } else if (next.mission.restartTicks !== 0) {
       next.mission.restartTicks = 0;
     }
@@ -2348,9 +2368,77 @@ function applyAdvanceTick(next) {
     }
   }
 
-  // Downed-operator pass (9B): crawl, count, board carriers, deliver.
+  // W4-8 (Q78 ruling, prompt 175): the POW CREATORS. Until now the only
+// way to take a prisoner was a scout abducting a downed crew, which is
+// why prisons sat empty in standard wars. These four paths all reuse
+// OP_CAPTIVE + the prison arc exactly as built — no new hashed field,
+// only new ways to reach the state that already existed.
+
+// Which enemy compound is this body inside, or -1. Uses the same rect
+// (+1 verge) as the compound-watches-itself law, and the same guard
+// against sandbox whole-map bases.
+function capturingCompound(next, body) {
+  const bx = sampleCellX(body.x, next.map.width);
+  const by = worldToCellFloor(body.y);
+  for (const b of next.bases ?? []) {
+    if (b.team === body.team) continue;
+    if (b.width >= (next.map?.width ?? 128)) continue; // whole-map sandbox base
+    if (bx >= b.x - 1 && bx <= b.x + b.width &&
+        by >= b.y - 1 && by <= b.y + b.height) return b.team;
+  }
+  return -1;
+}
+
+// Move a downed body into the holding team's prison. Returns false when
+// there is no room (the arc's capacity rule wins — a full compound
+// cannot hold more, and the body simply carries on).
+function takePrisoner(next, body, holdingTeam, how) {
+  const prison = (next.prisons ?? []).find((p) => p.team === holdingTeam);
+  if (!prison || prison.pows.length >= PRISON_CAPACITY) return false;
+  const seat = next.operators[body.operatorId];
+  if (!seat) return false;
+  seat.state = OP_CAPTIVE;
+  seat.assetId = -1;
+  prison.pows.push({ id: body.operatorId, by: -1 });
+  next.downed = next.downed.filter((x) => x.operatorId !== body.operatorId);
+  next.events.push({
+    type: "operator_captured", operatorId: body.operatorId,
+    team: body.team, byAssetId: -1, how,
+  });
+  // The victim's team learns where it happened — the same courtesy the
+  // scout abduction pays (Review-2: the CHASE begins).
+  next.events.push({
+    type: "ping", kind: "need_rescue", team: body.team, toTeam: body.team,
+    cellX: sampleCellX(body.x, next.map.width), cellY: worldToCellFloor(body.y),
+  });
+  return true;
+}
+
+// Downed-operator pass (9B): crawl, count, board carriers, deliver.
   for (const d of [...next.downed]) {
     d.downTicks += 1;
+    // W4-8a/c (Q78): two capture paths that fire the MOMENT a crew hits
+    // the ground, not after a timer — being taken is the point.
+    if (d.downTicks === 1 && d.freedPow !== 1) {
+      // (a) FAILED HEIST: the Asset carrier goes down inside the
+      // defender's half — the vault's guards take whoever was driving.
+      if (next.mission?.kind === MISSION_HEIST && d.team === next.mission.attacker) {
+        const half = next.map.width >> 1;
+        const bx = sampleCellX(d.x, next.map.width);
+        const defenderIsEast = next.mission.attacker === 0;
+        const inTheirHalf = defenderIsEast ? bx >= half : bx < half;
+        const holder = next.mission.attacker === 0 ? 1 : 0;
+        if (inTheirHalf && takePrisoner(next, d, holder, "failed_heist")) continue;
+      }
+      // (c) FAILED PRISON RAID: downed inside the raid radius while the
+      // alarm is live. Raiding a guarded compound now carries the risk
+      // it always implied.
+      const wire = (next.prisons ?? []).find((p) =>
+        p.team !== d.team && (p.alarmTicks ?? 0) > 0 &&
+        Math.max(absI32(sampleCellX(d.x, next.map.width) - p.cellX),
+                 absI32(worldToCellFloor(d.y) - p.cellY)) <= PRISON_RAID_CELLS);
+      if (wire && takePrisoner(next, d, wire.team, "failed_raid")) continue;
+    }
     // Crawl toward target, axis-major at foot speed. No heading for feet.
     let ddx = d.targetX - d.x;
     let ddy = d.targetY - d.y;
@@ -2367,6 +2455,13 @@ function applyAdvanceTick(next) {
       d.x += ddx < 0 ? -mx : mx;
     }
     if (d.downTicks >= OPERATOR_AUTO_RETURN_TICKS) {
+      // W4-8b (Q78 ruling): THE DEEP-DOWN CAPTURE LAW — the universal
+      // POW creator, and the reason standard wars will finally grow
+      // prisoners at all. A crew that runs out of nerve INSIDE the
+      // enemy compound does not stroll home; the garrison takes them.
+      // Everywhere else the old auto-return stands.
+      const capturedBy = capturingCompound(next, d);
+      if (capturedBy !== -1 && takePrisoner(next, d, capturedBy, "deep_down")) continue;
       freeSeat(next, d.operatorId, "operator_returned", { auto: true });
     }
   }

@@ -103,7 +103,7 @@ The measured counter to artillery farming (the mid-war ledger).
 - los.js + fog_model parity again; ws echo; ammo-style rejects
   ("not enough recognition").
 
-## W4-8 · POW-creating events (M) — engine — NEEDS RULING (Q78)
+## W4-8 · POW-creating events (M) — ✅ SHIPPED (all four; measurement is a NULL in AI wars — see Q84)
 
 Today the only creator is scout abduction of downed crew. The ruled
 question — which events should create POWs — my slate:

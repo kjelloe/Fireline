@@ -6108,3 +6108,43 @@ current build. THE LESSON IS THE OLD ONE, EARNED AGAIN: always read
 the build hash in the result line before believing a battery. The
 config-drift law exists because this is easy to miss, and it was only
 visible here because the mail prints the commit.
+
+## W4-8: the POW creators land — and the measurement is a NULL
+## (2026-08-05, prompt 183)
+
+All four ruled creators implemented, reusing OP_CAPTIVE + prisons
+exactly as built (no new hashed field — only new ways to reach a
+state that already existed):
+- **(b) deep-down capture law** — nerve running out INSIDE the enemy
+  compound hands you to the garrison; anywhere else the old
+  auto-return stands. The universal one.
+- **(a) failed heist** — the Asset carrier downed in the defender's
+  half is taken by the vault's guards.
+- **(c) failed prison raid** — downed inside the raid radius while the
+  ALARM is live. Raiding a guarded compound now carries the risk it
+  always implied.
+- **(d) convoy driver** — a convoy wreck nobody comes for loses its
+  driver after 60 s. Generous by the ruling's own caveat, so the
+  RESTART law stays the first answer.
+Prison CAPACITY still wins (a full compound holds no more), a freed
+POW is never re-captured by these paths (the re-secure rule owns that
+case), and every capture PINGS the victim's team — the same courtesy
+the scout abduction pays. 8 tests.
+
+**THE MEASUREMENT IS A NULL, and that is the finding.** Across 5
+standard wars the new creators fired ZERO times; every capture was
+still the pre-existing scout abduction (A lost 3, B lost 1). The
+reasons are structural, not buggy: (a) and (d) are mode-scoped and a
+standard war has neither; (c) needs a raid, and raids barely land
+even after the Q83 gate; and (b) requires a crew to sit inside an
+enemy compound for the FULL auto-return timer — which an AI crew
+never does, because it redeploys first.
+
+So (b) is very probably a HUMAN-FACING feature that AI sims cannot
+exercise, exactly like the Q70 getaway car. That is a tuning question
+for the owner rather than something to guess at: leave it as a rare,
+dramatic event that only human stubbornness triggers, or move the
+trigger from timer-expiry to down-time-inside-the-compound, which
+would fire constantly and change the feel of every base assault.
+FILED AS Q84 — the honest read is that a playtest, not a battery, is
+the instrument that can answer it.
