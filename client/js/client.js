@@ -734,6 +734,7 @@ function init3d() {
       for (const [, entry] of worldLabels) scene.remove(entry.sprite);
       worldLabels.clear();
       applyPageStrings(); // 15B part 3: the static chrome follows too
+      if (tut) renderTutorial(); // W4-12: live tutorial text follows too
     };
   }
   // 11G: settings panel.

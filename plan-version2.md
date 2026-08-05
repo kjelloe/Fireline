@@ -1,6 +1,9 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-05 (suite 844/844, fixture v71 — the CONTACT-LAW era). HTML twin:
+*Updated 2026-08-06 (suite 859/859, fixture v71 — LIVE at
+https://fireline.kjell.today since 2026-08-05; wave-4 ledger in
+`plan-wave4.md`, now W4-1..8 + W4-10 + W4-12 tutorial shipped,
+remaining W4-9 careers + W4-11 Frontline Push). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
