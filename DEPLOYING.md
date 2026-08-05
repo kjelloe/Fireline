@@ -86,6 +86,15 @@ server {
 
 ## Shared-box hosting (the sibling's hard-won rules)
 
+**Link order matters more than the config.** `ln -sf` then `nginx -t` leaves a
+bad file live in `sites-enabled` when the test fails — which breaks `nginx -t`,
+`-T` and EVERY future reload on the box, including neighbours' deploys and
+certbot renewals. Nginx keeps serving from memory, so nothing looks broken
+until someone else's reload dies. Use `ln … ; nginx -t || rm …` so a failed
+test rolls itself back. And when `nginx -T` prints only an error, the config
+is broken — that is not your grep finding nothing.
+
+
 If the target box already serves other sites, four of its failure modes
 take down EVERY site, not just yours — so they are worth naming here even
 though the script guards them:

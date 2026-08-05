@@ -6439,3 +6439,31 @@ The actual bind state remains UNVERIFIED until the fixed check runs.
 The unit sets Environment=HOST=127.0.0.1 and the server honours HOST,
 so it SHOULD be loopback — but "should" is what the broken check was
 asserting, and it is exactly what wants proving.
+
+## The nginx setup, and a landmine we sat in (2026-08-05, prompt 189)
+
+Two of the sibling howto's claims did not hold on the real box, and the
+second one mattered:
+
+1. **`$connection_upgrade` does not exist there.** The howto says it is
+   "already defined once" and warns against redeclaring it. Following
+   that produced `[emerg] unknown "connection_upgrade" variable`.
+   Fireline now defines its OWN map under a deliberately unique name
+   (`$fireline_connection_upgrade`) in its own file, so it can never
+   collide with one a neighbour adds later.
+2. **My instructions had `ln -sf` BEFORE `nginx -t`.** When the test
+   failed, the bad file stayed linked — and a bad file in
+   `sites-enabled` breaks `nginx -t`, `nginx -T` and EVERY FUTURE
+   RELOAD on the box, including neighbours' deploys and certbot's
+   automatic renewal. Nginx kept serving from memory, so nothing looked
+   wrong; the box was a landmine for anyone else's next reload. Caught
+   only because a follow-up diagnostic returned "empty" and I checked
+   why instead of believing it.
+
+The safe form, now in ops/README.md and DEPLOYING.md:
+`ln … ; nginx -t || rm …` — a failed test rolls itself back.
+
+THIRD LESSON, the same shape as the day's others: when a diagnostic
+returns nothing, ask whether the TOOL ran. `nginx -T | grep upgrade`
+returned "nothing" twice; both times the config was broken and -T was
+erroring. An empty result is not evidence of absence.
