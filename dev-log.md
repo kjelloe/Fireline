@@ -6411,3 +6411,31 @@ CANNOT RUN IT FROM HERE: the key is passphrase-protected and this
 session has no ssh-agent, so the deploy must be run by the owner (or
 after `ssh-add`). My earlier "Permission denied" was my own
 `BatchMode=yes` probe, not a broken key.
+
+## The first real deploy — and a check that could never pass (prompt 188)
+
+The deploy WORKED: unit active, loopback /health answering, content
+hash verified, all five neighbours untouched. The game is live and
+private on the box.
+
+But it printed "!! NOT bound to 127.0.0.1", and **that check was
+broken, not the bind**. It used `grep -w ":$PORT"`, copied from the
+sibling. In `127.0.0.1:8131` the colon is preceded by a DIGIT, so
+grep -w's word-boundary test fails and nothing matches; in `*:8131`
+the colon starts the field and it matches fine. So the check warned
+on EVERY deploy and could never say "ok" — it was incapable of
+reporting success, which is the silent-failure class wearing the
+opposite mask: not a quiet no-op but a permanent false alarm, which
+trains you to ignore the one line that would matter.
+
+FIXED with ss's own filter (`ss -ltnH "sport = :PORT"`) and three
+honest states: loopback / nothing listening / exposed-and-here-is-the
+-address. THE SAME BROKEN GREP IS LIVE IN THE SIBLING
+(multiciv/ssh-deploy.sh's port-owner check) — it has been silently
+finding no owner and reporting "free" every run. Worth telling the
+owner: that project's shared-box port guard is not guarding.
+
+The actual bind state remains UNVERIFIED until the fixed check runs.
+The unit sets Environment=HOST=127.0.0.1 and the server honours HOST,
+so it SHOULD be loopback — but "should" is what the broken check was
+asserting, and it is exactly what wants proving.
