@@ -6175,3 +6175,25 @@ problem, which is that the truck simply cannot survive the distance.
 Recommendation for the next session: hold penalty at 3 and ladder the
 ROUTE (the 9,000-tick clock and the full-map run), measuring at -20%
 and -35% distance.
+
+## Q82 rung 2: shorten the route (2026-08-05, prompt 184)
+
+`rules.convoyRouteScale` — the percentage of the full run the convoy
+must still cover; the truck simply STARTS further forward. Chosen over
+another turn of the factory screw because the ladder showed that lever
+topping out near 24%, and reaching the ruled band with it would have
+meant switching the defender's rebuild off entirely, which destroys
+the mode's whole fiction. This attacks the actual problem: the truck
+cannot survive the distance.
+
+Mirror discipline: the reposition uses truncDiv, the mirror-symmetric
+rounding (plain floor hands west-bound movers a free unit — the
+riverline east-edge lesson), and the test pins that both attacker
+directions leave runs equal TO THE UNIT. Scale 100 is byte-identical
+to the classic route, so the knob is inert until asked for.
+
+CVROUTE plumbed through sim_sweep and the batch lane with its own CSV
+label (`convoy_att0_r65`) so the arms can never mix — the collector
+overwrites by label, and an unlabelled arm would silently clobber the
+baseline. Ladder queued at 80% and 65%, plus the opposite attacker
+direction at 65% to confirm the shortening stays symmetric at scale.
