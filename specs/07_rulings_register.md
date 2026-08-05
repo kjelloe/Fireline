@@ -420,3 +420,24 @@ recorded here because they reverse or retire earlier rulings.
   52.8/51.1 — the whole slate now sits in the band's UPPER half.
   Accept a ~3-point house lean as tolerance, or hunt once more after
   the raid-party census?
+
+
+## Prompt 181 rulings (2026-08-05)
+
+- **Q83 — the raid party: GATE IT.** A party may not form unless a
+  carrier is committed and within reach (40 cells of the staging cell).
+  Basis: the census showed the doctrine landing ~1 raid per war and
+  completing ZERO across ten war-sides, while pinning a hull plus two
+  escorts for most of the war — springing POWs is only step one, and
+  the carry-home leg had no transport. Implemented in ai_regency
+  (`RAID_CARRIER_REACH_CELLS`), pinned by three tests, committed
+  hull-time roughly halved. Same-build POWS=2 pair queued for the
+  balance claim.
+- **Q74 — the house lean: TOLERANCE.** frontier 54.0/52.9, sawtooth
+  54.8/54.4, blackwood 52.8/51.1 all sit in the band's upper half;
+  caldera leans the other way. Accepted as in-band. CLOSED.
+- **Standing directive (not a Q)**: add source lints liberally, and
+  BEFORE behavioural gates. Silent failures — a command missing its
+  validate case, a client gate on an unprojected field — pass client
+  smoke and UI acceptance unnoticed. See `test/lints.test.js` and
+  `test/view_contract.test.js`.

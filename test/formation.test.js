@@ -24,12 +24,17 @@ const LANE = { cellX: 10, cellY: 38 };
 // Team 1 raids a team-0 prison holding op 30. Party: one scout (the
 // specialist) + two tanks. A team-0 guard tank sits at the wire so the
 // sneak window (guards === 0) stays closed unless a test opens it.
-function partyWorld({ scoutAt, tank1At, tank2At, guard = true }) {
+function partyWorld({ scoutAt, tank1At, tank2At, guard = true, carrier = true }) {
   const specs = [
     { team: 1, type: 1, cellX: scoutAt[0], cellY: scoutAt[1] },
     { team: 1, type: 0, cellX: tank1At[0], cellY: tank1At[1] },
     { team: 1, type: 0, cellX: tank2At[0], cellY: tank2At[1] },
   ];
+  // Q83 GATE (owner ruling, prompt 181): no party forms without a
+  // carrier committed and within reach — springing POWs is only step
+  // one, and they must be CARRIED home. Every formation fixture needs
+  // the ride home present; the gate itself is pinned separately below.
+  if (carrier) specs.push({ team: 1, type: 4, cellX: STAGE.cellX, cellY: STAGE.cellY });
   if (guard) specs.push({ team: 0, type: 0, cellX: PRISON.cellX + 1, cellY: PRISON.cellY });
   let s = sandbox(specs, [], {
     bases: [
@@ -42,9 +47,12 @@ function partyWorld({ scoutAt, tank1At, tank2At, guard = true }) {
   s = joinAndSelect(s, 20, 1, 0); // scout
   s = joinAndSelect(s, 21, 1, 1); // tank escort
   s = joinAndSelect(s, 22, 1, 2); // tank escort
-  if (guard) s = joinAndSelect(s, 0, 0, 3); // human-crewed guard (not AI-planned)
+  const carrierIdx = 3;
+  if (carrier) s = joinAndSelect(s, 23, 1, carrierIdx); // the ride home
+  if (guard) s = joinAndSelect(s, 0, 0, carrier ? 4 : 3); // human-crewed guard
   const ai = new AIRegency({ fixedAgents: false });
   ai.assume(20); ai.assume(21); ai.assume(22);
+  if (carrier) ai.assume(23);
   return { s, ai };
 }
 
@@ -99,6 +107,9 @@ test("formation: no escorts, guarded wire → the raider stages, never solo-dive
   const specs = [
     { team: 1, type: 1, cellX: 55, cellY: 45 },
     { team: 0, type: 0, cellX: PRISON.cellX + 1, cellY: PRISON.cellY },
+    // Q83: the ride home must exist for a party to form at all — the
+    // point of THIS test is the missing ESCORTS, not the missing carrier.
+    { team: 1, type: 4, cellX: STAGE.cellX, cellY: STAGE.cellY },
   ];
   let s = sandbox(specs, [], {
     bases: [
@@ -110,8 +121,9 @@ test("formation: no escorts, guarded wire → the raider stages, never solo-dive
   s.prisons = [{ team: 0, ...PRISON, pows: [{ id: 30, by: -1 }], raidTicks: 0 }];
   s = joinAndSelect(s, 20, 1, 0);
   s = joinAndSelect(s, 0, 0, 1);
+  s = joinAndSelect(s, 23, 1, 2); // the carrier
   const ai = new AIRegency({ fixedAgents: false });
-  ai.assume(20);
+  ai.assume(20); ai.assume(23); // Q83: the carrier is AI-run too
   const cmds = ai.plan(s);
   assert.ok(near(moveOf(cmds, 20), STAGE), "the raider stages and waits for a party");
 });
@@ -168,4 +180,34 @@ test("formation: the phase latch resets when the mission ends", () => {
   const freed = { ...s, prisons: [{ ...s.prisons[0], pows: [] }] };
   ai.plan(freed);
   assert.equal(ai.raidParty[1], undefined, "no pows, no party memory");
+});
+
+test("Q83 GATE: no carrier in reach, no party (owner ruling, prompt 181)", () => {
+  // The census convicted the raid party as a mission that lands ~once a
+  // war and completes ZERO: springing POWs is only step one, and they
+  // must be CARRIED home. A party that commits a hull plus two escorts
+  // with no ride home is pure cost — so the ride must exist first.
+  const { s, ai } = partyWorld({
+    scoutAt: [55, 45], tank1At: [54, 44], tank2At: [56, 46], carrier: false,
+  });
+  const cmds = ai.plan(s);
+  const mv = moveOf(cmds, 20);
+  assert.ok(!mv || !near(mv, STAGE), "the raider does not stage for a raid it cannot finish");
+  assert.equal(ai.raidDebug?.[1]?.reason, "no carrier for the ride home");
+});
+
+test("Q83 GATE: a carrier too far away is no ride home either", () => {
+  const { s, ai } = partyWorld({ scoutAt: [55, 45], tank1At: [54, 44], tank2At: [56, 46] });
+  // Shove the transport to the far corner, well past RAID_CARRIER_REACH_CELLS.
+  const carrier = s.assets.find((a) => a.team === 1 && a.type === 4);
+  carrier.x = 127 * 256 + 128;
+  carrier.y = 127 * 256 + 128;
+  ai.plan(s);
+  assert.equal(ai.raidDebug?.[1]?.reason, "carrier out of reach");
+});
+
+test("Q83 GATE: with the ride home present the party forms as before", () => {
+  const { s, ai } = partyWorld({ scoutAt: [55, 45], tank1At: [54, 44], tank2At: [56, 46] });
+  const cmds = ai.plan(s);
+  assert.ok(near(moveOf(cmds, 20), STAGE), "the raid still happens when it can be finished");
 });

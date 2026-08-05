@@ -232,6 +232,11 @@ export const SNEAK_DIVE_CELLS = 12;
 // construction; the old head-on-annihilation measurement predated
 // fights-on-the-move and no longer reproduces.
 export const RAID_LANE_ROWS = 8; // both teams — see fairness note above
+// Q83 (prompt 181): how close a free-bunked carrier must be to the
+// staging cell before a raid party may form. Generous — the point is
+// that a ride home EXISTS and is committed, not that it is already
+// parked on the wire.
+export const RAID_CARRIER_REACH_CELLS = 40;
 export const RAID_TURN_IN_CELLS = 12;
 function raidWindowOpen(state, carrier, visibleSet) {
   const cx = sampleCellX(carrier.x, AI_W);
@@ -652,7 +657,37 @@ export class AIRegency {
         Math.abs(prison.cellX - bx) > 12 ? bx + sx * 12 : prison.cellX,
         laneY,
       ];
-      prisonRaiderFor.set(team, { opId: bestOp, prison, guards, stage, escorts: [] });
+      // Q83 GATE (owner ruling, prompt 181): a raid party may not form
+      // unless a CARRIER is committed and within reach. The census
+      // convicted the doctrine as a mission that lands ~1 time per war
+      // and completes ZERO: springing POWs is only step one, and they
+      // must then be CARRIED home. Committing a hull plus two escorts
+      // for most of a war to a mission whose second half has no
+      // transport is how the POWS deficit was paid. No carrier, no
+      // party — go hold the line instead.
+      let carrierOp = -1;
+      let carrierDist = Infinity;
+      for (const [operatorId] of [...controlled.entries()].sort((a, b) => a[0] - b[0])) {
+        const op = state.operators[operatorId];
+        if (op.state !== OP_ACTIVE || op.assetId === -1) continue;
+        const c = state.assets[op.assetId];
+        if (!c || c.team !== team || c.operatorId !== operatorId || isWreck(c)) continue;
+        if (!getUnitStats(c.type).capacity) continue;      // a real transport
+        if (c.aboard1 !== -1 && c.aboard2 !== -1) continue; // no free bunk
+        const d = Math.max(Math.abs(sampleCellX(c.x, AI_W) - stage[0]),
+                           Math.abs(worldToCellFloor(c.y) - stage[1]));
+        if (d < carrierDist) { carrierDist = d; carrierOp = operatorId; }
+      }
+      if (carrierOp === -1 || carrierDist > RAID_CARRIER_REACH_CELLS) {
+        (this.raidDebug ??= {})[team] = {
+          tick: state.tick, opId: -1,
+          reason: carrierOp === -1 ? "no carrier for the ride home" : "carrier out of reach",
+        };
+        continue;
+      }
+      prisonRaiderFor.set(team, {
+        opId: bestOp, prison, guards, stage, escorts: [], carrierOp,
+      });
     }
 
     // Item 11 escort ASSEMBLY (the active half of "group attack"): when

@@ -5977,3 +5977,48 @@ by the person who built it. Client smoke and UI acceptance BOTH
 passed the bad build, because the failure mode is a button that never
 renders. Only the lint caught it. That is the whole argument for
 source lints over behavioural gates in one incident.
+
+## Q83 GATE (owner ruling, prompt 181) + a lint wave
+
+**RULED: gate it.** A raid party may not form unless a CARRIER is
+committed and within `RAID_CARRIER_REACH_CELLS` (40) of the staging
+cell. Springing POWs is only step one — they must be CARRIED home —
+and the census proved the doctrine was pinning a hull plus two
+escorts to a mission whose second half had no transport. No carrier,
+no party: go hold the line.
+
+Effect, measured by the census: committed hull-time roughly HALVED
+(A 49,950 -> 25,740, B 31,166 -> 17,998) and the A/B gap in
+commitment fell from 18,784 to 7,742 tick-instances. Sim gate stays
+healthy (one seed moved 5653 -> 5663 ticks; the rest identical).
+A same-build POWS=2 pair is queued — the balance claim belongs to
+that, not to five seeds.
+Three tests pin the gate in both directions (no carrier / carrier too
+far / carrier present and the raid proceeds as before), and every
+formation fixture now carries the ride home.
+
+**Q74 RULED: tolerance.** The ~3-point upper-half lean shared by
+frontier, sawtooth and blackwood is accepted as in-band. Closed.
+
+## The lint wave (owner directive: "more lints before gates")
+
+`test/lints.test.js` — four source lints, each one for a class that
+has actually shipped and that NO behavioural gate can see:
+1. **Command completeness** — every `CMD_*` needs a `validate()` case
+   AND a reducer case. This is the W4-6 bug made impossible: without
+   the validate case a command is dispatched, handled, and silently
+   refused before the reducer runs.
+2. **Locale parity** — every key in both catalogues.
+3. **t() reality** — every key the client asks for exists, or the
+   player reads a raw key mid-war.
+4. **Event reality** — every event `SFX_MAP` listens for is one the
+   engine actually emits, so a rename cannot silently mute a sound.
+
+BOTH new lints reported a failure on their first run and BOTH were
+LINT bugs, not code bugs: catalogue keys share lines (a line-anchored
+regex misses the second), and events are not always emitted as a
+`type: "x"` literal (`freeSeat` takes the name as an argument). Fixed
+the lints, then verified each bites by reintroducing its bug and
+watching it go red. A lint that cries wolf is worse than no lint —
+"I wrote the lint" is not "the lint works", and the only way to tell
+them apart is to break the code on purpose.
