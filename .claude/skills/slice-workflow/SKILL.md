@@ -65,3 +65,18 @@ for 29 worked examples). Follow this shape:
 - Commit locally: `marker-NNNN: <slice> (<pass-count>/<pass-count>)` (next
   NNNN from `git log`), add the `dev-log.md` entry, append any new product
   decision to `dev-prompts.md`. Never push.
+
+## A new COMMAND needs four entries (learned W4-6, 2026-08-05)
+
+`validate()` in `engine/commands.js` is an ALLOWLIST — an unknown
+command type is refused there, before the reducer's switch ever runs,
+and the refusal event is typed `"rejected"`. So a new command needs:
+
+1. the constant in `engine/commands.js`
+2. a **`validate()` case** — miss this and the command is a SILENT
+   no-op: correctly dispatched, correctly handled, and never reached
+3. the `case` in the reducer's switch
+4. the handler itself
+
+Symptom of a missing #2: the command "does nothing" with no rejection
+you recognise, because you are grepping for the wrong event type.
