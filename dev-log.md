@@ -6379,3 +6379,35 @@ seriously rather than assuming it would work:
    lives under a single configurable root, `./data` in a checkout and
    `/opt/fireline/state` in production.
 Both pinned by test.
+
+## The deploy script, checked against BOTH working siblings (prompt 187)
+
+Both are live and proven on the Hetzner box, so where ours differed the
+sibling wins. Three corrections:
+
+1. **`-p 2222`, not `-o Port=`.** Both working scripts hand `-p` to
+   `rsync -e` and it works. The howto's -p/-P warning is about SCP,
+   which none of the three scripts uses — I had generalised a warning
+   past its scope.
+2. **`chown ~/.npm` before npm** (multiciv line 65). An earlier
+   sudo-run npm leaves a ROOT-OWNED cache, and every later `npm ci`
+   dies with EACCES. Pure scar tissue; there is no way to deduce it.
+   Added to both the bootstrap and the deploy path.
+3. **The `&&` guards are safe under `set -e`** — I tested rather than
+   reasoned, because both siblings use `[ x ] && Y=1` with
+   `set -euo pipefail` and clearly do not exit. They don't: bash
+   exempts the left operand of an AND-list.
+
+THE ALLOWLIST IS VERIFIED, not assumed. Ran the exact rsync filter
+locally to a scratch dir: **209 files** — client 150, engine 44, shared
+5, server 4, data/units.json, plus package.json, package-lock.json and
+LICENSE. Every runtime essential present; and ops/, test/, debugging/,
+specs/, reports/, tools/, dev-*.md, CLAUDE.md, .claude/,
+data/replays and data/autosave.json all confirmed ABSENT. That check
+costs seconds and is the one that would have caught the sibling's
+~28 MB notes leak before it happened.
+
+CANNOT RUN IT FROM HERE: the key is passphrase-protected and this
+session has no ssh-agent, so the deploy must be run by the owner (or
+after `ssh-add`). My earlier "Permission denied" was my own
+`BatchMode=yes` probe, not a broken key.
