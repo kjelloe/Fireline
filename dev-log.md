@@ -6148,3 +6148,30 @@ trigger from timer-expiry to down-time-inside-the-compound, which
 would fire constantly and change the feel of every base assault.
 FILED AS Q84 — the honest read is that a playtest, not a battery, is
 the instrument that can answer it.
+
+## Q82's ladder: the factory lever alone cannot reach the band
+## (2026-08-05, prompt 183)
+
+| convoyDefenderPenalty | attacker rate |
+|---|---|
+| 2 (the old law) | 16.3% |
+| 3 (rung 1) | 18.7% |
+| 4 | 22.0% |
+| 5 | 24.3% |
+
+The curve is not flat — each step buys ~2-3 points — but it is far too
+shallow to reach the ruled 30-40% band. Extrapolating, 30% wants a
+penalty near 7 and 35% near 10, i.e. a defender factory running at a
+TENTH rate. That is not a counterweight any more, it is switching the
+defender's rebuild off, and it would make the mode's fiction
+(a fortress grinding down under a committed attack) into something
+else entirely.
+
+VERDICT: rung 1 is worth keeping at 3 — it bought points AND made the
+two directions symmetric (18.7 v 19.7) — but the ruled target belongs
+to RUNG 2: shorten the convoy's route or its clock. That is the lever
+the owner already approved as the fallback, and it attacks the actual
+problem, which is that the truck simply cannot survive the distance.
+Recommendation for the next session: hold penalty at 3 and ladder the
+ROUTE (the 9,000-tick clock and the full-map run), measuring at -20%
+and -35% distance.
