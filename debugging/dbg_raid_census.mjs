@@ -22,6 +22,7 @@ for (const seed of [2026, 777, 31337, 4242, 9001]) {
     rules: { powPreplaced: 2 },
   });
   const wasLive = { 0: false, 1: false };
+  const sprung = { 0: new Set(), 1: new Set() }; // operatorIds freed from a prison
   const partyMembers = { 0: new Set(), 1: new Set() };
   for (let t = 0; t < 12000; t++) {
     server.step();
@@ -55,6 +56,9 @@ for (const seed of [2026, 777, 31337, 4242, 9001]) {
         }
       }
     }
+    for (const d of s.downed ?? []) {
+      if (d.freedPow === 1 && (d.team === 0 || d.team === 1)) sprung[d.team].add(d.operatorId);
+    }
     for (const e of s.events) {
       if (e.type === "asset_disabled") {
         const v = s.assets[e.assetId];
@@ -63,8 +67,12 @@ for (const seed of [2026, 777, 31337, 4242, 9001]) {
       } else if (e.type === "pow_freed" || e.type === "prison_raided") {
         const team = e.team === 0 ? 0 : 1;
         agg[team].raids++;
-      } else if (e.type === "operator_delivered" && e.freedPow) {
-        agg[e.team === 0 ? 0 : 1].freed++;
+      } else if (e.type === "operator_delivered") {
+        // operator_delivered carries no freedPow flag, so track WHO was
+        // a sprung POW and count their arrivals home.
+        for (const team of [0, 1]) {
+          if (sprung[team].has(e.operatorId)) { agg[team].freed++; sprung[team].delete(e.operatorId); }
+        }
       }
     }
     if (s.phase === 1) break;

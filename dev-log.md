@@ -5939,3 +5939,41 @@ range) is specified but NOT implemented — the truck-laid version is
 the whole feature today. No AI doctrine by design (the getaway
 lesson); a SMOKE=0 kill-switch and a same-build battery pair are the
 next rungs before this can be called measured.
+
+## Q83 part 1: the carry-home leg was IMPERCEPTIBLE (2026-08-05, prompt 180)
+
+Why the raid party delivered zero POWs across ten war-sides: a freed
+POW springs at the ENEMY prison — the far rear edge, ~100 cells from
+any loitering carrier — while the carrier's rescue-seek only looks
+`RESCUE_SEEK_CELLS` (24) out. The raid's own objective was literally
+invisible to the only doctrine that could finish it. Spring them,
+then nobody comes, forever.
+
+FIXED (ai_regency ~1880): a `freedPow === 1` body is seekable at ANY
+range — but only once no ordinary body is within normal reach, so
+local rescues keep their priority. AI-only, nothing hashed.
+
+HONEST RESULT: **the outcome did not move — still 0 delivered.** The
+deeper problem the trace exposed is that raids barely LAND: across 5
+seeds there were 5 prison_raided events total, and seed 2026 produced
+NO pow/prison event of any kind all war. So the doctrine spends
+~50,000 hull-tick-instances (team A) to land ~1 raid per war and
+complete none. The seek fix is a necessary precondition, not a
+sufficient repair, and it is committed as a correctness fix on that
+basis — not as a balance claim.
+
+THIS STRENGTHENS Q83's GATE OPTION and turns it into a real ruling
+for the owner: a doctrine that lands once per war and completes zero
+should not be allowed to pin a hull plus two escorts for most of the
+war. Gating changes AI behaviour, so it wants the owner's word.
+Sim gate after the fix: TICK-IDENTICAL (17977/5653/12680/14600).
+
+## The view-contract lint caught its own author (same day)
+
+W4-6's SMOKE button was gated on `me.smokeLeft` — and the view never
+projected `smokeLeft`. The identical dead-button bug as the sandbags,
+committed one day after building the lint that exists to prevent it,
+by the person who built it. Client smoke and UI acceptance BOTH
+passed the bad build, because the failure mode is a button that never
+renders. Only the lint caught it. That is the whole argument for
+source lints over behavioural gates in one incident.

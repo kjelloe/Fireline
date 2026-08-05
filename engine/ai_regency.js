@@ -1877,14 +1877,29 @@ export class AIRegency {
         } else if (asset.id !== raiderFor[asset.team]) {
           let body = null;
           let bestDist = Infinity;
+          let freed = null;      // Q83: a sprung POW, at ANY distance
+          let freedDist = Infinity;
           for (const d of state.downed) {
             if (d.team !== asset.team) continue;
             const dist = Math.max(Math.abs(sampleCellX(d.x, AI_W) - cellX0),
                                   Math.abs(worldToCellFloor(d.y) - cellY0));
             if (dist < bestDist) { bestDist = dist; body = d; }
+            if (d.freedPow === 1 && dist < freedDist) { freedDist = dist; freed = d; }
           }
           if (body && bestDist <= RESCUE_SEEK_CELLS) {
             target = [sampleCellX(body.x, AI_W), worldToCellFloor(body.y)];
+          } else if (freed) {
+            // Q83, THE CARRY-HOME LEG (census 2026-08-05: the raid party
+            // delivered ZERO POWs home across ten war-sides). A freed POW
+            // springs at the ENEMY prison — the far rear edge, ~100 cells
+            // from any loitering carrier — while rescue-seek only looks
+            // RESCUE_SEEK_CELLS (24) out. So the raid's own objective was
+            // literally imperceptible to the only doctrine that could
+            // finish it: spring them, then nobody comes, forever. A
+            // sprung POW is the team's COMMITTED objective, so it is
+            // seekable at any range — but only once no ordinary body is
+            // in normal reach, so local rescues keep their priority.
+            target = [sampleCellX(freed.x, AI_W), worldToCellFloor(freed.y)];
           }
         }
       }
