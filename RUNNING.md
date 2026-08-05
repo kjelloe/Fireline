@@ -80,6 +80,11 @@ npm start                              # host machine
   damage + suppression). Your team always sees its own mines; enemy scouts
   within 3 cells auto-MARK them for their team, and a truck adjacent to a
   marked (or own) mine clears it with C.
+- **UAV SWEEP (W4-7)**: bank 25 Recognition and the UAV SWEEP special
+  lights up an 8-cell patch of the map for your whole team for 10
+  seconds — it sees through smoke, because you paid for it. Spending
+  never touches your medals: honours judge what you EARNED, the sweep
+  draws from a separate wallet that earning also fills.
 - **SMOKE SCREENS (W4-6)**: supply trucks and mortar carriers carry two
   smoke pots — the SMOKE special in direct mode lays a 3x3 cloud on your
   cell for 30 seconds. A hull inside smoke can only be seen from one cell

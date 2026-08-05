@@ -441,3 +441,21 @@ recorded here because they reverse or retire earlier rulings.
   validate case, a client gate on an unprojected field — pass client
   smoke and UI acceptance unnoticed. See `test/lints.test.js` and
   `test/view_contract.test.js`.
+
+
+## Prompt 182 outcomes (2026-08-05)
+
+- **Q82 — the convoy attacker bar: RULED (2) then (1), target 30-40%.**
+  CORRECTION FOR THE RECORD: there is no defender MPG *bonus* — the
+  convoy defender's factory already ran at HALF rate (a counterweight
+  favouring the attacker), so option (2) means turning that lever UP.
+  Rung 1 (`rules.convoyDefenderPenalty` 2 -> 3, i.e. a third rate) is
+  MEASURED: attackers 16.3/14.3% -> **18.7/19.7%** — now symmetric to
+  within noise, but well short of the ruled band. Ladder queued at 4
+  and 5; if the curve flattens, rung 2 is shortening the route/clock
+  rather than an ever-harsher factory penalty.
+- **The premium pull: CONFIRMED** ("ok if leans are not there"). Both
+  sawtooth and riverline entries stay out; the mechanism stays live and
+  tested for the next map that earns one.
+- **Q78/W4-8 POW creators: MEASURE AND TUNE** — implement a+b+c+d, then
+  measure, rather than pre-tuning on intuition.

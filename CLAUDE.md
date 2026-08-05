@@ -215,8 +215,17 @@ outcome. Renderer presents fog-filtered views only.
   a Chebyshev radius, NOT a raycast, and a ray march would put the
   equivariance ladder at risk; a hull in smoke is seen only from
   SMOKE_SEE_CELLS, and a sensor in smoke reaches only that far. BLIND
-  TO TEAM by design. Truck-laid only so far: the mortar alt-fire,
-  SMOKE=0 and the battery pair are unfinished.
+  TO TEAM by design. COMPLETE: truck-laid (`deploy_smoke`) + mortar
+  alt-fire (`fire_order {smoke:true, targetCellX/Y}`, full tube
+  discipline incl. minRange) + SMOKE=0 (`rules.smoke`).
+  W4-7 UAV SWEEP (`engine/uav.js` holds the radius; command + pool in
+  the reducer; fixture v71): 25 Recognition -> 10 s radius-8 reveal.
+  Hashed `uavSweeps[]`/`nextUavId`/`operator.recogAvailable`. THE
+  HONESTY RULE: honors judge EARNED `score`; spending draws from the
+  separate `recogAvailable` wallet that earning also fills — a sink
+  must never cost a medal. The sweep BEATS smoke by design. The WALLET
+  IS PRIVATE to its own team in the view (the scoreboard is public,
+  what you can afford is not). UAV=0 / `rules.uavCost` knobs.
 - A NEW COMMAND NEEDS FOUR ENTRIES (W4-6 lesson): the constant, the
   **`validate()` case in commands.js** (an ALLOWLIST — an unknown type
   is refused before the reducer's switch, event type `"rejected"`), the
