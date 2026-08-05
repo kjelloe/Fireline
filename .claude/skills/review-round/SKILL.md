@@ -19,6 +19,7 @@ changed. Only genuinely new artifacts (a skill, a big doc) need asking.
 | `reports/<date>_*.md` | every working session | the user reads THESE on return — slice table, findings, numbered questions (keep numbering monotonic across the session) |
 | `dev-log.md` | every slice | already habitual |
 | `dev-prompts.md` | every user prompt, verbatim | GITIGNORED by the user's choice — on-disk only |
+| `dev-questions.md` | a question for the designer comes up mid-work | GITIGNORED like dev-prompts; next free Q-number (register continues specs/07); answered → move to the register, stale → strike, never delete |
 | Memories (`~/.claude/.../memory/`) | project state changes shape (branch, fixture version, open questions, big invariants) | update the existing file; keep MEMORY.md one-liners current |
 | Skills (`.claude/skills/`) | a WORKFLOW repeats or a checklist drifts (e.g. new-chassis contract fields) | update in place; new skill only for a genuinely recurring new workflow |
 | `data/units.json` | any units.js change | regenerate (one-liner in dev-log 11A) |
