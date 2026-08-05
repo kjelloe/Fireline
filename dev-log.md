@@ -6022,3 +6022,32 @@ the lints, then verified each bites by reintroducing its bug and
 watching it go red. A lint that cries wolf is worse than no lint —
 "I wrote the lint" is not "the lint works", and the only way to tell
 them apart is to break the code on purpose.
+
+## W4-6 COMPLETE + Q82's first rung (2026-08-05, prompt 182)
+
+SMOKE finished: the **mortar alt-fire** lands a screen at range
+(`fire_order` with `smoke: true` + a target cell) under full tube
+discipline — reload, ammo, supply, min AND max range — because a
+screen droppable from safety at no cost is a wall, not a decision.
+The `SMOKE=0` kill-switch gates both paths (`rules.smoke`), wired
+into sim_sweep. The client's SMOKE button now picks the right verb by
+chassis: a tube ARCS its screen 5 cells ahead, a truck drops pots
+over the side. 12 tests on the feature.
+
+**Q82, and a correction I owe the record**: I described option (2) as
+"halve the defender's MPG bonus". There is no defender bonus. The
+convoy defender's factory already runs at HALF rate — an existing
+counterweight that favours the ATTACKER. So the honest form of the
+owner's ruling is to turn that lever UP, not remove one: the
+defender's factory now runs at a THIRD
+(`rules.convoyDefenderPenalty ?? 3`, CVPENALTY= for the ladder).
+Same intent, opposite sign, and the plan text was wrong before this
+paragraph. A same-build convoy pair is queued; if a third does not
+reach the ruled 30-40% band, rung two is shortening the route.
+
+TWO EXISTING GUARDS CAUGHT THIS SLICE, which is the argument for
+lints in miniature: 8H demanded human text for every new rejection
+reason (seven added, both locales — including `target too close`,
+which the mortar's dead zone exposed and which had been reachable
+but textless before today), and the view-contract lint had already
+caught the smoke rack a slice earlier.

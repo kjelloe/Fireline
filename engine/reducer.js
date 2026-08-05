@@ -517,6 +517,41 @@ function applyFireOrder(next, command) {
     return reject(next, command, "asset not operable");
   }
   if (attacker.deployTimer > 0) return reject(next, command, "still transitioning"); // 12B
+  // W4-6 MORTAR ALT-FIRE: a smoke round lands a screen at range instead
+  // of a shell. Same tube discipline as any shot — reload, ammo, supply,
+  // min/max range — because a screen you can drop from safety with no
+  // cost is a wall, not a decision.
+  if (command.smoke === true) {
+    if (next.rules?.smoke === false) return reject(next, command, "smoke disabled");
+    const stats = getUnitStats(attacker.type);
+    if (!stats.indirect || (stats.smoke ?? 0) === 0) {
+      return reject(next, command, "this chassis fires no smoke");
+    }
+    if (attacker.reloadTimer > 0) return reject(next, command, "reloading");
+    if (attacker.ammo < SUPPLY_FIRE_COST) return reject(next, command, "out of ammo");
+    if (!inSupply(next, attacker)) return reject(next, command, "out of supply");
+    const tx = cellToWorld(command.targetCellX);
+    const ty = cellToWorld(command.targetCellY);
+    const dist = Math.max(absI32(tx - attacker.x), absI32(ty - attacker.y));
+    if (dist > stats.range) return reject(next, command, "target out of range");
+    if (dist < stats.minRange) return reject(next, command, "target too close");
+    const why = smokeRejection(next, attacker, stats, command.targetCellX, command.targetCellY);
+    if (why) return reject(next, command, why);
+    attacker.ammo -= SUPPLY_FIRE_COST;
+    attacker.reloadTimer = fireReloadTicks(next, attacker, stats);
+    attacker.smokeLeft -= 1;
+    next.smokes.push({
+      id: next.nextSmokeId, team: attacker.team,
+      cellX: command.targetCellX, cellY: command.targetCellY, ticks: SMOKE_TICKS,
+    });
+    next.nextSmokeId += 1;
+    next.events.push({
+      type: "smoke_deployed", assetId: attacker.id, team: attacker.team,
+      cellX: command.targetCellX, cellY: command.targetCellY,
+      smokeLeft: attacker.smokeLeft, fired: 1,
+    });
+    return next;
+  }
   // 11F (Q9): shelling infrastructure. Sites are public; only the indirect
   // siege tube can breach them; normal ammo/reload/supply/range discipline.
   if (command.targetSiteId !== undefined) {
@@ -1040,6 +1075,7 @@ function applyDeploySmoke(next, command) {
   }
   const cellX = sampleCellX(asset.x, next.map.width);
   const cellY = worldToCellFloor(asset.y);
+  if (next.rules?.smoke === false) return reject(next, command, "smoke disabled"); // SMOKE=0
   const why = smokeRejection(next, asset, getUnitStats(asset.type), cellX, cellY);
   if (why) return reject(next, command, why);
   asset.smokeLeft -= 1;
@@ -2369,8 +2405,15 @@ function applyAdvanceTick(next) {
     // ITS OWN BASE — dead defenders respawn inside the kill-box, dead
     // attackers respawn a full map away. The defender factory runs at
     // half rate so a committed attack can grind the fortress down.
+    // Q82 (owner ruling, prompt 182 — target a 30-40% attacker rate):
+    // the contact-law re-baseline left convoy SYMMETRIC (16.3/14.3%,
+    // the old 25-point team gap gone) but defender-dominant, which is a
+    // dial rather than a bias. The lever is this existing counterweight,
+    // turned UP: the defender's factory goes from half rate to a third.
+    // Knob so the ladder can tune it without a code change.
     const defenderPenalty =
-      next.mission?.kind === MISSION_CONVOY && next.mission.attacker !== team ? 2 : 1;
+      next.mission?.kind === MISSION_CONVOY && next.mission.attacker !== team
+        ? (next.rules?.convoyDefenderPenalty ?? 3) : 1;
     const baseNeed = (next.rules?.mpgTicks ?? MPG_TICKS) * defenderPenalty;
     const waveNeed = Math.max(floorDivI32(baseNeed, 3),
       baseNeed - salvageBoost * SALVAGE_TICKS_PER_POINT - factoryCut);

@@ -45,7 +45,9 @@ const STALEMATE = process.env.STALEMATE !== "0"; // prompt-136 grind kill-switch
 const DROPS = process.env.DROPS !== "0"; // B6 circle kill-switch (residue rung)
 const VAULTS = process.env.VAULTS !== "0"; // 0 strips kind-4 sites pre-war
 const ORDERPARITY = process.env.ORDERPARITY === "1"; // Q71 trial: tick-parity command order
-const CACHE = process.env.CACHE !== "0"; // Q64 aura kill-switch
+const CACHE = process.env.CACHE !== "0";
+const SMOKE = process.env.SMOKE !== "0"; // W4-6 kill-switch
+const CVPENALTY = process.env.CVPENALTY ? Number(process.env.CVPENALTY) : null; // Q82 ladder
 const GETAWAY = process.env.GETAWAY !== "0"; // Q70 heist getaway-car experiment
 const SIEGE = process.env.SIEGE !== "0"; // Q72 heist siege-prep switch
 const LANDSHIPAI = process.env.LANDSHIPAI === "1"; // Q56 trial: regents may claim the fortress
@@ -69,9 +71,11 @@ for (let seed = 1; seed <= COUNT; seed++) {
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
     mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
     alarmResponse: ALARMRESPONSE, orderParity: ORDERPARITY,
-    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI || HANDICAP !== null || !SLIDE
+    rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI || HANDICAP !== null || !SLIDE || !SMOKE || CVPENALTY !== null
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),
           ...(POWS !== null ? { powPreplaced: POWS } : {}),
+          ...(SMOKE ? {} : { smoke: false }),
+          ...(CVPENALTY !== null ? { convoyDefenderPenalty: CVPENALTY } : {}),
           ...(MODE !== null ? { mode: MODE, modeAttacker: MODEATTACKER } : {}),
           ...(!POWARC ? { powArc: false } : {}),
           ...(!RAIDERCLAUSE ? { raiderClause: false } : {}),

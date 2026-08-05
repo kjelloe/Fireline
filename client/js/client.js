@@ -222,7 +222,20 @@ function updateDirectSpecials() {
   }]);
   if ((me?.caltropsLeft ?? 0) > 0) rows.push(["ui.sp_caltrops", () => send({ type: "deploy_caltrops" })]);
   // W4-6: the smoke screen — the answer to being shelled in the open.
-  if ((me?.smokeLeft ?? 0) > 0) rows.push(["ui.sp_smoke", () => send({ type: "deploy_smoke" })]);
+  if ((me?.smokeLeft ?? 0) > 0) rows.push(["ui.sp_smoke", () => {
+    // A tube ARCS its screen out to where the shells are landing; a
+    // truck drops its pots over the side. Same button, right verb.
+    const stats = UNIT_STATS?.[me.type];
+    if (stats?.indirect) {
+      const brads = me.heading ?? 0;
+      const reach = 5; // cells ahead — inside the tube's arc, past its dead zone
+      const cx = Math.round(me.x / CELL + Math.cos((brads / 256) * Math.PI * 2) * reach);
+      const cy = Math.round(me.y / CELL + Math.sin((brads / 256) * Math.PI * 2) * reach);
+      send({ type: "fire_order", smoke: true, targetCellX: cx, targetCellY: cy });
+    } else {
+      send({ type: "deploy_smoke" });
+    }
+  }]);
   if ((me?.sandbagsLeft ?? 0) > 0) rows.push(["ui.sp_sandbag", () => {
     const cx = Math.floor(me.x / CELL);
     const cy = Math.floor(me.y / CELL);

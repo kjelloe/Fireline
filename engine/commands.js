@@ -74,6 +74,12 @@ export function validate(cmd) {
 
     case CMD_FIRE_ORDER:
       if (!isUint(cmd.operatorId, 31))     return { ok: false, reason: "invalid operatorId" };
+      if (cmd.smoke === true) { // W4-6 mortar alt-fire: a screen at range
+        if (!isCell(cmd.targetCellX) || !isCell(cmd.targetCellY)) {
+          return { ok: false, reason: "invalid target cell" };
+        }
+        return { ok: true };
+      }
       if (cmd.targetSandbagId !== undefined) { // Q45/Q50: player cover
         if (!isUint(cmd.targetSandbagId, 0xffff)) return { ok: false, reason: "invalid targetSandbagId" };
         return { ok: true };

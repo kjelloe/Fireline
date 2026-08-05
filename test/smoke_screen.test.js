@@ -139,3 +139,50 @@ test("W4-6: concealment commutes with the mirror", () => {
   assert.equal(plain.smokes[0].cellX + flipped.smokes[0].cellX, W - 1,
     "and mirrored columns");
 });
+
+test("W4-6: the MORTAR fires a smoke round at range (alt-fire)", () => {
+  // A screen you can place from safety is the whole point of a tube —
+  // but it pays full tube discipline: reload, ammo, supply, min/max range.
+  let s = sandbox([
+    { team: 0, type: 6, cellX: 30, cellY: 30 }, // mortar carrier
+    { team: 1, type: 0, cellX: 36, cellY: 30 },
+  ]);
+  s = joinAndSelect(s, 0, 0, 0);
+  assert.equal(s.assets[0].smokeLeft, 2, "the tube carries smoke rounds");
+  s = apply(s, { type: "fire_order", operatorId: 0, smoke: true, targetCellX: 36, targetCellY: 30 });
+  assert.equal(s.smokes.length, 1, "the round lands where it was aimed");
+  assert.equal(s.smokes[0].cellX, 36);
+  assert.equal(s.assets[0].smokeLeft, 1, "and costs a round");
+  assert.ok(s.assets[0].reloadTimer > 0, "and the tube reloads like any shot");
+  assert.ok(!computeVisible(s, 0).has(1), "the enemy it landed on is concealed");
+});
+
+test("W4-6: alt-fire respects the tube's minimum range", () => {
+  let s = sandbox([{ team: 0, type: 6, cellX: 30, cellY: 30 }]);
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "fire_order", operatorId: 0, smoke: true, targetCellX: 30, targetCellY: 30 });
+  assert.equal(s.smokes.length, 0, "a tube cannot drop smoke on its own boots");
+  assert.equal(s.events.find((e) => e.type === "rejected").reason, "target too close");
+});
+
+test("W4-6: a direct-fire chassis has no smoke round", () => {
+  let s = sandbox([{ team: 0, type: 3, cellX: 30, cellY: 30 }]); // truck: lays, never fires
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "fire_order", operatorId: 0, smoke: true, targetCellX: 36, targetCellY: 30 });
+  assert.equal(s.smokes.length, 0);
+  assert.equal(s.events.find((e) => e.type === "rejected").reason, "this chassis fires no smoke");
+});
+
+test("W4-6: SMOKE=0 disables both paths (the kill-switch)", () => {
+  let s = sandbox([{ team: 0, type: 3, cellX: 30, cellY: 30 }], [], {});
+  s.rules = { ...s.rules, smoke: false };
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "deploy_smoke", operatorId: 0 });
+  assert.equal(s.smokes.length, 0, "the truck path is off");
+  assert.equal(s.events.find((e) => e.type === "rejected").reason, "smoke disabled");
+  let m = sandbox([{ team: 0, type: 6, cellX: 30, cellY: 30 }], [], {});
+  m.rules = { ...m.rules, smoke: false };
+  m = joinAndSelect(m, 0, 0, 0);
+  m = apply(m, { type: "fire_order", operatorId: 0, smoke: true, targetCellX: 36, targetCellY: 30 });
+  assert.equal(m.smokes.length, 0, "the tube path is off too");
+});

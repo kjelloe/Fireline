@@ -8,6 +8,13 @@ export const CATALOGS = {
   en: {
     // ── rejections (key = "rej." + engine reason, verbatim) ──
     "rej.operator already active": "That command seat is taken.",
+    "rej.smoke disabled": "Smoke screens are switched off on this server.",
+    "rej.target too close": "Too close — an indirect tube has a dead zone.",
+    "rej.this chassis carries no smoke": "This chassis carries no smoke pots.",
+    "rej.this chassis fires no smoke": "Only an indirect tube fires smoke rounds.",
+    "rej.smoke rack empty": "Smoke rack empty — resupply at base.",
+    "rej.team smoke limit reached": "Your team already has six screens up.",
+    "rej.smoke already here": "A screen is already standing here.",
     "rej.operator not active": "Join the war first.",
     "rej.no such asset": "No such asset.",
     "rej.asset belongs to other team": "That asset fights for the enemy.",
@@ -434,6 +441,13 @@ export const CATALOGS = {
   },
   no: {
     "rej.operator already active": "Den kommandoplassen er opptatt.",
+    "rej.smoke disabled": "Røykskjermer er slått av på denne serveren.",
+    "rej.target too close": "For nært — et indirekte rør har en dødsone.",
+    "rej.this chassis carries no smoke": "Dette chassiset har ingen røykpotter.",
+    "rej.this chassis fires no smoke": "Bare et indirekte rør skyter røykgranater.",
+    "rej.smoke rack empty": "Røykstativet er tomt — fyll opp i basen.",
+    "rej.team smoke limit reached": "Laget ditt har allerede seks skjermer ute.",
+    "rej.smoke already here": "Det står allerede en skjerm her.",
     "rej.operator not active": "Bli med i krigen først.",
     "rej.no such asset": "Ingen slik enhet.",
     "rej.asset belongs to other team": "Den enheten kjemper for fienden.",
