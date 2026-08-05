@@ -59,7 +59,7 @@ law), caltrops, and mines.
 - No engine change. Acceptance item: ghost appears, flips tint across
   a known-illegal cell.
 
-## W4-5 · Direct-control juice (S-M) — client only
+## W4-5 · Direct-control juice (S-M) — ✅ SHIPPED
 
 The homage's feel layer: camera kick on own gun (2-3 px, 100 ms),
 tracer streak on direct-mode shots, muzzle flash scale by chassis,

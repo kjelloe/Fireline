@@ -5871,3 +5871,25 @@ RULING NEEDED (Q83): the doctrine has three honest options —
 Recommendation: (2) then (1) — gating is one condition and stops the
 bleeding immediately; the carry-home doctrine is the real repair and
 becomes MORE urgent once W4-8 puts POWs in standard wars.
+
+## W4-5: direct-control juice (2026-08-05, prompt 174)
+
+Feel, which is the whole point of the homage: YOUR gun kicks the
+camera (0.09 world units, 0.16 for a heavy hit, decaying over 110 ms),
+every visible shot draws a fading tracer along its line, heavier hits
+draw a warmer one. The kick is deliberately restricted to the shot YOU
+fired — it is the "that was me" signal, and it stops meaning anything
+if every shot in the war kicks.
+
+The shake wobble is driven off the clock rather than any random
+source. Nothing in the client's render path should reach for
+Math.random when a deterministic function is the same cost — the habit
+is what keeps replays and the engine honest, and there is no reason to
+keep two habits. Low visual tier skips the shake entirely (it is the
+one effect that can genuinely bother people) and the tracers with it.
+
+Presentation only: nothing hashed, nothing the reducer or a replay can
+see. Gates: client smoke + UI acceptance (the project's contract for
+client work — a headless SwiftShader run cannot judge a camera kick,
+so the gate proves the page still boots, joins and ticks with zero
+errors), plus 801/801 x2 to prove the engine is untouched.

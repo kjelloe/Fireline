@@ -249,6 +249,47 @@ function updateDirectSpecials() {
 let lastDriveSent = "0,0";
 let directRing = null; // 11O: the tracking targeting circle
 const orderMarkers = []; // 14I: click-order feedback {sprite, bornMs}
+// W4-5 (prompt 174): DIRECT-CONTROL JUICE. The homage's fun lives in
+// feel, and feel is feedback you can see without reading a number.
+// Camera kick when YOUR gun fires, a tracer along the shot, a brighter
+// muzzle flash on the heavy guns. All presentation: nothing here is
+// hashed, replayed, or visible to the reducer. Low visual tier skips
+// the shake (it is the one effect that can bother people).
+let shakeMag = 0;      // world units, decays every frame
+let shakeUntilMs = 0;
+const tracers = [];    // {line, bornMs}
+const SHAKE_MS = 110;
+function kickCamera(mag) {
+  if ((window.__mfVisualTier ?? "high") === "low") return;
+  shakeMag = Math.max(shakeMag, mag);
+  shakeUntilMs = performance.now() + SHAKE_MS;
+}
+function spawnTracer(fromX, fromY, toX, toY, heavy) {
+  if (!scene || (window.__mfVisualTier ?? "high") === "low") return;
+  const geo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(fromX, 0.55, fromY), new THREE.Vector3(toX, 0.55, toY),
+  ]);
+  const line = new THREE.Line(geo, new THREE.LineBasicMaterial({
+    color: heavy ? 0xffd07a : 0xfff2b0, transparent: true, opacity: 0.9,
+  }));
+  scene.add(line);
+  tracers.push({ line, bornMs: performance.now() });
+}
+const TRACER_MS = 130;
+function stepTracers(nowMs) {
+  for (let i = tracers.length - 1; i >= 0; i--) {
+    const tr = tracers[i];
+    const age = nowMs - tr.bornMs;
+    if (age >= TRACER_MS) {
+      scene.remove(tr.line);
+      tr.line.geometry.dispose();
+      tr.line.material.dispose();
+      tracers.splice(i, 1);
+    } else {
+      tr.line.material.opacity = 0.9 * (1 - age / TRACER_MS);
+    }
+  }
+}
 let lastMyScore = null; // 14J: mission-complete toast trigger
 let toastUntil = 0;
 let dragPan = null; // item 28: right-button drag-pan anchor, or null
@@ -1451,6 +1492,23 @@ function handleEvents(events) {
   for (const e of events) {
     const sfxKind = SFX_MAP[e.type]?.(e);
     if (sfxKind) sfx(sfxKind);
+    // W4-5: MY shot kicks the camera and draws a tracer. Someone
+    // else's shot draws the tracer only — the kick is the "that was
+    // me" signal and it stops meaning anything if everything kicks.
+    if (e.type === "fire_resolved") {
+      const view = interpolator.latest();
+      const shooter = view?.friendlyAssets?.find((a) => a.id === e.attackerId) ??
+        view?.visibleEnemies?.find((a) => a.id === e.attackerId);
+      const target = view?.friendlyAssets?.find((a) => a.id === e.targetId) ??
+        view?.visibleEnemies?.find((a) => a.id === e.targetId);
+      const heavy = (e.hpDelta ?? 0) >= 25;
+      if (shooter && target) {
+        spawnTracer(shooter.x / CELL, shooter.y / CELL, target.x / CELL, target.y / CELL, heavy);
+      }
+      if (shooter && shooter.operatorId === joined?.operatorId) {
+        kickCamera(heavy ? 0.16 : 0.09);
+      }
+    }
     const line = describeEvent(e, joined?.team);
     if (line) pushEvent(line);
     // B7: MY asset going down gets the recap — what killed me, from
@@ -3544,8 +3602,20 @@ function renderBattlefield() {
   camera.top = cam.zoom;
   camera.bottom = -cam.zoom;
   camera.updateProjectionMatrix();
-  camera.position.set(cam.x + 18, 26, cam.y + 18);
-  camera.lookAt(cam.x, 0, cam.y);
+  // W4-5: the kick. Deterministic wobble from the clock (no Math.random
+  // anywhere near the client's render path either), decaying to nothing.
+  let sx = 0;
+  let sy = 0;
+  const nowMs = performance.now();
+  if (nowMs < shakeUntilMs && shakeMag > 0) {
+    const k = (shakeUntilMs - nowMs) / SHAKE_MS; // 1 -> 0
+    sx = Math.sin(nowMs / 11) * shakeMag * k;
+    sy = Math.cos(nowMs / 9) * shakeMag * k;
+  } else {
+    shakeMag = 0;
+  }
+  camera.position.set(cam.x + 18 + sx, 26, cam.y + 18 + sy);
+  camera.lookAt(cam.x + sx, 0, cam.y + sy);
 }
 
 function onWindowResize() {
@@ -3562,6 +3632,7 @@ function onWindowResize() {
 function animate() {
   requestAnimationFrame(animate);
   renderBattlefield();
+  stepTracers(performance.now()); // W4-5
   // Phase-1 water sheen: a slow opacity breath (visual only).
   const sheen = terrainMesh?.getObjectByName?.("water-sheen");
   if (sheen) sheen.material.opacity = 0.30 + 0.07 * Math.sin(performance.now() / 1400);
