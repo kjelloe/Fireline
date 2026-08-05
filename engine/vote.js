@@ -9,7 +9,8 @@
 // held profiles join when they pass — server owners may still opt
 // them in explicitly via VOTE_MAPS.
 export const COMPLETED_MAPS = ["frontier_corridor", "blackwood"];
-export const ALL_MODES = ["standard", "convoy", "heist"];
+// "night" is a VARIANT, not a mode — it rides whatever war is running.
+export const ALL_MODES = ["standard", "convoy", "heist", "night"];
 
 export function normalizePool(pool = {}, validMaps = null) {
   let maps = Array.isArray(pool.maps) && pool.maps.length ? [...pool.maps] : [...COMPLETED_MAPS];
@@ -42,12 +43,20 @@ export function voteCandidates(state, warsStarted, pool) {
   if (curMode !== 0) {
     out.push({ map: cur, mode: 0 });
   } else {
+    // W4-10 (Q80): NIGHT shares this third slot rather than adding a
+    // fourth. It is a VARIANT — same map, same mode, lights out — so
+    // it belongs beside the mode flips in the "something different"
+    // position, and the ballot stays the three choices the UI and the
+    // Q54 law were built around. Never offered while already at night.
     const flips = [];
-    if (modes.includes("convoy")) flips.push(1);
-    if (modes.includes("heist")) flips.push(2);
+    if (modes.includes("convoy")) flips.push({ mode: 1 });
+    if (modes.includes("heist")) flips.push({ mode: 2 });
+    if (modes.includes("night") && state.rules?.nightWar !== true) flips.push({ night: true });
     if (flips.length) {
-      const mode = flips[warsStarted % flips.length];
-      out.push({ map: cur, mode, modeAttacker: warsStarted & 1 });
+      const pick = flips[warsStarted % flips.length];
+      out.push(pick.night
+        ? { map: cur, mode: 0, modeAttacker: 0, night: true }
+        : { map: cur, mode: pick.mode, modeAttacker: warsStarted & 1 });
     }
   }
   return out;

@@ -6288,3 +6288,23 @@ so a mirrored pair reads identically.
 REMAINING on this slice: the Q80 vote-pool entry and a client-side
 visual dimmer. The mechanic is complete and playable now; those two
 are presentation and rotation, not the rule.
+
+## W4-10 finished: the ballot and the dimmer (2026-08-05, prompt 186)
+
+**Vote entry.** Night joins the THIRD SLOT rotation beside convoy and
+heist rather than becoming a fourth candidate — the ballot stays the
+three choices the Q54 law and the UI were both built around, and
+convoy/heist/night take fair turns by war count. It is offered only
+when the pool enables it and the war is not ALREADY at night: never
+put on the ballot what people are currently playing. Night is a
+VARIANT (same map, same mode, lights out), so the pick carries a
+`night` flag alongside the mode rather than replacing it.
+
+**The dimmer.** Without it a night war looked EXACTLY like a day war
+while playing completely differently — the worst kind of hidden rule,
+and the reason I flagged it rather than calling the slice done. The
+client now dims the same three dials the storm already uses (sky, fog,
+sun) but colder, deeper and permanently: moonlight at 0.22 intensity,
+fog closing at 10-42 units so sight dies sooner, a near-black sky.
+Reusing the storm's dials keeps one visual system instead of two, and
+the mode latch means it only redraws on a change.

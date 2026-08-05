@@ -176,11 +176,18 @@ export function createAppServer(options = {}) {
         const nextSeed = mix32(gameServer.state.mapSeed);
         const verdict = transport.tallyVote();
         const pick = verdict?.pick;
+        // W4-10: a NIGHT pick carries its variant flag alongside the
+        // mode, because night rides whatever war is running rather than
+        // replacing it.
+        const picked = pick
+          ? {
+              ...(pick.mode ? { mode: pick.mode, modeAttacker: pick.modeAttacker ?? 0 } : {}),
+              ...(pick.night ? { nightWar: true } : {}),
+            }
+          : null;
         gameServer.resetWar(nextSeed, pick ? {
           mapProfile: pick.map,
-          modeRules: pick.mode
-            ? { mode: pick.mode, modeAttacker: pick.modeAttacker ?? 0 }
-            : null,
+          modeRules: picked && Object.keys(picked).length ? picked : null,
         } : {});
         archived = false;
         gameOverTick = -1;

@@ -1669,7 +1669,8 @@ function showVote(candidates) {
     paintMapThumb(cv, c.map);
     const label = document.createElement("div");
     const mapName = t(`map.${c.map}`) !== `map.${c.map}` ? t(`map.${c.map}`) : c.map;
-    label.textContent = c.mode === 1 ? t("vote.convoy_on", { map: mapName })
+    label.textContent = c.night ? t("vote.night_on", { map: mapName })
+      : c.mode === 1 ? t("vote.convoy_on", { map: mapName })
       : c.mode === 2 ? t("vote.heist_on", { map: mapName }) : mapName;
     const count = document.createElement("div");
     count.className = "vote-count";
@@ -2194,14 +2195,26 @@ function updateMotion(nowMs) {
 // 16G: the storm reads as distance fog + a dimmed sky. The schedule is
 // the same pure function the engine uses (mapSeed from the cached map).
 let stormOn = false;
+let visualMode = ""; // "" | "storm" | "night" — only redraw on a change
 function updateWeatherVisual(view) {
   if (!view || !cachedMap) return;
   const w = weatherWindow(cachedMap.seed >>> 0);
-  const active = view.tick >= w.start && view.tick < w.end;
-  if (active === stormOn) return;
-  stormOn = active;
+  const storm = view.tick >= w.start && view.tick < w.end;
+  // W4-10: a NIGHT war is the engine's storm that never lifts, so the
+  // client dims the same three dials — sky, fog, sun — just colder and
+  // deeper, and permanently. Without this a night war LOOKS identical
+  // to a day war while playing completely differently, which is the
+  // worst kind of hidden rule.
+  const mode = view.night ? "night" : storm ? "storm" : "";
+  if (mode === visualMode) return;
+  visualMode = mode;
+  stormOn = storm;
   const sun = scene.getObjectByName("sun");
-  if (active) {
+  if (mode === "night") {
+    scene.fog = new THREE.Fog(0x0b1020, 10, 42); // sight dies sooner in the dark
+    scene.background = new THREE.Color(0x070a14);
+    if (sun) { sun.intensity = 0.22; sun.color.set(0x9fb4e0); } // moonlight, not sunlight
+  } else if (mode === "storm") {
     scene.fog = new THREE.Fog(0x8a8676, 18, 60);
     scene.background = new THREE.Color(0x6e6a5c);
     if (sun) { sun.intensity = 0.45; sun.color.set(0xc9c4b2); } // phase 5: the front dims the sun

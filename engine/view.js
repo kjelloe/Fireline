@@ -57,6 +57,7 @@ export function buildSpectatorView(state) {
   return {
     tick: state.tick,
     mapProfile: state.mapProfile, // premium disclosure + map-aware UI
+    night: state.rules?.nightWar === true, // W4-10: the client dims for it
     team: -1,
     spectator: true,
     phase: state.phase,
@@ -178,6 +179,7 @@ export function buildView(state, team) {
   return {
     tick: state.tick,
     mapProfile: state.mapProfile, // premium disclosure + map-aware UI
+    night: state.rules?.nightWar === true, // W4-10: the client dims for it
     team,
     operators,
     phase: state.phase,

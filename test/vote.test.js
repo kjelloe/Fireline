@@ -102,7 +102,9 @@ test("Q49: silence keeps the status quo; spectators cannot vote", async () => {
 test("Q54: pool defaults, filtering, and candidate law", async () => {
   const { normalizePool, voteCandidates, COMPLETED_MAPS } = await import("../engine/vote.js");
   // Defaults: every completed map, every mode.
-  assert.deepEqual(normalizePool({}), { maps: COMPLETED_MAPS, modes: ["standard", "convoy", "heist"] });
+  // W4-10: "night" joined ALL_MODES as a VARIANT (it rides the running
+  // war rather than replacing it), so the default pool now offers it.
+  assert.deepEqual(normalizePool({}), { maps: COMPLETED_MAPS, modes: ["standard", "convoy", "heist", "night"] });
   // Unknown maps filtered against the valid list; empty result falls back.
   assert.deepEqual(
     normalizePool({ maps: ["blackwood", "atlantis"] }, ["frontier_corridor", "blackwood"]).maps,
@@ -121,11 +123,14 @@ test("Q54: pool defaults, filtering, and candidate law", async () => {
   assert.equal(full.length, 3);
   assert.deepEqual(full[0], { map: "frontier_corridor", mode: 0, modeAttacker: 0 });
   assert.equal(full[1].map, "blackwood");
-  // warsStarted 3 with two flip modes -> flips[3 % 2] = heist (Q52).
-  assert.deepEqual(full[2], { map: "frontier_corridor", mode: 2, modeAttacker: 1 });
-  const evenWar = voteCandidates(state, 4, normalizePool({}));
-  assert.deepEqual(evenWar[2], { map: "frontier_corridor", mode: 1, modeAttacker: 0 },
-    "convoy and heist share the flip slot by war parity");
+  // W4-10: the third slot now rotates convoy / heist / NIGHT by war
+  // count, so the ballot stays three choices (the Q54 law + the UI).
+  // flips[3 % 3] = convoy, then heist, then night — a fair share each.
+  assert.deepEqual(full[2], { map: "frontier_corridor", mode: 1, modeAttacker: 1 });
+  assert.equal(voteCandidates(state, 4, normalizePool({}))[2].mode, 2, "then heist");
+  const w5 = voteCandidates(state, 5, normalizePool({}))[2];
+  assert.equal(w5.night, true, "then a night war");
+  assert.equal(voteCandidates(state, 5, normalizePool({})).length, 3, "always three choices");
   // Convoy disabled: no mode flip offered.
   const noConvoy = voteCandidates(state, 3, normalizePool({ modes: ["standard"] }));
   assert.equal(noConvoy.length, 2);
@@ -139,4 +144,24 @@ test("Q54: pool defaults, filtering, and candidate law", async () => {
   const back = voteCandidates(convoyState, 4, normalizePool({ modes: ["standard"] }));
   assert.deepEqual(back[0], { map: "blackwood", mode: 1, modeAttacker: 1 }, "status quo first");
   assert.ok(back.some((c) => c.map === "blackwood" && c.mode === 0), "the exit exists");
+});
+
+test("W4-10 (Q80): NIGHT rides the ballot as a variant of the current war", async () => {
+  const { voteCandidates, normalizePool } = await import("../engine/vote.js");
+  const day = { mapProfile: "blackwood", rules: { mode: 0 } };
+  const cands = voteCandidates(day, 2, normalizePool({ maps: ["blackwood"], modes: ["standard", "night"] }));
+  const night = cands.find((c) => c.night);
+  assert.ok(night, "the ballot offers a night war");
+  assert.equal(night.map, "blackwood", "on the SAME map — it is a variant, not a rotation");
+  assert.equal(night.mode, 0, "and the same mode");
+
+  // Already at night? Then it is not on the ballot — never offer what
+  // you are already playing.
+  const atNight = { mapProfile: "blackwood", rules: { mode: 0, nightWar: true } };
+  const again = voteCandidates(atNight, 2, normalizePool({ maps: ["blackwood"], modes: ["standard", "night"] }));
+  assert.equal(again.find((c) => c.night), undefined);
+
+  // A pool without night never offers it.
+  const noNight = voteCandidates(day, 2, normalizePool({ maps: ["blackwood"], modes: ["standard"] }));
+  assert.equal(noNight.find((c) => c.night), undefined);
 });
