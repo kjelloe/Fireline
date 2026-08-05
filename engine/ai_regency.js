@@ -482,6 +482,29 @@ export class AIRegency {
       if (!controlled.has(id)) controlled.set(id, null);
     }
 
+    // HUMAN-RESERVE LAW (prompt 195): a regent may claim a free hull only
+    // while enough stock remains for every waiting HUMAN (slots 0-15,
+    // active, bodiless, not on foot — respawn countdowns count, they need
+    // a hull in seconds). Each team fields 17 hulls for 16 seats, so
+    // after a human's wreck the regency ladder would otherwise take the
+    // spare AND win the race to every factory-wave hull — the human sat
+    // spectating from their own base with nothing to click. Inert in AI
+    // sims (no human slot ever joins), so wars stay tick-identical.
+    const humanWaiting = { 0: 0, 1: 0 };
+    for (const op of state.operators) {
+      if (op.id < 16 && op.state === OP_ACTIVE && op.assetId === -1 &&
+          !this.regented.has(op.id) &&
+          !state.downed.some((d) => d.operatorId === op.id)) {
+        humanWaiting[op.team] += 1;
+      }
+    }
+    const aiClaims = { 0: 0, 1: 0 };
+    const regentMayClaim = (team) => {
+      const free = state.assets.filter((a) =>
+        a.team === team && a.operatorId === -1 && !isWreck(a)).length;
+      return free - aiClaims[team] - humanWaiting[team] > 0;
+    };
+
     // Per-team designated roles, computed fresh every tick from live state
     // (both rules found by backend sims: a global recoverer pick left one team
     // unable to recover; a dead scout left a team unable to raid again).
@@ -1070,6 +1093,7 @@ export class AIRegency {
       if (operator.state === OP_ACTIVE && operator.assetId === -1) {
         let pick = null;
         const team = operator.team;
+        if (!regentMayClaim(team)) continue; // garage reserved for waiting humans
         // Q1 (prompt 16): "AI may crew free assets when a ROLE is unfilled."
         // TEAM-wide check (a human raiding fills the role too): no crewed
         // operable carrier anywhere on the team → ANY free AI seat grabs a
@@ -1167,6 +1191,7 @@ export class AIRegency {
           if (free) pick = free.id;
         }
         if (pick !== null) {
+          aiClaims[team] += 1;
           commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: pick, confirm: true });
         }
         continue;
@@ -1207,12 +1232,17 @@ export class AIRegency {
             this.earnCheck.set(operatorId, { assetId: asset.id, score: operator.score, tick: state.tick });
           } else if (state.tick - mark.tick >= EARN_WINDOW_TICKS) {
             if (operator.score === mark.score) {
-              const hull = state.assets.find((a) =>
-                a.team === operator.team && a.operatorId === -1 && !isWreck(a) &&
-                !getUnitStats(a.type).amphibious && !getUnitStats(a.type).deployable);
+              // Human-reserve law: the swap consumes a free hull AND
+              // benches the unique — a double hit on garage stock.
+              const hull = regentMayClaim(operator.team)
+                ? state.assets.find((a) =>
+                    a.team === operator.team && a.operatorId === -1 && !isWreck(a) &&
+                    !getUnitStats(a.type).amphibious && !getUnitStats(a.type).deployable)
+                : null;
               if (hull) {
                 this.benched.add(asset.id);
                 this.earnCheck.delete(operatorId);
+                aiClaims[operator.team] += 1;
                 commands.push({ type: CMD_SELECT_ASSET, operatorId, assetId: hull.id, confirm: true });
                 continue;
               }

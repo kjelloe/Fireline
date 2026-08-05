@@ -3082,6 +3082,26 @@ function updateStatusPanel(view) {
   if (!el) return;
   const me = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
   if (!me || joined?.spectator) {
+    // Prompt 195 (playtest): the BODILESS seat must say what it is.
+    // Shot down -> respawned -> no hull: the panel used to just hide,
+    // Next-asset sat disabled, and clicking crewed hulls did nothing —
+    // "the game stopped working". Name the state and the way out.
+    if (view && joined && !joined.spectator &&
+        !view.downedOperators?.some((d) => d.operatorId === joined.operatorId) &&
+        whereAmI(view) === null) {
+      const myOp = view.operators?.find((o) => o.id === joined.operatorId);
+      const freeHull = view.friendlyAssets?.some(
+        (a) => a.operatorId === -1 && a.state !== STATE_DISABLED && a.state !== 3);
+      const line = (myOp?.respawnTicks ?? 0) > 0
+        ? t("notice.respawn_count", { s: Math.ceil(myOp.respawnTicks / 10) })
+        : freeHull ? t("notice.pick_hull") : t("notice.wave_wait");
+      if (statusKey !== line) {
+        statusKey = line;
+        el.style.display = "block";
+        el.textContent = line;
+      }
+      return;
+    }
     if (statusKey !== "") { el.style.display = "none"; statusKey = ""; }
     return;
   }

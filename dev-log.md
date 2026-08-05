@@ -6537,3 +6537,44 @@ The acceptance clickHud helper force-hides tutorial-overlay before
 hit-testing (so the overlay can never shadow later checks), which meant
 the tutorial's own buttons needed an inline hit-tester — clickHud would
 have hidden the button under test.
+
+## 2026-08-06 — the bodiless-seat playtest bug + the human-reserve law (prompt 195)
+
+FIRST TUTORIAL PLAYTEST found a stuck state that predates the tutorial:
+shot down at quest 5, respawned at base, and NOTHING responded — hull
+clicks did nothing, Next-asset did nothing. Diagnosis: both symptoms
+were honest UI over a real hole. Each team fields 17 hulls for 16
+seats; when the human's hull was wrecked, the regency crewing ladder
+claimed the spare and then WON THE RACE to every factory-wave hull (the
+AI plans every tick; a human clicks). The client made it feel dead:
+input_mapper only builds selects for UNCREWED hulls (clicking an
+AI-crewed hull is a designed no-op) and Next-asset disables itself when
+nothing is free — a disabled button swallows clicks silently.
+
+THE HUMAN-RESERVE LAW (engine/ai_regency.js plan()): a regent may claim
+a free hull only while enough stock remains for every WAITING human —
+slot 0-15, OP_ACTIVE, bodiless, not on foot, not under regency takeover;
+respawn countdowns count (they need a hull in seconds). A within-tick
+aiClaims counter stops two regents double-spending the surplus in one
+plan pass. Both claim sites gated: the bodiless-regent ladder AND the
+Q31 seat-swap (which consumes a hull and benches the unique — a double
+hit on stock). The Q56 landship claim stays ungated: it FREES a light
+hull. Inert in AI-only sims — no human slot ever joins there, and
+events are not hashed, so wars stay identical in hashed state.
+
+CLIENT LEGIBILITY: the status panel now names the bodiless state
+instead of hiding — "RESPAWNING — back in {s}s" (operator.respawnTicks
+already rides the view), "press NEXT ASSET or click a free hull" when
+stock exists, "the next factory-wave hull is RESERVED FOR YOU" when it
+does not. Strings in both locales.
+
+Gates: 6 new tests (test/ai_human_reserve.test.js), guard verified
+red-then-green by disabling it; 5-seed sim gate healthy (mixed winners
+B/A/B/B/A, reasons 5/4, tempo in band, systems firing); suite 865 x2;
+smoke + acceptance green.
+
+Prompt 195's second half — the numbered GOLDEN MISSION-LINE after
+tutorial completion (one of each mission type, rising difficulty) — is
+planned as W4-13 in plan-wave4.md with the recommended client-first
+shape; Q91 (mode steps vs the vote cycle) and Q92 (difficulty ramp)
+filed in dev-questions.md before build.
