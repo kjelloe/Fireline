@@ -6226,3 +6226,32 @@ mission it cannot finish.
 Both numbers came from re-runs after a lane error was caught by
 reading the build hash — the first Q83 pair measured a pre-gate
 commit. The habit paid twice in one day.
+
+## The route ladder is NOT monotonic — 80 is an optimum, not a point
+## on a curve (2026-08-05, prompt 184)
+
+| convoyRouteScale | attacker |
+|---|---|
+| 100 (classic) | 18.7% |
+| **80** | **38.3%** |
+| 65 | **15.3%** |
+
+Shortening the run FURTHER made the attacker much WORSE — worse even
+than not shortening it at all. The mechanism is in the implementation
+and I should have seen it before queuing: `convoyRouteScale` moves the
+TRUCK and nothing else. Its escorts still rally near their own lines,
+because that is what the formation law tells them to do. At 80 the
+truck is far enough forward to shave the run but close enough that its
+escort assembles around it; at 65 it is teleported into the defender's
+half ALONE, and dies before the party ever forms.
+
+So 80 is a local optimum, not a sample from a monotone curve, and the
+honest read of the ladder is: the knob as built has a ceiling set by
+the escort geometry, not by distance. Going further would mean moving
+the whole party — a formation change, not a scalar.
+
+TAKEAWAY worth keeping: a "simple scalar dial" that touches one entity
+inside a system built on relative positions is not simple. The
+non-monotonicity was the system telling us the dial has a hidden
+second variable in it.
+RECOMMENDATION UNCHANGED and now better evidenced: adopt scale 80.
