@@ -5820,3 +5820,54 @@ per-team block and green on restore — the FIRST attempt at that check
 passed while deleting it from the SPECTATOR projection, which is a
 neat demonstration of why "I wrote the lint" is not the same as "the
 lint bites".
+
+## THE RAID-PARTY CENSUS: a mission that never completes
+## (2026-08-05, prompt 179)
+
+`debugging/dbg_raid_census.mjs`, POWS=2, 5 seeds. What the AI raid
+party actually does:
+
+| | team A | team B |
+|---|---|---|
+| parties formed | 8 | 5 |
+| tick-instances with a party live | **49,950** | 31,166 |
+| distinct hulls cycled through it | **13** | 7 |
+| mean advance of a committed hull | 41.9 cells | 45.3 cells |
+| raid events | 4 | 1 |
+| **POWs delivered home** | **0** | **0** |
+| ticks with NO eligible raider | **2,763** | **5** |
+
+**THE HEADLINE IS THE ZERO.** Across ten war-sides the raid party
+never once brought a freed POW home. It commits a hull — plus up to
+two escorts — 40+ cells into enemy ground, holds them there for most
+of the war, and completes nothing. It is not an unfair mechanic; it
+is a BROKEN one, and RAIDPARTY=0 wins 15 points simply by not paying
+the tax. A pays that tax ~60% harder (49,950 v 31,166 tick-instances,
+13 v 7 hulls), and that difference IS the POWS deficit.
+
+The starvation column is the second finding: A hits "no eligible
+raider" 2,763 ticks to B's 5. The raider filter excludes
+canTow/canCarryStandard/indirect/**deployable** — and the Sentinel is
+the ONLY deployable chassis in the roster and it is the Directorate's
+(team A's) unique. So A fields 8 eligible raider hulls where B fields
+9, structurally, in every war.
+
+BUT THE UNIQUE PAIR IS NOT THE ROOT — tested, not assumed. With
+UNIQUES=0 the starvation gap PERSISTS (A 7,271 v B 1,964) and both
+sides get worse. Removing B's Skimmer costs B dearly (5 -> 1,964
+starved), confirming the eligibility edge is real; removing A's
+Sentinel — which was never an eligible raider — still doubles A's
+starvation (2,763 -> 7,271), which can only mean the Sentinel's
+battlefield PRESENCE was protecting A's eligible pool. That is the
+mid-war ledger's story again: A loses fighting hulls, the pool
+empties, the doctrine starves.
+
+RULING NEEDED (Q83): the doctrine has three honest options —
+(1) FIX it so raids complete (the carry-home leg is where it dies:
+    freed POWs must be CARRIED, and no doctrine picks them up);
+(2) GATE it — never commit a hull to a mission whose completion rate
+    is zero, e.g. require a carrier within N cells before forming;
+(3) DEFAULT IT OFF at POWS=2 (RAIDPARTY=0 already reads in band).
+Recommendation: (2) then (1) — gating is one condition and stops the
+bleeding immediately; the carry-home doctrine is the real repair and
+becomes MORE urgent once W4-8 puts POWs in standard wars.
