@@ -329,6 +329,15 @@ npm start                              # host machine
   AI now RESERVES the next factory-wave hull for you, and the status
   panel says exactly where you stand (respawn countdown / pick a free
   hull / your hull is coming).
+- ON-SCREEN KEY BAR (prompt 211, mobile round 1): touch devices get a
+  bottom bar of ACTION KEYS — only the ones your current seat can use,
+  grayed when momentarily unavailable, blinking when the banner or
+  tutorial says "do this now". Tapping does exactly what the key does.
+  ⚙ toggle turns it on/off anywhere.
+- THE GARAGE (prompt 211): rebuilt hulls now roll out of an
+  open-fronted motor-pool bay at the base's centre column — visible,
+  not just reachable via Next-asset. Warehouse and barracks got proper
+  pitched roofs.
 - THE GOLDEN LINE (prompt 201): mission cards you have never tried
   wear GOLD (★ + glow) until you click one and take it on — a standing
   map of what you haven't explored, across wars, until every mission
