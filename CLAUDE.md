@@ -254,11 +254,22 @@ outcome. Renderer presents fog-filtered views only.
   TOUR of real HUD ids → 12 sequential QUESTS detected from real play
   (send() hook, UI actions, own-view events; fog-legit by construction);
   mf_tutorial persists; SKIP falls back to the O3 coach beats; ⚙
-  replay. TWO LINTS in test/tutorial_model.test.js (tour targetIds
-  exist in index.html; tut.* keys in both locales incl. derived
-  `tut.q.<id>`); ui_acceptance walks the whole flow — its clickHud
+  replay. The ladder is a QUEUE (prompt 200): quests carry attemptKey
+  (tow/special), the DOM answers caps per snapshot, and an
+  unattemptable quest ROTATES TO THE BACK with a one-time defer note —
+  numbering counts done, never rotations. TWO LINTS in
+  test/tutorial_model.test.js (tour targetIds exist in index.html;
+  tut.* keys in both locales incl. derived `tut.q.<id>` and
+  `tut.defer.<id>`); ui_acceptance walks the whole flow — its clickHud
   force-hides tutorial-overlay, so tutorial buttons use an inline
-  hit-tester.
+  hit-tester. GOLDEN LINE (prompt 201): real task-strip cards wear
+  gold per KIND until first clicked (mf_goldline, cross-war,
+  client-only). IMPORT-REALITY LINT (prompt 202, lints.test.js #5):
+  every engine/shared export called bare in a client module must be
+  imported there — the stations slice shipped getUnitStats unimported
+  and the WHOLE seat-facing UI threw on first touch from day one. The
+  silently-dead-feature ledger: unprojected view field (W4-4), missing
+  validate case (W4-6), unimported helper (202).
   CONVOY ROUTE (Q82): `CONVOY_ROUTE_SCALE` default 80 — the truck
   starts 20% forward, measured 38.3% attacker (classic 100 = 18.7%).
   The ladder is NOT monotonic (65 -> 15.3%): the knob moves the TRUCK

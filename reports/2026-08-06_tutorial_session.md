@@ -1,4 +1,4 @@
-# Session report — 2026-08-06 (prompts 192-199): tutorial + playtest fixes
+# Session report — 2026-08-06 (prompts 192-204): tutorial + playtest fixes
 
 ## What shipped
 
@@ -9,7 +9,11 @@
 | YOU-marker embodiment (196-197) | The green diamond was a child of your driven hull — it died exactly when you left it. One scene-level marker now follows whereAmI (driving/stationed/riding/downed), the downed figure is terrain-anchored (it SANK into relief at fixed y=0.05 under ~0.11 undulation — why you never saw a body), and your body's first appearance fires the locator ring. Acceptance pins the marker. |
 | /healthz + real version (198) | `/healthz` aliases `/health` (both siblings speak only /healthz — box sweeps missed us); `/health` falls back to package.json version instead of `"dev"`. Live after your next deploy. |
 | Prompt recovery | dev-prompts.md was missing the deploy-session prompts — 187-192 recovered verbatim from the session transcript, grouped to match the commit citations. |
-| W4-13 planned | Your golden mission-line directive — recommended client-first shape in plan-wave4.md; Q91 (mode steps vs the vote cycle) + Q92 (difficulty ramp) block the build. |
+| Deferrable quests (200) | Artillery at the tow step no longer blocks the ladder: unattemptable quests rotate to the back with a one-time "deferred — why" note and return when conditions allow. Numbering counts done. |
+| THE GOLDEN LINE (201) | Your clarified design shipped, superseding the W4-13 sketch: real mission cards wear gold (★+glow+tooltip) per kind until first clicked; `mf_goldline` persists across wars. Q91/Q92 dissolved. |
+| Key bar visibility (201) | The special-quest text names the actual keys, and #hint-bar lights up while that quest is active (it was 11px dark-grey chrome — never hidden, never legible). |
+| THE UNIMPORTED IMPORT (202) | The stations slice never imported getUnitStats — J-join, seat hover tips, and the station banner threw ReferenceError on first touch since 08a9b1d. Fixed + a clickable "call a gunner" banner for drivers + bunk advertising on hover + an import-reality lint (red-green verified) so the class cannot reship. |
+| Searchlight anchor (203) | The sweep pivoted about mid-beam (centred ConeGeometry); apex now sits at the lamp. |
 
 ## Rulings you made (AskUserQuestion, prompt 192)
 
@@ -49,16 +53,22 @@ Suite 859/859 ×2 · client smoke OK · ui_acceptance OK (19 checks, 7 new).
   Fireline to games.json in the games-index repo.
 - multiciv/ssh-deploy.sh still has the broken `grep -w ":$p"` port check.
 
-## Playtest focus (round 2)
+## Playtest focus (round 3)
 
-1. Get shot down ON PURPOSE: you should see your prone body (terrain-
-   anchored now), the green ring pulse on it, and the diamond above it.
-2. Respawn with all hulls taken: the status panel should count down,
-   then either point you at a free hull or promise the reserved wave
-   hull — which the AI must actually leave for you.
-3. Resume the tutorial ladder from wherever you left it (it never
-   dead-ends: every state-dependent quest has "skip this step").
-4. The four feel-questions in dev-questions.md (arrow placement, quest
+1. NEW — seats, first honest run ever: hover a friendly carrier (tip
+   should offer J for the ring / B for the bunk), and drive a carrier
+   near enemies with the ring empty — the "call a gunner" banner should
+   appear and click-send the ping. This UI has never once worked in a
+   real session, so treat it as a fresh feature.
+2. NEW — golden cards: untried mission kinds glow gold with ★; clicking
+   one retires its gold permanently. Tell me if click-to-retire feels
+   too cheap (deed-based retirement is the ready follow-up).
+3. NEW — the tow quest in a wrong hull should DEFER (blue note) and
+   come back; the special quest should light the key bar.
+4. Still standing from round 2: shot-down body + ring + diamond;
+   bodiless respawn narration + the reserved hull; searchlights now
+   hang from their towers.
+5. The four feel-questions in dev-questions.md (arrow placement, quest
    pacing, ✓ rhythm, tour clarity).
 
 ## Open questions

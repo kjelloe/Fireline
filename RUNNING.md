@@ -329,6 +329,15 @@ npm start                              # host machine
   AI now RESERVES the next factory-wave hull for you, and the status
   panel says exactly where you stand (respawn countdown / pick a free
   hull / your hull is coming).
+- THE GOLDEN LINE (prompt 201): mission cards you have never tried
+  wear GOLD (★ + glow) until you click one and take it on — a standing
+  map of what you haven't explored, across wars, until every mission
+  type is tried.
+- CREW SEATS, discoverable (prompt 202): hovering a friendly hull now
+  advertises its free seats ("JOIN AS GUNNER (J)", "BOARD when
+  adjacent (B)"), and a driver whose station is open under fire gets a
+  clickable banner to call a gunner (the same call lives on the
+  1/2/3 ping keys).
 - TUTORIAL quest-line (W4-12): your very first join opens "Looks like
   it's your first time" — take a 7-stop arrow tour of the screen, then
   12 field exercises walk you through everything (move, waypoints,
