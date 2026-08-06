@@ -135,3 +135,39 @@ test("5A HTTP: /replays lists and /replay/:id streams an archived war", async ()
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("prompt 206: retention keeps the newest N and deletes the oldest from disk + index", () => {
+  const dir = tempDir();
+  try {
+    const store = createReplayStore(dir, { keep: 2 });
+    const ids = [];
+    for (const seed of [1, 2, 3, 4]) {
+      // Distinct logs -> distinct content hashes -> four distinct wars.
+      ids.push(store.save(
+        { mapSeed: seed, ticks: seed, winner: 0, reason: 5, finalHash: `h${seed}` },
+        [{ tick: seed, cmd: { type: "advance_tick" } }]
+      ));
+    }
+    const listed = store.list();
+    assert.equal(listed.length, 2, "index holds only the newest two");
+    assert.deepEqual(listed.map((r) => r.id), [ids[2], ids[3]], "arrival order, oldest evicted");
+    assert.equal(store.load(ids[0]), null, "evicted file is gone from disk");
+    assert.ok(store.load(ids[3]), "the newest survives");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("prompt 206: no keep option = unlimited (the home-server default)", () => {
+  const dir = tempDir();
+  try {
+    const store = createReplayStore(dir);
+    for (const seed of [1, 2, 3, 4]) {
+      store.save({ mapSeed: seed, ticks: seed, winner: 0, reason: 5, finalHash: `h${seed}` },
+        [{ tick: seed, cmd: { type: "advance_tick" } }]);
+    }
+    assert.equal(store.list().length, 4, "nothing evicted without a cap");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

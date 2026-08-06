@@ -3,7 +3,7 @@
 // index. Replay ids derive from the log's content hash — no wall clock in
 // anything replay-relevant; timestamps are caller-supplied operational data.
 
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync, existsSync, unlinkSync } from "node:fs";
 import path from "node:path";
 import { createByteWriter, computeFnv1a64, hashToHex64 } from "../shared/canonical.js";
 
@@ -17,7 +17,7 @@ function logHash(log) {
   return hashToHex64(hashHi, hashLo);
 }
 
-export function createReplayStore(dir) {
+export function createReplayStore(dir, { keep = null } = {}) {
   mkdirSync(dir, { recursive: true });
   const indexPath = path.join(dir, "replay_index.json");
 
@@ -43,6 +43,17 @@ export function createReplayStore(dir) {
           finalHash: meta.finalHash,
           finishedAt: meta.finishedAt ?? null,
         });
+        // RETENTION (prompt 206): a full-war commandLog is megabytes and
+        // the archive grew forever — on the shared box the DISK is a
+        // neighbourhood resource just like memory. Keep the newest
+        // `keep`; index order IS arrival order, so the front is oldest.
+        if (Number.isInteger(keep) && keep > 0) {
+          while (index.replays.length > keep) {
+            const old = index.replays.shift();
+            try { unlinkSync(path.join(dir, `${old.id}.json`)); }
+            catch { /* already gone — the index row is what matters */ }
+          }
+        }
         writeFileSync(indexPath, JSON.stringify(index, null, 2));
       }
       return id;

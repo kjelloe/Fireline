@@ -4,7 +4,7 @@
 // broadcast. All game logic stays in engine/.
 
 import http from "node:http";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, renameSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
@@ -58,6 +58,10 @@ export function createAppServer(options = {}) {
       winner: gameServer.state.winner,
       players: transport.sessions.size,
       uptimeMs: Date.now() - startedAt,
+      // Prompt 206: memory pressure visible from OUTSIDE — the box caps
+      // us at MemoryMax and a sweep should see us climbing before the
+      // reaper does.
+      rssMb: Math.round(process.memoryUsage().rss / (1024 * 1024)),
       // The deployed build must be identifiable from outside: the real
       // package.json version unless the host overrides (options wins).
       version: options.version ?? pkgVersionCached ?? "dev",
@@ -147,8 +151,14 @@ export function createAppServer(options = {}) {
   });
 
   // 5A: match history. A finished war is archived exactly once.
+  // REPLAY_KEEP (prompt 206): retention cap for the shared box — a
+  // constrained host keeps the newest N archives instead of growing the
+  // disk forever. Default unlimited so home/LAN servers lose nothing.
+  const replayKeep = options.replayKeep ??
+    (Number(process.env.REPLAY_KEEP) > 0 ? Number(process.env.REPLAY_KEEP) : null);
   const replayStore = createReplayStore(
-    options.replayDir ?? path.join(STATE_DIR, "replays")
+    options.replayDir ?? path.join(STATE_DIR, "replays"),
+    { keep: replayKeep }
   );
   let archived = false;
   function archiveIfOver() {
@@ -328,7 +338,14 @@ export function createAppServer(options = {}) {
             const s = gameServer.state;
             const body = JSON.stringify({ savedAt: Date.now(), state: s },
               (k, v) => (v instanceof Uint8Array ? { __u8: Array.from(v) } : v));
-            writeFileSync(savePath, body);
+            // ATOMIC (prompt 206): tmp + rename. The crash this file
+            // exists for is the memory-cap SIGKILL, and that lands
+            // whenever the reaper likes — including mid-write. A direct
+            // write leaves truncated JSON and the resume path reads
+            // "no autosave"; rename is atomic on the same filesystem,
+            // so the previous good save survives any kill.
+            writeFileSync(`${savePath}.tmp`, body);
+            renameSync(`${savePath}.tmp`, savePath);
           } catch (err) { console.error("autosave failed:", err.message); }
         }, options.autosaveMs ?? 30000);
         this.autosaveTimer.unref?.(); // never hold the event loop open

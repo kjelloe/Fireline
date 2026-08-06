@@ -6692,3 +6692,33 @@ New acceptance checks: searchlight bbox hangs from apex [-h, 0];
 downed body resolves via whereAmI with the YOU diamond at the low
 anchor and the locator ring live; bodiless narration walks countdown →
 pick-a-hull/wave-wait. 27 checks total. Suite 872, smoke green.
+
+## 2026-08-06 — crash + memory posture on the shared box (prompt 206)
+
+Reviewed how the runtime behaves when the Hetzner box's MemoryMax bites.
+Already right: caps turn a leak into a restart, not a box death; 30 s
+autosave with a 10-minute freshness gate; graceful SIGTERM archive;
+snapshots capped (30); commandLog resets per war and wars END (time
+limit/mercy/overtime), so per-war memory is bounded. Four gaps closed:
+
+1. V8 CANNOT SEE THE CGROUP: default heap ceiling exceeds MemoryMax, so
+   the first sign of pressure was a SIGKILL from the OOM reaper — no GC
+   pressure, no stack, possibly mid-write. `--max-old-space-size=384`
+   in the unit makes V8 collect hard below the cap; worst case is now a
+   clean heap-OOM crash that systemd restarts.
+2. AUTOSAVE WAS NOT ATOMIC: writeFileSync straight to autosave.json —
+   the exact crash the file exists for could truncate it (resume then
+   reads "no autosave" and cold-starts). tmp+rename now; the previous
+   good save survives any kill.
+3. THE REPLAY ARCHIVE GREW FOREVER on disk (a full-war commandLog is
+   megabytes) — REPLAY_KEEP retention in replay_store (index order is
+   arrival order; oldest evicted from disk + index). Unit sets 200;
+   home servers stay uncapped by default. 2 tests.
+4. NO MEMORY SIGNAL: /health//healthz now report rssMb so an outside
+   sweep sees the climb before the reaper acts. Test pins it.
+
+Deliberately unchanged: Restart=on-failure @ 5 s with NO StartLimit —
+for a game on a capped unit, an eternal capped crash-loop beats a dead
+unit nobody is watching; recorded in the unit file. BOX-SIDE ACTION:
+the unit changed — sync, then --bootstrap (unit + daemon-reload), then
+deploy. Suite 874 x2, smoke green.

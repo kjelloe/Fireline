@@ -55,11 +55,18 @@ After=network.target
 User=fireline
 WorkingDirectory=/opt/fireline
 # Session config lives HERE, not in the code: map/mode/difficulty/rules.
-ExecStart=/usr/bin/node server/index.js --map frontier_corridor --difficulty normal
+# On a MemoryMax-capped unit, ALWAYS set --max-old-space-size ~25% below
+# the cap: V8 cannot see the cgroup, so without it the first sign of
+# memory pressure is a SIGKILL from the OOM reaper (no GC pressure, no
+# stack trace, possibly mid-autosave-write). With it, V8 collects hard
+# and the worst case is a clean heap-OOM crash systemd restarts.
+ExecStart=/usr/bin/node --max-old-space-size=384 server/index.js --map frontier_corridor --difficulty normal
 # Competitive public host? add --teambalance (default lets friends stack one team vs the AI)
 Restart=on-failure
 RestartSec=3
 Environment=PORT=8080
+# Shared/small disk? REPLAY_KEEP=200 caps the war archive (a full-war
+# commandLog is megabytes; unset = unlimited for home servers).
 # Optional: MASTER_URL=... (discovery), SPECTATE=0, REPLAYS=0, RULES=normal
 
 [Install]
@@ -67,7 +74,8 @@ WantedBy=multi-user.target
 ```
 
 `RESUME` note: the CLI path runs with crash persistence ON (30 s
-autosave, resume within 10 min) — a `Restart=on-failure` unit
+ATOMIC autosave — tmp+rename, so a kill mid-write can never truncate
+the previous good save — resume within 10 min) — a `Restart=on-failure` unit
 therefore resumes the war the players were in. `RESUME=0` disables.
 
 ## nginx (template)

@@ -149,5 +149,8 @@ test("prompt 198: /healthz aliases /health and both report the real version", as
     // version through. package.json is the floor now.
     assert.notEqual(health.version, "dev", "version falls back to package.json, not 'dev'");
     assert.match(health.version, /^\d+\.\d+\.\d+/);
+    // Prompt 206: memory pressure must be visible from outside — the
+    // shared box caps RSS and a sweep should see the climb coming.
+    assert.ok(Number.isInteger(health.rssMb) && health.rssMb > 0, `rssMb=${health.rssMb}`);
   });
 });
