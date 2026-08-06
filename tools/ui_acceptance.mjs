@@ -263,6 +263,106 @@ async function main() {
     typeof btnState.disabled === "boolean",
     `disabled=${btnState.disabled} title="${btnState.title}"`);
 
+  // ── prompt 205: the three round-2 playtest items get automated proof ──
+  // Searchlight anchor (203): the beam's geometry must hang FROM its
+  // apex — a centred cone pivots about mid-beam and the arc floats off
+  // its tower. bbox y must be [-h, 0], never [-h/2, +h/2].
+  const beamBox = await page.evaluate(() => {
+    const scene = window.__mfDebug.scene();
+    let beam = null;
+    scene.traverse((o) => { if (!beam && o.name === "searchlight") beam = o; });
+    if (!beam) return null;
+    beam.geometry.computeBoundingBox();
+    return { minY: beam.geometry.boundingBox.min.y, maxY: beam.geometry.boundingBox.max.y };
+  });
+  check("searchlight beam hangs from its apex (prompt 203)",
+    beamBox !== null && beamBox.maxY < 0.01 && beamBox.minY < -2,
+    JSON.stringify(beamBox));
+
+  // Downed body + ring + diamond (196-197): put the joined player's own
+  // seat DOWN through the ENGINE'S OWN shapes (createDowned — the same
+  // constructor the reducer uses), then assert the client renders the
+  // body ABOVE the terrain surface with the locator ring and the YOU
+  // diamond over it.
+  const { createDowned } = await import("../engine/downed.js");
+  const opId = await page.evaluate(() => window.__mfDebug.joined()?.operatorId);
+  // CAPTURE AND MUTATE SYNCHRONOUSLY: gameServer.state is REPLACED every
+  // tick (the reducer returns a fresh copy), so state captured before an
+  // await is a dead object by the time you touch it — the first cut of
+  // this check mutated a stale snapshot and proved nothing.
+  const downOk = (() => {
+    const st = appServer.gameServer.state;
+    const myAsset = st.assets.find((a) => a.operatorId === opId);
+    if (!myAsset) return false;
+    const seat = st.operators[opId];
+    seat.state = 2; // OP_DOWN
+    seat.assetId = -1;
+    const body = createDowned(seat, myAsset);
+    // Away from ALL friendly hulls: the reducer's auto-rescue boards an
+    // adjacent body on the very next tick (correct game law — the first
+    // cut of this check downed the player beside the base carrier and
+    // the body vanished into a bunk before one snapshot shipped).
+    body.x = 60 * 256 + 128; body.y = 20 * 256 + 128;
+    body.targetX = body.x; body.targetY = body.y;
+    st.downed.push(body);
+    myAsset.state = 2; // ASSET_DISABLED
+    myAsset.operatorId = -1;
+    return true;
+  })();
+  check("surgery precondition: the joined player crews a hull", downOk,
+    `operator ${opId}`);
+  if (downOk) {
+    await page.waitForTimeout(900); // two snapshots + render frames
+    const downedView = await page.evaluate(() => {
+      const scene = window.__mfDebug.scene();
+      const dbg = { body: null, marker: null, ring: false };
+      scene.traverse((o) => {
+        if (o.name === "you-marker") dbg.marker = { visible: o.visible, y: o.position.y };
+      });
+      // downed meshes are unnamed groups; identify by the label instead
+      dbg.labels = window.__mfDebug.labelCount();
+      dbg.whereAmI = window.__mfDebug.whereAmI();
+      return dbg;
+    });
+    check("downed: whereAmI resolves to the body", downedView.whereAmI?.kind === "downed",
+      JSON.stringify(downedView.whereAmI));
+    check("downed: the YOU diamond rides the body (low anchor)",
+      downedView.marker?.visible === true && downedView.marker.y < 1.0,
+      JSON.stringify(downedView.marker));
+    const ringUp = await page.evaluate(() => {
+      const scene = window.__mfDebug.scene();
+      let ring = false;
+      scene.traverse((o) => {
+        if (o.geometry?.type === "RingGeometry" && o.material?.color?.getHex?.() === 0x59e07a) ring = true;
+      });
+      return ring;
+    });
+    check("downed: the green locator ring pulses on the body", ringUp === true);
+
+    // Bodiless-respawn narration (195): redeploy the seat, then walk the
+    // status-panel states — countdown, then pick-a-hull/wave-wait.
+    // Same rule: fresh state capture, synchronous mutation.
+    (() => {
+      const st = appServer.gameServer.state;
+      const i = st.downed.findIndex((d) => d.operatorId === opId);
+      if (i >= 0) st.downed.splice(i, 1);
+      st.operators[opId].state = 1; // OP_ACTIVE
+      st.operators[opId].respawnTicks = 40;
+    })();
+    await page.waitForTimeout(500); // < 40 ticks: the countdown is still live
+    const counting = await page.evaluate(() =>
+      document.getElementById("status-panel").textContent);
+    check("bodiless: the respawn countdown narrates",
+      /RESPAWNING|GJENOPPSTÅR/.test(counting), `panel="${counting}"`);
+    (() => { appServer.gameServer.state.operators[opId].respawnTicks = 0; })();
+    await page.waitForTimeout(700);
+    const landed = await page.evaluate(() =>
+      document.getElementById("status-panel").textContent);
+    check("bodiless: the panel points at a hull or promises the wave",
+      /NEXT ASSET|free hull|RESERVED|NESTE ENHET|RESERVERT/.test(landed),
+      `panel="${landed}"`);
+  }
+
   await browser.close();
   await appServer.stop();
   if (failures.length) {

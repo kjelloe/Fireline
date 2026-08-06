@@ -6664,3 +6664,31 @@ field (W4-4), missing validate case (W4-6), unimported helper (202).
 Suite 872 x2, smoke + acceptance green. AudioContext console noise in
 headless smoke observed once under parallel load — environmental, the
 re-run was clean (ws-flake family, sighting logged).
+
+## 2026-08-06 — automated proof for the round-2 trio, and the crash it caught (prompt 205)
+
+The three manual playtest items got acceptance-harness proof via STATE
+SURGERY: mutate gameServer.state through the ENGINE'S OWN constructors
+(createDowned) and assert what the browser renders. Three lessons paid
+for on the spot:
+
+1. gameServer.state is REPLACED every tick (the reducer returns a new
+   copy) — state captured before an await is a DEAD OBJECT. Capture and
+   mutate synchronously or the surgery proves nothing (the first cut
+   "passed" its mutations into the void).
+2. The auto-rescue law is FAST: a body downed beside the base carrier
+   was boarded before one snapshot shipped. Correct game behaviour —
+   the test moves the body away from friendly hulls.
+3. THE SURGERY CAUGHT A LIVE CRASH: the golden line's tooltip called
+   t("gold.untried") inside `for (const t of tasks)` — the loop var
+   SHADOWED the i18n t(), so the moment any untried gold card rendered,
+   renderBattlefield threw EVERY FRAME. Smoke missed it (no tasks in
+   its window); the surgery's rescue card surfaced it instantly. THE
+   DEPLOYED BUILD CARRIES THIS CRASH — redeploy before further gold
+   playtesting. Loop var renamed task; the shadow class is noted here
+   because grep-level lints cannot see scope.
+
+New acceptance checks: searchlight bbox hangs from apex [-h, 0];
+downed body resolves via whereAmI with the YOU diamond at the low
+anchor and the locator ring live; bodiless narration walks countdown →
+pick-a-hull/wave-wait. 27 checks total. Suite 872, smoke green.

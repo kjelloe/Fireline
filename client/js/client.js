@@ -3025,13 +3025,17 @@ function updateTaskStrip(view) {
   if (key === lastTaskKey) return;
   lastTaskKey = key;
   el.innerHTML = "";
-  for (const t of tasks) {
+  // (loop var is `task`, NOT `t` — the old `for (const t of tasks)`
+  // shadowed the i18n t() and the gold tooltip crashed every frame the
+  // moment an untried card appeared; caught by the prompt-205
+  // acceptance surgery before it reached a player)
+  for (const task of tasks) {
     const card = document.createElement("div");
-    const untried = !tried.has(t.kind);
-    card.textContent = untried ? `★ ${t.label}` : t.label;
+    const untried = !tried.has(task.kind);
+    card.textContent = untried ? `★ ${task.label}` : task.label;
     card.style.cssText =
       "background:rgba(10,14,10,0.78); color:#d8e6c8; padding:7px 10px;" +
-      `border-left:3px solid ${t.mine ? "#57c46b" : "#f5e96b"}; border-radius:4px;` +
+      `border-left:3px solid ${task.mine ? "#57c46b" : "#f5e96b"}; border-radius:4px;` +
       "font:12px sans-serif; cursor:pointer;" +
       (untried
         ? "border:1px solid #f5c84a; border-left:3px solid #f5c84a;" +
@@ -3039,10 +3043,10 @@ function updateTaskStrip(view) {
         : "");
     if (untried) card.title = t("gold.untried");
     card.onclick = () => {
-      markGoldTried(t.kind);
+      markGoldTried(task.kind);
       lastTaskKey = ""; // re-render: the gold retires the moment it is tried
-      freeCam.jumpTo(t.cellX, t.cellY);
-      send({ type: "ping", kind: t.ping, targetCellX: t.cellX, targetCellY: t.cellY });
+      freeCam.jumpTo(task.cellX, task.cellY);
+      send({ type: "ping", kind: task.ping, targetCellX: task.cellX, targetCellY: task.cellY });
     };
     el.appendChild(card);
   }
