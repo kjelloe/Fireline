@@ -1969,24 +1969,11 @@ function upsertAssetMesh(a, friendly) {
   }
   if (friendly && a.operatorId === joined?.operatorId) {
     mesh.scale.setScalar(1.15);
-    // Prompt 160 item 1: the YOU marker — a small green low-poly
-    // diamond floating over the hull, bobbing and slowly spinning.
-    if (!mesh.userData.ownMarker) {
-      const d = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.14, 0),
-        new THREE.MeshBasicMaterial({ color: 0x5aff7a, transparent: true, opacity: 0.9 })
-      );
-      d.name = "own-marker";
-      mesh.add(d);
-      mesh.userData.ownMarker = d;
-    }
-    const om = mesh.userData.ownMarker;
-    om.position.y = 1.15 + 0.08 * Math.sin(performance.now() / 320);
-    om.rotation.y = performance.now() / 800;
-    om.visible = true;
-  } else {
-    if (mesh.userData.ownMarker) mesh.userData.ownMarker.visible = false;
-    if (a.state !== STATE_DISABLED) mesh.scale.setScalar(1);
+    // Prompt 160 item 1 -> prompt 197: the green YOU diamond moved to a
+    // scene-level marker (updateYouMarker) that follows your EMBODIMENT
+    // — driving, stationed, riding, or down on foot — not just this hull.
+  } else if (a.state !== STATE_DISABLED) {
+    mesh.scale.setScalar(1);
   }
   // Prompt 160 item 8: SEAT PIPS — a cyan ring over any friendly hull
   // with a free seat beyond the driver (carrier bunks, empty stations).
@@ -2133,13 +2120,46 @@ function updateVfx(nowMs) {
   }
 }
 
+// Prompt 197: the YOU marker — one scene-level green diamond that
+// follows your EMBODIMENT through every state whereAmI can name:
+// driving a hull, manning a station, riding a carrier, or down on
+// foot. The old per-hull child marker vanished exactly when you left
+// the hull — the states where finding yourself matters most.
+let youMarker = null;
+function updateYouMarker(view) {
+  // (named emb, not me — the view-contract lint reserves me/meNow/
+  // myAsset for OWN-ASSET bindings, and this is a whereAmI embodiment)
+  const emb = joined && !joined.spectator ? whereAmI(view) : null;
+  if (!emb) {
+    if (youMarker) youMarker.visible = false;
+    return;
+  }
+  if (!youMarker) {
+    youMarker = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.14, 0),
+      new THREE.MeshBasicMaterial({ color: 0x5aff7a, transparent: true, opacity: 0.9 }));
+    youMarker.name = "you-marker";
+    scene.add(youMarker);
+  }
+  const h = emb.kind === "downed" ? 0.75
+    : emb.assetId === 32 ? 3.0 // the LANDSHIP towers over the 1.55 line
+    : 1.55;
+  youMarker.position.set(
+    emb.x / CELL + 0.5,
+    h + 0.08 * Math.sin(performance.now() / 320),
+    emb.y / CELL + 0.5);
+  youMarker.rotation.y = performance.now() / 800;
+  youMarker.visible = true;
+}
+
 // 14C: tracers + dust. Recoil rides the asset upsert; this owns the rest.
-// Item 20: a pulsing green ring rides YOUR hull for 3 s after respawn.
+// Item 20: a pulsing green ring rides YOU for 3 s after respawn — and
+// since prompt 197 it resolves through whereAmI, so it can pulse over
+// a downed body, not only a driven hull.
 function updateSpawnRing(nowMs, view) {
   const active = nowMs < spawnRingUntil && joined;
-  const me = active
-    ? view?.friendlyAssets?.find((a) => a.operatorId === joined.operatorId) : null;
-  if (!me) {
+  const emb = active ? whereAmI(view) : null; // embodiment, not an own-asset
+  if (!emb) {
     if (spawnRingMesh) { scene.remove(spawnRingMesh); spawnRingMesh = null; }
     return;
   }
@@ -2154,7 +2174,7 @@ function updateSpawnRing(nowMs, view) {
   const pulse = 1 + 0.18 * Math.sin(nowMs / 120);
   spawnRingMesh.scale.set(pulse, pulse, pulse);
   spawnRingMesh.material.opacity = Math.max(0.15, remain);
-  spawnRingMesh.position.set(me.x / CELL + 0.5, 0.06, me.y / CELL + 0.5);
+  spawnRingMesh.position.set(emb.x / CELL + 0.5, 0.06, emb.y / CELL + 0.5);
 }
 
 function updateMotion(nowMs) {
@@ -3561,7 +3581,21 @@ function updateDownedMeshes(view) {
       scene.add(mesh);
       downedMeshes.set(d.operatorId, mesh);
     }
-    mesh.position.set(d.x / CELL + 0.5, 0.05, d.y / CELL + 0.5);
+    // Prompt 197 ("I have never seen anything outside a hull"): the
+    // prone figure sat at a FIXED y=0.05 while the terrain mesh
+    // undulates up to ~0.11 — bodies sank into any rough ground. Anchor
+    // to the surface the way props always have.
+    const gx = d.x / CELL + 0.5, gz = d.y / CELL + 0.5;
+    const gy = cachedMap
+      ? Math.max(0.05, 0.02 + heightAt(cachedMap.cells, cachedMap.width,
+          cachedMap.seed >>> 0, Math.round(gx), Math.round(gz)))
+      : 0.05;
+    mesh.position.set(gx, gy, gz);
+    const mineNew = d.operatorId === joined?.operatorId && !mesh.userData.ringShown;
+    if (mineNew) {
+      mesh.userData.ringShown = true;
+      spawnRingUntil = performance.now() + 3000; // "you are HERE", face down
+    }
     // Figure kit: a FREED POW reads distinct — pale coat, not team paint
     // (they are barely walking; the carrier ride is the rescue).
     if (d.freedPow === 1 && !mesh.userData.freedTint) {
@@ -3780,6 +3814,7 @@ function renderBattlefield() {
   updateWarDressing(view);
   for (const st of view.standards ?? []) upsertStandardMesh(st);
   updateDownedMeshes(view);
+  updateYouMarker(view); // prompt 197: after downed meshes — it may mark one
   updateMineMeshes(view);
   updateCaltropMeshes(view);
   updateSandbagMeshes(view);

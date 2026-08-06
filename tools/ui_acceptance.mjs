@@ -160,6 +160,15 @@ async function main() {
   });
   check("joined operator known", own !== null);
 
+  // ── prompt 197: the YOU marker rides the player's embodiment ─────────
+  const marker = await page.evaluate(() => {
+    const m = window.__mfDebug.scene()?.getObjectByName?.("you-marker");
+    return m ? { visible: m.visible, y: m.position.y } : null;
+  });
+  check("YOU marker exists and is visible while embodied",
+    marker !== null && marker.visible === true && marker.y > 0.5,
+    JSON.stringify(marker));
+
   // ── next-asset cycles selection ───────────────────────────────────────
   const selBefore = await page.evaluate(() => window.__mfDebug.selectedAsset());
   await clickHud("#btn-next-asset");

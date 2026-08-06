@@ -6578,3 +6578,30 @@ tutorial completion (one of each mission type, rising difficulty) — is
 planned as W4-13 in plan-wave4.md with the recommended client-first
 shape; Q91 (mode steps vs the vote cycle) and Q92 (difficulty ramp)
 filed in dev-questions.md before build.
+
+## 2026-08-06 — "I have never seen anything outside a hull" (prompts 196-197)
+
+Two roots behind one playtest observation, both in presentation:
+
+1. THE SUNKEN BODY: the downed-operator figure rendered at a FIXED
+   y=0.05 while terrain-mesh relief undulates up to ~0.11 — a prone
+   figure 0.2 tall sank partly or wholly into any rough ground. Props
+   solved this at birth (0.02 + heightAt anchor); the figure never did.
+   Now anchored to the surface the same way, and YOUR body's first
+   appearance fires the 3s green locator ring.
+
+2. THE MARKER THAT DIED WITH THE HULL: the prompt-160 green YOU diamond
+   was a CHILD of the driven hull's mesh, gated on operatorId — it
+   vanished exactly when you left the hull (downed, riding a carrier,
+   manning a station), the states where finding yourself matters most.
+   Replaced with ONE scene-level marker driven by whereAmI every frame:
+   driving, stationed, aboard, down — same diamond, correct height per
+   embodiment (0.75 over a body, 3.0 over the landship). The spawn ring
+   resolves through whereAmI now too.
+
+The view-contract lint caught its author a THIRD time mid-slice: the
+new code bound a whereAmI EMBODIMENT to a variable named `me`, which
+the lint reserves for own-asset bindings (it flagged kind/assetId as
+unprojected). Renamed to `emb` — the lint's contract stays strict.
+Acceptance now pins the marker (exists + visible + above ground after
+join). Suite 865, smoke + acceptance green.
