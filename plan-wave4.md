@@ -158,25 +158,16 @@ tests pin each new transition. The abduction counterplay law
   hashed. Two new lints (tour targets exist in index.html; tutorial
   keys in both locales) + full-flow browser acceptance.
 
-## W4-13 · The GOLDEN MISSION-LINE (M-L) — ruled by prompt 195, design pending Q91/Q92
+## W4-13 · The GOLDEN LINE (M) — ✅ SHIPPED (prompt 201, owner's design)
 
-- Owner's directive: once the tutorial completes, a numbered "golden"
-  mission-line takes the player through ONE OF EACH mission type at
-  increasing difficulty, until they have done every mission the game
-  offers.
-- Recommended shape (client-first, the tutorial precedent): a
-  persistent numbered ladder (localStorage `mf_goldline`) rendered as
-  a GOLD mission card above the task strip. Candidate ladder by rising
-  difficulty: ① win a standard war · ② capture N relays in one war ·
-  ③ tow-recover a wreck home · ④ deliver a supply-drop hold · ⑤ return
-  a stolen standard · ⑥ steal + score the enemy standard · ⑦ claim the
-  LANDSHIP · ⑧ convoy escort delivered (attacker) · ⑨ convoy stopped
-  (defender) · ⑩ heist getaway scored · ⑪ spring a POW (raid) · ⑫ win
-  a night war. Completion detected from real play like the tutorial
-  (own-view events; cross-war persistence is the new bit).
-- OPEN before build: Q91 (how mode-bound steps meet the server's vote
-  cycle — wait for the mode, or let the gold card SUGGEST the vote) and
-  Q92 (solo default difficulty ramp vs the AI). See dev-questions.md.
+- The owner's clarified shape replaced the scripted-ladder sketch: the
+  REAL mission cards wear gold (★ + glow + tooltip) for every kind
+  this player has never tried; clicking the card — fly there, answer
+  it — retires that kind's gold forever (`mf_goldline`, cross-war).
+  Veterans age out naturally; no server coupling, so the old Q91/Q92
+  (vote-cycle + difficulty-ramp questions) dissolved unasked.
+- Follow-up candidates if playtests want more: deed-based retirement
+  (gold clears on DOING, not clicking) and a progress count in ⚙.
 
 ## W4-11 · Frontline Push — the third mode (L) — full slice chain
 
