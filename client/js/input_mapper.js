@@ -14,7 +14,17 @@ export function clampCell(v) {
 }
 
 // Scene coordinates use 1 unit = 1 cell (renderer convention).
-export function scenePointToCell(sceneX, sceneZ) {
+// Prompt 214 (the RUNAWAY-CORNER bug): a tap whose ground ray lands
+// OUTSIDE the map used to be CLAMPED to the edge — manufacturing a
+// corner move-order the player never gave, and every further tap
+// clamped to the same corner ("a target I could not reset"). A slight
+// overshoot (half a cell) still forgives edge taps; anything further
+// out returns null and the caller drops the click.
+export function scenePointToCell(sceneX, sceneZ, { strict = false } = {}) {
+  if (strict && (sceneX < CELL_MIN - 0.5 || sceneX > CELL_MAX + 1.5 ||
+                 sceneZ < CELL_MIN - 0.5 || sceneZ > CELL_MAX + 1.5)) {
+    return null;
+  }
   return { cellX: clampCell(sceneX), cellY: clampCell(sceneZ) };
 }
 

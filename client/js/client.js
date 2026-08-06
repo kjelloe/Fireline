@@ -768,6 +768,12 @@ function init3d() {
       lastKeybarSig = ""; // force re-render either direction
     };
   }
+  // Prompt 214: the ⚙ connection check — one tap answers "is it me,
+  // the network, or the host".
+  const netBtn = document.getElementById("btn-net-check");
+  if (netBtn) {
+    netBtn.onclick = () => runNetCheck(document.getElementById("net-diag"));
+  }
   // W4-12: re-arm the tutorial on demand (a long break, a friend's PC).
   const tutReplayBtn = document.getElementById("btn-tutorial-replay");
   if (tutReplayBtn) {
@@ -793,6 +799,8 @@ function init3d() {
     whereAmI: () => whereAmI(interpolator.latest()),
     tasks: () => tasksFor(interpolator.latest(), joined?.operatorId).map((x) => x.kind),
     viewDowned: () => interpolator.latest()?.downedOperators ?? null,
+    netDiag: () => netDiagSummary(), // prompt 214
+    runNetCheck: () => runNetCheck(null),
     notice: () => {
       const el = document.getElementById("centre-notice");
       return el && el.style.display === "block" ? el.textContent : null;
@@ -970,6 +978,19 @@ function connect() {
       if (!resumed) showBriefing(); // prompt 139: a resume never replays the briefing
       updateOpInfo(null);
     } else if (msg.type === "s_snapshot") {
+      // Prompt 214: snapshot cadence is the client-side twin of the
+      // server's tickJitter — a gap the server did not have is the
+      // NETWORK'S fault, and that comparison is the whole diagnosis.
+      {
+        const now = performance.now();
+        if (netDiag.lastSnapAt > 0) {
+          const gap = now - netDiag.lastSnapAt;
+          netDiag.gaps[netDiag.gapIdx] = gap;
+          netDiag.gapIdx = (netDiag.gapIdx + 1) % netDiag.gaps.length;
+          if (gap > 1000) netDiag.stalls += 1;
+        }
+        netDiag.lastSnapAt = now;
+      }
       interpolator.push(msg.view, performance.now());
       if (!autoSelectSent && joined) {
         const target = autoSelectTarget(msg.view, joined.operatorId);
@@ -1016,7 +1037,15 @@ function connect() {
       if (msg.reason !== "takeover needs confirmation") flashNotice(line, 2200, "#ff6b52");
     }
   };
-  socket.onclose = () => {
+  socket.onclose = (e) => {
+    // Prompt 214: CONNECTION DIAGNOSIS. Record every drop with its
+    // close code — 1006 = the wire died (network/radio/proxy), 1000/
+    // 1001 = deliberate close. Combined with the server's heartbeat-
+    // drop journal line and /healthz tickJitter, this separates
+    // "the host is struggling" from "the network blinked".
+    netDiag.drops += 1;
+    netDiag.lastCloseCode = e?.code ?? null;
+    netDiag.lastDropAt = Date.now();
     pushEvent(t("net.lost_feed"));
     showReconnectBanner();
   };
@@ -1192,7 +1221,12 @@ function setupTouch() {
       ev.preventDefault();
       ev.stopPropagation();
       if (key === "stop") stopTouchDrive();
-      else touchDesiredBrads = ARROW_BRADS[key]; // set off in that direction
+      // Prompt 214: ALIGN THE COMPASS WITH THE SCREEN. The camera is
+      // isometric (offset +x,+z looking at the map), so raw world brads
+      // rendered 45° skewed — the "right" arrow drove world-east, which
+      // reads as lower-right on screen. +224 brads (-45°) makes each
+      // arrow drive the direction it POINTS on screen.
+      else touchDesiredBrads = (ARROW_BRADS[key] + 224) & 255;
     });
     pad.appendChild(b);
   }
@@ -1229,12 +1263,17 @@ function setupTouch() {
       const to = e.changedTouches[0];
       const kind = classifyTouch(touchStart, { x: to.clientX, y: to.clientY },
         performance.now() - touchStart.t);
-      if (kind === "tap") {
+      if (kind === "tap" || kind === "hold") {
         // Tap MY unit = STOP (the Q10 rule); anywhere else = the normal
-        // click order path.
-        const fake = { clientX: to.clientX, clientY: to.clientY };
+        // click order path. HOLD (prompt 214) = the touch SHIFT-click:
+        // the order queues as a waypoint leg.
+        const fake = { clientX: to.clientX, clientY: to.clientY,
+          shiftKey: kind === "hold" };
         if (tapIsOnMyUnit(fake)) stopTouchDrive();
-        else onPointerDown(fake);
+        else {
+          if (kind === "hold") flashNotice(t("notice.waypoint_queued"), 1400, "#9fd8ff");
+          onPointerDown(fake);
+        }
       }
     }
     touchStart = null;
@@ -1459,9 +1498,11 @@ function releaseCommWheel() {
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const target = new THREE.Vector3();
   if (raycaster.ray.intersectPlane(plane, target)) {
-    const { cellX, cellY } = scenePointToCell(target.x, target.z);
-    cmd.targetCellX = cellX;
-    cmd.targetCellY = cellY;
+    const cell = scenePointToCell(target.x, target.z, { strict: true });
+    if (cell) {
+      cmd.targetCellX = cell.cellX;
+      cmd.targetCellY = cell.cellY;
+    }
   }
   send(cmd);
 }
@@ -1502,7 +1543,9 @@ function onPointerDown(event) {
   if (!raycaster.ray.intersectPlane(plane, target)) return;
 
   const view = interpolator.latest();
-  const { cellX, cellY } = scenePointToCell(target.x, target.z);
+  const cellHit = scenePointToCell(target.x, target.z, { strict: true });
+  if (!cellHit) return; // prompt 214: off-map tap = no order, ever
+  const { cellX, cellY } = cellHit;
   // Prompt-100: at a station, clicking a visible enemy FIRES the mount.
   if (whereAmI(view)?.kind === "stationed") {
     const foe = (view?.visibleEnemies ?? []).find((e2) =>
@@ -3041,7 +3084,7 @@ let lastTaskKey = "";
 // keydown events on tap, so keyboard and bar share one dispatch
 // contract. Default ON for touch devices, ⚙ toggle everywhere
 // (mf_keybar: "1"/"0" overrides the device default).
-const KEYBAR_FIXED_KEYS = { sandbag: "n" }; // N is a fixed key, not a bind
+const KEYBAR_FIXED_KEYS = { sandbag: "n", ping1: "1", ping2: "2", ping3: "3" }; // fixed keys, not binds
 let keybarBlink = null; // action name the banner/tutorial suggests
 let lastKeybarSig = "";
 function keybarEnabled() {
@@ -3164,6 +3207,42 @@ function updateTaskStrip(view) {
     };
     el.appendChild(card);
   }
+}
+
+// Prompt 214: the connection-diagnosis ledger. Read it in ⚙ (the NET
+// line) or window.__mfDebug.netDiag; the verdict logic: client gaps
+// bad + server tickJitter clean = network; both bad = the host.
+const netDiag = {
+  drops: 0, lastCloseCode: null, lastDropAt: null,
+  gaps: new Array(600).fill(-1), gapIdx: 0, lastSnapAt: 0, stalls: 0,
+};
+function netDiagSummary() {
+  const g = netDiag.gaps.filter((x) => x >= 0).sort((a, b) => a - b);
+  const p99 = g.length >= 10 ? Math.round(g[Math.floor(0.99 * g.length)]) : null;
+  return { drops: netDiag.drops, lastCloseCode: netDiag.lastCloseCode,
+    stalls: netDiag.stalls, snapP99Ms: p99 };
+}
+async function runNetCheck(el) {
+  const local = netDiagSummary();
+  let line = `you: drops ${local.drops}` +
+    (local.lastCloseCode !== null ? ` (code ${local.lastCloseCode})` : "") +
+    ` · stalls>1s ${local.stalls}` +
+    (local.snapP99Ms !== null ? ` · snap p99 ${local.snapP99Ms}ms` : "");
+  try {
+    const t0 = performance.now();
+    const h = await (await fetch("/healthz")).json();
+    const rtt = Math.round(performance.now() - t0);
+    line += `\nserver: rtt ${rtt}ms · rss ${h.rssMb}MB · tick p99 ${h.tickJitter?.p99Ms ?? "?"}ms` +
+      ` late ${h.tickJitter?.latePct ?? "?"}%`;
+    const serverClean = (h.tickJitter?.latePct ?? 0) < 2 && (h.rssMb ?? 0) < 450;
+    const youClean = local.stalls === 0 && local.drops === 0;
+    line += `\n${serverClean && !youClean ? t("net.verdict_network")
+      : !serverClean ? t("net.verdict_host") : t("net.verdict_clean")}`;
+  } catch {
+    line += `\n${t("net.verdict_unreachable")}`;
+  }
+  if (el) el.textContent = line;
+  return line;
 }
 
 // Playtest-8: the NOTICE line — one prominent, short-lived message for
@@ -3907,9 +3986,18 @@ function updateWarDressing(view) {
     const roof = new THREE.MeshLambertMaterial({
       color: new THREE.Color(faction.colors.secondary).multiplyScalar(0.7),
     });
+    const spawnCol = baseCentreCol(b, cachedMap?.width ?? 128) + 0.5;
     for (const piece of baseCompound(b, b.team === 1)) {
       const spec = BUILDING[piece.kind];
       if (!spec) continue;
+      // Prompt 214: rebuilt waves spawn on the centre column across the
+      // reserve rows — no building may sit on that strip (assets used
+      // to appear UNDER the warehouse). Nudge away from the column;
+      // symmetric-by-distance keeps the mirror exact.
+      if (Math.abs(piece.x - spawnCol) < 1.9 &&
+          piece.y > RESERVE_ROWS[0] - 2 && piece.y < RESERVE_ROWS[RESERVE_ROWS.length - 1] + 2) {
+        piece.x += piece.x < spawnCol ? -(2.1 - (spawnCol - piece.x)) : (2.1 - (piece.x - spawnCol));
+      }
       // 14J (playtest 6.6): roads are sacred — no structure may cover a
       // road or path cell (approximate 2-cell footprint check).
       if (coversProtectedTerrain(piece.x, piece.y, piece.kind === "hq" ? 1.4 : 0.9)) continue;
@@ -3958,40 +4046,38 @@ function updateWarDressing(view) {
           dressingGroup.add(slab);
         }
       }
+      // Prompt 214 ("some windows"): lit window strips on both long
+      // sides of the inhabited buildings — cheap boxes, warm glow.
+      if (piece.kind === "warehouse" || piece.kind === "barracks" || piece.kind === "hq") {
+        const dims = piece.kind === "hq" ? { w: 2.4, d: 1.6, h: 0.75, n: 4 }
+          : piece.kind === "warehouse" ? { w: 2.8, d: 1.4, h: 0.55, n: 3 }
+          : { w: 1.9, d: 0.9, h: 0.4, n: 3 };
+        const glow = new THREE.MeshBasicMaterial({ color: 0xd8c878 });
+        for (const side of [-1, 1]) {
+          for (let wi = 0; wi < dims.n; wi++) {
+            const win = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.03), glow);
+            const fx = (wi + 0.5) / dims.n - 0.5;
+            win.position.set(piece.x + fx * dims.w * 0.86, dims.h,
+              piece.y + side * (dims.d / 2 + 0.02));
+            dressingGroup.add(win);
+          }
+        }
+      }
     }
-    // Prompt 211: THE GARAGE. Rebuilt hulls spawn on the base's centre
-    // column across the reserve rows (fieldSpawnFor — mirror-honest);
-    // build an open-fronted motor-pool bay AROUND those cells so a new
-    // wave is VISIBLE rolling out, not just reachable via Next-asset.
-    // Opening faces the map centre; centre-col anchoring keeps the
-    // east/west pair mirror-exact by construction. Art only — spawns,
-    // sims and fixtures untouched.
+    // Prompt 214: the garage bay was TOO BIG (playtest) — reverted.
+    // Instead the spawn strip stays OPEN GROUND: a subtle apron stripe
+    // marks it, and any compound piece that would sit ON the strip is
+    // nudged aside so rebuilt waves never appear under a building.
+    // (Nudge is by distance-from-centre-column, so the east/west pair
+    // stays mirror-exact.)
     {
       const col = baseCentreCol(b, cachedMap?.width ?? 128) + 0.5;
       const rows = RESERVE_ROWS;
       const y0 = rows[0] - 0.8, y1 = rows[rows.length - 1] + 0.8;
-      const len = y1 - y0, cz = (y0 + y1) / 2;
-      const dir = b.x + b.width / 2 < (cachedMap?.width ?? 128) / 2 ? 1 : -1;
-      const backX = col - dir * 1.15; // back wall away from the front
-      const mkWall = (geo, x, y, z) => {
-        const m = new THREE.Mesh(geo, wall);
-        m.position.set(x, y, z);
-        dressingGroup.add(m);
-        return m;
-      };
-      mkWall(new THREE.BoxGeometry(0.18, 1.1, len), backX, 0.55, cz);
-      mkWall(new THREE.BoxGeometry(2.2, 1.1, 0.18), col - dir * 0.1, 0.55, y0);
-      mkWall(new THREE.BoxGeometry(2.2, 1.1, 0.18), col - dir * 0.1, 0.55, y1);
-      // Roof slab overhangs the OPEN front so the bay reads as a garage
-      // from the player camera, but hulls inside stay visible.
-      const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.1, len + 0.4), roof);
-      roofSlab.position.set(col - dir * 0.25, 1.15, cz);
-      dressingGroup.add(roofSlab);
-      // A painted apron stripe out the opening — "they come out HERE".
       const apron = new THREE.Mesh(
-        new THREE.BoxGeometry(1.1, 0.03, len),
+        new THREE.BoxGeometry(1.6, 0.03, y1 - y0),
         new THREE.MeshLambertMaterial({ color: 0x4a4a3a }));
-      apron.position.set(col + dir * 1.1, 0.02, cz);
+      apron.position.set(col, 0.02, (y0 + y1) / 2);
       dressingGroup.add(apron);
     }
   }

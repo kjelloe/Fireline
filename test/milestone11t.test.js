@@ -393,7 +393,8 @@ test("15A touch model: arrow controller, tap classification, pinch", async () =>
   // Taps are short and still; everything else pans.
   assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 14, y: 12 }, 180), "tap");
   assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 80, y: 12 }, 180), "drag");
-  assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 12, y: 10 }, 900), "drag", "slow press is not a tap");
+  assert.equal(classifyTouch({ x: 10, y: 10 }, { x: 12, y: 10 }, 900), "hold",
+    "prompt 214: a slow STILL press is the touch SHIFT-click now (waypoint leg)");
 
   // Pinch is clamped sane.
   assert.equal(pinchFactor(100, 50), 2);
@@ -411,4 +412,14 @@ test("14K the encyclopedia covers every chassis and every mechanics page has tex
     assert.ok((CATALOGS.en[key] ?? "").length > 40, `${key} en`);
     assert.ok((CATALOGS.no[key] ?? "").length > 40, `${key} no`);
   }
+});
+
+test("prompt 214: a still HELD touch classifies as 'hold' — the touch SHIFT-click", async () => {
+  const { classifyTouch } = await import("../client/js/touch_model.js");
+  const at = (x, y) => ({ x, y });
+  assert.equal(classifyTouch(at(50, 50), at(52, 51), 200), "tap");
+  assert.equal(classifyTouch(at(50, 50), at(52, 51), 900), "hold", "held still past 700ms");
+  assert.equal(classifyTouch(at(50, 50), at(52, 51), 500), "drag",
+    "the 400-700ms dead zone stays a pan, never a surprise order");
+  assert.equal(classifyTouch(at(50, 50), at(120, 90), 900), "drag", "movement always pans");
 });

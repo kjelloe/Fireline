@@ -28,12 +28,17 @@ export const ARROW_BRADS = Object.freeze({
   n: 192, ne: 224, e: 0, se: 32, s: 64, sw: 96, w: 128, nw: 160,
 });
 
-// Tap or drag? A touch that ends near where it began, quickly, is a tap
-// (an order); anything else pans the camera.
-export function classifyTouch(start, end, dtMs, { maxDist = 14, maxMs = 400 } = {}) {
+// Tap, hold, or drag? Near where it began and quick = tap (an order);
+// near where it began but HELD = "hold" (prompt 214: the touch
+// equivalent of SHIFT-click — queues a waypoint leg; there is no SHIFT
+// on a phone); anything that moved pans the camera.
+export function classifyTouch(start, end, dtMs, { maxDist = 14, maxMs = 400, holdMs = 700 } = {}) {
   const dx = end.x - start.x;
   const dy = end.y - start.y;
-  if (dtMs <= maxMs && dx * dx + dy * dy <= maxDist * maxDist) return "tap";
+  if (dx * dx + dy * dy <= maxDist * maxDist) {
+    if (dtMs <= maxMs) return "tap";
+    if (dtMs >= holdMs) return "hold";
+  }
   return "drag";
 }
 

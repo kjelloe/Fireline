@@ -7,7 +7,7 @@
 //   gray  — the chassis carries the action but it is momentarily
 //           unavailable (no adjacent wreck, rack empty, countdown)
 //
-// Keys the chassis can NEVER use are absent (context-curated, cap 8,
+// Keys the chassis can NEVER use are absent (context-curated, cap 11,
 // stable order). blinkKey (the action banner's or tutorial's current
 // suggestion) marks its entry blink:true — only when ready: a blinking
 // gray button would be a lie. The DOM taps synthesize real keydown
@@ -25,7 +25,8 @@ const adjacent = (a, b, cells = 1) =>
 
 // Stable presentation order (the hint-bar's narrative order).
 const ORDER = ["redeploy", "board", "unboard", "station", "tow", "transfer",
-  "mine", "clearMine", "sandbag", "hardpoint", "directDrive"];
+  "mine", "clearMine", "sandbag", "hardpoint", "directDrive",
+  "ping1", "ping2", "ping3"];
 
 export function keyBarFor(view, operatorId, { blinkKey = null } = {}) {
   if (!view || operatorId === null || operatorId === undefined) return [];
@@ -43,6 +44,7 @@ export function keyBarFor(view, operatorId, { blinkKey = null } = {}) {
   if (down) {
     // R unlocks after the crawl-first window (REDEPLOY_TICKS = 100).
     add("redeploy", (down.downTicks ?? 0) >= 100);
+    add("ping1", true); // the cry for rescue (10C: downed seats say only that)
   } else if (stationed) {
     add("station", true); // J leaves the mount
   } else if (aboard) {
@@ -74,12 +76,17 @@ export function keyBarFor(view, operatorId, { blinkKey = null } = {}) {
       add("station", true); // J starts the gunner eject (Q41)
     }
     add("directDrive", true);
+    // Prompt 214: pings must be TAPPABLE — 1/2/3 ride the bar like any
+    // other key (context meaning comes from ping_model, same as the keys).
+    add("ping1", true);
+    add("ping2", true);
+    add("ping3", true);
   } else {
     return []; // bodiless: the status panel narrates; no keys apply
   }
 
   entries.sort((a, b) => ORDER.indexOf(a.action) - ORDER.indexOf(b.action));
-  const capped = entries.slice(0, 8);
+  const capped = entries.slice(0, 11);
   for (const e of capped) e.blink = e.action === blinkKey && e.ready;
   return capped;
 }

@@ -6883,3 +6883,52 @@ coverage lives in smoke, which keeps AI), 300 s heartbeat, poll-waits
 everywhere with re-applied mutations (a pump-window race cannot outlive
 the loop). FIVE consecutive green runs — the first stable streak since
 the surgical era began. Suite 892 x2, smoke green.
+
+## 2026-08-07 — mobile round 3 (prompt 214, five new screenshots)
+
+Nine items from the phone playtest, all landed:
+
+1. GARAGE REVERTED (too big) — the spawn strip is OPEN GROUND again
+   with a subtle apron stripe, and any compound piece that would sit ON
+   the strip is nudged aside symmetric-by-distance (assets used to
+   spawn UNDER the warehouse — the actual complaint behind the garage).
+2. BUILDING DETAIL: lit window strips (both long sides) on
+   hq/warehouse/barracks, keeping the pitched roofs.
+3. THE CONNECTIVITY ROOT SUSPECT: the transport terminated any session
+   silent for FIVE SECONDS (ws ping/pong heartbeat) — tighter than a
+   phone radio waking from power-save or a WiFi->5G handover (both
+   visible in the screenshots' status bars), and it explains desktop
+   drops on tab-switches too. 30 s now; every heartbeat drop is LOGGED
+   with operator ids + tick so journalctl can prove kick-vs-network.
+   The screenshots also prove the SERVER never died: the tick counter
+   rose monotonically across every CONNECTION LOST banner.
+4. CONNECTION DIAGNOSIS (asked for): client netDiag ledger (drops +
+   close codes, snapshot-gap ring, stalls>1s) + ⚙ "Connection check" —
+   one tap compares YOUR gaps against the server's /healthz
+   tickJitter+rssMb and prints a verdict: network / host / clean /
+   unreachable. __mfDebug.netDiag for harnesses.
+5. THE RUNAWAY-CORNER BUG: scenePointToCell CLAMPED off-map taps to
+   the map edge — a tap whose ground ray missed the world (drifted
+   camera, or the black no-snapshot screen in shot 1) manufactured a
+   corner move-order, and every further tap clamped to the SAME corner
+   ("a target I could not reset"). Strict bounds now: off-map tap = no
+   order, ever.
+6. COMPASS ALIGNED WITH THE SCREEN: the touch arrows drove raw world
+   brads under an isometric camera — "right" drove world-east, which
+   RENDERS as lower-right. +224 brads (-45°) makes every arrow drive
+   the direction it points on screen.
+7. STATUS PANEL: full-width single strip at the very bottom on mobile —
+   no more overlapping the touch pad.
+8. TEAM BOARD + MISSION CARDS to the top bar (top:44) — the play area
+   the player asked for.
+9. WAYPOINTS ON TOUCH: classifyTouch gained "hold" (700 ms still) =
+   the touch SHIFT-click; queues a leg with a confirming notice; the
+   400-700 ms dead zone stays a pan so no surprise orders. Tutorial
+   waypoint text teaches it. PINGS 1/2/3 are key-bar BUTTONS now
+   (fixed keys, downed shows the rescue ping alone; cap 11).
+
+Layout verified by phone-viewport screenshots (4 iterations — the
+direct column collided with the wrapped key bar once, and 352px
+bottoms pushed cards off a 360px-tall viewport: all bottom anchors now
+cap at min(px, vh) so landscape phones survive too). Suite 893 x2,
+smoke green, acceptance 3x green.

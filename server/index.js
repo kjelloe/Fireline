@@ -338,9 +338,21 @@ export function createAppServer(options = {}) {
       const hb = options.heartbeat ?? {};
       const setIntervalFn = clockOptions.setIntervalFn ?? setInterval;
       this.clearHeartbeat = () => (clockOptions.clearIntervalFn ?? clearInterval)(this.heartbeatTimer);
+      // Prompt 214: 5 s was FAR too aggressive for the real world — a
+      // phone radio waking from power-save or a WiFi->5G handover stalls
+      // longer than that, and the kick looked like "random connectivity
+      // issues" (it hit desktop tab-switches too). 30 s tolerates every
+      // benign stall; true disconnects just start their AI takeover
+      // later, and the drop is now LOGGED so journalctl can prove
+      // kick-vs-network for any future report.
       this.heartbeatTimer = setIntervalFn(
-        () => transport.checkHeartbeats(Date.now(), hb.timeoutMs ?? 5000),
-        hb.intervalMs ?? 2000
+        () => {
+          const dropped = transport.checkHeartbeats(Date.now(), hb.timeoutMs ?? 30000);
+          if (dropped.length) {
+            console.log(`heartbeat drop: operators [${dropped.join(",")}] silent past timeout at tick ${gameServer.state.tick}`);
+          }
+        },
+        hb.intervalMs ?? 5000
       );
       if (options.masterUrl && options.publicAddr) {
         announceOnce();

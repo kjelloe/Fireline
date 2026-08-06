@@ -18,9 +18,9 @@ const view = (assets, downed = []) => ({ friendlyAssets: assets, downedOperators
 const actions = (bar) => bar.map((e) => e.action);
 const entry = (bar, a) => bar.find((e) => e.action === a);
 
-test("a tank driver: redeploy/mine/direct — no truck keys, no sandbags", () => {
+test("a tank driver: redeploy/mine/direct/pings — no truck keys, no sandbags", () => {
   const bar = keyBarFor(view([hull({ minesLeft: 3 })]), 3);
-  assert.deepEqual(actions(bar), ["redeploy", "mine", "directDrive"]);
+  assert.deepEqual(actions(bar), ["redeploy", "mine", "directDrive", "ping1", "ping2", "ping3"]);
   assert.equal(entry(bar, "mine").ready, true);
 });
 
@@ -33,7 +33,8 @@ test("empty mine rack grays M; a light hull's caltrops light it again", () => {
 
 test("a truck driver gets the logistics cluster; tow is gray without an adjacent wreck", () => {
   const solo = keyBarFor(view([hull({ type: 3 })]), 3);
-  assert.deepEqual(actions(solo), ["redeploy", "tow", "transfer", "clearMine", "directDrive"]);
+  assert.deepEqual(actions(solo),
+    ["redeploy", "tow", "transfer", "clearMine", "directDrive", "ping1", "ping2", "ping3"]);
   assert.equal(entry(solo, "tow").ready, false);
   const wreck = hull({ id: 4, operatorId: -1, state: 2, x: W(11), y: W(10) });
   const near = keyBarFor(view([hull({ type: 3 }), wreck]), 3);
@@ -56,9 +57,9 @@ test("board appears only beside a carrier with a free bunk", () => {
   assert.ok(!actions(full).includes("board"), "full bunks: no B");
 });
 
-test("downed: R alone, gray until the crawl-first window passes", () => {
+test("downed: R + the rescue ping, R gray until the crawl-first window passes", () => {
   const early = keyBarFor(view([], [{ operatorId: 3, downTicks: 40, x: W(5), y: W(5) }]), 3);
-  assert.deepEqual(actions(early), ["redeploy"]);
+  assert.deepEqual(actions(early), ["redeploy", "ping1"]);
   assert.equal(early[0].ready, false);
   const late = keyBarFor(view([], [{ operatorId: 3, downTicks: 100, x: W(5), y: W(5) }]), 3);
   assert.equal(late[0].ready, true);
@@ -95,7 +96,7 @@ test("blink marks only the READY suggested key", () => {
   assert.ok(near.filter((e) => e.blink).length === 1);
 });
 
-test("the bar never exceeds 8 entries", () => {
+test("the bar never exceeds 11 entries", () => {
   // A truck beside a wreck, carrier, and needy hull, fully stocked.
   const assets = [
     hull({ type: 3, cargoAmmo: 5, sandbagsLeft: 2, caltropsLeft: 2 }),
@@ -103,12 +104,13 @@ test("the bar never exceeds 8 entries", () => {
     hull({ id: 6, operatorId: 9, type: 4, x: W(9), y: W(10) }),
     hull({ id: 7, operatorId: 8, ammo: 1, x: W(10), y: W(11) }),
   ];
-  assert.ok(keyBarFor(view(assets), 3).length <= 8);
+  assert.ok(keyBarFor(view(assets), 3).length <= 11);
 });
 
 test("lint: every bar action has a tooltip string in BOTH locales", () => {
   const ACTIONS = ["redeploy", "board", "unboard", "station", "tow", "transfer",
-    "mine", "clearMine", "sandbag", "hardpoint", "directDrive"];
+    "mine", "clearMine", "sandbag", "hardpoint", "directDrive",
+    "ping1", "ping2", "ping3"];
   for (const locale of ["en", "no"]) {
     for (const a of ACTIONS) {
       assert.ok(`keybar.${a}` in CATALOGS[locale], `${locale} missing keybar.${a}`);
