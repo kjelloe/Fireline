@@ -3,6 +3,23 @@
 // activity, captures, kills, recoveries, and rejection frequencies. Pure
 // accumulator fed from broadcast events; no game logic.
 
+// Prompt 208/210: the tick-jitter digest, pure so it is testable. gaps
+// = inter-pump intervals in ms (unfilled ring slots may be negative —
+// they are dropped); returns null below 10 samples (meaningless).
+export function jitterDigest(gaps, tickMs) {
+  const g = gaps.filter((x) => x >= 0).sort((a, b) => a - b);
+  if (g.length < 10) return null;
+  const pick = (q) => g[Math.min(g.length - 1, Math.floor(q * g.length))];
+  return {
+    expectedMs: tickMs,
+    p50Ms: Math.round(pick(0.5)),
+    p99Ms: Math.round(pick(0.99)),
+    maxMs: Math.round(g[g.length - 1]),
+    // a gap over 1.5 ticks means a snapshot slipped a whole beat
+    latePct: Math.round(g.filter((x) => x > tickMs * 1.5).length / g.length * 1000) / 10,
+  };
+}
+
 export function createMetrics() {
   const counters = {
     warsCompleted: 0,

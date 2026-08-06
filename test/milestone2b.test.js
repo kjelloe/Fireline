@@ -158,3 +158,17 @@ test("prompt 198: /healthz aliases /health and both report the real version", as
     assert.ok("tickJitter" in health, "tickJitter digest field present");
   });
 });
+
+test("prompt 210: jitterDigest math — percentiles, latePct, small-sample null", async () => {
+  const { jitterDigest } = await import("../server/metrics.js");
+  assert.equal(jitterDigest([100, 100, 100], 100), null, "under 10 samples: null");
+  // 96 perfect beats, 3 late-but-invisible, 1 slipped a full tick.
+  const gaps = [...Array(96).fill(100), 140, 145, 149, 210];
+  const d = jitterDigest(gaps, 100);
+  assert.equal(d.p50Ms, 100);
+  assert.equal(d.maxMs, 210);
+  assert.equal(d.latePct, 1, "one gap of 100 exceeded 1.5 ticks");
+  assert.ok(d.p99Ms >= 149, `p99=${d.p99Ms}`);
+  // ring-buffer unfilled slots (negative sentinels) are dropped
+  assert.equal(jitterDigest([-1, -1, ...Array(12).fill(100)], 100).p50Ms, 100);
+});

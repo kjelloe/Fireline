@@ -33,6 +33,15 @@ async function main() {
   };
 
   page.on("pageerror", (e) => failures.push(`pageerror: ${e.message}`));
+  // Prompt 210: make the acceptance war UNENDABLE. The harness's own
+  // surgeries create wrecks, wrecks bleed tickets, and a mid-checks war
+  // reset reseats everyone into fresh hulls — which read as "the player
+  // got mysteriously reseated" until the fresh full-HP scout gave it
+  // away. Deep pools + a distant horn keep ONE war running throughout.
+  {
+    const st = appServer.gameServer.state;
+    st.tickets = [99999, 99999];
+  }
   await page.goto(url, { waitUntil: "networkidle" });
   await page.click("#btn-join-a");
   await page.waitForTimeout(1200);
@@ -221,6 +230,37 @@ async function main() {
   check("right-drag disengages follow (item 28)", postDrag.follow === false,
     `follow=${postDrag.follow}`);
 
+  // WAR REALITY (prompt 210): the acceptance war is LIVE — the longer
+  // the check list grows, the deeper into the fighting the late checks
+  // run, and the player's hull sometimes dies organically. ensureSeated
+  // puts the joined operator back in an operable hull through state
+  // surgery so checks that assume a seat stay deterministic.
+  const opIdEarly = await page.evaluate(() => window.__mfDebug.joined()?.operatorId);
+  const ensureSeated = () => {
+    const st = appServer.gameServer.state;
+    const op = st.operators[opIdEarly];
+    if (!op) return;
+    const seated = op.state === 1 && op.assetId !== -1 &&
+      st.assets[op.assetId]?.operatorId === opIdEarly &&
+      st.assets[op.assetId]?.state !== 2 && st.assets[op.assetId]?.state !== 3;
+    if (seated) return;
+    const i = st.downed.findIndex((d) => d.operatorId === opIdEarly);
+    if (i >= 0) st.downed.splice(i, 1);
+    const hull = st.assets.find((a) =>
+      a.team === op.team && a.operatorId === -1 && a.state !== 2 && a.state !== 3)
+      ?? st.assets.find((a) => a.team === op.team && a.operatorId === opIdEarly);
+    if (!hull) return;
+    if (hull.state === 2 || hull.state === 3) { hull.state = 0; hull.hp = 50; }
+    if (hull.operatorId !== -1 && hull.operatorId !== opIdEarly) {
+      const prev = st.operators[hull.operatorId];
+      if (prev) prev.assetId = -1;
+    }
+    op.state = 1; op.respawnTicks = 0; op.assetId = hull.id;
+    hull.operatorId = opIdEarly;
+  };
+  ensureSeated();
+  await page.waitForTimeout(400);
+
   // Item 31: the stats key opens the codex without needing the hover link.
   await page.evaluate(() => {
     const el = document.getElementById("codex-panel");
@@ -286,6 +326,8 @@ async function main() {
   // diamond over it.
   const { createDowned } = await import("../engine/downed.js");
   const opId = await page.evaluate(() => window.__mfDebug.joined()?.operatorId);
+  ensureSeated(); // the war may have downed the player organically by now
+  await page.waitForTimeout(300);
   // CAPTURE AND MUTATE SYNCHRONOUSLY: gameServer.state is REPLACED every
   // tick (the reducer returns a fresh copy), so state captured before an
   // await is a dead object by the time you touch it — the first cut of
@@ -301,8 +343,10 @@ async function main() {
     // Away from ALL friendly hulls: the reducer's auto-rescue boards an
     // adjacent body on the very next tick (correct game law — the first
     // cut of this check downed the player beside the base carrier and
-    // the body vanished into a bunk before one snapshot shipped).
-    body.x = 60 * 256 + 128; body.y = 20 * 256 + 128;
+    // the body vanished into a bunk before one snapshot shipped; the
+    // second cut used mid-map and a passing carrier still got it).
+    // The ENEMY corner is the one place friendly carriers don't roam.
+    body.x = 118 * 256 + 128; body.y = 10 * 256 + 128;
     body.targetX = body.x; body.targetY = body.y;
     st.downed.push(body);
     myAsset.state = 2; // ASSET_DISABLED
@@ -361,6 +405,47 @@ async function main() {
     check("bodiless: the panel points at a hull or promises the wave",
       /NEXT ASSET|free hull|RESERVED|NESTE ENHET|RESERVERT/.test(landed),
       `panel="${landed}"`);
+  }
+
+  // ── prompt 210: THE GOLDEN LINE on a real card ────────────────────────
+  // Down an AI TEAMMATE (own bodies are excluded from rescue cards) away
+  // from carriers — a rescue card must appear, wear gold (★, fresh
+  // profile), and clicking it retires the kind into mf_goldline.
+  (() => {
+    const st = appServer.gameServer.state;
+    const mate = st.operators.find((o) =>
+      o.id !== opId && o.team === st.operators[opId]?.team &&
+      o.state === 1 && o.assetId !== -1);
+    if (!mate) return;
+    const hull = st.assets[mate.assetId];
+    mate.state = 2;
+    mate.assetId = -1;
+    const body = createDowned(mate, hull);
+    body.x = 118 * 256 + 128; body.y = 30 * 256 + 128;
+    body.targetX = body.x; body.targetY = body.y;
+    st.downed.push(body);
+  })();
+  await page.waitForTimeout(900);
+  const goldCard = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll("#task-strip div")];
+    const gold = cards.find((c) => c.textContent.startsWith("★"));
+    return gold ? { text: gold.textContent, title: gold.title } : null;
+  });
+  check("golden line: an untried mission card wears the star",
+    goldCard !== null && goldCard.title.length > 0, JSON.stringify(goldCard));
+  if (goldCard) {
+    await page.evaluate(() => {
+      [...document.querySelectorAll("#task-strip div")]
+        .find((c) => c.textContent.startsWith("★"))?.click();
+    });
+    await page.waitForTimeout(400);
+    const after = await page.evaluate(() => ({
+      tried: JSON.parse(localStorage.getItem("mf_goldline") ?? "[]"),
+      stillGold: [...document.querySelectorAll("#task-strip div")]
+        .some((c) => c.textContent === document.__lastGold),
+    }));
+    check("golden line: clicking retires the kind into mf_goldline",
+      after.tried.length > 0, JSON.stringify(after.tried));
   }
 
   await browser.close();

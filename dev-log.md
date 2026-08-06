@@ -6754,3 +6754,35 @@ in the resource-profile report: a 10 Hz war is jitter-tolerant (a
 spike must beat ~100 ms to slip one snapshot, and the interpolator
 spans two), so tiny games want HEADROOM on shared cores over one
 dedicated core — measure, then buy. Suite 874 x2 (the jitter pin is an assertion inside the existing healthz test), smoke green.
+
+## 2026-08-06 — test-gap sweep (prompt 210)
+
+Coverage review across features + UI interactions. Every pure client
+model has test references except sfx (whose event map is lint-covered
+in client.js). Gaps found and closed:
+
+1. need_gunner (prompt-100 vocabulary) had ZERO tests — unsurprising:
+   the UI offering it crashed on first touch its whole life, so nothing
+   ever exercised it. 4 tests: offered to carrier/scout drivers with
+   open stations, not to manned ones or tanks, and the reducer accepts
+   it from a driving seat.
+2. jitterDigest extracted from the pump closure into server/metrics.js
+   as a pure function — percentiles/latePct/small-sample-null unit
+   tested (was only field-presence pinned).
+3. THE GOLDEN LINE got its browser proof: down an AI teammate (own
+   bodies are excluded from rescue cards) → a ★ gold card appears with
+   its tooltip → clicking retires the kind into mf_goldline.
+
+THE HARNESS FOUGHT THE WAR AND THE WAR WON, TWICE: (a) the growing
+check list pushed late checks deeper into the live fighting and the
+player's hull started dying ORGANICALLY — ensureSeated() surgery
+re-seats before checks that assume a seat; (b) the surgeries themselves
+create wrecks, wrecks bleed tickets, and the WAR ENDED MID-CHECKS —
+the reset reseated everyone into fresh hulls, which read as a mystery
+until the full-HP scout gave it away. The acceptance war now starts
+with 99999-ticket pools: one war, unendable, for the whole run.
+Triple-run stable. Suite 879 x2, smoke green, 29 acceptance checks.
+
+Accepted gaps (recorded, not closed): tutorialCaps + boostHintBar are
+client.js-internal DOM helpers (acceptance-only reachable; the model
+side of deferral is fully tested); sfx patches are audio-out only.

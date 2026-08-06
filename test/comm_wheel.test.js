@@ -52,3 +52,35 @@ test("B5 'thanks' is legal vocabulary and survives the reducer", () => {
   assert.ok(ev, "the ping resolved");
   assert.equal(ev.toTeam, 0, "team-scoped like every ping");
 });
+
+// ── prompt 202/210: the need_gunner call (prompt-100 vocabulary, made
+// reachable by the seats fix — it was never tested because the UI that
+// offered it crashed on first touch for its whole life) ──
+
+test("a carrier driver with an OPEN station is offered need_gunner", () => {
+  const view = scene([{ id: 1, operatorId: 3, type: 4, stationOp: -1 }]);
+  const kinds = wheelOptionsFor(view, 3).map((o) => o.kind);
+  assert.ok(kinds.includes("need_gunner"), `wheel: ${kinds.join(",")}`);
+});
+
+test("a MANNED station offers no gunner call", () => {
+  const view = scene([{ id: 1, operatorId: 3, type: 4, stationOp: 7 }]);
+  const kinds = wheelOptionsFor(view, 3).map((o) => o.kind);
+  assert.ok(!kinds.includes("need_gunner"), `wheel: ${kinds.join(",")}`);
+});
+
+test("the scout's AT rack qualifies too; a tank never does", () => {
+  const scout = scene([{ id: 1, operatorId: 3, type: 1, stationOp: -1 }]);
+  assert.ok(wheelOptionsFor(scout, 3).map((o) => o.kind).includes("need_gunner"));
+  const tank = scene([{ id: 1, operatorId: 3, type: 0, stationOp: -1 }]);
+  assert.ok(!wheelOptionsFor(tank, 3).map((o) => o.kind).includes("need_gunner"));
+});
+
+test("need_gunner survives the reducer from a driving seat", () => {
+  let s = sandbox([{ team: 0, cellX: 10, cellY: 10, type: 4 }]);
+  s = joinAndSelect(s, 0, 0, 0);
+  s = apply(s, { type: "ping", operatorId: 0, kind: "need_gunner" });
+  const ping = s.events.find((e) => e.type === "ping");
+  assert.ok(ping, "the call went out");
+  assert.equal(ping.kind, "need_gunner");
+});

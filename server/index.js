@@ -17,7 +17,7 @@ import { mix32 } from "../shared/prng.js";
 import { createReplayStore } from "./replay_store.js";
 import { normalizePool, voteCandidates } from "../engine/vote.js";
 import { MAP_PROFILES } from "../engine/state.js";
-import { createMetrics } from "./metrics.js";
+import { createMetrics, jitterDigest } from "./metrics.js";
 
 const ROOT_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 // ops (2026-08-05): everything the server WRITES lives under one root, so a
@@ -204,19 +204,7 @@ export function createAppServer(options = {}) {
   const jitterRing = new Array(600).fill(-1);
   let jitterIdx = 0;
   let lastPumpAt = 0;
-  function tickJitterDigest() {
-    const gaps = jitterRing.filter((g) => g >= 0).sort((a, b) => a - b);
-    if (gaps.length < 10) return null;
-    const pick = (q) => gaps[Math.min(gaps.length - 1, Math.floor(q * gaps.length))];
-    return {
-      expectedMs: TICK_MS,
-      p50Ms: Math.round(pick(0.5)),
-      p99Ms: Math.round(pick(0.99)),
-      maxMs: Math.round(gaps[gaps.length - 1]),
-      // a gap over 1.5 ticks means a snapshot slipped a whole beat
-      latePct: Math.round(gaps.filter((g) => g > TICK_MS * 1.5).length / gaps.length * 1000) / 10,
-    };
-  }
+  const tickJitterDigest = () => jitterDigest(jitterRing, TICK_MS);
 
   function pump(snapshot) {
     const now = performance.now();
