@@ -329,6 +329,13 @@ npm start                              # host machine
   AI now RESERVES the next factory-wave hull for you, and the status
   panel says exactly where you stand (respawn countdown / pick a free
   hull / your hull is coming).
+- MOBILE LAYOUT (prompt 212): on phones (or any narrow window) the HUD
+  reflows — mission banner below the top bar, faction shown as its
+  LOGO glyph (⛨/➳, all platforms), team board starts collapsed, the
+  tutorial card sits clear of the touch pad, and the key bar +
+  DIRECT CONTROL stack on the right above the minimap. The keyboard
+  hint bar and supply line hide on mobile — the key bar and status
+  panel carry their jobs.
 - ON-SCREEN KEY BAR (prompt 211, mobile round 1): touch devices get a
   bottom bar of ACTION KEYS — only the ones your current seat can use,
   grayed when momentarily unavailable, blinking when the banner or

@@ -18,7 +18,21 @@ async function main() {
     process.exit(2);
   }
 
-  const appServer = createAppServer({ mapSeed: 2026, enableAi: true });
+  // NO AI (prompt 213): this harness tests UI WIRING, not the war. With
+  // regents fighting, every surgical check raced organic deaths and
+  // reason-4 war resets — the flakes moved to whichever section ran
+  // longest. A quiet ticking war keeps every hull free (next-asset
+  // still cycles), snapshots still flow, and surgery is deterministic.
+  // Combat coverage lives in client_smoke (AI stays on there).
+  // Generous heartbeat: headless SwiftShader stalls the page for
+  // seconds at a time; the production 5 s timeout dropped the session
+  // mid-run and the client's auto-rejoin re-seated the player between
+  // a surgery and its assertion (the reseated-into-a-full-HP-hull
+  // mystery, third edition).
+  const appServer = createAppServer({
+    mapSeed: 2026, enableAi: false,
+    heartbeat: { timeoutMs: 300000, intervalMs: 60000 },
+  });
   const addr = await appServer.start(0);
   const url = `http://localhost:${addr.port}`;
   const browser = await chromium.launch();
@@ -41,6 +55,15 @@ async function main() {
   {
     const st = appServer.gameServer.state;
     st.tickets = [99999, 99999];
+    // A STANDARD SCORE (reason 4) can still reset the war, wiping the
+    // deep pools AND any in-flight surgery. Re-pin the pools after
+    // every reset so at most ONE reset window exists per run.
+    const origReset = appServer.gameServer.resetWar.bind(appServer.gameServer);
+    appServer.gameServer.resetWar = (...a) => {
+      const r = origReset(...a);
+      appServer.gameServer.state.tickets = [99999, 99999];
+      return r;
+    };
   }
   await page.goto(url, { waitUntil: "networkidle" });
   await page.click("#btn-join-a");
@@ -356,18 +379,22 @@ async function main() {
   check("surgery precondition: the joined player crews a hull", downOk,
     `operator ${opId}`);
   if (downOk) {
-    await page.waitForTimeout(900); // two snapshots + render frames
-    const downedView = await page.evaluate(() => {
-      const scene = window.__mfDebug.scene();
-      const dbg = { body: null, marker: null, ring: false };
-      scene.traverse((o) => {
-        if (o.name === "you-marker") dbg.marker = { visible: o.visible, y: o.position.y };
+    // POLL, never settle (the harness's own recorded rule — every fixed
+    // settle in this section flaked under SwiftShader stalls in turn).
+    let downedView = null;
+    for (let i = 0; i < 25; i++) {
+      await page.waitForTimeout(200);
+      downedView = await page.evaluate(() => {
+        const scene = window.__mfDebug.scene();
+        const dbg = { marker: null };
+        scene.traverse((o) => {
+          if (o.name === "you-marker") dbg.marker = { visible: o.visible, y: o.position.y };
+        });
+        dbg.whereAmI = window.__mfDebug.whereAmI();
+        return dbg;
       });
-      // downed meshes are unnamed groups; identify by the label instead
-      dbg.labels = window.__mfDebug.labelCount();
-      dbg.whereAmI = window.__mfDebug.whereAmI();
-      return dbg;
-    });
+      if (downedView.whereAmI?.kind === "downed" && downedView.marker?.y < 1.0) break;
+    }
     check("downed: whereAmI resolves to the body", downedView.whereAmI?.kind === "downed",
       JSON.stringify(downedView.whereAmI));
     check("downed: the YOU diamond rides the body (low anchor)",
@@ -385,21 +412,28 @@ async function main() {
 
     // Bodiless-respawn narration (195): redeploy the seat, then walk the
     // status-panel states — countdown, then pick-a-hull/wave-wait.
-    // Same rule: fresh state capture, synchronous mutation.
-    (() => {
+    // Poll-waits; the mutation re-applies each round so a pump-window
+    // race cannot outlive the loop (UI wiring is what is under test).
+    let counting = "";
+    for (let i = 0; i < 25 && !/RESPAWNING|GJENOPPSTÅR/.test(counting); i++) {
       const st = appServer.gameServer.state;
-      const i = st.downed.findIndex((d) => d.operatorId === opId);
-      if (i >= 0) st.downed.splice(i, 1);
+      const di = st.downed.findIndex((d) => d.operatorId === opId);
+      if (di >= 0) st.downed.splice(di, 1);
       st.operators[opId].state = 1; // OP_ACTIVE
-      st.operators[opId].respawnTicks = 40;
-    })();
-    await page.waitForTimeout(500); // < 40 ticks: the countdown is still live
-    const counting = await page.evaluate(() =>
-      document.getElementById("status-panel").textContent);
+      if ((st.operators[opId].respawnTicks ?? 0) < 20) st.operators[opId].respawnTicks = 60;
+      await page.waitForTimeout(200);
+      counting = await page.evaluate(() =>
+        document.getElementById("status-panel").textContent);
+    }
     check("bodiless: the respawn countdown narrates",
       /RESPAWNING|GJENOPPSTÅR/.test(counting), `panel="${counting}"`);
-    (() => { appServer.gameServer.state.operators[opId].respawnTicks = 0; })();
-    await page.waitForTimeout(700);
+    for (let i = 0; i < 25; i++) {
+      appServer.gameServer.state.operators[opId].respawnTicks = 0;
+      await page.waitForTimeout(200);
+      const now = await page.evaluate(() =>
+        document.getElementById("status-panel").textContent);
+      if (/NEXT ASSET|free hull|RESERVED|NESTE ENHET|RESERVERT/.test(now)) break;
+    }
     const landed = await page.evaluate(() =>
       document.getElementById("status-panel").textContent);
     check("bodiless: the panel points at a hull or promises the wave",
@@ -411,13 +445,16 @@ async function main() {
   // Headless Chromium is not a touch device, so the bar is off by
   // default; the ⚙ override turns it on, and a tap on G must enter
   // direct mode through the SAME dispatch as the real key.
-  ensureSeated();
   await page.evaluate(() => localStorage.setItem("mf_keybar", "1"));
-  await page.waitForTimeout(700);
-  const keybar = await page.evaluate(() => {
-    const el = document.getElementById("key-bar");
-    return el ? [...el.querySelectorAll("button")].map((b) => b.textContent) : null;
-  });
+  let keybar = null;
+  for (let i = 0; i < 25 && !(keybar?.length > 0); i++) {
+    ensureSeated(); // the earlier surgeries may have left the seat bodiless
+    await page.waitForTimeout(200);
+    keybar = await page.evaluate(() => {
+      const el = document.getElementById("key-bar");
+      return el ? [...el.querySelectorAll("button")].map((b) => b.textContent) : null;
+    });
+  }
   check("key bar renders for a seated player when enabled",
     Array.isArray(keybar) && keybar.length > 0, JSON.stringify(keybar));
   if (keybar?.includes("G")) {
@@ -444,7 +481,7 @@ async function main() {
   // filter is personal by design — the first cut used a rescue card and
   // the scout-driving player was legitimately never shown it). Surgery:
   // an owned relay flips to under-enemy-capture.
-  const relayThreatened = (() => {
+  const threatenRelay = () => {
     const st = appServer.gameServer.state;
     const team = st.operators[opId]?.team ?? 0;
     const site = st.sites.find((s) => s.owner === team) ?? st.sites[0];
@@ -453,14 +490,22 @@ async function main() {
     site.capturingTeam = team === 0 ? 1 : 0;
     site.captureProgress = 20;
     return true;
-  })();
-  await page.waitForTimeout(900);
-  const goldCard = await page.evaluate(() => {
-    const cards = [...document.querySelectorAll("#task-strip div")];
-    const gold = cards.find((c) => c.textContent.startsWith("★"));
-    if (gold) return { text: gold.textContent, title: gold.title };
-    return { all: cards.map((c) => c.textContent), gold: null };
-  });
+  };
+  // One retry: a war reset between surgery and read wipes the site —
+  // with pools re-pinned on reset, a SECOND reset inside this window
+  // would need two standard runs in ~2 s.
+  let relayThreatened = false;
+  let goldCard = null;
+  for (let attempt = 0; attempt < 2 && !goldCard?.title; attempt++) {
+    relayThreatened = threatenRelay();
+    await page.waitForTimeout(900);
+    goldCard = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll("#task-strip div")];
+      const gold = cards.find((c) => c.textContent.startsWith("★"));
+      if (gold) return { text: gold.textContent, title: gold.title };
+      return { all: cards.map((c) => c.textContent), gold: null };
+    });
+  }
   check("golden surgery precondition: an owned relay is threatened", relayThreatened === true);
   check("golden line: an untried mission card wears the star",
     goldCard?.gold !== null && (goldCard?.title?.length ?? 0) > 0, JSON.stringify(goldCard));

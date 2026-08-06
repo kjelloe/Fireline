@@ -279,6 +279,25 @@ outcome. Renderer presents fog-filtered views only.
   and the WHOLE seat-facing UI threw on first touch from day one. The
   silently-dead-feature ledger: unprojected view field (W4-4), missing
   validate case (W4-6), unimported helper (202).
+  MOBILE ERA (prompts 211-212): `client/js/keybar_model.js` PURE — the
+  on-screen KEY BAR (context-curated ≤8 per embodiment, gray=carried-
+  but-unavailable, hidden=never-applicable, blink=banner/tutorial
+  suggestion ONLY when ready; taps synthesize real keydown — one
+  dispatch contract; touch default, mf_keybar/⚙ override). MOBILE
+  LAYOUT: body.mobile (matchMedia max-width:700px) + index.html
+  mobile-css block with !important (the HUD is inline-styled — plain
+  media queries cannot win); hint-bar+supply-bar HIDE on mobile (key
+  bar + status panel carry their jobs); op-info uses the faction LOGO
+  glyph (⛨/➳) on ALL platforms; team board starts collapsed on
+  phones. Lint #6 pins every mobile-css id to a real element.
+  GARAGE (211): art-only open bay built AROUND the reserve-spawn strip
+  (baseCentreCol × RESERVE_ROWS, exported) — spawns/sims untouched.
+  Acceptance runs at 640px = the MOBILE layout is gate-exercised;
+  state-surgery pattern (engine constructors on gameServer.state,
+  capture+mutate synchronously — it is REPLACED each tick; 99999
+  ticket pools keep the harness war unendable; ensureSeated() heals
+  organic deaths). debugging/mobile_shot.mjs renders a phone-viewport
+  screenshot for layout work.
   CONVOY ROUTE (Q82): `CONVOY_ROUTE_SCALE` default 80 — the truck
   starts 20% forward, measured 38.3% attacker (classic 100 = 18.7%).
   The ladder is NOT monotonic (65 -> 15.3%): the knob moves the TRUCK

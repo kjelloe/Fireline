@@ -6858,3 +6858,28 @@ with !important. Width-based, so a narrow desktop window benefits too.
 Verified with before/after 412x915 screenshots; acceptance's 640px
 viewport now exercises the mobile layout on every run. Suite 891,
 smoke + acceptance green.
+
+## 2026-08-06/07 — review round + THE HARNESS STOPS FIGHTING THE WAR (prompt 213)
+
+Review-round sync (report/memories/boards at 892) + lint #6 (mobile-css
+reality: every id the body.mobile block styles must exist in index.html
+or as a dynamic el.id="..." — a renamed element would silently rot the
+phone layout; red-green verified).
+
+THE ACCEPTANCE FLAKE FAMILY, ROOT-CAUSED AND CLOSED. Four separate
+mechanisms had been racing the harness, and each "fix" only moved the
+failure to the longest-running section:
+1. The harness's own surgeries created wrecks -> tickets bled -> the
+   war RESET mid-checks (fixed earlier: 99999 pools) — but a STANDARD
+   SCORE still reset (pools now re-pinned via a resetWar wrap).
+2. Organic AI combat killed the player mid-run (ensureSeated).
+3. Headless SwiftShader stalls tripped the PRODUCTION 5 s heartbeat —
+   the transport dropped the session, the client auto-rejoined, and a
+   fresh join AUTO-SELECTED a hull between a surgery and its assertion
+   (the "reseated into a full-HP hull" mystery, three editions).
+4. Fixed settles raced the pump.
+FINAL SHAPE: enableAi:false (this harness tests UI WIRING — combat
+coverage lives in smoke, which keeps AI), 300 s heartbeat, poll-waits
+everywhere with re-applied mutations (a pump-window race cannot outlive
+the loop). FIVE consecutive green runs — the first stable streak since
+the surgical era began. Suite 892 x2, smoke green.

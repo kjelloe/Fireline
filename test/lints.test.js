@@ -156,3 +156,25 @@ test("lint: client modules import every engine/shared function they call", () =>
     "engine helpers called but never imported (ReferenceError on first " +
     `touch, invisible to every gate that does not exercise the path): ${[...new Set(problems)].join("; ")}`);
 });
+
+// ---------------------------------------------------------------------
+// 6. MOBILE-CSS REALITY (prompt 213). The body.mobile override block
+//    targets ids by name with !important — a renamed element would
+//    silently orphan its rule and the phone layout would quietly
+//    regress. Every #id in mobile-css must exist in index.html or be
+//    dynamically created (el.id="..." in client.js).
+// ---------------------------------------------------------------------
+test("lint: every id the mobile-css block styles actually exists", () => {
+  const html = read("../client/index.html");
+  const client = read("../client/js/client.js");
+  const block = html.slice(html.indexOf('id="mobile-css"'), html.indexOf("</style>", html.indexOf('id="mobile-css"')));
+  const styled = [...block.matchAll(/#([\w-]+)/g)].map((m) => m[1]);
+  assert.ok(styled.length > 10, `mobile-css styles ids (${styled.length})`);
+  const known = new Set([
+    ...[...html.matchAll(/id="([\w-]+)"/g)].map((m) => m[1]),
+    ...[...client.matchAll(/\.id="([\w-]+)"/g)].map((m) => m[1]),
+  ]);
+  const orphans = [...new Set(styled)].filter((id) => !known.has(id)).sort();
+  assert.deepEqual(orphans, [],
+    `mobile-css styles ids that no element carries (silent phone-layout rot): ${orphans.join(", ")}`);
+});
