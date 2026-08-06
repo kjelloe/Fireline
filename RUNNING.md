@@ -322,6 +322,13 @@ npm start                              # host machine
   (RESUME=0 skips); join buttons are square faction FLAGS; and if 3D
   graphics fail (driver WebGL errors), the game tells you and drops
   into a playable 2D fallback instead of a black screen.
+- FINDING YOURSELF (prompts 195-197): the green YOU diamond follows you
+  through every state — driving, manning a station, riding a carrier,
+  or down on foot (your body also gets the green locator ring when it
+  hits the ground). Shot down and respawned with every hull taken? The
+  AI now RESERVES the next factory-wave hull for you, and the status
+  panel says exactly where you stand (respawn countdown / pick a free
+  hull / your hull is coming).
 - TUTORIAL quest-line (W4-12): your very first join opens "Looks like
   it's your first time" — take a 7-stop arrow tour of the screen, then
   12 field exercises walk you through everything (move, waypoints,

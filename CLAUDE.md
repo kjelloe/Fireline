@@ -235,6 +235,20 @@ outcome. Renderer presents fog-filtered views only.
   night war is a STORM THAT NEVER LIFTS (weatherActive returns true
   unconditionally), reusing the 16G sensor halving wholesale so it
   inherits an already-tested fairness+mirror argument. Nothing hashed.
+  HUMAN-RESERVE LAW (prompt 195, ai_regency plan()): a regent claims a
+  free hull only while stock remains for every WAITING human (slot
+  0-15, active, bodiless, not on foot, not under regency takeover;
+  respawn countdowns count) — 17 hulls serve 16 seats, and without the
+  law the AI ladder took the spare and won the race to every factory
+  wave, leaving a respawned human spectating their own war. Within-tick
+  aiClaims counter; both claim sites gated (bodiless ladder + Q31
+  seat-swap); Q56 landship claim stays free (it ADDS a hull). Inert in
+  AI-only sims (no human slot joins; events unhashed). The client YOU
+  marker follows EMBODIMENT via whereAmI (driving/stationed/aboard/
+  downed — prompt 197), the downed figure is terrain-anchored via
+  heightAt (it sank into relief at fixed y), and a bodiless seat NAMES
+  its state in the status panel. /healthz aliases /health (siblings'
+  convention); /health falls back to package.json version (prompt 198).
   W4-12 TUTORIAL (prompt 192, client-only, nothing hashed):
   `client/js/tutorial_model.js` pure controller — INTRO → 7-stop arrow
   TOUR of real HUD ids → 12 sequential QUESTS detected from real play

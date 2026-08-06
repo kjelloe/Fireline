@@ -83,6 +83,21 @@ test("a human who HAS a hull reserves nothing", () => {
   assert.equal(claims(ai, s).length, 1, "the seated human frees the garage");
 });
 
+test("a human slot under regency takeover reserves nothing (it IS the AI)", () => {
+  // The cross-system edge: a disconnected human's seat is assumed by the
+  // regency (3C). That seat must not ALSO count as a waiting human, or a
+  // dropped player would freeze their team's garage from the lobby.
+  let s = sandbox([
+    { team: 0, cellX: 10, cellY: 10 },
+  ]);
+  s = apply(s, { type: "join_operator", operatorId: 0, team: 0 }); // human joins...
+  const ai = new AIRegency({ fixedAgents: false });
+  ai.assume(0); // ...then drops; the regency takes the slot
+  const sel = claims(ai, s);
+  assert.equal(sel.length, 1, "the regented seat claims like any regent");
+  assert.equal(sel[0].operatorId, 0);
+});
+
 test("a waiting human on team A does not freeze team B's garage", () => {
   let s = sandbox([
     { team: 0, cellX: 10, cellY: 10 },
