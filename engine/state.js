@@ -75,7 +75,7 @@ const TEAM_A_SPAWN_X = 7;
 // A's mirror (127-7=120) — B won the middle race and the war in 5/5 sim
 // seeds. Spawns are now exact mirrors.
 const TEAM_B_SPAWN_X = 120;
-const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
+export const RESERVE_ROWS = [55, 57, 59, 61, 63, 65];
 const TEAM_A_RESERVE_COLS = [8, 9];
 // Q42: landship rotation points — centre column (width>>1, the B6 drop
 // precedent), north/south of the road so respawns move the fight.

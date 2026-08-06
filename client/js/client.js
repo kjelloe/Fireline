@@ -24,6 +24,7 @@ import { createCamera, panForKey } from "./camera_model.js";
 import { describeEvent, summarizeGameOver, topOperators, deathRecapLine, categoryHonors, setOperatorNames } from "./feedback_model.js";
 import { pingOptionsFor, wheelOptionsFor } from "./ping_model.js";
 import { createSplash } from "./splash_model.js";
+import { keyBarFor } from "./keybar_model.js";
 import {
   createTutorial, TOUR_STOPS, QUESTS,
   PHASE_INTRO, PHASE_TOUR, PHASE_QUESTS, PHASE_DONE,
@@ -41,7 +42,7 @@ import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
 import { UNIT_STATS, getUnitStats } from "../../engine/units.js";
 import { UAV_COST } from "../../engine/reducer.js";
 import { sfx } from "./sfx.js";
-import { MAP_PROFILES } from "../../engine/state.js";
+import { MAP_PROFILES, baseCentreCol, RESERVE_ROWS } from "../../engine/state.js";
 import { DEFAULT_BINDS, loadBinds, saveBinds } from "./keybinds.js";
 import {
   arrowDrive, ARROW_BRADS, classifyTouch, pinchFactor, isTouchDevice,
@@ -745,6 +746,16 @@ function init3d() {
   document.getElementById("btn-settings-close").onclick = () => {
     settingsOverlay.style.display = "none";
   };
+  // Prompt 211: the key-bar toggle — checked reflects the EFFECTIVE
+  // state (touch default), writes an explicit override either way.
+  const keybarEl = document.getElementById("opt-keybar");
+  if (keybarEl) {
+    keybarEl.checked = keybarEnabled();
+    keybarEl.onchange = () => {
+      try { localStorage.setItem("mf_keybar", keybarEl.checked ? "1" : "0"); } catch { /* private */ }
+      lastKeybarSig = ""; // force re-render either direction
+    };
+  }
   // W4-12: re-arm the tutorial on demand (a long break, a friend's PC).
   const tutReplayBtn = document.getElementById("btn-tutorial-replay");
   if (tutReplayBtn) {
@@ -768,6 +779,8 @@ function init3d() {
     selectedAsset: () => mySelectedAssetId,
     // playtest-8 acceptance surface
     whereAmI: () => whereAmI(interpolator.latest()),
+    tasks: () => tasksFor(interpolator.latest(), joined?.operatorId).map((x) => x.kind),
+    viewDowned: () => interpolator.latest()?.downedOperators ?? null,
     notice: () => {
       const el = document.getElementById("centre-notice");
       return el && el.style.display === "block" ? el.textContent : null;
@@ -2881,6 +2894,7 @@ function updateActionBanner(view) {
   if (!el || !joined || joined.spectator) return;
   let text = null;
   bannerAction = null;
+  keybarBlink = null; // prompt 211: each banner case names its key below
   // Prompt-100: the station banner — what you man, how to fire, how to
   // leave. AT gunners see their missile count.
   const myStation = view?.friendlyAssets?.find(
@@ -2896,6 +2910,7 @@ function updateActionBanner(view) {
       el2.style.display = "block";
       el2.style.color = "#9fe89f";
       bannerAction = () => send({ type: "leave_station" });
+      keybarBlink = "station";
     }
     return;
   }
@@ -2917,9 +2932,11 @@ function updateActionBanner(view) {
       if (spawnable) {
         text = recap + t("banner.spawn_carrier", { id: spawnable.id });
         bannerAction = () => send({ type: "redeploy", carrierAssetId: spawnable.id });
+        keybarBlink = "redeploy";
       } else {
         text = recap + t("banner.down_ready");
         bannerAction = () => send({ type: "redeploy" });
+        keybarBlink = "redeploy";
       }
     }
   } else {
@@ -2929,13 +2946,16 @@ function updateActionBanner(view) {
     if (wreck) {
       text = t("banner.tow", { id: wreck.id });
       bannerAction = () => send({ type: "tow_order", wreckAssetId: wreck.id });
+      keybarBlink = "tow";
     } else if (me?.type === 3 && adjacentNeedyFriendly(view)) { // 13A
       const needy = adjacentNeedyFriendly(view);
       text = t("banner.resupply", { id: needy.id });
       bannerAction = () => send({ type: "transfer_cargo", targetAssetId: needy.id });
+      keybarBlink = "transfer";
     } else if (me?.type === 7 && me.deployTimer === 0) { // 12B
       text = me.deployed === 1 ? t("banner.undeploy") : t("banner.deploy");
       bannerAction = () => send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
+      keybarBlink = "hardpoint";
     } else if (me && getUnitStats(me.type).station && (me.stationOp ?? -1) === -1 &&
                (visibleEnemyIds(view)?.length ?? 0) > 0) {
       // Prompt 202: the driver's CALL button — your crew station is
@@ -2992,6 +3012,68 @@ function adjacentTowableWreck(view) {
 // Clicking a card jumps the camera there and sends the matching context
 // ping — that IS "responding" on the team channel for v2.0.
 let lastTaskKey = "";
+// Prompt 211: THE ON-SCREEN KEY BAR — mobile has no keyboard, and the
+// game keeps saying "press J". keybar_model decides WHAT shows (context-
+// curated, gray = momentarily unavailable, blink = the banner's or the
+// tutorial's current suggestion); this renders it and synthesizes REAL
+// keydown events on tap, so keyboard and bar share one dispatch
+// contract. Default ON for touch devices, ⚙ toggle everywhere
+// (mf_keybar: "1"/"0" overrides the device default).
+const KEYBAR_FIXED_KEYS = { sandbag: "n" }; // N is a fixed key, not a bind
+let keybarBlink = null; // action name the banner/tutorial suggests
+let lastKeybarSig = "";
+function keybarEnabled() {
+  let pref = null;
+  try { pref = localStorage.getItem("mf_keybar"); } catch { /* private */ }
+  if (pref === "1") return true;
+  if (pref === "0") return false;
+  return isTouchDevice();
+}
+function updateKeyBar(view) {
+  let el = document.getElementById("key-bar");
+  if (!keybarEnabled() || !joined || joined.spectator) {
+    if (el) { el.remove(); lastKeybarSig = ""; }
+    return;
+  }
+  const tutKey = tut?.currentQuest()?.id === "direct" ? "directDrive"
+    : tut?.currentQuest()?.id === "tow" ? "tow"
+    : tut?.currentQuest()?.id === "board" ? "board" : null;
+  const bar = keyBarFor(view, joined.operatorId, { blinkKey: keybarBlink ?? tutKey });
+  const sig = bar.map((e) => `${e.action}${e.ready ? "+" : "-"}${e.blink ? "!" : ""}`).join("|");
+  if (sig === lastKeybarSig && el) return;
+  lastKeybarSig = sig;
+  if (!el) {
+    el = document.createElement("div");
+    el.id="key-bar"; // (no spaces: the wiring net greps id="...")
+    el.style.cssText = "position:absolute; bottom:44px; left:50%;" +
+      "transform:translateX(-50%); display:flex; gap:8px; z-index:6;";
+    document.body.appendChild(el);
+    if (!document.getElementById("keybar-style")) {
+      const st = document.createElement("style");
+      st.id="keybar-style"; // (no spaces: the wiring net greps id="...")
+      st.textContent = "@keyframes keybar-blink { 50% { box-shadow:0 0 14px #f5e96b; border-color:#f5e96b; } }";
+      document.head.appendChild(st);
+    }
+  }
+  el.innerHTML = "";
+  for (const e of bar) {
+    const key = KEYBAR_FIXED_KEYS[e.action] ?? BINDS[e.action] ?? "?";
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = key.toUpperCase();
+    btn.title = t(`keybar.${e.action}`);
+    btn.style.cssText = "min-width:44px; height:44px; font:bold 17px sans-serif;" +
+      "border:1px solid #556; border-radius:8px; touch-action:manipulation;" +
+      (e.ready ? "" : "opacity:0.35; filter:grayscale(1);") +
+      (e.blink ? "animation:keybar-blink 0.9s infinite;" : "");
+    btn.onclick = () => {
+      if (!e.ready) { flashNotice(t(`keybar.${e.action}`), 1600, "#98a"); return; }
+      window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+    };
+    el.appendChild(btn);
+  }
+}
+
 // Prompt 201: THE GOLDEN LINE. Until a player has TRIED every mission
 // type the war has shown them, untried kinds wear GOLD on their cards
 // (★ + glow) — a standing map of what they haven't explored yet.
@@ -3825,7 +3907,60 @@ function updateWarDressing(view) {
         const cap = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.7), roof);
         cap.position.set(piece.x, 1.36, piece.y);
         dressingGroup.add(cap);
+        // Prompt 211: a ridge over the cap — "proper roofs".
+        const ridge = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.3, 0.5), roof);
+        ridge.rotation.z = 0; ridge.position.set(piece.x, 1.5, piece.y);
+        ridge.scale.set(1, 0.6, 1);
+        dressingGroup.add(ridge);
       }
+      // Prompt 211 ("the base buildings need proper roofs"): pitched
+      // roofs — two slanted slabs meeting at a ridge — on the big boxes.
+      if (piece.kind === "warehouse" || piece.kind === "barracks") {
+        const w = piece.kind === "warehouse" ? 2.9 : 2.0;
+        const d = piece.kind === "warehouse" ? 0.85 : 0.55;
+        const top = piece.kind === "warehouse" ? 1.0 : 0.7;
+        for (const side of [-1, 1]) {
+          const slab = new THREE.Mesh(new THREE.BoxGeometry(w, 0.07, d), roof);
+          slab.position.set(piece.x, top + 0.16, piece.y + side * d * 0.42);
+          slab.rotation.x = side * 0.42;
+          dressingGroup.add(slab);
+        }
+      }
+    }
+    // Prompt 211: THE GARAGE. Rebuilt hulls spawn on the base's centre
+    // column across the reserve rows (fieldSpawnFor — mirror-honest);
+    // build an open-fronted motor-pool bay AROUND those cells so a new
+    // wave is VISIBLE rolling out, not just reachable via Next-asset.
+    // Opening faces the map centre; centre-col anchoring keeps the
+    // east/west pair mirror-exact by construction. Art only — spawns,
+    // sims and fixtures untouched.
+    {
+      const col = baseCentreCol(b, cachedMap?.width ?? 128) + 0.5;
+      const rows = RESERVE_ROWS;
+      const y0 = rows[0] - 0.8, y1 = rows[rows.length - 1] + 0.8;
+      const len = y1 - y0, cz = (y0 + y1) / 2;
+      const dir = b.x + b.width / 2 < (cachedMap?.width ?? 128) / 2 ? 1 : -1;
+      const backX = col - dir * 1.15; // back wall away from the front
+      const mkWall = (geo, x, y, z) => {
+        const m = new THREE.Mesh(geo, wall);
+        m.position.set(x, y, z);
+        dressingGroup.add(m);
+        return m;
+      };
+      mkWall(new THREE.BoxGeometry(0.18, 1.1, len), backX, 0.55, cz);
+      mkWall(new THREE.BoxGeometry(2.2, 1.1, 0.18), col - dir * 0.1, 0.55, y0);
+      mkWall(new THREE.BoxGeometry(2.2, 1.1, 0.18), col - dir * 0.1, 0.55, y1);
+      // Roof slab overhangs the OPEN front so the bay reads as a garage
+      // from the player camera, but hulls inside stay visible.
+      const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.1, len + 0.4), roof);
+      roofSlab.position.set(col - dir * 0.25, 1.15, cz);
+      dressingGroup.add(roofSlab);
+      // A painted apron stripe out the opening — "they come out HERE".
+      const apron = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 0.03, len),
+        new THREE.MeshLambertMaterial({ color: 0x4a4a3a }));
+      apron.position.set(col + dir * 1.1, 0.02, cz);
+      dressingGroup.add(apron);
     }
   }
   scene.add(dressingGroup);
@@ -3920,6 +4055,7 @@ function renderBattlefield() {
   updateDirectRing(view);
   updateTaskStrip(view);
   updateActionBanner(view);
+  updateKeyBar(view); // prompt 211: after the banner — it feeds the blink
   fogGhosts = updateGhosts(fogGhosts, view, performance.now());
   updateGhostMeshes(performance.now());
   updateOrderMarkers(performance.now());

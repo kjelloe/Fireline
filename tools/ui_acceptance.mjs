@@ -407,33 +407,64 @@ async function main() {
       `panel="${landed}"`);
   }
 
+  // ── prompt 211: the on-screen key bar ─────────────────────────────────
+  // Headless Chromium is not a touch device, so the bar is off by
+  // default; the ⚙ override turns it on, and a tap on G must enter
+  // direct mode through the SAME dispatch as the real key.
+  ensureSeated();
+  await page.evaluate(() => localStorage.setItem("mf_keybar", "1"));
+  await page.waitForTimeout(700);
+  const keybar = await page.evaluate(() => {
+    const el = document.getElementById("key-bar");
+    return el ? [...el.querySelectorAll("button")].map((b) => b.textContent) : null;
+  });
+  check("key bar renders for a seated player when enabled",
+    Array.isArray(keybar) && keybar.length > 0, JSON.stringify(keybar));
+  if (keybar?.includes("G")) {
+    await page.evaluate(() => {
+      [...document.querySelectorAll("#key-bar button")]
+        .find((b) => b.textContent === "G")?.click();
+    });
+    await page.waitForTimeout(400);
+    const direct = await page.evaluate(() =>
+      document.getElementById("btn-direct-exit")?.style.display !== "none");
+    check("tapping G on the bar enters direct mode (shared dispatch)", direct === true);
+    await page.evaluate(() => {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "g", bubbles: true }));
+    });
+    await page.waitForTimeout(200);
+  }
+  await page.evaluate(() => localStorage.setItem("mf_keybar", "0"));
+  await page.waitForTimeout(500);
+  const barGone = await page.evaluate(() => document.getElementById("key-bar") === null);
+  check("the ⚙ override removes the bar", barGone === true);
+
   // ── prompt 210: THE GOLDEN LINE on a real card ────────────────────────
-  // Down an AI TEAMMATE (own bodies are excluded from rescue cards) away
-  // from carriers — a rescue card must appear, wear gold (★, fresh
-  // profile), and clicking it retires the kind into mf_goldline.
-  (() => {
+  // Use a card EVERY chassis is shown: defend_relay (the capability
+  // filter is personal by design — the first cut used a rescue card and
+  // the scout-driving player was legitimately never shown it). Surgery:
+  // an owned relay flips to under-enemy-capture.
+  const relayThreatened = (() => {
     const st = appServer.gameServer.state;
-    const mate = st.operators.find((o) =>
-      o.id !== opId && o.team === st.operators[opId]?.team &&
-      o.state === 1 && o.assetId !== -1);
-    if (!mate) return;
-    const hull = st.assets[mate.assetId];
-    mate.state = 2;
-    mate.assetId = -1;
-    const body = createDowned(mate, hull);
-    body.x = 118 * 256 + 128; body.y = 30 * 256 + 128;
-    body.targetX = body.x; body.targetY = body.y;
-    st.downed.push(body);
+    const team = st.operators[opId]?.team ?? 0;
+    const site = st.sites.find((s) => s.owner === team) ?? st.sites[0];
+    if (!site) return false;
+    site.owner = team;
+    site.capturingTeam = team === 0 ? 1 : 0;
+    site.captureProgress = 20;
+    return true;
   })();
   await page.waitForTimeout(900);
   const goldCard = await page.evaluate(() => {
     const cards = [...document.querySelectorAll("#task-strip div")];
     const gold = cards.find((c) => c.textContent.startsWith("★"));
-    return gold ? { text: gold.textContent, title: gold.title } : null;
+    if (gold) return { text: gold.textContent, title: gold.title };
+    return { all: cards.map((c) => c.textContent), gold: null };
   });
+  check("golden surgery precondition: an owned relay is threatened", relayThreatened === true);
   check("golden line: an untried mission card wears the star",
-    goldCard !== null && goldCard.title.length > 0, JSON.stringify(goldCard));
-  if (goldCard) {
+    goldCard?.gold !== null && (goldCard?.title?.length ?? 0) > 0, JSON.stringify(goldCard));
+  if (goldCard?.title) {
     await page.evaluate(() => {
       [...document.querySelectorAll("#task-strip div")]
         .find((c) => c.textContent.startsWith("★"))?.click();

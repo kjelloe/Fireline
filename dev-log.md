@@ -6786,3 +6786,43 @@ Triple-run stable. Suite 879 x2, smoke green, 29 acceptance checks.
 Accepted gaps (recorded, not closed): tutorialCaps + boostHintBar are
 client.js-internal DOM helpers (acceptance-only reachable; the model
 side of deferral is fully tested); sfx patches are audio-out only.
+
+## 2026-08-06 — mobile round 1: the KEY BAR, roofs, and the garage (prompt 211)
+
+Mobile playtest verdicts, four rulings taken (touch+⚙ toggle /
+context-curated ≤8 / banner+tutorial blink / art-only garage):
+
+THE ON-SCREEN KEY BAR: `client/js/keybar_model.js` PURE — from the
+fog-filtered view alone it answers which action keys this embodiment
+can use now (ready), which its chassis carries but can't use this
+moment (gray — tap explains via tooltip flash), and which to hide
+entirely. Blink = the action banner's current suggestion (6 banner
+cases name their key) or the tutorial's active quest — and ONLY when
+ready: a blinking gray button would be a lie. DOM taps synthesize REAL
+keydown events so keyboard and bar share one dispatch contract;
+sandbags ride the fixed N key. Default ON for touch, mf_keybar
+override, ⚙ toggle reflects the effective state. 12 model tests incl.
+a both-locales tooltip lint; acceptance: renders when enabled, tapping
+G enters direct mode through the shared dispatch, the override removes
+it.
+
+COMPOUND ART: pitched roof slabs on warehouse/barracks + an hq ridge;
+THE GARAGE — an open-fronted motor-pool bay built AROUND the real
+reserve-spawn strip (baseCentreCol × RESERVE_ROWS, now exported), so a
+rebuilt wave is VISIBLE rolling out of a building instead of appearing
+loose in the compound. Opening faces map centre; centre-col anchoring
+keeps the pair mirror-exact BY CONSTRUCTION. Art only — spawns, sims,
+fixtures untouched (the ruled alternative, moving spawns, would have
+cost a sim gate).
+
+ACCEPTANCE ARCHAEOLOGY on the way: the golden-line check's rescue card
+was correctly filtered — the capability filter shows rescue only to
+carriers (capacity > 0), BY DESIGN — so the check now uses
+defend_relay (every chassis sees it) via site surgery. Two debug
+getters (tasks, viewDowned) joined __mfDebug. Triple-run stable.
+
+STILL OPEN from this prompt: the mobile ELEMENT-OVERLAP pass waits for
+the screenshots; wiring-net convention re-learned (el.id="..." no
+spaces, twice).
+
+Suite 891 x2, smoke + acceptance green, 33 acceptance checks.
