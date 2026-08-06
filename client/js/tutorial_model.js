@@ -70,11 +70,11 @@ export const QUESTS = Object.freeze([
   { id: "switch", textKey: "tut.q.switch",
     matchUi: (a) => a === "next-asset",
     matchCommand: (c) => c.type === "select_asset" },
-  { id: "tow", textKey: "tut.q.tow",
+  { id: "tow", textKey: "tut.q.tow", attemptKey: "tow",
     matchEvent: (e, ctx) => e.type === "tow_started" && e.by === ctx.myAssetId },
   { id: "board", textKey: "tut.q.board",
     matchCommand: (c) => c.type === "board_carrier" || c.type === "redeploy" },
-  { id: "special", textKey: "tut.q.special",
+  { id: "special", textKey: "tut.q.special", attemptKey: "special",
     matchCommand: (c) => SPECIAL_COMMANDS.has(c.type) },
   { id: "direct", textKey: "tut.q.direct",
     matchUi: (a) => a === "direct" },
@@ -85,23 +85,26 @@ export const QUESTS = Object.freeze([
 export function createTutorial() {
   const s = {
     phase: PHASE_OFF,
-    tour: 0,          // index into TOUR_STOPS
-    quest: 0,         // index into QUESTS
-    results: {},      // quest id -> "done" | "skipped"
+    tour: 0,               // index into TOUR_STOPS
+    pending: [...QUESTS],  // the ladder as a QUEUE — deferrals rotate it
+    results: {},           // quest id -> "done" | "skipped"
     skippedAll: false,
-    justCompleted: null, // quest id, consumed by the DOM for the ✓ flash
+    justCompleted: null,   // quest id, consumed by the DOM for the ✓ flash
+    justDeferred: null,    // quest id, consumed for the "deferred" note
+    deferFlagged: {},      // quest id -> true once, so the note fires once
   };
 
-  function advanceQuest() {
-    s.quest += 1;
-    if (s.quest >= QUESTS.length) s.phase = PHASE_DONE;
+  const current = () => s.pending[0] ?? null;
+
+  function finishCurrent(result) {
+    const q = s.pending.shift();
+    s.results[q.id] = result;
+    if (s.pending.length === 0) s.phase = PHASE_DONE;
   }
 
   function complete() {
-    const q = QUESTS[s.quest];
-    s.results[q.id] = "done";
-    s.justCompleted = q.id;
-    advanceQuest();
+    s.justCompleted = current().id;
+    finishCurrent("done");
   }
 
   return {
@@ -120,22 +123,39 @@ export function createTutorial() {
     },
     skipStep() {
       if (s.phase !== PHASE_QUESTS) return;
-      s.results[QUESTS[s.quest].id] = "skipped";
-      advanceQuest();
+      finishCurrent("skipped");
+    },
+    // Prompt 200 (playtest: "bring one home" while the only hull was
+    // artillery): a quest whose PRECONDITIONS the war cannot currently
+    // meet must not block the ladder. caps is the DOM's honest answer
+    // per attemptKey ({tow, special}); an unattemptable quest rotates
+    // to the BACK and the next attemptable one leads. Bounded by one
+    // full rotation; if NOTHING pending is attemptable the current
+    // quest stays (the per-step skip is the exit, never a spin).
+    noteCaps(caps) {
+      if (s.phase !== PHASE_QUESTS || !caps) return;
+      const attemptable = (q) => !q.attemptKey || caps[q.attemptKey] === true;
+      if (!s.pending.some(attemptable)) return;
+      for (let i = 0; i < QUESTS.length && !attemptable(current()); i++) {
+        const q = s.pending.shift();
+        s.pending.push(q);
+        if (!s.deferFlagged[q.id]) {
+          s.deferFlagged[q.id] = true;
+          s.justDeferred = q.id;
+        }
+      }
     },
     noteCommand(cmd) {
       if (s.phase !== PHASE_QUESTS || !cmd) return;
-      const q = QUESTS[s.quest];
-      if (q.matchCommand?.(cmd)) complete();
+      if (current().matchCommand?.(cmd)) complete();
     },
     noteUi(action) {
       if (s.phase !== PHASE_QUESTS) return;
-      const q = QUESTS[s.quest];
-      if (q.matchUi?.(action)) complete();
+      if (current().matchUi?.(action)) complete();
     },
     noteEvents(events, ctx) {
       if (s.phase !== PHASE_QUESTS || !Array.isArray(events)) return;
-      const q = QUESTS[s.quest];
+      const q = current();
       if (!q.matchEvent) return;
       for (const e of events) {
         if (q.matchEvent(e, ctx ?? {})) { complete(); return; }
@@ -146,8 +166,14 @@ export function createTutorial() {
       s.justCompleted = null;
       return id;
     },
+    consumeDeferred() {
+      const id = s.justDeferred;
+      s.justDeferred = null;
+      return id;
+    },
+    questNumber() { return QUESTS.length - s.pending.length + 1; },
     currentStop() { return s.phase === PHASE_TOUR ? TOUR_STOPS[s.tour] : null; },
-    currentQuest() { return s.phase === PHASE_QUESTS ? QUESTS[s.quest] : null; },
+    currentQuest() { return s.phase === PHASE_QUESTS ? current() : null; },
     finishedClean() { return s.phase === PHASE_DONE && !s.skippedAll; },
   };
 }

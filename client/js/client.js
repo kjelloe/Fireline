@@ -38,7 +38,7 @@ import { codexFor, codexAll, MECHANICS_PAGES } from "./codex.js";
 import { t, setLocale, getLocale } from "./strings.js";
 import { fogMask } from "./fog_model.js";
 import { buildTerrainMesh, heightAt } from "./terrain_mesh.js";
-import { UNIT_STATS } from "../../engine/units.js";
+import { UNIT_STATS, getUnitStats } from "../../engine/units.js";
 import { UAV_COST } from "../../engine/reducer.js";
 import { sfx } from "./sfx.js";
 import { MAP_PROFILES } from "../../engine/state.js";
@@ -961,7 +961,11 @@ function connect() {
       updateNextAssetButton(msg.view); // item 22
       updateWarClock(msg.view);        // item 27
       handleEvents(msg.view.events ?? []);
-      if (tut) { tut.noteEvents(msg.view.events ?? [], tutorialCtx(msg.view)); tutorialSync(); } // W4-12
+      if (tut) { // W4-12; caps first so an unattemptable quest defers before matching
+        tut.noteCaps(tutorialCaps(msg.view));
+        tut.noteEvents(msg.view.events ?? [], tutorialCtx(msg.view));
+        tutorialSync();
+      }
       announceContacts(msg.view); // B5: fog reveals become callouts
       splashAssetsReady(); // splash: belt-and-braces (open handler is primary)
       // B7: track the asset I drive AFTER the event pass — on the death
@@ -2355,8 +2359,27 @@ function tutorialSync() {
   if (!tut) return;
   const doneId = tut.consumeCompleted();
   if (doneId && doneId !== "win") flashNotice(`✓ ${t(`tut.q.${doneId}`)}`, 2000, "#9fe89f");
+  const deferId = tut.consumeDeferred(); // prompt 200: say WHY it moved on
+  if (deferId) flashNotice(t(`tut.defer.${deferId}`), 3200, "#9fd8ff");
   if (tut.state.phase === PHASE_DONE) { finishTutorial(); return; }
   renderTutorial();
+}
+
+// Prompt 200: what the war can currently offer each deferrable quest —
+// the DOM's honest answer, recomputed per snapshot. TOW needs a truck
+// you drive or could take; SPECIAL needs your chassis to carry one.
+function tutorialCaps(view) {
+  const mine = view?.friendlyAssets?.find((a) => a.operatorId === joined?.operatorId);
+  const stats = mine ? UNIT_STATS[mine.type] : null;
+  const truckReachable = stats?.canTow === true ||
+    view?.friendlyAssets?.some((a) =>
+      a.operatorId === -1 && a.state !== STATE_DISABLED && a.state !== 3 &&
+      UNIT_STATS[a.type]?.canTow === true);
+  const special = !!(mine && (stats?.canMine === true || stats?.canClearMines === true ||
+    stats?.deployable === true || (mine.minesLeft ?? 0) > 0 ||
+    (mine.caltropsLeft ?? 0) > 0 || (mine.sandbagsLeft ?? 0) > 0 ||
+    (mine.smokeLeft ?? 0) > 0));
+  return { tow: truckReachable === true, special };
 }
 
 function positionTutBubble(bubble, rect, side) {
@@ -2378,10 +2401,26 @@ function positionTutBubble(bubble, rect, side) {
   else a.style.cssText = base + "left:-10px; top:16px; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:10px solid #f5e96b;";
 }
 
+// Prompt 201 (playtest: "keybar is not visible"): #hint-bar is 11px
+// dark-grey chrome — legible when sought, invisible when needed. While
+// the SPECIAL quest is active, it gets a temporary boost.
+function boostHintBar(on) {
+  const el = document.getElementById("hint-bar");
+  if (!el) return;
+  el.style.color = on ? "#ffe9a0" : "";
+  el.style.background = on ? "rgba(12,14,20,0.92)" : "";
+  el.style.border = on ? "1px solid #f5e96b" : "";
+  el.style.borderRadius = on ? "6px" : "";
+  el.style.padding = on ? "4px 8px" : "";
+  el.style.fontSize = on ? "13px" : "";
+  el.style.zIndex = on ? "6" : "";
+}
+
 function renderTutorial() {
   const overlay = document.getElementById("tutorial-overlay");
   const questCard = document.getElementById("tutorial-quest");
   if (!overlay || !questCard) return;
+  boostHintBar(tut?.state.phase === PHASE_QUESTS && tut.currentQuest()?.id === "special");
   if (!tut) { overlay.style.display = "none"; questCard.style.display = "none"; return; }
   const phase = tut.state.phase;
   const panel = document.getElementById("tut-panel");
@@ -2419,7 +2458,7 @@ function renderTutorial() {
   } else if (phase === PHASE_QUESTS) {
     const q = tut.currentQuest();
     document.getElementById("tut-quest-head").textContent =
-      t("tut.q.title", { n: tut.state.quest + 1, total: QUESTS.length });
+      t("tut.q.title", { n: tut.questNumber(), total: QUESTS.length });
     document.getElementById("tut-quest-text").textContent = t(q.textKey);
     document.getElementById("btn-tut-quest-skip").textContent = t("tut.skip");
     const skipStep = document.getElementById("tut-quest-skipstep");
@@ -2897,6 +2936,17 @@ function updateActionBanner(view) {
     } else if (me?.type === 7 && me.deployTimer === 0) { // 12B
       text = me.deployed === 1 ? t("banner.undeploy") : t("banner.deploy");
       bannerAction = () => send({ type: me.deployed === 1 ? "undeploy" : "deploy_hardpoint" });
+    } else if (me && getUnitStats(me.type).station && (me.stationOp ?? -1) === -1 &&
+               (visibleEnemyIds(view)?.length ?? 0) > 0) {
+      // Prompt 202: the driver's CALL button — your crew station is
+      // open and there is contact. Click = the need_gunner ping (the
+      // key-side twin already lives on 1/2/3). Gated on visible enemies
+      // so a quiet drive is not nagged.
+      text = t("banner.call_gunner", { key: BINDS.station.toUpperCase() });
+      bannerAction = () => send({
+        type: "ping", kind: "need_gunner",
+        targetCellX: Math.floor(me.x / CELL), targetCellY: Math.floor(me.y / CELL),
+      });
     }
     // 15: tactically stuck? The status panel's force-respawn button calls
     // CMD_RESPAWN; while the 10 s countdown runs the banner narrates it.
@@ -2942,6 +2992,26 @@ function adjacentTowableWreck(view) {
 // Clicking a card jumps the camera there and sends the matching context
 // ping — that IS "responding" on the team channel for v2.0.
 let lastTaskKey = "";
+// Prompt 201: THE GOLDEN LINE. Until a player has TRIED every mission
+// type the war has shown them, untried kinds wear GOLD on their cards
+// (★ + glow) — a standing map of what they haven't explored yet.
+// "Tried" = clicked the card (you flew there and answered it); the set
+// persists across wars (mf_goldline). Veterans age out naturally: once
+// a kind is tried its card renders plain forever.
+let goldTried = null;
+function loadGoldTried() {
+  if (goldTried) return goldTried;
+  try { goldTried = new Set(JSON.parse(localStorage.getItem("mf_goldline") ?? "[]")); }
+  catch { goldTried = new Set(); }
+  return goldTried;
+}
+function markGoldTried(kind) {
+  const set = loadGoldTried();
+  if (set.has(kind)) return;
+  set.add(kind);
+  try { localStorage.setItem("mf_goldline", JSON.stringify([...set])); } catch { /* private */ }
+}
+
 function updateTaskStrip(view) {
   const el = document.getElementById("task-strip");
   if (!el) return;
@@ -2950,18 +3020,27 @@ function updateTaskStrip(view) {
     return;
   }
   const tasks = tasksFor(view, joined.operatorId).slice(0, 5); // 14J: five
-  const key = tasks.map((t) => t.id + (t.mine ? "*" : "")).join("|");
+  const tried = loadGoldTried();
+  const key = tasks.map((t) => t.id + (t.mine ? "*" : "") + (tried.has(t.kind) ? "" : "★")).join("|");
   if (key === lastTaskKey) return;
   lastTaskKey = key;
   el.innerHTML = "";
   for (const t of tasks) {
     const card = document.createElement("div");
-    card.textContent = t.label;
+    const untried = !tried.has(t.kind);
+    card.textContent = untried ? `★ ${t.label}` : t.label;
     card.style.cssText =
       "background:rgba(10,14,10,0.78); color:#d8e6c8; padding:7px 10px;" +
       `border-left:3px solid ${t.mine ? "#57c46b" : "#f5e96b"}; border-radius:4px;` +
-      "font:12px sans-serif; cursor:pointer;";
+      "font:12px sans-serif; cursor:pointer;" +
+      (untried
+        ? "border:1px solid #f5c84a; border-left:3px solid #f5c84a;" +
+          "box-shadow:0 0 8px rgba(245,200,74,0.45); color:#ffe9a0;"
+        : "");
+    if (untried) card.title = t("gold.untried");
     card.onclick = () => {
+      markGoldTried(t.kind);
+      lastTaskKey = ""; // re-render: the gold retires the moment it is tried
       freeCam.jumpTo(t.cellX, t.cellY);
       send({ type: "ping", kind: t.ping, targetCellX: t.cellX, targetCellY: t.cellY });
     };
@@ -3230,7 +3309,12 @@ function updateHoverTip(view) {
   // tip of its own, even when a driver is aboard.
   const stationStats = operable ? getUnitStats(a.type).station : null;
   const stationOpen = stationStats && a.stationOp === -1;
-  if (!a || !operable || (a.operatorId !== -1 && !stationOpen)) {
+  // Prompt 202: a crewed carrier with a FREE BUNK advertises it too —
+  // the B board key was invisible unless you already knew it.
+  const bunkOpen = operable && (getUnitStats(a.type).capacity ?? 0) > 0 &&
+    a.operatorId !== -1 && a.operatorId !== joined?.operatorId &&
+    (a.aboard1 === -1 || a.aboard2 === -1);
+  if (!a || !operable || (a.operatorId !== -1 && !stationOpen && !bunkOpen)) {
     el.style.display = "none";
     return;
   }
@@ -3244,9 +3328,12 @@ function updateHoverTip(view) {
   const stationLine = stationOpen
     ? ` <span style="color:#9fe89f;">${t(stationStats.kind === "mg" ? "hover.join_mg" : "hover.join_at")}</span>`
     : "";
+  const bunkLine = bunkOpen
+    ? ` <span style="color:#9fd8ff;">${t("hover.join_bunk")}</span>`
+    : "";
   if (a.operatorId !== -1) {
-    // Crewed hull, open station: the tip is ONLY the join line.
-    el.innerHTML = stationLine;
+    // Crewed hull, open seat(s): the tip is ONLY the join line(s).
+    el.innerHTML = stationLine + bunkLine;
     return;
   }
   // Item 31: the key is the reliable route — the link stays for mouse
@@ -3717,7 +3804,11 @@ function updateWarDressing(view) {
         cabin.position.set(piece.x, 1.7, piece.y);
         dressingGroup.add(cabin);
         const beam = new THREE.Mesh(
-          new THREE.ConeGeometry(0.5, 2.6, 6, 1, true),
+          // Prompt 203: anchor the APEX at the lamp — ConeGeometry is
+          // centred, so the sweep used to pivot about mid-beam and the
+          // arc floated off its tower.
+          (() => { const g = new THREE.ConeGeometry(0.5, 2.6, 6, 1, true);
+                   g.translate(0, -1.3, 0); return g; })(),
           new THREE.MeshBasicMaterial({ color: 0xfff2b0, transparent: true, opacity: 0.14, depthWrite: false })
         );
         beam.name = "searchlight";

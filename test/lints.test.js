@@ -12,7 +12,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 
 const read = (rel) => readFileSync(new URL(rel, import.meta.url), "utf8");
 
@@ -116,4 +116,43 @@ test("lint: every event the client's SFX map listens for is one the engine emits
   const ghosts = listened.filter((k) => !emitted.has(k)).sort();
   assert.deepEqual(ghosts, [],
     `SFX_MAP listens for events the engine never emits (silently mute): ${ghosts.join(", ")}`);
+});
+
+// ---------------------------------------------------------------------
+// 5. IMPORT REALITY (prompt 202). The stations slice called
+//    getUnitStats() at three client.js sites WITHOUT importing it — the
+//    whole seat-facing surface (J join, vacant-seat hover tips, the
+//    station banner) threw ReferenceError on first touch from the day
+//    it shipped, and no gate hovered a friendly hull to notice. This
+//    lint: every engine/shared export USED as a bare call in a client
+//    module must be imported there or defined locally.
+// ---------------------------------------------------------------------
+test("lint: client modules import every engine/shared function they call", () => {
+  const engineExports = new Set();
+  for (const dir of ["../engine", "../shared"]) {
+    for (const f of readdirSync(new URL(dir, import.meta.url))) {
+      if (!f.endsWith(".js")) continue;
+      const src = read(`${dir}/${f}`);
+      for (const m of src.matchAll(/export function (\w+)/g)) engineExports.add(m[1]);
+    }
+  }
+  const clientDir = new URL("../client/js", import.meta.url);
+  const problems = [];
+  for (const f of readdirSync(clientDir)) {
+    if (!f.endsWith(".js")) continue;
+    const src = read(`../client/js/${f}`);
+    const imported = new Set();
+    for (const m of src.matchAll(/import\s*\{([^}]+)\}/g)) {
+      for (const name of m[1].split(",")) imported.add(name.trim().split(/\s+as\s+/).pop());
+    }
+    const local = new Set([...src.matchAll(/(?:^|\s)function (\w+)/g)].map((m) => m[1]));
+    for (const m of src.matchAll(/\b(\w+)\(/g)) {
+      const name = m[1];
+      if (!engineExports.has(name) || imported.has(name) || local.has(name)) continue;
+      problems.push(`${f}: calls ${name}() without importing it`);
+    }
+  }
+  assert.deepEqual([...new Set(problems)].sort(), [],
+    "engine helpers called but never imported (ReferenceError on first " +
+    `touch, invisible to every gate that does not exercise the path): ${[...new Set(problems)].join("; ")}`);
 });

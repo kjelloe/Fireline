@@ -30,6 +30,8 @@ test("lint: every tutorial string key exists in BOTH locales", () => {
     ...TOUR_STOPS.map((s) => s.textKey),
     ...QUESTS.map((q) => q.textKey),
     ...QUESTS.map((q) => `tut.q.${q.id}`), // the ✓ flash builds this form
+    // prompt 200: every deferrable quest needs its "why it moved on" line
+    ...QUESTS.filter((q) => q.attemptKey).map((q) => `tut.defer.${q.id}`),
     "tut.intro.title", "tut.intro.body", "tut.intro.start", "tut.skip",
     "tut.next", "tut.q.title", "tut.q.skipstep", "tut.q.gotit",
     "tut.done", "tut.replay",
@@ -195,4 +197,55 @@ test("consumeCompleted yields once", () => {
   tut.noteCommand({ type: "ping", kind: 2 });
   assert.equal(tut.consumeCompleted(), "ping");
   assert.equal(tut.consumeCompleted(), null);
+});
+
+// ── prompt 200: deferrable quests (the artillery-at-the-tow-step bug) ──
+
+test("an unattemptable quest rotates to the back; the ladder continues", () => {
+  const tut = atQuest("tow");
+  tut.noteCaps({ tow: false, special: true });
+  assert.equal(tut.currentQuest().id, "board", "tow stepped aside");
+  assert.equal(tut.consumeDeferred(), "tow");
+  assert.equal(tut.consumeDeferred(), null, "the note fires once");
+  // The number must NOT advance on a deferral — nothing was done.
+  assert.equal(tut.questNumber(), 8);
+  assert.equal(tut.state.results.tow, undefined, "deferred is not skipped");
+});
+
+test("a deferred quest returns once capable and completes", () => {
+  const tut = atQuest("tow");
+  tut.noteCaps({ tow: false, special: true });
+  // Finish everything else; tow is now the last one standing.
+  while (tut.currentQuest() && tut.currentQuest().id !== "tow") tut.skipStep();
+  assert.equal(tut.currentQuest()?.id, "tow", "tow came back around");
+  tut.noteCaps({ tow: true, special: true }); // a truck freed up
+  tut.noteEvents([{ type: "tow_started", assetId: 4, by: 7 }], { team: 0, myAssetId: 7 });
+  assert.equal(tut.consumeCompleted(), "tow");
+});
+
+test("nothing attemptable: the current quest STAYS (skip is the exit, not a spin)", () => {
+  const tut = atQuest("tow");
+  // Reduce pending to [tow, special] only: defer tow, then skip the rest.
+  tut.noteCaps({ tow: false, special: true });   // [board, special, direct, win, tow]
+  tut.consumeDeferred();
+  tut.skipStep();                                 // board -> [special, direct, win, tow]
+  tut.noteCaps({ tow: false, special: false });   // special steps aside too
+  tut.consumeDeferred();
+  tut.skipStep();                                 // direct
+  tut.skipStep();                                 // win -> [tow, special]
+  assert.deepEqual(tut.state.pending.map((q) => q.id), ["tow", "special"]);
+  const before = tut.currentQuest().id;
+  tut.noteCaps({ tow: false, special: false });
+  assert.equal(tut.currentQuest().id, before, "no rotation when nothing qualifies");
+  assert.equal(tut.consumeDeferred(), null, "and no churned notes");
+});
+
+test("consecutive unattemptable quests both step aside in one caps pass", () => {
+  const tut = atQuest("tow");
+  // Skip board so tow and special sit adjacent at the front.
+  tut.noteCaps({ tow: false, special: true }); // tow -> back, board leads
+  tut.skipStep(); // board skipped; special leads
+  tut.noteCaps({ tow: false, special: false }); // special must ALSO step aside
+  assert.equal(tut.currentQuest().id, "direct");
+  assert.equal(tut.state.results.special, undefined, "deferred, not skipped");
 });

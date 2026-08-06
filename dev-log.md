@@ -6617,3 +6617,50 @@ reported `"version":"dev"` because the CLI never passed a version —
 package.json (cached at first probe) is the floor now, options.version
 still overrides. Test pins the alias + the non-dev version. Suite 866.
 Live site reports the fix on its NEXT deploy.
+
+## 2026-08-06 — playtest round 2: deferrable quests, the golden line, and THE UNIMPORTED IMPORT (prompts 200-203)
+
+DEFERRABLE QUESTS (200): "bring one home" hit a player whose only hull
+was artillery — a quest with unmeetable preconditions BLOCKED the
+ladder. The ladder is a QUEUE now: quests carry attemptKey (tow,
+special), the DOM answers caps per snapshot (a truck you drive or could
+take; a chassis that carries any special), and an unattemptable quest
+rotates to the BACK with a one-time "deferred — why" note. Bounded by
+one rotation; nothing attemptable → current stays (skip is the exit,
+never a spin). Numbering counts DONE, so a deferral does not advance
+it. 4 new model tests.
+
+THE GOLDEN LINE (201, supersedes the W4-13 sketch): not a scripted
+ladder — the REAL mission cards wear gold (★ + glow + tooltip) for
+kinds this player has never tried; clicking the card (fly there +
+answer it) retires the gold for that kind forever (mf_goldline).
+Veterans age out naturally; no server involvement, no vote coupling —
+Q91/Q92 dissolved by the owner's own design.
+
+KEY BAR (201): #hint-bar was never hidden — it is 11px #667 chrome,
+legible when sought, invisible when needed. The SPECIAL quest text now
+names the actual keys, and while that quest is active the bar gets a
+temporary boost (bright, bordered, larger).
+
+SEARCHLIGHT ANCHOR (203): ConeGeometry is centred, so the sweep
+pivoted about mid-beam and the arc floated off its tower. Geometry
+translated so the APEX sits at the lamp.
+
+THE UNIMPORTED IMPORT (202): "what happened to second seats?" — the
+stations client slice (08a9b1d) called getUnitStats() at three
+client.js sites WITHOUT IMPORTING IT. The whole seat-facing surface —
+J-key join, vacant-seat hover tips, the station banner, need_gunner
+discovery — threw ReferenceError on first touch from the day it
+shipped, and no gate ever hovered a friendly hull to notice. Found
+because the new driver's CALL-A-GUNNER banner (click = need_gunner
+ping, shown when your station is open under fire) put getUnitStats on
+a common path and smoke caught it instantly. Import fixed; carrier
+BUNKS advertise too (hover: "BOARD when adjacent (B)"). NEW LINT
+(import reality, red-green verified): every engine/shared export used
+as a bare call in a client module must be imported there or defined
+locally. The dead-feature-classes ledger now reads: unprojected view
+field (W4-4), missing validate case (W4-6), unimported helper (202).
+
+Suite 872 x2, smoke + acceptance green. AudioContext console noise in
+headless smoke observed once under parallel load — environmental, the
+re-run was clean (ws-flake family, sighting logged).
