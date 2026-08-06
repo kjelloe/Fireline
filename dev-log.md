@@ -6738,3 +6738,19 @@ Full table: reports/2026-08-06_resource_profile.md. TOOL BUG WORTH
 REMEMBERING: the first cut compared phase !== 2, but PHASE_OVER is 1 —
 every war "ran" to the cap and the cpu/tick read LOW (averaged over
 dead-war ticks). Import the constant, never guess an enum.
+
+## 2026-08-06 — host-quality instruments: tick jitter + candidate probe (prompt 208)
+
+The shared-vs-dedicated vCPU question, answered with instruments
+instead of vendor marketing. (1) /health now serves `tickJitter` —
+p50/p99/max inter-pump gap + late% over the last 60 s of the LIVE war
+(ring buffer in pump(); a late 100 ms timer IS noisy-neighbour steal
+expressed as what players feel). Test pins the field. (2)
+tools/host_probe.mjs: rent a candidate for an hour, run a REAL war at
+10 Hz for N minutes — tick lateness, event-loop delay histogram
+(perf_hooks), autosave-sized write stalls, printed verdict. Dev-box
+baseline: p99 101.3 ms, zero late, zero slipped, EXCELLENT. Analysis
+in the resource-profile report: a 10 Hz war is jitter-tolerant (a
+spike must beat ~100 ms to slip one snapshot, and the interpolator
+spans two), so tiny games want HEADROOM on shared cores over one
+dedicated core — measure, then buy. Suite 874 x2 (the jitter pin is an assertion inside the existing healthz test), smoke green.

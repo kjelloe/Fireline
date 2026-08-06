@@ -152,5 +152,9 @@ test("prompt 198: /healthz aliases /health and both report the real version", as
     // Prompt 206: memory pressure must be visible from outside — the
     // shared box caps RSS and a sweep should see the climb coming.
     assert.ok(Number.isInteger(health.rssMb) && health.rssMb > 0, `rssMb=${health.rssMb}`);
+    // Prompt 208: the host-quality digest rides /health (null until ~1 s
+    // of live pumping — the stubbed test clock never pumps, so only the
+    // key's presence is pinned here; host_probe.mjs measures for real).
+    assert.ok("tickJitter" in health, "tickJitter digest field present");
   });
 });

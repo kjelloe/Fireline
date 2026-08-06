@@ -55,3 +55,32 @@ built per TEAM, not per player. The real per-player cost is CPU
 To profile a sibling the same way: the tool is ~140 lines against the
 engine API (step loop + process.memoryUsage/cpuUsage) — the pattern
 ports to any headless-steppable game server.
+
+## Host choice instruments (prompt 208)
+
+Two instruments now exist for the shared-vs-dedicated vCPU decision:
+
+1. **`/health` `tickJitter`** (live, passive): p50/p99/max inter-pump
+   gap + late% over the last 60 s of the real war. Sweep it on any
+   running server — this is noisy-neighbour CPU steal expressed in the
+   unit that matters: late snapshots.
+2. **`tools/host_probe.mjs N`** (candidate box, N minutes): real war
+   at 10 Hz + event-loop delay histogram + autosave-sized write
+   stalls; prints a verdict. Dev-box baseline: p99 101.3 ms, 0 late,
+   0 slipped — EXCELLENT.
+
+### Reading for the decision
+
+A 10 Hz war is jitter-TOLERANT: a steal spike must exceed ~100 ms
+before one snapshot slips a beat, and the client interpolates across
+two snapshots — occasional 150 ms gaps are invisible. What hurts is
+SUSTAINED starvation (late% >2, repeated 200+ ms gaps).
+
+Given measured needs (all games tiny: Fireline ~1% of a core idle,
+≤10% loaded, ≤66 MB heap): the games do not need dedicated cores —
+they need HEADROOM so steal spikes are absorbed. The shared
+4vCPU/8GB (€10) buys 4x the cores and 2x the RAM of the shared
+2vCPU/4GB (€7) for €3 — on a shared-CPU host, spare cores ARE the
+jitter insurance. The dedicated 1vCPU/2GB (€14) has predictable
+latency but every game + nginx + certbot shares ONE core and 2 GB —
+less total margin for more money. Probe before committing either way.

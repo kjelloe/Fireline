@@ -62,6 +62,8 @@ export function createAppServer(options = {}) {
       // us at MemoryMax and a sweep should see us climbing before the
       // reaper does.
       rssMb: Math.round(process.memoryUsage().rss / (1024 * 1024)),
+      // Prompt 208: null until ~1 s of war has pumped.
+      tickJitter: tickJitterDigest(),
       // The deployed build must be identifiable from outside: the real
       // package.json version unless the host overrides (options wins).
       version: options.version ?? pkgVersionCached ?? "dev",
@@ -192,7 +194,37 @@ export function createAppServer(options = {}) {
     modes: (options.voteModes ?? process.env.VOTE_MODES)?.split?.(",").map((s) => s.trim())
       ?? options.voteModes,
   }, Object.keys(MAP_PROFILES));
+  // Prompt 208: TICK JITTER — the host-quality metric that actually
+  // matters for a 10 Hz war. On a shared-vCPU host, neighbour steal
+  // shows up as LATE PUMPS (the 100 ms timer fires behind schedule),
+  // which is exactly what a player feels as lag. Ring buffer of the
+  // last ~60 s of inter-pump gaps; /health serves the digest so any
+  // candidate host can be judged from outside while a real war runs.
+  const TICK_MS = 100;
+  const jitterRing = new Array(600).fill(-1);
+  let jitterIdx = 0;
+  let lastPumpAt = 0;
+  function tickJitterDigest() {
+    const gaps = jitterRing.filter((g) => g >= 0).sort((a, b) => a - b);
+    if (gaps.length < 10) return null;
+    const pick = (q) => gaps[Math.min(gaps.length - 1, Math.floor(q * gaps.length))];
+    return {
+      expectedMs: TICK_MS,
+      p50Ms: Math.round(pick(0.5)),
+      p99Ms: Math.round(pick(0.99)),
+      maxMs: Math.round(gaps[gaps.length - 1]),
+      // a gap over 1.5 ticks means a snapshot slipped a whole beat
+      latePct: Math.round(gaps.filter((g) => g > TICK_MS * 1.5).length / gaps.length * 1000) / 10,
+    };
+  }
+
   function pump(snapshot) {
+    const now = performance.now();
+    if (lastPumpAt > 0) {
+      jitterRing[jitterIdx] = now - lastPumpAt;
+      jitterIdx = (jitterIdx + 1) % jitterRing.length;
+    }
+    lastPumpAt = now;
     transport.broadcastSnapshots(snapshot);
     metrics.consumeEvents(snapshot.views[0]?.events, snapshot.tick);
     if (gameServer.state.phase === PHASE_OVER) {
