@@ -6722,3 +6722,19 @@ for a game on a capped unit, an eternal capped crash-loop beats a dead
 unit nobody is watching; recorded in the unit file. BOX-SIDE ACTION:
 the unit changed — sync, then --bootstrap (unit + daemon-reload), then
 deploy. Suite 874 x2, smoke green.
+
+## 2026-08-06 — measured resource profile for co-hosting (prompt 207)
+
+tools/profile_run.mjs: per-map full-war headless profile (heap/RSS/cpu
+per tick, view-build per broadcast) + --players N (real server + ws
+clients, marginal human cost). MEASURED: heap never exceeds 66 MB in a
+full war on any profile; live CPU 0.8-1.2% of a core at 10 ticks/s
+(sawtooth/caldera ~40% pricier per tick — contact density); view build
+0.02-0.03 ms. HUMANS COST CPU, NOT MEMORY: ~0.5-1 MB RSS + ~0.35% of a
+core per connected player (transport + per-socket serialization;
+operators are preallocated and views are per-team). Co-hosting budget:
+512M/50% caps carry 2x+ margins; 384M/25% viable if the box tightens.
+Full table: reports/2026-08-06_resource_profile.md. TOOL BUG WORTH
+REMEMBERING: the first cut compared phase !== 2, but PHASE_OVER is 1 —
+every war "ran" to the cap and the cpu/tick read LOW (averaged over
+dead-war ticks). Import the constant, never guess an enum.
