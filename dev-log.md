@@ -6605,3 +6605,15 @@ the lint reserves for own-asset bindings (it flagged kind/assetId as
 unprojected). Renamed to `emb` — the lint's contract stays strict.
 Acceptance now pins the marker (exists + visible + above ground after
 join). Suite 865, smoke + acceptance green.
+
+## 2026-08-06 — /healthz alias + the version:"dev" fix (prompt 198)
+
+Asked directly: our probe is `/health`; BOTH siblings on the shared box
+speak `/healthz` (multiciv :8123, pitfall :8130) — a box-wide sweep
+would have missed us. `/healthz` now aliases the same handler;
+`/health` stays canonical (the deploy lane and the live site already
+speak it). Same slice closes the deploy-session follow-up: `/health`
+reported `"version":"dev"` because the CLI never passed a version —
+package.json (cached at first probe) is the floor now, options.version
+still overrides. Test pins the alias + the non-dev version. Suite 866.
+Live site reports the fix on its NEXT deploy.

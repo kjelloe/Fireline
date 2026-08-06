@@ -29,7 +29,9 @@ in the order they saved us over there:
 One Node process: `server/index.js` serves the HTTP client, the
 WebSocket war, and the REST surface (`/health`, `/version`,
 `/metrics`, `/rotation`, `/replays`). No build step, no database.
-Health probe: `curl http://127.0.0.1:8080/health`.
+Health probe: `curl http://127.0.0.1:8080/health` — `/healthz` is an
+alias of the same handler (the shared-box sibling convention), and
+both report the running package.json version.
 
 ## The runtime allowlist
 

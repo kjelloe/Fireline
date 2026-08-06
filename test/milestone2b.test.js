@@ -137,3 +137,17 @@ test("2B health endpoint reports server tick", async () => {
     assert.equal(body.tick, 1);
   });
 });
+
+test("prompt 198: /healthz aliases /health and both report the real version", async () => {
+  await withServer(async (appServer, port) => {
+    const health = await (await fetch(`http://localhost:${port}/health`)).json();
+    const healthz = await (await fetch(`http://localhost:${port}/healthz`)).json();
+    assert.equal(healthz.status, "ok", "the sibling-convention path answers");
+    assert.equal(healthz.version, health.version, "one handler, two paths");
+    // The deployed build must be identifiable from outside — the live
+    // site reported "dev" until prompt 198 because nothing passed a
+    // version through. package.json is the floor now.
+    assert.notEqual(health.version, "dev", "version falls back to package.json, not 'dev'");
+    assert.match(health.version, /^\d+\.\d+\.\d+/);
+  });
+});

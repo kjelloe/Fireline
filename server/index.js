@@ -39,7 +39,18 @@ export function createAppServer(options = {}) {
   app.use("/shared", express.static(path.join(ROOT_DIR, "shared")));
   app.get("/favicon.ico", (req, res) => res.status(204).end());
   const startedAt = Date.now(); // operational metric only — never game logic
-  app.get("/health", (req, res) => {
+  // Prompt 198: /healthz is an ALIAS of /health — the sibling projects on
+  // the shared box all answer /healthz, so box-wide monitoring can sweep
+  // one path across every port. /health stays canonical here (the deploy
+  // lane and the live site already speak it).
+  let pkgVersionCached;
+  const healthHandler = (req, res) => {
+    if (pkgVersionCached === undefined) {
+      try {
+        pkgVersionCached =
+          JSON.parse(readFileSync(path.join(ROOT_DIR, "package.json"))).version;
+      } catch { pkgVersionCached = null; }
+    }
     res.json({
       status: "ok",
       tick: gameServer.state.tick,
@@ -47,9 +58,13 @@ export function createAppServer(options = {}) {
       winner: gameServer.state.winner,
       players: transport.sessions.size,
       uptimeMs: Date.now() - startedAt,
-      version: options.version ?? "dev",
+      // The deployed build must be identifiable from outside: the real
+      // package.json version unless the host overrides (options wins).
+      version: options.version ?? pkgVersionCached ?? "dev",
     });
-  });
+  };
+  app.get("/health", healthHandler);
+  app.get("/healthz", healthHandler);
 
   // 11J: what exactly is running — for BATCH_PC provenance and bug reports.
   app.get("/version", (req, res) => {
