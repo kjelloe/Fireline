@@ -46,10 +46,15 @@ async function main() {
     const briefing = await page.textContent("#briefing-text").catch(() => "");
     await page.keyboard.press("Enter");
     await page.waitForTimeout(2500); // a couple of server ticks
+    // Prompt 212: op-info is compact now — "Op N <glyph> <tick>", the
+    // faction carried by a coloured glyph whose title attr names it.
     const opInfo = await page.textContent("#op-info").catch(() => "");
-    const tick = Number((opInfo.match(/Tick (\d+)/) ?? [])[1] ?? -1);
-    if (!opInfo.includes(expectText)) {
-      failures.push(`${buttonId}: op-info "${opInfo}" lacks "${expectText}"`);
+    const tick = Number((opInfo.match(/(\d+)\s*$/) ?? [])[1] ?? -1);
+    // Spectators have no faction glyph — their word stays in the text.
+    const glyphTitle = expectText === "Spectator" ? opInfo
+      : (await page.getAttribute("#op-info span", "title").catch(() => "")) ?? "";
+    if (!glyphTitle.includes(expectText)) {
+      failures.push(`${buttonId}: op-info "${glyphTitle}" lacks "${expectText}"`);
     }
     if (buttonId !== "btn-spectate" && !briefing.includes("fight for")) {
       failures.push(`${buttonId}: briefing missing ("${briefing.slice(0, 60)}")`);

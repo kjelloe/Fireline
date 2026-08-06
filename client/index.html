@@ -229,6 +229,40 @@
             <div id="vote-buttons" style="display:flex; gap:8px; justify-content:center;"></div>
         </div>
     </div>
+    <style id="mobile-css">
+    /* Prompt 212 (mobile screenshots): the NARROW-VIEWPORT layout. Most
+       HUD positioning is inline style, so these rules ride body.mobile
+       (set by client.js from viewport width) and use !important to win.
+       The screenshots' collisions, each answered below:
+       - mission banner buried op-info + the hud buttons -> banner drops
+         BELOW the hud bar and shrinks
+       - team board vs task strip overlap -> narrower + board collapses
+         by default on phones (JS)
+       - tutorial quest card sat ON the touch pad -> lifted above it
+       - the bottom pile (hint/supply/status/direct/keybar) -> hint and
+         supply bars hide (the KEY BAR and status panel carry their
+         jobs), direct control moves right, key bar right-aligns */
+    body.mobile #mission-banner { top:52px !important; font-size:13px !important; padding:4px 10px !important; max-width:94vw !important; }
+    body.mobile #objective-strip { top:98px !important; font-size:11px !important; max-width:94vw !important; }
+    body.mobile #hud-top { padding:4px 6px !important; }
+    body.mobile #hud-top .btn { font-size:11px !important; padding:3px 6px !important; }
+    body.mobile #op-info { font-size:12px !important; }
+    body.mobile #event-feed { display:none !important; }
+    body.mobile #team-board { max-width:38vw !important; font-size:11px !important; top:132px !important; }
+    body.mobile #task-strip { width:190px !important; top:132px !important; right:4px !important; }
+    body.mobile #task-strip div { font-size:11px !important; padding:5px 7px !important; }
+    body.mobile #tutorial-quest { bottom:330px !important; max-width:82vw !important; font-size:13px !important; }
+    body.mobile #hint-bar { display:none !important; }
+    body.mobile #supply-bar { display:none !important; }
+    body.mobile #status-bar { display:none !important; }
+    body.mobile #status-panel { font-size:12px !important; min-width:0 !important; max-width:96vw !important; bottom:4px !important; padding:5px 8px !important; }
+    body.mobile #minimap { width:104px !important; height:104px !important; bottom:64px !important; }
+    body.mobile #btn-direct, body.mobile #btn-direct-exit { left:auto !important; right:8px !important; bottom:236px !important; font-size:12px !important; }
+    body.mobile #direct-specials { left:auto !important; right:8px !important; bottom:282px !important; }
+    body.mobile #key-bar { left:auto !important; right:6px !important; transform:none !important; bottom:178px !important; max-width:58vw !important; flex-wrap:wrap !important; justify-content:flex-end !important; }
+    body.mobile #centre-notice { font-size:17px !important; max-width:90vw !important; }
+    body.mobile #action-banner { bottom:292px !important; font-size:13px !important; max-width:88vw !important; }
+    </style>
     <div id="tutorial-overlay" style="display:none; position:absolute; inset:0; z-index:12;">
         <div id="tut-spotlight" style="display:none; position:absolute; border:2px solid #f5e96b; border-radius:8px; box-shadow:0 0 0 9999px rgba(0,0,0,0.62); pointer-events:none;"></div>
         <div id="tut-panel" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.62); flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center;">

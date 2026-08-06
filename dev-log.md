@@ -6826,3 +6826,35 @@ the screenshots; wiring-net convention re-learned (el.id="..." no
 spaces, twice).
 
 Suite 891 x2, smoke + acceptance green, 33 acceptance checks.
+
+## 2026-08-06 — mobile round 2: the overlap pass (prompt 212, screenshots)
+
+Four phone screenshots in debugging/screenshots/ named the collisions;
+each got an answer. Mechanism: most HUD positioning is INLINE style, so
+media queries alone cannot win — client.js stamps body.mobile from
+matchMedia(max-width:700px) and index.html's mobile-css block overrides
+with !important. Width-based, so a narrow desktop window benefits too.
+
+- Mission banner buried op-info AND the hud buttons -> banner drops
+  BELOW the hud bar (top:52px), shrinks, caps at 94vw.
+- op-info wrapped to two lines -> COMPACT on all platforms per the
+  owner's call: faction NAME replaced by the faction LOGO glyph
+  (⛨ Directorate / ➳ Outliers, faction-coloured, title attr keeps the
+  name) — "Op 0 ⛨ 2450" is one line even at 412px.
+- Team board vs task strip overlap -> both narrower; the board starts
+  COLLAPSED on phones (preference still wins once expressed).
+- Tutorial quest card sat ON the touch pad -> lifted above the whole
+  left cluster (bottom:330px).
+- The bottom pile (hint/supply/status/direct-control/keybar): hint-bar
+  and supply-bar HIDE on mobile — the key bar and status panel carry
+  their jobs (the special quest's hint-bar boost now blinks the
+  matching KEY instead); status panel compacts; DIRECT CONTROL and the
+  key bar move to a right-hand column stacked above the minimap
+  (first cut parked the key bar ON the minimap — caught by my own
+  phone-viewport screenshot, debugging/mobile_shot.mjs renders one).
+- Smoke's op-info parser expected "Tick N" and the faction name in
+  text — updated for the compact format (glyph title carries the name).
+
+Verified with before/after 412x915 screenshots; acceptance's 640px
+viewport now exercises the mobile layout on every run. Suite 891,
+smoke + acceptance green.

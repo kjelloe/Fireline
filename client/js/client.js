@@ -322,7 +322,19 @@ function stepTracers(nowMs) {
 let lastMyScore = null; // 14J: mission-complete toast trigger
 let toastUntil = 0;
 let dragPan = null; // item 28: right-button drag-pan anchor, or null
-let boardCollapsed = localStorage.getItem("mf_board_collapsed") === "1";
+// Prompt 212: narrow viewports get the mobile layout (index.html
+// mobile-css rides body.mobile) — width-based, so a narrow desktop
+// window benefits too. The team board starts COLLAPSED on phones
+// unless the player has expressed a preference.
+const mobileMq = window.matchMedia?.("(max-width: 700px)");
+function applyMobileClass() {
+  document.body.classList.toggle("mobile", mobileMq?.matches === true);
+}
+applyMobileClass();
+mobileMq?.addEventListener?.("change", applyMobileClass);
+let boardCollapsed = localStorage.getItem("mf_board_collapsed") === null
+  ? (mobileMq?.matches === true)
+  : localStorage.getItem("mf_board_collapsed") === "1";
 const eventFeed = [];
 let liveVfx = [];
 // 14C motion pass: cues (recoil/tracer/dust) + per-hull dust bookkeeping.
@@ -1739,12 +1751,22 @@ function pushEvent(text) {
     eventFeed.map((t) => `<div>${t}</div>`).join("");
 }
 
+// Prompt 212 (mobile): the faction NAME wrapped op-info into two lines
+// under the mission banner — the LOGO glyph says the same thing in one
+// character, coloured in the faction identity. All platforms.
+const FACTION_GLYPH = { shield: "⛨", arrow: "➳" };
 function updateOpInfo(msg) {
   const info = document.getElementById("op-info");
   if (!joined) { info.innerText = "Not joined"; return; }
   const tick = msg ? msg.tick : "-";
-  const who = joined.spectator ? "Spectator" : factionFor(joined.team).short; // 12A
-  info.innerText = `Op ${joined.operatorId} | ${who} | Tick ${tick}`;
+  if (joined.spectator) {
+    info.innerText = `Spectator | Tick ${tick}`;
+  } else {
+    const f = factionFor(joined.team);
+    info.innerHTML = `Op ${joined.operatorId} ` +
+      `<span title="${f.name}" style="color:${f.colors.secondary}; font-size:1.25em;">` +
+      `${FACTION_GLYPH[f.symbol] ?? "●"}</span> ${tick}`;
+  }
   if (msg) document.getElementById("status-bar").innerText = `Hash ${msg.stateHash}`;
 }
 
@@ -3035,10 +3057,20 @@ function updateKeyBar(view) {
     if (el) { el.remove(); lastKeybarSig = ""; }
     return;
   }
-  const tutKey = tut?.currentQuest()?.id === "direct" ? "directDrive"
-    : tut?.currentQuest()?.id === "tow" ? "tow"
-    : tut?.currentQuest()?.id === "board" ? "board" : null;
-  const bar = keyBarFor(view, joined.operatorId, { blinkKey: keybarBlink ?? tutKey });
+  const questId = tut?.currentQuest()?.id;
+  let tutKey = questId === "direct" ? "directDrive"
+    : questId === "tow" ? "tow"
+    : questId === "board" ? "board" : null;
+  let bar = keyBarFor(view, joined.operatorId, { blinkKey: keybarBlink ?? tutKey });
+  // Prompt 212: the SPECIAL quest used to light the hint-bar, which the
+  // mobile layout hides — blink whichever special key this chassis has.
+  if (questId === "special" && !bar.some((e) => e.blink)) {
+    const special = bar.find((e) =>
+      ["mine", "sandbag", "hardpoint"].includes(e.action) && e.ready);
+    if (special) {
+      bar = keyBarFor(view, joined.operatorId, { blinkKey: special.action });
+    }
+  }
   const sig = bar.map((e) => `${e.action}${e.ready ? "+" : "-"}${e.blink ? "!" : ""}`).join("|");
   if (sig === lastKeybarSig && el) return;
   lastKeybarSig = sig;
