@@ -248,7 +248,16 @@ outcome. Renderer presents fog-filtered views only.
   downed — prompt 197), the downed figure is terrain-anchored via
   heightAt (it sank into relief at fixed y), and a bodiless seat NAMES
   its state in the status panel. /healthz aliases /health (siblings'
-  convention); /health falls back to package.json version (prompt 198).
+  convention); /health falls back to package.json version (prompt 198)
+  and reports rssMb + a live tickJitter digest (prompt 206/208 —
+  memory pressure and noisy-neighbour steal visible from outside).
+  OPS INSTRUMENTS: tools/profile_run.mjs (per-map RAM/CPU + --players
+  marginal human cost; humans cost CPU not memory), tools/host_probe.mjs
+  (candidate-box verdict: real war at 10 Hz, tick lateness + event-loop
+  delay + write stalls). Autosave is ATOMIC (tmp+rename);
+  REPLAY_KEEP caps the disk archive; unit templates cap V8 heap BELOW
+  MemoryMax (the cgroup is invisible to GC — without it the first
+  pressure sign is a mid-write SIGKILL).
   W4-12 TUTORIAL (prompt 192, client-only, nothing hashed):
   `client/js/tutorial_model.js` pure controller — INTRO → 7-stop arrow
   TOUR of real HUD ids → 12 sequential QUESTS detected from real play

@@ -1,6 +1,6 @@
 # Fireline Command — Version 2 Plan (status board)
 
-*Updated 2026-08-06 (suite 872/872, fixture v71 — LIVE at
+*Updated 2026-08-06 (suite 874/874, fixture v71 — LIVE at
 https://fireline.kjell.today since 2026-08-05; wave-4 ledger in
 `plan-wave4.md`, now W4-1..8 + W4-10 + W4-12 tutorial + W4-13 golden line shipped,
 remaining W4-9 careers + W4-11 Frontline Push). HTML twin:

@@ -1,4 +1,4 @@
-# Session report — 2026-08-06 (prompts 192-204): tutorial + playtest fixes
+# Session report — 2026-08-06 (prompts 192-209): tutorial, playtest fixes, ops instruments
 
 ## What shipped
 
@@ -14,6 +14,10 @@
 | Key bar visibility (201) | The special-quest text names the actual keys, and #hint-bar lights up while that quest is active (it was 11px dark-grey chrome — never hidden, never legible). |
 | THE UNIMPORTED IMPORT (202) | The stations slice never imported getUnitStats — J-join, seat hover tips, and the station banner threw ReferenceError on first touch since 08a9b1d. Fixed + a clickable "call a gunner" banner for drivers + bunk advertising on hover + an import-reality lint (red-green verified) so the class cannot reship. |
 | Searchlight anchor (203) | The sweep pivoted about mid-beam (centred ConeGeometry); apex now sits at the lamp. |
+| Acceptance state-surgery (205) | The round-2 trio proven in a real browser (downed body/diamond/ring, bodiless narration, searchlight bbox) — and the surgery caught the golden-line `t` shadow crash the deployed build carried. |
+| Crash + memory posture (206) | Atomic autosave (tmp+rename), V8 heap capped below MemoryMax in the unit templates, REPLAY_KEEP disk retention, rssMb on /health. Unit changed — box needs `--bootstrap`. |
+| Resource profile (207) | Measured: heap ≤66 MB any map, ~1% core idle war; humans cost ~0.35% CPU + ~1 MB each (CPU, not memory). `tools/profile_run.mjs`. |
+| Host instruments (208) | `/health` tickJitter digest (live steal-as-late-snapshots) + `tools/host_probe.mjs` candidate-box verdict. Shared 4vCPU/8GB analysis in the resource report. |
 
 ## Rulings you made (AskUserQuestion, prompt 192)
 
