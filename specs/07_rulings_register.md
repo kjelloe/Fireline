@@ -492,3 +492,36 @@ recorded here because they reverse or retire earlier rulings.
   drama, or move the trigger to down-time-inside-the-compound (which
   fires constantly and reshapes every base assault)? A PLAYTEST is the
   instrument, not a battery.
+
+- **Q85 — tutorial-war protection: KEEP IT REAL (delegated, prompt 216).**
+  While the quest ladder runs, only the W4-2 rookie drone grace applies.
+  The ladder teaches by consequence; the worst first-war gank is already
+  covered, and a shielded tutorial would teach a game that does not
+  exist. Revisit only if a playtest shows first-timers dying too fast to
+  finish the ladder.
+- **Q86 — deploy timing: CLOSED, overtaken by events.** The owner
+  deploys after each playtest round; the healthz version check is the
+  standing verification.
+- **Q87 — the heist bar (delegated): TARGET 25-40% attacker, siege prep
+  is GO as the next balance lever.** The convoy precedent (Q82 ruled
+  30-40, landed 38.3) sets the shape: a mode should be hard for the
+  attacker but genuinely winnable. Current 12.7/9.3 is below any
+  defensible bar. Siege prep = the named lever (attacker pre-war
+  emplacements); engine slice + battery pair queued on the balance
+  track BEHIND the map-promotion slate.
+- **Q88 — the raid-party census (delegated): QUEUED SECOND on the PC
+  lane**, after the three map-promotion batteries (sawtooth/riverline/
+  caldera on HEAD). Rationale: promotions unblock the voting circle for
+  players NOW; the census chases a residual that only shows in POWS=2
+  measurement worlds. Census instrument = hulls committed per team,
+  party lifetime, losses while live, rebuild timing after wipe.
+- **Q89 — wave-4 tail order (delegated): W4-9 CAREERS FIRST.** Smaller,
+  server+client only, nothing hashed, and persistent identity makes the
+  live site sticky now that strangers reach it. W4-11 Frontline Push
+  starts fresh after with its full slice chain.
+- **Q90 — public how-to page: YES (delegated), SHIPPED prompt 216.**
+  `/howto.html` — a compact one-page field manual served static from
+  the client dir (EN, with the NO essentials inline), linked from the
+  join screen next to the replay viewer. RUNNING.md stays the deep
+  playtester doc; the page carries only what a stranger needs in the
+  first five minutes.

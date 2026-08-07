@@ -6932,3 +6932,33 @@ direct column collided with the wrapped key bar once, and 352px
 bottoms pushed cards off a 360px-tall viewport: all bottom anchors now
 cap at min(px, vh) so landscape phones survive too). Suite 893 x2,
 smoke green, acceptance 3x green.
+
+## 2026-08-07 — housekeeping + the six delegated rulings (prompt 216)
+
+SIBLING/INDEX HOUSEKEEPING (edits in THEIR repos left uncommitted —
+the owner handles their git):
+- multiciv/ops/multi-game-hosting.md: port 8131 claimed for fireline,
+  8132+ marked free.
+- multiciv/ops/ssh-deploy.sh: THE BROKEN PORT CHECK FIXED at the source
+  (grep -w ":$p" can never match 127.0.0.1:8123 — silently reported
+  every port free since it shipped; ss sport filter now, with the
+  fireline finding cited inline). bash -n clean.
+- gamesindex/README.md: fireline row coming-soon → live (games.json
+  already carried the live entry probing /healthz — which works
+  because of the prompt-198 alias).
+
+Q85-Q90 EXECUTED as delegated (full text specs/07):
+- Q85 tutorial protection: KEEP IT REAL (rookie grace only).
+- Q86 deploy timing: closed, overtaken by events.
+- Q87 heist bar: TARGET 25-40% attacker; SIEGE PREP IS GO, queued
+  behind the promotion slate.
+- Q88 raid census: queued SECOND on the PC lane after the three
+  promotion batteries (promotions serve players now; the census
+  chases a measurement-world residual).
+- Q89 wave-4 tail: W4-9 CAREERS first.
+- Q90 how-to page: SHIPPED — client/howto.html, one static page
+  (EN + NO essentials, controls incl. hold-tap and the key bar,
+  win conditions, the five veteran rules), linked from the join
+  screen. RUNNING.md stays the deep doc.
+
+Suite 894 x2, smoke + acceptance green.
