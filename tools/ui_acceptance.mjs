@@ -476,6 +476,15 @@ async function main() {
   const barGone = await page.evaluate(() => document.getElementById("key-bar") === null);
   check("the ⚙ override removes the bar", barGone === true);
 
+  // ── prompt 214: the connection-diagnosis surface answers ─────────────
+  const diag = await page.evaluate(async () => ({
+    summary: window.__mfDebug.netDiag(),
+    verdictLine: await window.__mfDebug.runNetCheck(),
+  }));
+  check("netDiag ledger + connection check answer with a verdict",
+    Number.isInteger(diag.summary?.drops) && /VERDICT|DOM:/.test(diag.verdictLine ?? ""),
+    JSON.stringify(diag.summary));
+
   // ── prompt 210: THE GOLDEN LINE on a real card ────────────────────────
   // Use a card EVERY chassis is shown: defend_relay (the capability
   // filter is personal by design — the first cut used a rescue card and

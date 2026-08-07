@@ -20,6 +20,7 @@
 | Test-gap sweep (210) | need_gunner finally tested (its UI had crashed on first touch its whole life), jitterDigest pure + unit-tested, golden line browser-proven; harness hardened (ensureSeated, unendable war). |
 | KEY BAR + garage (211) | On-screen context key bar (pure model, 12 tests, taps = real keydown); pitched roofs; open-fronted garage AROUND the real spawn strip (art-only, mirror-exact). |
 | Mobile overlap pass (212) | body.mobile + mobile-css from your screenshots: banner below hud, faction LOGO glyph in op-info (all platforms), board collapses on phones, tutorial card off the touch pad, hint/supply bars hide, right-column restack. Lint #6 pins mobile-css ids. |
+| Mobile round 3 (214) | Heartbeat 5s→30s + logged drops (the connectivity suspect), ⚙ Connection check verdict, runaway-corner fixed (strict tap bounds), screen-aligned compass, hold-tap waypoint, ping buttons, garage reverted + windows, full-width status, min(px,vh) anchors. |
 | Host instruments (208) | `/health` tickJitter digest (live steal-as-late-snapshots) + `tools/host_probe.mjs` candidate-box verdict. Shared 4vCPU/8GB analysis in the resource report. |
 
 ## Rulings you made (AskUserQuestion, prompt 192)
@@ -60,7 +61,20 @@ Suite 859/859 ×2 · client smoke OK · ui_acceptance OK (19 checks, 7 new).
   Fireline to games.json in the games-index repo.
 - multiciv/ssh-deploy.sh still has the broken `grep -w ":$p"` port check.
 
-## Playtest focus (round 4 — mobile, after deploy)
+## Playtest focus (round 5 — mobile, after THIS deploy)
+
+1. CONNECTIVITY: if a drop happens, tap ⚙ → Connection check and send
+   me the verdict lines (also `journalctl -u fireline | grep heartbeat`
+   on the box shows any server-side kicks — there should be far fewer
+   with the 30 s timeout).
+2. Touch arrows now drive SCREEN directions — confirm "right" goes
+   right. Hold-tap 700 ms queues a waypoint (notice confirms).
+3. Ping buttons 1/2/3 on the bar; downed shows the rescue ping alone.
+4. Spawn strip: waves appear on the apron stripe in the OPEN — never
+   under a building; windows + roofs read at your zoom.
+5. Off-map taps: try tapping the void — your hull must NOT move.
+
+## Playtest focus (round 4 — superseded by round 5)
 
 1. The reflowed phone layout against your four screenshots: banner
    position, one-line op-info glyph, board collapsed, tutorial card

@@ -329,6 +329,12 @@ npm start                              # host machine
   AI now RESERVES the next factory-wave hull for you, and the status
   panel says exactly where you stand (respawn countdown / pick a free
   hull / your hull is coming).
+- MOBILE ROUND 3 (prompt 214): HOLD your finger still 700 ms on the
+  ground = queue a WAYPOINT (the touch SHIFT-click; a notice confirms).
+  Pings 1/2/3 are tappable key-bar buttons. The touch arrows now drive
+  the direction they POINT on screen. ⚙ has a CONNECTION CHECK — one
+  tap says whether a drop was your network or the host. Off-map taps
+  no longer send your hull to the map corner.
 - MOBILE LAYOUT (prompt 212): on phones (or any narrow window) the HUD
   reflows — mission banner below the top bar, faction shown as its
   LOGO glyph (⛨/➳, all platforms), team board starts collapsed, the

@@ -49,3 +49,17 @@ test("2D fire radius option tolerates near-miss clicks deterministically", () =>
 test("2D select command shape", () => {
   assert.deepEqual(buildSelectCommand(3), { type: "select_asset", assetId: 3 });
 });
+
+test("prompt 214: off-map taps are DROPPED, never clamped to the edge", async () => {
+  const { scenePointToCell } = await import("../client/js/input_mapper.js");
+  // The runaway-corner bug: a tap whose ground ray landed outside the
+  // map was clamped to the edge, manufacturing a corner move-order the
+  // player never gave — and every further tap clamped to the SAME
+  // corner ("a target I could not reset").
+  assert.equal(scenePointToCell(-40, 300, { strict: true }), null, "far off-map: no order");
+  assert.equal(scenePointToCell(500, 64, { strict: true }), null);
+  assert.deepEqual(scenePointToCell(-0.3, 64, { strict: true }), { cellX: 0, cellY: 64 },
+    "half-cell edge overshoot forgiven");
+  assert.deepEqual(scenePointToCell(-40, 300), { cellX: 0, cellY: 127 },
+    "legacy non-strict callers keep the clamp");
+});

@@ -298,6 +298,21 @@ outcome. Renderer presents fog-filtered views only.
   ticket pools keep the harness war unendable; ensureSeated() heals
   organic deaths). debugging/mobile_shot.mjs renders a phone-viewport
   screenshot for layout work.
+  MOBILE ROUND 3 (prompt 214): transport heartbeat 5s→30s + LOGGED
+  drops (5 s kicked phone-radio wakes and WiFi/5G handovers — the tick
+  counter rising through every CONNECTION LOST proved the server never
+  died); client netDiag ledger + ⚙ Connection check (your gaps vs
+  /healthz tickJitter → network/host/clean verdict;
+  __mfDebug.netDiag/runNetCheck). RUNAWAY-CORNER LAW:
+  scenePointToCell(..., {strict:true}) — an off-map tap is DROPPED,
+  never clamped (the clamp manufactured un-resettable corner orders).
+  Touch compass: arrows +224 brads so they drive SCREEN directions
+  under the iso camera. HOLD-tap 700 ms = touch SHIFT-click (waypoint;
+  400-700 ms stays a pan). Pings 1/2/3 are key-bar buttons (cap 11;
+  downed = rescue ping alone). Garage REVERTED to open spawn strip +
+  buildings nudged off it symmetric-by-distance + lit windows. Mobile
+  bottom anchors cap at min(px, vh) — 352px bottoms pushed cards off a
+  360px-tall viewport (landscape phones + the acceptance viewport).
   CONVOY ROUTE (Q82): `CONVOY_ROUTE_SCALE` default 80 — the truck
   starts 20% forward, measured 38.3% attacker (classic 100 = 18.7%).
   The ladder is NOT monotonic (65 -> 15.3%): the knob moves the TRUCK
