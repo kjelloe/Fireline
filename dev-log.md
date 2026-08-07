@@ -6962,3 +6962,15 @@ Q85-Q90 EXECUTED as delegated (full text specs/07):
   screen. RUNNING.md stays the deep doc.
 
 Suite 894 x2, smoke + acceptance green.
+
+## 2026-08-07 — the sibling deploy guide (prompt 217)
+
+./deploy-new-sibling-game-in-box-dos-and-donts.md (TRACKED — it is FOR
+allies): every shared-box lesson from the Fireline deploy in dos/don'ts
+form — claim-your-port + ss-not-grep, unit caps with the V8 heap flag,
+OWN uniquely-named upgrade map, ln-then-test-or-rm, the self-rollback
+pattern, one-change-at-a-time, no http2 redeclaration, --expand with
+the exactly-transcribed -d list, the LINEAGE path not your name,
+public-endpoint-not-loopback, the neighbour sweep with 404-proves-
+chain, the empty-diagnostic law, atomic autosaves, the 30 s heartbeat,
+rssMb on health. Ends in checklist form + "record new lessons HERE".

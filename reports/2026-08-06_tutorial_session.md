@@ -21,6 +21,8 @@
 | KEY BAR + garage (211) | On-screen context key bar (pure model, 12 tests, taps = real keydown); pitched roofs; open-fronted garage AROUND the real spawn strip (art-only, mirror-exact). |
 | Mobile overlap pass (212) | body.mobile + mobile-css from your screenshots: banner below hud, faction LOGO glyph in op-info (all platforms), board collapses on phones, tutorial card off the touch pad, hint/supply bars hide, right-column restack. Lint #6 pins mobile-css ids. |
 | Mobile round 3 (214) | Heartbeat 5s→30s + logged drops (the connectivity suspect), ⚙ Connection check verdict, runaway-corner fixed (strict tap bounds), screen-aligned compass, hold-tap waypoint, ping buttons, garage reverted + windows, full-width status, min(px,vh) anchors. |
+| Housekeeping + rulings (216) | Port 8131 recorded, multiciv port check fixed at source (uncommitted there), gamesindex row live; Q85-Q90 executed as delegated — incl. /howto.html public field manual SHIPPED. |
+| Sibling deploy guide (217) | ./deploy-new-sibling-game-in-box-dos-and-donts.md — the nginx/certbot/shared-box lessons for new coding allies, checklist form included. |
 | Host instruments (208) | `/health` tickJitter digest (live steal-as-late-snapshots) + `tools/host_probe.mjs` candidate-box verdict. Shared 4vCPU/8GB analysis in the resource report. |
 
 ## Rulings you made (AskUserQuestion, prompt 192)
