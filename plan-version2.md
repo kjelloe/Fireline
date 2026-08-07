@@ -3,7 +3,7 @@
 *Updated 2026-08-06 (suite 894/894, fixture v71 — LIVE at
 https://fireline.kjell.today since 2026-08-05; wave-4 ledger in
 `plan-wave4.md`, now W4-1..8 + W4-10 + W4-12 tutorial + W4-13 golden line shipped,
-remaining W4-9 careers + W4-11 Frontline Push). HTML twin:
+remaining W4-9 + W4-11 now tracked in plan-version3.md). HTML twin:
 `plan-version2.html` — keep both in step. Companion to
 `plan-version1.md` (v1: SHIPPED) and `plan-wave3.md` (the wave-3
 ledger). Design rulings: `specs/07_rulings_register.md`. Map design:
@@ -85,6 +85,9 @@ plus three experimental maps that have not earned promotion.
 | Category awards + death recap (B4/B7) | ✅ `slice-b4`/`slice-b7` — 8 deed counters, six honors (incl. BEST ESCORT per Q26 ruling), killer identity on the down banner |
 | Quick-command wheel + auto-callouts (B5) | ✅ `slice-b5` — hold Q, full vocabulary, "thanks" ping, fog-reveal contact callouts |
 | Persistent profiles / leaderboard | ⬜ V2.x — the premium MECHANISM landed; ranking premium still V2.x |
+| **Tutorial quest-line (W4-12)** | ✅ prompt 192-200 — intro/tour/12 deferrable quests detected from REAL play; supersedes the O3 coach (SKIP falls back to it); ⚙ replay |
+| **The Golden Line** | ✅ prompt 201 — untried mission-card kinds wear gold until first engaged (mf_goldline, cross-war) |
+| **Seats resurrected** | ✅ prompt 202 — the stations client UI had thrown on first touch since it shipped (unimported helper); J-join/hover-ads/call-a-gunner banner live; import-reality lint guards the class |
 | Join flow / lobbies | 🔶 prompt 149 landed the real join screen: 2x team buttons, live team-balance gating (s_lobby, 2+ imbalance greys with tooltip, server-enforced), spectate/replay server config. Full lobbies stay V3 |
 
 ## Track E — Presentation & platforms
@@ -104,7 +107,9 @@ plus three experimental maps that have not earned promotion.
 | **Client feel batch (playtest 8)** | ✅ `slice-18d` — honest centre-on-me, war clock, fog notice, right-drag pan, stats key |
 | **Heading render fix (playtest 10)** | ✅ `slice-18h` — interpolator clobbered engine brads with radians: every mover rendered ~east since 9F; motion-facing on slides |
 | Audio identity | 🔶 HUMAN COMPOSER SECURED — brief delivered (`specs/game-soundtrack-design.md` + shareable .html twin, 12 prioritized tracks); music toggle already ships; integration slice when tracks arrive. SFX stay synth-first |
-| Camera/diorama + chase cam | ⬜ V2.x |
+| **MOBILE ERA (prompts 211-215)** | ✅ on-screen KEY BAR (context ≤11 keys, gray/blink laws, taps=real keydown, ping buttons), body.mobile layout (screenshot-driven, min(px,vh) anchors), HOLD-tap waypoint, screen-aligned touch compass, faction glyph op-info, runaway-corner fix, ⚙ Connection check |
+| **Public how-to page** | ✅ Q90 (216) — /howto.html field manual linked from the join screen |
+| Camera/diorama + chase cam | ⬜ V3 |
 | Native perf numbers | 🔜 RUNNER WORKS — `tools/perf_native.ps1` (+ `perf_native.sh` from WSL, docs in `tools/perf_native.md`); a run succeeded on the PC, **numbers not yet collected** |
 | Roblox/Luau twin | Horizon |
 
@@ -114,7 +119,11 @@ plus three experimental maps that have not earned promotion.
 |---|---|
 | Ops hardening, /version, rate limits | ✅ `slice-11j` |
 | Batch-PC lane (agent-mail jobs, CSV mail home) | ✅ `11p` + per-map `map` job + self-update with autostash |
-| Telemetry & heatmaps | ⬜ V2.x (`/metrics` is the seed) |
+| **LIVE at fireline.kjell.today** | ✅ 2026-08-05 — gitignored ops lane, shared cert lineage x6, port 8131; sibling guide TRACKED (deploy-new-sibling-game-in-box-dos-and-donts.md) |
+| **Crash/memory posture** | ✅ prompt 206 — atomic autosave, V8 heap capped below MemoryMax, REPLAY_KEEP retention, rssMb + tickJitter on /health(z) |
+| **Resource + host instruments** | ✅ 207-208 — profile_run (heap ≤66MB/war, ~1% core; humans = CPU not RAM), host_probe candidate verdict |
+| **Connectivity** | ✅ prompt 214 — heartbeat 5s→30s + logged kicks (the drop suspect), client netDiag + ⚙ verdict |
+| Telemetry & heatmaps | ⬜ V3 (`/metrics` + tickJitter + netDiag are the seeds) |
 | Achievements, modding, custom modes, campaign | ⬜ Horizon |
 
 ## ⚠ Measurement eras (read before trusting any number)
@@ -160,65 +169,35 @@ Recommended order: O2 (names — small, immediately warms every existing
 system) → O1 (the SFX manifest; music integration follows the composer)
 → O3 (onboarding) → O4/O6 (host QoL) → O5.
 
-## What is actually open
+## What is actually open (2026-08-07 — the LIVE era)
 
-**WAVE 4 RULED (prompt 174) — see `plan-wave4.md`**: co-op-by-default,
-rookie drone grace, POW/Landship mission cards, placement ghost,
-direct-control juice, smoke screens, the UAV recognition-sink test,
-POW-creating events (Q78), careers, night wars, Frontline Push.
-Plan only — implementation awaits the Q77-Q81 sub-rulings and the
-PC lane's era re-baseline verdicts.
+**V2 IS EFFECTIVELY CLOSED.** The game is deployed, onboarded (tutorial
++ golden line + how-to), mobile-playable, fair on its default map both
+worlds, and instrumented end to end. What remains on THIS board:
 
-1. **THE MERGED TEAM-KEYED HUNT — ROOT CONVICTED AND FIXED
-   (prompt 170, b5b5a69)**: the line instrument proved pre-contact
-   advance symmetric to a decimal and put the mover at FIRST
-   CONTACT; the first-blood drill found every seed's first kill at
-   t=546 on the exact centre column; the micro-trace convicted the
-   MEETING-STOP LAW — sequential collision checks let the decisive
-   tick's first mover park one speed quantum deeper (88 v 143 from
-   the boundary) and eat mirror-support artillery 2 ticks early.
-   Fixed: verdicts read start-of-tick snapshots; mirror-pair pin in
-   test/collision_mirror.test.js (red pre-fix). The b5b5a69 pairs
-   read FLAT (39.7/40.3 frontier_uq, 25.9/28.3 POWS=2) — correct
-   fix, not the outcome channel — and exposed a SECOND phase-lock:
-   Q18's lead-team emission was raw tick parity (fixed team led
-   every mirror-synchronized exchange; Q71's partition was a dead
-   switch enforcing the sort's own order). Fixed at a81477c: lead
-   team = seeded hash bit of (tick, mapSeed); first blood now flips
-   sides by seed. VERDICT (a81477c, n=300 pairs): frontier_uq
-   **54.0/52.9% A — IN BAND BOTH WORLDS**; POWS=2 **39.4/36.4**
-   (was ~26; residual epoch now a mid-war A-loss run t≈4250-5000 —
-   the mid-war ledger is the next instrument). MPG wave-timing
-   asymmetry filed. Sawtooth bench and heist bar decisions can now
-   ride on a fair default baseline.
-2. **Heist AI viability** — Q72 (siege prep) with you; humans have
-   the getaway car already.
-3. **Specials ladder** — both vault and cache engine-complete and
-   homeless; Q67 (vault re-test) with you; frontier post-symmetry is
-   the fair-map candidate.
-4. **Music integration** — when the composer's tracks arrive (brief
-   delivered; toggle ships).
-5. **The Firepower homage, next steps** — direct control is surfaced;
-   candidates: chase-cam polish, direct-fire feel, arcade HUD.
-6. **User-side**: playtest the join flow + balance gate + 🕹 direct
-   control + fog sheen + mission banners; sawtooth/riverline feel;
-   rule on Q47/Q56/Q67/Q72/Q73.
+1. **Map promotions to the voting circle** — sawtooth needs one fresh
+   300-war pair on HEAD + the owner's choke playtest; riverline its
+   pending pair + bridge-feel playtest; caldera a pair that either
+   climbs in-band or gets ruled acceptable for a brawl map. Then three
+   one-line COMPLETED_MAPS additions. THE FIRST PC-LANE SLATE.
+2. **POWS residual** — raid-party census (queued SECOND on the lane):
+   name what inside the party is team-keyed; suspect = rebuild
+   overshoot. Also filed: MPG wave-timing, east-pusher residual.
+3. **O8 second half** — uncapped + weak-hardware perf runs (user-side).
+4. **Music integration** — when the composer delivers.
+5. **Owner playtests** — mobile round 5 (Connection-check verdict on
+   any drop), tutorial re-run, sawtooth/riverline feel for promotion.
 
-## Open design questions (the clarify-and-design queue)
+Everything FORWARD-looking lives in **plan-version3.md** (careers,
+Frontline Push, siege prep, the 6-map bank, homage completion,
+live-service growth).
 
-CLOSED since the last pass (full text in specs/07 + the git history):
-Q46/Q59-Q61 (powPreplaced arc → 0), Q60/Q62/Q63 (caldera blessed),
-Q64-Q66 (cache landed→pulled; mechanism kept), Q68 (blackwood
-restored), Q69 (riverline premium accepted), Q70 (getaway: speed alone
-insufficient — carry rule kept), Q71 (tick-parity inert), Q53 (two-lane
-road walls landed), Q58 (cache brief delivered).
+## Rulings ledger (current)
 
-All five were delegated (prompt 151) and EXECUTED on data:
-
-| # | Verdict |
-|---|---|
-| Q47 | The gap is THE UNIQUE PAIR (factionswap square, n=1200): Skimmer-led attacks +~35 pts regardless of team/direction (Sentinel 39/32, Skimmer 78/65). The BAR itself remains yours — but the axes are now honest: chassis value, not team bias |
-| Q56 | BUILT, default OFF: light-hull regents within 12 cells claim the fortress under `rules.landshipAI` / LANDSHIPAI=1 — your playtest feel flips it |
-| Q67 | ANSWERED: VAULTS=2 on symmetric terrain still convicts (41.7/42.3% A) — the vault's harm was never terrain luck; it stays pulled, ladder parked |
-| Q72 | LANDED + MEASURED: the siege battery took heist attackers 8.0/3.7 → **12.7/9.3%** (n=600) — confirmed at scale; a tuning dial now, not a wall. Next rung if wanted: the unique axis (Skimmer-led heist) |
-| Q73 | ANSWERED: uniques-off sawtooth is DEAD FAIR (48.5/45.1); factionswap fair (52.5/49.2) — the 68% is entirely the pair on home sides. Lever choice (per-map unique law / tune / premium-as-is) is a design call with clean data |
+Q74-Q92 all resolved — tolerance band (Q74), sawtooth in band (Q75),
+convoy scale 80 (Q82), raid carrier-gate (Q83), deep-down human-only
+(Q84), tutorial-real (Q85), heist bar 25-40 + siege prep GO (Q87),
+census queued (Q88), careers-first (Q89), how-to shipped (Q90),
+golden-line design dissolved Q91/Q92. Full text: specs/07 +
+dev-questions.md (gitignored working file). NOTHING awaits a ruling —
+the next owner decisions are playtest-driven (promotion feel checks).

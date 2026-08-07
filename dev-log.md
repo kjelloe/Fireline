@@ -6974,3 +6974,24 @@ the exactly-transcribed -d list, the LINEAGE path not your name,
 public-endpoint-not-loopback, the neighbour sweep with 404-proves-
 chain, the empty-diagnostic law, atomic autosaves, the 30 s heartbeat,
 rssMb on health. Ends in checklist form + "record new lessons HERE".
+
+## 2026-08-07 — the plans catch up with reality (prompt 218)
+
+plan-version2 (md + html): V2 DECLARED EFFECTIVELY CLOSED — the stale
+"recently landed 134-149" era replaced with the LIVE-era table
+(deployment, onboarding trio, mobile era, fairness-both-worlds,
+never-stranded laws, ops posture, quality machinery); rulings ledger
+current through Q92 (NOTHING awaits a ruling — next owner decisions
+are playtest-driven); tracks D/E/F gained the tutorial/golden-line/
+seats, mobile-era/how-to, and live-ops rows; the open list is now five
+real items + a pointer forward.
+
+plan-version3 (md + html twin, NEW): the LIVE-SERVICE era. Thesis:
+engine + fairness done; value is PEOPLE, the THIRD MODE, the last
+residuals, the homage's feel. Five tracks — careers-first (Q89),
+Frontline Push (Q81 shape), balance closure (promotions slate →
+census → siege prep → filed residuals → the 6-map bank), presentation
+(music external, chase-cam/arcade HUD, detail 4-5), live service
+(host decision, monitoring sweep, second server, telemetry, O8 tail).
+Sequencing explicit; deliberate exclusions recorded (no chat, no
+accounts, no new chassis).

@@ -40,13 +40,12 @@
 <body><main>
 <h1>FIRELINE COMMAND — <span>V2 status board</span></h1>
 <p class="sub">Updated 2026-08-06 · suite 894/894 · fixture v71 · <b>LIVE at fireline.kjell.today</b> ·
-wave-4: <code>plan-wave4.md</code> (W4-12 tutorial + W4-13 golden line shipped; W4-9 + W4-11 remain) ·
+wave-4: <code>plan-wave4.md</code> (W4-12 + W4-13 shipped; the tail lives in <code>plan-version3.md</code>) ·
 md twin: <code>plan-version2.md</code> · rulings: <code>specs/07</code> · maps: <code>specs/10</code></p>
 
-<div class="banner"><b>Where the game stands:</b> v2.0 shipped long ago; the faction era,
-pacing era, mode framework, POW arc, and the equivariance/terrain fairness campaigns are done.
-What remains: the team-keyed balance remainder, heist AI viability, the homeless specials,
-music integration, and the Firepower homage.</div>
+<div class="banner"><b>Where the game stands:</b> V2 is effectively CLOSED — live, onboarded, mobile-playable,
+fair on the default map in both worlds, instrumented end to end. This board is the record;
+the forward roadmap is <code>plan-version3.html</code>.</div>
 
 <h2>Maps (the symmetric-terrain era)</h2>
 <table>
@@ -58,21 +57,16 @@ music integration, and the Firepower homage.</div>
 <tr><td><code>caldera</code></td><td><span class="ok">FIXED + BLESSED (Q63)</span> — 54.3/51.7 in band; the 13-minute elimination brawl IS the map</td></tr>
 </table>
 
-<h2>Recently landed (prompts 134-149)</h2>
+<h2>The LIVE era (prompts 164-217)</h2>
 <table>
-<tr><th>Slice</th><th>What</th></tr>
-<tr><td>Composer brief + music toggle</td><td>Human composer secured; 12-track brief (md + shareable html); ⚙ Music on/off ships</td></tr>
-<tr><td>Riverline pacing</td><td>Stalemate attrition + B3 overtime cap — horn 41%→0, median ~19 min</td></tr>
-<tr><td>Terrain symmetry (the residue's root)</td><td>Frontier mirror-by-construction + the cell-level invariant test all profiles</td></tr>
-<tr><td>Landship-farm fix</td><td>Team--1 foe-computation bug class found + fixed (blackwood 62%→fair)</td></tr>
-<tr><td>Mobile resilience</td><td>Token seat takeover, auto-rejoin, reconnect-on-visible</td></tr>
-<tr><td>Mode UX + fog sheen</td><td>Mission banner/cards/rings; the fog overlay's edge IS the spotting edge</td></tr>
-<tr><td>Escort-wall fix</td><td>Moving leaders' escorts keep rolling — convoy attackers 32→39/64%</td></tr>
-<tr><td>Join flow + balance gate</td><td>2x join buttons; live s_lobby team balancing (2+ greys out, tooltip); SPECTATE=0/REPLAYS=0</td></tr>
-<tr><td>DIRECT CONTROL surfaced</td><td>🕹 button, low zoom, howto, on-screen specials, ✕ EXIT — the Firepower homage begins</td></tr>
-<tr><td>Detail era phases 1-3 (157)</td><td>Terrain mesh v2 (blended/banded/semantic relief) + per-map species/verges/patches + low-detail mode + typed-node dressing + compound v2</td></tr>
-<tr><td>Two-lane road walls (Q53)</td><td>Sandbags on roads, cross-section law keeps two lanes open</td></tr>
-<tr><td>Heist getaway car (Q70)</td><td>Attacker scouts carry the Asset (human-facing); AI trial reverted — speed alone insufficient</td></tr>
+<tr><th>Milestone</th><th>What</th></tr>
+<tr><td>DEPLOYED</td><td><b>fireline.kjell.today</b> live 2026-08-05 — shared cert lineage, port 8131, /healthz (version+rssMb+tickJitter); sibling deploy guide tracked in-repo</td></tr>
+<tr><td>Onboarding complete</td><td>Tutorial quest-line (12 deferrable quests from REAL play) + the Golden Line (untried mission kinds wear gold) + /howto.html public field manual</td></tr>
+<tr><td>Mobile era</td><td>On-screen KEY BAR (context keys, gray/blink laws, ping buttons), screenshot-driven body.mobile layout, HOLD-tap waypoint, screen-aligned compass, ⚙ Connection check</td></tr>
+<tr><td>Fairness both worlds</td><td>Phase-lock class fixed x2 (march b5b5a69 + emission a81477c): frontier 54.0/52.9 IN BAND; sawtooth FIXED 54.8/54.4; premium table empty; POWS root = the raid party (carrier gate recovers it)</td></tr>
+<tr><td>Players never stranded</td><td>Human-reserve law (regents leave hulls for waiting humans), embodiment YOU-marker, bodiless-seat narration, seats UI resurrected (dead since it shipped — unimported helper)</td></tr>
+<tr><td>Ops posture</td><td>Atomic autosave, V8 heap below MemoryMax, REPLAY_KEEP, 30s heartbeat + logged kicks, netDiag verdicts, resource profile (≤66MB heap, ~1% core; humans cost CPU not RAM), host_probe for candidate boxes</td></tr>
+<tr><td>Quality machinery</td><td>Six source lints (commands, locales, t(), events, imports, mobile-css) + view-contract + state-surgery acceptance (34 checks, deterministic — the harness stopped fighting the war)</td></tr>
 </table>
 
 <h2>⚠ Measurement notes</h2>
@@ -86,7 +80,7 @@ dominant channel is closed. Mode wars are a different game — never mix their r
 standard baselines.
 </div>
 
-<h2>The five open rulings — delegated (prompt 151) and EXECUTED on data</h2>
+<h2>Rulings — ALL RESOLVED (Q47-Q92)</h2>
 <table>
 <tr><th>#</th><th>Verdict</th></tr>
 <tr><td>Q47</td><td>The convoy gap is THE UNIQUE PAIR (n=1200 square): Skimmer-led +~35 pts regardless of team/direction (Sentinel 39/32, Skimmer 78/65). The bar number stays yours — the axes are now honest</td></tr>
@@ -95,8 +89,9 @@ standard baselines.
 <tr><td>Q72</td><td>LANDED + MEASURED: heist attackers 8.0/3.7 → <b>12.7/9.3%</b> (n=600) — a tuning dial now, not a wall</td></tr>
 <tr><td>Q73</td><td>ANSWERED: sawtooth uniques-off is DEAD FAIR (48.5/45.1) — the 68% is entirely the pair; lever choice is now a clean design call</td></tr>
 </table>
-<p class="sub">Closed since the last pass: Q46/59-61 (powPreplaced→0), Q60/62/63, Q64-66 (cache pulled, mechanism kept),
-Q68-Q71, Q53, Q58 — full text in specs/07 and the md twin.</p>
+<p class="sub">Also resolved since: Q74 tolerance · Q75 sawtooth in band · Q82 convoy scale 80 · Q83 raid gate ·
+Q84 human-only drama · Q85 tutorial-real · Q87 heist 25-40 + SIEGE PREP GO · Q88 census queued ·
+Q89 careers-first · Q90 how-to SHIPPED · Q91/Q92 dissolved. Full text: specs/07. NOTHING awaits a ruling.</p>
 
 <h2>Omissions review (prompt 163)</h2>
 <table>
@@ -111,26 +106,14 @@ Q68-Q71, Q53, Q58 — full text in specs/07 and the md twin.</p>
 </table>
 <p class="sub">Recommended order: O2 → O1 → O3 → O4/O6 → O5. Text chat deliberately absent (pings were the ruled design).</p>
 
-<h2>What is actually open</h2>
+<h2>What is actually open (the LIVE era)</h2>
 <ul>
-<li><b>The merged team-keyed hunt — ROOT CONVICTED AND FIXED (prompt 170)</b>: the line
-instrument proved pre-contact advance symmetric to a decimal and put the mover at first
-contact; the micro-trace convicted the MEETING-STOP LAW (sequential collision checks let
-the decisive tick's first mover park one speed quantum deeper — 88 v 143 from the
-boundary — and eat mirror artillery 2 ticks early). Fixed with start-of-tick snapshot
-verdicts, pinned red-then-green. The b5b5a69 pairs read FLAT (correct fix, not the
-outcome channel) and exposed a SECOND phase-lock: the Q18 lead-team emission used raw
-tick parity, so a fixed team led every mirror-synchronized exchange (Q71's partition was
-a dead switch). Fixed at a81477c with a seeded (tick, mapSeed) hash bit — first blood
-now flips sides by seed. VERDICT (n=300 pairs): frontier_uq <b>54.0/52.9% A — IN BAND
-BOTH WORLDS</b>, the first fair default since the obstacle-slide era; POWS=2 39.4/36.4
-(was ~26 — residual epoch now a mid-war A-loss run t≈4250-5000; the mid-war ledger is
-the next instrument). MPG wave-timing asymmetry filed.</li>
-<li><b>Heist AI viability</b> — Q72 with you; humans have the getaway car.</li>
-<li><b>The specials ladder</b> — vault + cache engine-complete, homeless; Q67.</li>
-<li><b>Music integration</b> — when the composer's tracks arrive.</li>
-<li><b>The homage, next steps</b> — chase-cam polish, direct-fire feel, arcade HUD.</li>
-<li><b>Your playtests</b> — join flow + balance gate + 🕹 + fog sheen + banners; sawtooth/riverline feel.</li>
+<li><b>Map promotions</b> — sawtooth (fresh pair on HEAD + choke playtest), riverline (pending pair + bridge feel), caldera (climbs in-band or ruled) → three COMPLETED_MAPS lines. The first PC-lane slate.</li>
+<li><b>POWS residual</b> — raid-party census (second on the lane); MPG wave-timing + east-pusher filed.</li>
+<li><b>O8 second half</b> — uncapped + weak-hardware perf runs (user-side).</li>
+<li><b>Music integration</b> — when the composer delivers.</li>
+<li><b>Owner playtests</b> — mobile round 5 (Connection-check verdict on any drop), promotion feel checks.</li>
+<li><b>Everything forward</b> — careers, Frontline Push, siege prep, the 6-map bank, homage, live-service growth: see <code>plan-version3.md</code>.</li>
 </ul>
 
 <p class="sub">Everything else — roster, systems, coordination, presentation tracks — lives with

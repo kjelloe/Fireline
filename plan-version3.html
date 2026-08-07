@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fireline Command — Version 3 Plan</title>
+<style>
+  :root {
+    --bg: #101018; --panel: #181824; --ink: #e8e8e2; --dim: #9a9aa8;
+    --green: #4f8f4f; --gold: #f5e96b; --ok: #6bd17b; --line: #2c2c3a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55; padding: 2rem 1rem 4rem; }
+  main { max-width: 900px; margin: 0 auto; }
+  h1 { letter-spacing: 2px; margin-bottom: 0.2rem; }
+  h1 span { color: var(--gold); }
+  .sub { color: var(--dim); margin-top: 0; font-size: 0.95rem; }
+  h2 { margin-top: 2.4rem; padding-bottom: 0.3rem;
+    border-bottom: 2px solid var(--line); letter-spacing: 1px; }
+  table { width: 100%; border-collapse: collapse; margin: 0.8rem 0; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--dim); font-weight: 600; }
+  code { background: #22222e; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88em; }
+  .ok { color: var(--ok); font-weight: 700; }
+  .next { color: var(--gold); font-weight: 700; }
+  .later { color: var(--dim); }
+  .banner { background: linear-gradient(90deg, #1c2a1c, #181824);
+    border: 1px solid var(--green); border-radius: 10px;
+    padding: 1rem 1.2rem; margin: 1.2rem 0; }
+  ul { padding-left: 1.2rem; }
+  li { margin: 0.3rem 0; }
+</style>
+</head>
+<body><main>
+<h1>FIRELINE COMMAND — <span>V3: the live-service era</span></h1>
+<p class="sub">Created 2026-08-07 · md twin: <code>plan-version3.md</code> ·
+V2 board (closed): <code>plan-version2.html</code> · LIVE at fireline.kjell.today</p>
+
+<div class="banner"><b>The V3 thesis:</b> engine and fairness are done. The remaining
+value is PEOPLE (careers, growth), the THIRD MODE, the last balance residuals, and the
+presentation that makes the homage sing. Every slice keeps the V2 laws — paired
+hashing, sim gates, lints before gates, PC-lane batteries.</div>
+
+<h2>Track 1 — People &amp; persistence <span class="next">(FIRST, ruled Q89)</span></h2>
+<table>
+<tr><th>Slice</th><th>Shape</th></tr>
+<tr><td><b>W4-9 Operator careers</b> <span class="next">NEXT BUILD</span></td><td>Persistent record per playerId (wars, deeds, honors, gold-line) in STATE_DIR — not hashed, transport-served; career card on join + end screen</td></tr>
+<tr><td>Name reservation</td><td>A name sticks to its playerId (collision → suffix); pure transport</td></tr>
+<tr><td>Leaderboard page</td><td><code>/careers.html</code>, names only, opt-out flag</td></tr>
+</table>
+
+<h2>Track 2 — The third mode (ruled Q81)</h2>
+<table>
+<tr><th>Slice</th><th>Shape</th></tr>
+<tr><td><b>W4-11 Frontline Push</b></td><td>Relays lock into the road-spine SEQUENCE, only the active pair capturable; win = hold their final pair 60 s or stall-clock tickets. Full chain: engine → AI doctrine → cards/banner → <code>batch_send.sh push</code></td></tr>
+</table>
+
+<h2>Track 3 — Balance closure</h2>
+<table>
+<tr><th>Item</th><th>Status</th></tr>
+<tr><td><b>Map promotions</b> (sawtooth/riverline/caldera → the voting circle)</td><td><span class="next">FIRST PC-LANE SLATE</span> — batteries on HEAD + owner feel-checks</td></tr>
+<tr><td><b>Raid-party census</b> (the POWS residual)</td><td>queued SECOND (ruled Q88)</td></tr>
+<tr><td><b>Siege prep</b> (heist lever, target 25-40%)</td><td>GO per Q87, after the census</td></tr>
+<tr><td>MPG wave-timing · east-pusher residual</td><td class="later">filed</td></tr>
+<tr><td>The 6-map bank</td><td class="later">one at a time, full promotion gate each</td></tr>
+</table>
+
+<h2>Track 4 — Presentation &amp; the homage</h2>
+<table>
+<tr><th>Item</th><th>Status</th></tr>
+<tr><td><b>Music integration</b> (12-track brief with the composer)</td><td>⏳ external — bus + toggle already ship</td></tr>
+<tr><td>Chase-cam polish · arcade HUD (direct mode)</td><td class="later">the homage's missing feel</td></tr>
+<tr><td>Detail era 4-5 (unit detail, atmosphere) · compound life</td><td class="later">interleaves</td></tr>
+</table>
+
+<h2>Track 5 — Live service &amp; growth</h2>
+<table>
+<tr><th>Item</th><th>Status</th></tr>
+<tr><td>Host decision (probe candidates, migrate if warranted)</td><td>⏳ user probing — <code>tools/host_probe.mjs</code></td></tr>
+<tr><td>Monitoring sweep (/healthz cron: rssMb + tickJitter + version)</td><td class="later">small</td></tr>
+<tr><td>Second live server + discovery for real · telemetry digest</td><td class="later">when players warrant</td></tr>
+<tr><td>O8 second half (uncapped + weak-hardware runs)</td><td>⏳ user-side</td></tr>
+</table>
+
+<h2>Sequencing</h2>
+<ul>
+<li><b>PC lane now:</b> promotion batteries ×3 → census.</li>
+<li><b>Build now:</b> W4-9 careers → siege prep → Frontline Push.</li>
+<li>Presentation interleaves as externals land; growth rides player numbers.</li>
+</ul>
+
+<p class="sub">Deliberately absent: text chat (pings are the ruled design), accounts,
+the Roblox twin (horizon), new chassis (the 10+2 roster is complete).</p>
+</main></body>
+</html>
