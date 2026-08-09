@@ -110,7 +110,23 @@ test("integration: a crashed server rebuilds exact state from its command log", 
 
 test("integration: 4000-tick AI war upholds state invariants", () => {
   const server = new GameServer({ mapSeed: 1234, enableAi: true, aiDifficulty: 2 });
-  for (let i = 0; i < 4000; i++) server.step();
+  const OP_DOWN = 2;
+  for (let i = 0; i < 4000; i++) {
+    server.step();
+    // Prompt 219 ghost-seat invariant: a down seat is always HELD by
+    // something recoverable — a body to crawl with, a bunk aboard a
+    // carrier, or a kidnapper's scout (abduction transit; wrecking the
+    // scout spills the body back). The wreck-release path once produced
+    // down+bodyless+held-by-nothing — unrecoverable forever.
+    for (const o of server.state.operators) {
+      if (o.state !== OP_DOWN) continue;
+      const hasBody = server.state.downed.some((d) => d.operatorId === o.id);
+      const held = server.state.assets.some(
+        (a) => a.aboard1 === o.id || a.aboard2 === o.id || a.prisoner === o.id);
+      assert.ok(hasBody || held,
+        `tick ${server.state.tick}: down operator ${o.id} is a ghost (no body, no holder)`);
+    }
+  }
   const s = server.state;
   const map = s.map;
   for (const a of s.assets) {

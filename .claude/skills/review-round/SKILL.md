@@ -43,6 +43,16 @@ changed. Only genuinely new artifacts (a skill, a big doc) need asking.
   bugs" in tests.
 - Suite counts are double-run; ws tests use poll-waits, never fixed
   settles under load.
+- **Surgical states the engine never produces** (prompt 219): a test
+  that hand-builds state (`s.operators[id].state = OP_ACTIVE` for a
+  rider) pins the AUTHOR'S ASSUMPTION, not the law — the playtest-9
+  passenger release never fired once in the field because real riders
+  are OP_DOWN, and its test built the impossible OP_ACTIVE rider. Build
+  fixtures through the REAL command path (board_carrier, redeploy);
+  surgery is for the STARTING position only, never for the state under
+  test. Sweeping per-tick invariants in the 4000-tick soak (ghost-seat:
+  every OP_DOWN seat is held by body/bunk/kidnapper) catch what
+  fixture-path tests miss.
 
 ## The view-contract class (added 2026-08-05, W4-4)
 

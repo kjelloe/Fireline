@@ -6995,3 +6995,39 @@ census → siege prep → filed residuals → the 6-map bank), presentation
 (host decision, monitoring sweep, second server, telemetry, O8 tail).
 Sequencing explicit; deliberate exclusions recorded (no chat, no
 accounts, no new chassis).
+
+## 2026-08-09 — the stranding's second life: the ghost seat (prompt 219)
+
+Playtest report: shot down → 15F respawn aboard a carrier → THAT
+carrier shot too → seat unrecoverable ("cannot respawn or click next
+hull", no presence marker; the bodiless narration truthfully offered
+NEXT ASSET, which the server truthfully refused forever).
+
+ROOT: the playtest-9 passenger-release (b5567c8) guarded on
+`rider.state !== OP_ACTIVE` — but REAL riders are OP_DOWN while aboard
+(board_carrier REQUIRES it; rescue and 15F never change state; only
+base delivery activates). So the release cleared the seat slot and
+then skipped the operator: down, bodyless, aboard nothing. redeploy
+says "not downed", select says "operator not active" — a GHOST SEAT,
+forever. The fix NEVER FIRED ONCE in the field, and its own test
+passed because it built riders surgically with OP_ACTIVE — a state the
+engine never produces. The test pinned the author's assumption, not
+the law. AI wars ghosted too (auto-rescued regents whose rescue
+carrier wrecked fought a man down for the rest of the war).
+
+FIX (engine/reducer.js disableAsset): guard only the impossible
+states (OP_ABSENT/OP_CAPTIVE); every real rider bails out on foot at
+the wreck. A freed POW re-emerges as a PLAIN downed (freedPow died
+with the boarded body) — accepted at the code site.
+
+TESTS: carrier_passengers.test.js REWRITTEN to board through the real
+machinery only (board_carrier + the verbatim prompt-219 15F sequence);
+red-green verified (old guard fails 3/4). NEW GHOST-SEAT INVARIANT in
+integration_gaps' 4000-tick sweep, checked EVERY tick: an OP_DOWN seat
+is always HELD — body, bunk, or kidnapper's scout (abduction transit
+is legal; the wrecked-scout spill already releases it). The invariant
+immediately caught its second candidate (abduction transit) and, red-
+checked, sees the original bug at tick 921 of the very first war on
+that seed — that is how common the ghosting was. Suite 895/895 twice;
+5-seed gate + systems probe healthy (mixed winners, tickets-era
+tempo, downs 108 / redeploys 89 / rescues 15 on seed 2026).

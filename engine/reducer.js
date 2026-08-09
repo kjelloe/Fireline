@@ -818,12 +818,19 @@ function disableAsset(next, target, scoringTeam, by = null) {
   // a genuine stranding: passengers used to stay marked aboard a WRECK
   // forever, so "centre on me" pointed at the hulk and the player could
   // never take another asset. Nothing released them, ever.
+  // Prompt 219: riders are OP_DOWN while aboard (board/rescue/15F never
+  // change state; only base delivery activates), so an OP_ACTIVE guard
+  // here skipped EVERY real passenger after clearing their seat — a
+  // ghost seat: down, bodyless, aboard nothing; redeploy AND select
+  // both refuse it forever. Guard only the impossible states. A freed
+  // POW re-emerges as a plain downed (the freedPow flag died with the
+  // boarded body) — accepted: the wreck already cost the rescue.
   for (const seatField of ["aboard1", "aboard2"]) {
     const riderId = target[seatField];
     if (riderId === -1) continue;
     target[seatField] = -1;
     const rider = next.operators[riderId];
-    if (!rider || rider.state !== OP_ACTIVE) continue;
+    if (!rider || rider.state === OP_ABSENT || rider.state === OP_CAPTIVE) continue;
     rider.assetId = -1;
     rider.state = OP_DOWN;
     next.downed.push(createDowned(rider, target));

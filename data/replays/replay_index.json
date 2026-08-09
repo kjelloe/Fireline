@@ -773,6 +773,33 @@
       "reason": 0,
       "finalHash": "dfbf588550218377",
       "finishedAt": "2026-08-03T09:46:53.274Z"
+    },
+    {
+      "id": "war-2026-8e3b8987a973",
+      "mapSeed": 2026,
+      "ticks": 6401,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "7d128baaacef8414",
+      "finishedAt": "2026-08-05T23:52:53.297Z"
+    },
+    {
+      "id": "war-2026-92f7416d5be2",
+      "mapSeed": 2026,
+      "ticks": 259,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "f743a5abf76d56e4",
+      "finishedAt": "2026-08-06T10:23:22.448Z"
+    },
+    {
+      "id": "war-2026-e6098725f5d0",
+      "mapSeed": 2026,
+      "ticks": 259,
+      "winner": -1,
+      "reason": 0,
+      "finalHash": "9d5300fd3166e7dc",
+      "finishedAt": "2026-08-06T10:23:53.251Z"
     }
   ]
 }
