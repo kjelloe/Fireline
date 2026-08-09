@@ -238,6 +238,7 @@ export const CATALOGS = {
     "ping.escort_standard": "ESCORT THE STANDARD",
     "ping.carrier_under_attack": "CARRIER UNDER ATTACK",
     "ping.prison_alarm": "ALARM AT THE COMPOUND",
+    "ping.intruder_alarm": "INTRUDER IN THE BASE",
     "ping.recovery_in_progress": "RECOVERY IN PROGRESS",
     "ping.road_blocked": "ROAD BLOCKED",
     "ping.mines_detected": "MINES DETECTED",
@@ -296,6 +297,9 @@ export const CATALOGS = {
     "hover.out_of_range": "OUT OF RANGE",
     "hover.too_close": "TOO CLOSE (dead zone)",
     "hover.in_range": "IN RANGE",
+    "hover.no_ammo": "NO AMMO — rearm at base",
+    "hover.no_supply": "OUT OF SUPPLY — cannot fire",
+    "hover.reloading": "RELOADING",
     "codex.traits": "Traits",
     "toast.mission": "MISSION COMPLETE  +{n} pts",
     // ── playtest 8: centre notices ──
@@ -392,6 +396,7 @@ export const CATALOGS = {
     "task.mission_heist_seize": "MISSION: seize the Asset from their vault",
     "task.mission_heist_guard": "MISSION: guard the Asset — they are coming",
     "task.stop_thief": "STOP THE THIEF — our standard is moving",
+    "task.intruder": "INTRUDER IN THE BASE — drive them out",
     "task.raid_prison": "RAID THEIR PRISON — {count} of ours are held there",
     // W4-4: the placement ghost names WHY a build was refused.
     "build.only_a_truck_builds_sandbags": "Only a supply truck builds sandbags",
@@ -729,6 +734,7 @@ export const CATALOGS = {
     "ping.escort_standard": "ESKORTER STANDARTEN",
     "ping.carrier_under_attack": "VOGNEN ER UNDER ANGREP",
     "ping.prison_alarm": "ALARM VED LEIREN",
+    "ping.intruder_alarm": "INNTRENGER I BASEN",
     "ping.recovery_in_progress": "BERGING PÅGÅR",
     "ping.road_blocked": "VEIEN ER SPERRET",
     "ping.mines_detected": "MINER OPPDAGET",
@@ -787,6 +793,9 @@ export const CATALOGS = {
     "hover.out_of_range": "UTENFOR REKKEVIDDE",
     "hover.too_close": "FOR NÆRT (dødsone)",
     "hover.in_range": "INNENFOR REKKEVIDDE",
+    "hover.no_ammo": "TOM FOR AMMO — fyll opp i basen",
+    "hover.no_supply": "UTEN FORSYNING — kan ikke skyte",
+    "hover.reloading": "LADER OM",
     "codex.traits": "Egenskaper",
     "toast.mission": "OPPDRAG FULLFØRT  +{n} pts",
     // ── playtest 8: midtvarsler ──
@@ -882,6 +891,7 @@ export const CATALOGS = {
     "task.mission_heist_seize": "OPPDRAG: ta Aktivumet fra hvelvet deres",
     "task.mission_heist_guard": "OPPDRAG: vokt Aktivumet — de kommer",
     "task.stop_thief": "STOPP TYVEN — standarten vår er på vandring",
+    "task.intruder": "INNTRENGER I BASEN — driv dem ut",
     "task.raid_prison": "RAID FENGSELET DERES — {count} av våre holdes der",
     // W4-4: plasseringsspøkelset sier HVORFOR bygging ble nektet.
     "build.only_a_truck_builds_sandbags": "Bare en forsyningslastebil bygger sandsekker",

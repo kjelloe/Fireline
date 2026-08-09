@@ -12,6 +12,7 @@ export const MOTION_TTL_MS = Object.freeze({
   recoil: 220,
   tracer: 650,
   dust: 900,
+  muzzle: 130, // prompt 221: the flash that says "that hull just FIRED"
 });
 
 function assetIn(view, assetId) {
@@ -33,6 +34,13 @@ export function mapEventsToMotion(events, view, nowMs) {
     cues.push({
       kind: "recoil", assetId: attacker.id,
       bornMs: nowMs, ttlMs: MOTION_TTL_MS.recoil,
+    });
+    // Prompt 221 ("could we have a muzzle flare for all assets"): every
+    // VISIBLE shot flashes at the gun — both teams, fog-honest by
+    // construction (an unseen attacker never reaches this loop).
+    cues.push({
+      kind: "muzzle", at: cellPos(attacker),
+      bornMs: nowMs, ttlMs: MOTION_TTL_MS.muzzle,
     });
     if (UNIT_STATS[attacker.type]?.indirect) {
       const target = e.targetId !== undefined ? assetIn(view, e.targetId) : null;

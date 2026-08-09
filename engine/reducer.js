@@ -2045,6 +2045,33 @@ function applyAdvanceTick(next) {
       next.events.push({ type: "supply_drop_secured", dropId: drop.id, byTeam: holder });
     }
   }
+  // Prompt 221 INTRUDER ALARM: the compound already SEES an enemy
+  // inside or hard against its walls (160.2, the watch law) — now it
+  // SHOUTS. Every 300 ticks while a crewed enemy stands in the watch
+  // zone, the defenders get a ping at the (lowest-id) intruder. Pure
+  // attention, zero new information — the hull is already always-seen
+  // there, so no fairness surface moved. Stateless cooldown
+  // (tick % 300), nothing hashed; the searchlights are this law's
+  // theatre, not its instrument.
+  if (next.tick % 300 === 0) {
+    for (const base of next.bases) {
+      if (base.width >= next.map.width) continue; // whole-map base = no walls (160.2)
+      const intruder = next.assets.find((a) =>
+        a.team >= 0 && a.team !== base.team && a.operatorId !== -1 &&
+        a.state !== ASSET_DISABLED && a.state !== ASSET_SALVAGED &&
+        sampleCellX(a.x, next.map.width) >= base.x - 1 &&
+        sampleCellX(a.x, next.map.width) <= base.x + base.width &&
+        worldToCellFloor(a.y) >= base.y - 1 &&
+        worldToCellFloor(a.y) <= base.y + base.height);
+      if (intruder) {
+        next.events.push({
+          type: "ping", kind: "intruder_alarm", team: base.team, toTeam: base.team,
+          cellX: sampleCellX(intruder.x, next.map.width),
+          cellY: worldToCellFloor(intruder.y),
+        });
+      }
+    }
+  }
   // ALARM GUARD pass (specs/12 Q38, "alarm-only guards first"): each
   // compound's watchman shouts when an enemy crewed hull comes within
   // GUARD_SENSE_CELLS — a toTeam ping for the defenders, once per

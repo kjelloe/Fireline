@@ -43,6 +43,7 @@ const RAIDERCLAUSE = process.env.RAIDERCLAUSE !== "0"; // Q31 clause kill-switch
 const LANDSHIP = process.env.LANDSHIP !== "0"; // Q42 hull kill-switch (the A-keyed hunt)
 const STALEMATE = process.env.STALEMATE !== "0"; // prompt-136 grind kill-switch (the Q69 rung)
 const DROPS = process.env.DROPS !== "0"; // B6 circle kill-switch (residue rung)
+const STANDOFF = process.env.STANDOFF !== "0"; // prompt-221 standoff-breaker kill-switch
 const VAULTS = process.env.VAULTS !== "0"; // 0 strips kind-4 sites pre-war
 const ORDERPARITY = process.env.ORDERPARITY === "1"; // Q71 trial: tick-parity command order
 const CACHE = process.env.CACHE !== "0";
@@ -71,7 +72,7 @@ for (let seed = 1; seed <= COUNT; seed++) {
   if (seed % SHARDS !== SHARD) continue;
   const server = new GameServer({
     mapSeed: seed, enableAi: true, aiDifficulty: DIFFICULTY, aiMirrored: MIRROR,
-    mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY,
+    mapProfile: MAP, uniqueCrewing: UNIQUES, raidParty: RAIDPARTY, standoffBreaker: STANDOFF,
     alarmResponse: ALARMRESPONSE, orderParity: ORDERPARITY,
     rules: TICKETPOOL || POWS !== null || MODE !== null || !POWARC || !RAIDERCLAUSE || !LANDSHIP || !STALEMATE || !DROPS || !CACHE || !GETAWAY || !SIEGE || LANDSHIPAI || HANDICAP !== null || !SLIDE || !SMOKE || CVPENALTY !== null || CVROUTE !== null || NIGHT
       ? { ...(TICKETPOOL ? { ticketPool: TICKETPOOL } : {}),

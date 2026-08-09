@@ -26,6 +26,7 @@ const TASK_VALUE = Object.freeze({
   mission_heist_seize: 40,
   mission_heist_guard: 40,
   stop_thief: 25,       // denies the enemy the biggest score in the game
+  intruder: 18,         // prompt 221: someone in the wire outranks routine work
   secure_standard: 25,  // our own standard run, same stake
   join_convoy: 20,      // the team's remaining story — above everything but the standard
   secure_drop: 15,      // B6: a one-shot ticket packet with a shared clock
@@ -211,6 +212,25 @@ export function tasksFor(view, myOperatorId = null) {
       label: t("task.claim_landship"),
       cellX: cellOf(a.x), cellY: cellOf(a.y), ping: "rally",
     });
+  }
+  // Prompt 221: INTRUDER IN THE BASE — the searchlights caught someone.
+  // The watch law (160.2) guarantees an enemy inside or hard against our
+  // walls is always visible, so this card is fog-legitimate for free.
+  // (Whole-map sandbox bases have no walls and raise no alarm.)
+  const homeCompound = (view?.bases ?? []).find((b) => b.team === myTeam && b.width < 100);
+  if (homeCompound) {
+    for (const a of (view?.visibleEnemies ?? [])) {
+      if (a.team === -1 || a.state === 2 || a.state === 3) continue;
+      const cx = cellOf(a.x), cy = cellOf(a.y);
+      if (cx >= homeCompound.x - 1 && cx <= homeCompound.x + homeCompound.width &&
+          cy >= homeCompound.y - 1 && cy <= homeCompound.y + homeCompound.height) {
+        tasks.push({
+          kind: "intruder", priority: 0,
+          label: t("task.intruder"),
+          cellX: cx, cellY: cy, ping: "defend",
+        });
+      }
+    }
   }
   // Own relays being flipped by the enemy: defend.
   for (const s of (view?.sites ?? [])) {

@@ -459,3 +459,20 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   Asset); the attackers' carrier must steal it home before the clock.
   The radio pings the Asset's position to the defenders while it
   moves. MODEATTACKER=1 flips sides.
+
+## Prompt 221 (2026-08-09)
+
+- Every visible shot now MUZZLE-FLASHES at the gun — both teams,
+  fog-honest (unseen attackers never flash).
+- Hovering an enemy tells the WHOLE fire truth, not just range:
+  NO AMMO / OUT OF SUPPLY — cannot fire / OUT OF RANGE / TOO CLOSE /
+  RELOADING / IN RANGE. (Every chassis carries at least a light gun —
+  trucks included — so "silence" always has one of these reasons.)
+- INTRUDER IN THE BASE: an enemy inside or hard against your compound
+  wall trips the base alarm — a team ping at the intruder every 30 s,
+  the alarm klaxon, and a red INTRUDER mission card while they stand
+  in the wire. The searchlight beams are 3x longer to match.
+- AI hulls no longer freeze forever in mid-map "traffic jams": a hull
+  that is out of supply (cannot fire), pressed against an enemy, and
+  stuck retreats home to rearm instead of pushing eternally
+  (STANDOFF=0 disables for A/B).

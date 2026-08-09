@@ -26,8 +26,10 @@ test("fire_resolved: recoil for any visible attacker; tracer only for indirect",
     ],
     view, 1000
   );
-  assert.deepEqual(cues.map((c) => c.kind), ["recoil", "tracer", "recoil"]);
-  const tracer = cues[1];
+  // prompt 221: every visible shot also flashes at the muzzle
+  assert.deepEqual(cues.map((c) => c.kind),
+    ["recoil", "muzzle", "tracer", "recoil", "muzzle"]);
+  const tracer = cues[2];
   assert.deepEqual(tracer.from, { x: 10.5, y: 10.5 });
   assert.deepEqual(tracer.to, { x: 20.5, y: 10.5 });
 });
@@ -40,7 +42,8 @@ test("fog: no cues for unseen attackers, no arcs to unseen targets", () => {
     ],
     view, 0
   );
-  assert.deepEqual(cues.map((c) => c.kind), ["recoil"], "recoil yes, arc out of fog no");
+  assert.deepEqual(cues.map((c) => c.kind), ["recoil", "muzzle"],
+    "recoil+flash yes, arc out of fog no, nothing for the unseen attacker");
 });
 
 test("recoil curve: zero at both ends, peak at 20% of the life", () => {

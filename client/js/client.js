@@ -1607,7 +1607,7 @@ const SFX_MAP = {
   standard_taken: () => "std_taken",
   standard_scored: () => "std_scored",
   operator_redeployed: () => "respawn",
-  ping: (e) => (e.kind === "prison_alarm" ? "alarm" : "ping"),
+  ping: (e) => (e.kind === "prison_alarm" || e.kind === "intruder_alarm" ? "alarm" : "ping"),
   drone_launched: () => "drone",
   sandbag_destroyed: () => "hit",
   bridge_breached: () => "explode",
@@ -1660,7 +1660,7 @@ function handleEvents(events) {
     if (e.type === "ping") {
       teamPings.push(e); // 10C (view is already team-scoped)
       // Figure kit: the watchman's lamp burns for 5 s after his shout.
-      if (e.kind === "prison_alarm") alarmFlashUntil = Date.now() + 5000;
+      if (e.kind === "prison_alarm" || e.kind === "intruder_alarm") alarmFlashUntil = Date.now() + 5000;
     }
     // Q41: the eject warning lands CENTRE-SCREEN for the affected crew.
     if (e.type === "station_eject_warning" && e.operatorId === joined?.operatorId) {
@@ -2302,6 +2302,10 @@ function updateMotion(nowMs) {
         ? new THREE.Mesh(
             new THREE.SphereGeometry(0.08, 6, 6),
             new THREE.MeshBasicMaterial({ color: 0xffc966 }))
+        : cue.kind === "muzzle"
+        ? new THREE.Mesh(
+            new THREE.SphereGeometry(0.16, 8, 6),
+            new THREE.MeshBasicMaterial({ color: 0xfff2a8, transparent: true, opacity: 0.95 }))
         : new THREE.Mesh(
             new THREE.CircleGeometry(0.14, 8),
             new THREE.MeshBasicMaterial({ color: 0xb9a184, transparent: true, opacity: 0.5 }));
@@ -2309,6 +2313,7 @@ function updateMotion(nowMs) {
         mesh.rotation.x = -Math.PI / 2;
         mesh.position.set(cue.at.x, 0.03, cue.at.y);
       }
+      if (cue.kind === "muzzle") mesh.position.set(cue.at.x, 0.55, cue.at.y);
       scene.add(mesh);
       motionMeshes.set(cue, mesh);
     }
@@ -2316,6 +2321,11 @@ function updateMotion(nowMs) {
     if (cue.kind === "tracer") {
       const p = tracerPoint(cue.from, cue.to, age);
       mesh.position.set(p.x, 0.3 + p.h, p.y);
+    } else if (cue.kind === "muzzle") {
+      // Bloom fast, die fast: full size almost immediately, gone in 130 ms.
+      const bloom = 0.6 + age * 1.8;
+      mesh.scale.set(bloom, bloom, bloom);
+      mesh.material.opacity = 0.95 * (1 - age);
     } else {
       const grow = 1 + age * 2.2;
       mesh.scale.set(grow, grow, grow);
@@ -3507,10 +3517,22 @@ function updateHoverTip(view) {
     el.style.left = `${Math.round((pos.x * 0.5 + 0.5) * window.innerWidth - 60)}px`;
     el.style.top = `${Math.round((-pos.y * 0.5 + 0.5) * window.innerHeight - 46)}px`;
     el.style.display = "block";
-    const label = tooFar ? t("hover.out_of_range")
+    // Prompt 221 ("I tried to shoot and nothing happened"): the tip said
+    // IN RANGE in green while the engine refused the shot — range is not
+    // the only fire law. Blockers that stop ANY shot outrank range;
+    // reload is transient and ranks last.
+    const meNow = view?.friendlyAssets?.find((x) => x.operatorId === joined?.operatorId);
+    const noAmmo = meNow && meNow.ammo <= 0;
+    const noSupply = meNow && !noAmmo && !isSupplied(view, meNow);
+    const reloading = meNow && (meNow.reloadTimer ?? 0) > 0;
+    const label = noAmmo ? t("hover.no_ammo")
+      : noSupply ? t("hover.no_supply")
+      : tooFar ? t("hover.out_of_range")
       : tooClose ? t("hover.too_close")
+      : reloading ? t("hover.reloading")
       : t("hover.in_range");
-    const colour = tooFar || tooClose ? "#ff6b52" : "#57c46b";
+    const colour = noAmmo || noSupply || tooFar || tooClose ? "#ff6b52"
+      : reloading ? "#ffd75e" : "#57c46b";
     el.innerHTML = `<span style="color:${colour}; font-weight:bold;">${label}</span>` +
       `<span style="color:#9ab;"> ${Math.round(dist)}c</span>`;
     return;
@@ -4074,8 +4096,9 @@ function updateWarDressing(view) {
           // Prompt 203: anchor the APEX at the lamp — ConeGeometry is
           // centred, so the sweep used to pivot about mid-beam and the
           // arc floated off its tower.
-          (() => { const g = new THREE.ConeGeometry(0.5, 2.6, 6, 1, true);
-                   g.translate(0, -1.3, 0); return g; })(),
+          // Prompt 221: beams 3x — the compound's reach reads from orbit.
+          (() => { const g = new THREE.ConeGeometry(1.1, 7.8, 6, 1, true);
+                   g.translate(0, -3.9, 0); return g; })(),
           new THREE.MeshBasicMaterial({ color: 0xfff2b0, transparent: true, opacity: 0.14, depthWrite: false })
         );
         beam.name = "searchlight";

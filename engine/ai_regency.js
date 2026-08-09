@@ -376,6 +376,10 @@ export class AIRegency {
     // gate -> no-squat Sentinel -> trail affinity). UNIQUES=0 disables
     // for A/B sweeps.
     this.uniqueCrewing = options.uniqueCrewing !== false;
+    // Prompt 221 standoff-breaker: operatorId -> {x, y, ticks, latched}.
+    this.standoff = new Map();
+    this.standoffBreaker = options.standoffBreaker !== false; // STANDOFF=0 A/B
+
     // Q71 TRIAL (prompt 145, the Q18 GO): tick-parity COMMAND order —
     // on odd ticks team B's commands apply first (stable within each
     // team, so per-operator sequences hold). The suspected first-strike
@@ -1326,6 +1330,48 @@ export class AIRegency {
       const cellX0 = sampleCellX(asset.x, AI_W);
       const cellY0 = worldToCellFloor(asset.y);
       const stats = getUnitStats(asset.type);
+      // Prompt 221 STANDOFF-BREAKER: the eternal clot. Hulls that meet
+      // OUT OF SUPPLY cannot shoot (engine law) and cannot pass (enemy
+      // block radius), so opposed pushes lock forever — three hulls sat
+      // interlocked with an enemy carrier for 10,000+ ticks at (63,87),
+      // seed 2026, everyone at full ammo and `supply false`. A hull
+      // that is unsupplied, stationary, and pressed against an enemy —
+      // and NOT near a site (11C capture standoffs keep their drama) —
+      // latches a retreat home until supply returns. Retreating steps
+      // are separating steps (collisionVerdict never constrains them),
+      // so the clot always dissolves. AI memory only, nothing hashed.
+      if (this.standoffBreaker) {
+        const mem = this.standoff.get(operatorId) ??
+          { x: asset.x, y: asset.y, ticks: 0, latched: false };
+        const supplied = inSupply(state, asset);
+        if (supplied) {
+          mem.latched = false;
+          mem.ticks = 0;
+        } else if (!mem.latched) {
+          const moved =
+            Math.max(Math.abs(asset.x - mem.x), Math.abs(asset.y - mem.y)) >= 32;
+          const pressed = state.assets.some((e) =>
+            e.team >= 0 && e.team !== asset.team && !isWreck(e) &&
+            Math.max(Math.abs(e.x - asset.x), Math.abs(e.y - asset.y)) < 512);
+          const nearSite = state.sites.some((site) =>
+            Math.max(Math.abs(site.cellX - cellX0), Math.abs(site.cellY - cellY0)) <= 2);
+          mem.ticks = !moved && pressed && !nearSite ? mem.ticks + 1 : 0;
+          if (mem.ticks >= 100) mem.latched = true;
+        }
+        mem.x = asset.x;
+        mem.y = asset.y;
+        this.standoff.set(operatorId, mem);
+        if (mem.latched) {
+          const home = homeCellFor(state, asset.team);
+          if (home) {
+            commands.push({
+              type: CMD_MOVE_ORDER, operatorId,
+              targetCellX: home[0], targetCellY: home[1],
+            });
+            continue;
+          }
+        }
+      }
       // Trucks defuse marked enemy mines they stand next to.
       if (stats.canClearMines) {
         const mine = state.mines.find((m) =>

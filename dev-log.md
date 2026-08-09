@@ -7063,3 +7063,45 @@ at combat zoom. Technically in the scene, invisible in practice.
   targetX/targetY.
 
 Suite 896/896 x2; smoke + acceptance green (incl. the new size check).
+
+## 2026-08-09 — the eternal clot + the honest fire tip + the shouting compound (prompt 221)
+
+PLAYTEST: enemy hulls "piled on top of each other in the main gate, not
+moving, not responding" and "I tried to shoot — nothing happened".
+
+THE CLOT, PROBE-CONVICTED: friends never hard-block (compression law)
+so columns stack; hulls that meet OUT OF SUPPLY cannot fire (engine
+law) and cannot pass (enemy block radius) — seed 2026 held a 3-hull
+team-1 stack against a team-0 carrier for 9,912 and 10,384 ticks
+respectively at (63,87), everyone at full ammo, `supply false`, both
+sides pushing THROUGH each other forever. THE STANDOFF-BREAKER
+(ai_regency, AI memory only, nothing hashed): unsupplied + stationary
++ pressed within 2 cells of an enemy + NOT within 2 cells of a site
+(11C capture standoffs keep their drama) for 100 plans → latch a
+retreat home until supply returns; retreat steps are separating steps,
+so dissolution is guaranteed by the verdict law itself. Post-fix probe:
+worst stacks 9912→638 / 875→149; worst ignores 10384→678. STANDOFF=0
+kill-switch plumbed (sweep+server+regency) with a dead-switch test.
+5-seed gate: mixed winners, systems firing; two horn endings (was one)
+— within 5-seed noise, note for the next PC-lane battery.
+
+THE SHOT THAT DID NOTHING: the user was deep in enemy ground = OUT OF
+SUPPLY (fire refused by law) — and the hover tip said IN RANGE in
+green. The tip now ranks the whole fire truth: NO AMMO > OUT OF SUPPLY
+> range > RELOADING > IN RANGE. (No chassis has zero damage — "scout
+has no guns" was a good guess at a different law.)
+
+MUZZLE FLASH (their ask): every visible fire_resolved blooms a 130 ms
+flash at the gun — added in the PURE motion model (motion_cues), both
+teams, fog-honest by construction; renderer grew one cue kind.
+
+INTRUDER ALARM (their feature): the compound already SEES enemies at
+its wall (160.2) — now it SHOUTS. Reducer: stateless every-300-tick
+toTeam ping at the (lowest-id) intruder in the watch zone; zero new
+information, zero fairness surface, nothing hashed. Client: klaxon +
+red flash (the prison-alarm treatment), INTRUDER IN THE BASE card in
+tasks_model (state-derived, fog-free via the watch law), searchlight
+beams 3x. AI reads state not pings — sims untouched by the alarm.
+
+Suite 905/905 x2; smoke; acceptance; ai_standoff (5) + intruder_alarm
+(4) + motion_cues updated.
