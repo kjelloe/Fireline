@@ -160,6 +160,7 @@ const worldLabels = new Map(); // labelKey -> Sprite
 const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
+let downBodyRing = null; // prompt 220: persistent locator under YOUR body
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
 const sandbagMeshes = new Map(); // sandbagId -> Mesh (Q45/Q50)
@@ -799,6 +800,20 @@ function init3d() {
     whereAmI: () => whereAmI(interpolator.latest()),
     tasks: () => tasksFor(interpolator.latest(), joined?.operatorId).map((x) => x.kind),
     viewDowned: () => interpolator.latest()?.downedOperators ?? null,
+    // prompt 220: the downed FIGURE is assertable — count + world size
+    // (the old body was technically in the scene and invisible in
+    // practice; size is part of the contract now).
+    downedMeshInfo: () => [...downedMeshes.entries()].map(([id, mesh]) => {
+      const bb = new THREE.Box3().setFromObject(mesh);
+      return {
+        operatorId: id,
+        size: {
+          x: +(bb.max.x - bb.min.x).toFixed(3),
+          y: +(bb.max.y - bb.min.y).toFixed(3),
+          z: +(bb.max.z - bb.min.z).toFixed(3),
+        },
+      };
+    }),
     netDiag: () => netDiagSummary(), // prompt 214
     runNetCheck: () => runNetCheck(null),
     notice: () => {
@@ -3856,12 +3871,22 @@ function updatePrisonFigures(view) {
 
 function updateDownedMeshes(view) {
   const live = new Set();
+  const nowMs = performance.now();
+  let ownDown = null;
   for (const d of view.downedOperators ?? []) {
     live.add(d.operatorId);
     let mesh = downedMeshes.get(d.operatorId);
     if (!mesh) {
       mesh = buildProcedural("operator_down");
       applyTeamColor(mesh, teamToken(ASSET_TOKENS, joined?.team ?? 0).color);
+      // Prompt 220: the coat SELF-GLOWS faintly (the lit-windows trick) —
+      // a body must read on dark ground and through storm dimming, or it
+      // may as well not render.
+      mesh.traverse((n) => {
+        if (n.isMesh && n.name === "team_panel") {
+          n.material.emissive = n.material.color.clone().multiplyScalar(0.5);
+        }
+      });
       scene.add(mesh);
       downedMeshes.set(d.operatorId, mesh);
     }
@@ -3874,7 +3899,21 @@ function updateDownedMeshes(view) {
       ? Math.max(0.05, 0.02 + heightAt(cachedMap.cells, cachedMap.width,
           cachedMap.seed >>> 0, Math.round(gx), Math.round(gz)))
       : 0.05;
-    mesh.position.set(gx, gy, gz);
+    // Prompt 220: a CRAWLING body reads as one — face the direction of
+    // travel and wriggle while moving (clock-driven, purely cosmetic).
+    const u = mesh.userData;
+    if (u.lastGx !== undefined) {
+      const dx = gx - u.lastGx, dz = gz - u.lastGz;
+      if (dx * dx + dz * dz > 1e-8) {
+        u.crawlYaw = Math.atan2(dx, dz);
+        u.crawlingUntilMs = nowMs + 450;
+      }
+    }
+    u.lastGx = gx; u.lastGz = gz;
+    const crawling = nowMs < (u.crawlingUntilMs ?? 0);
+    mesh.rotation.y = (u.crawlYaw ?? 0) + (crawling ? 0.14 * Math.sin(nowMs / 130) : 0);
+    mesh.position.set(gx, gy + (crawling ? 0.012 * Math.abs(Math.sin(nowMs / 130)) : 0), gz);
+    if (d.operatorId === joined?.operatorId) ownDown = { x: gx, y: gy, z: gz };
     const mineNew = d.operatorId === joined?.operatorId && !mesh.userData.ringShown;
     if (mineNew) {
       mesh.userData.ringShown = true;
@@ -3884,6 +3923,11 @@ function updateDownedMeshes(view) {
     // (they are barely walking; the carrier ride is the rescue).
     if (d.freedPow === 1 && !mesh.userData.freedTint) {
       applyTeamColor(mesh, "#cfc7a8");
+      mesh.traverse((n) => {
+        if (n.isMesh && n.name === "team_panel") {
+          n.material.emissive = n.material.color.clone().multiplyScalar(0.5);
+        }
+      });
       mesh.userData.freedTint = true;
     }
     const mine = d.operatorId === joined?.operatorId;
@@ -3901,6 +3945,23 @@ function updateDownedMeshes(view) {
       const label = worldLabels.get(`down${id}`);
       if (label) { scene.remove(label.sprite); worldLabels.delete(`down${id}`); }
     }
+  }
+  // Prompt 220: YOUR body wears a persistent soft locator ring for the
+  // whole down — the 3 s spawn ring was easy to miss entirely, and a
+  // downed player's first job is finding themselves on the ground.
+  if (ownDown) {
+    if (!downBodyRing) {
+      downBodyRing = new THREE.Mesh(
+        new THREE.RingGeometry(0.5, 0.68, 28),
+        new THREE.MeshBasicMaterial({ color: 0x5aff7a, transparent: true, side: THREE.DoubleSide }));
+      downBodyRing.rotation.x = -Math.PI / 2;
+      scene.add(downBodyRing);
+    }
+    downBodyRing.material.opacity = 0.42 + 0.2 * Math.sin(nowMs / 400);
+    downBodyRing.position.set(ownDown.x, ownDown.y + 0.02, ownDown.z);
+  } else if (downBodyRing) {
+    scene.remove(downBodyRing);
+    downBodyRing = null;
   }
 }
 

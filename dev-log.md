@@ -7031,3 +7031,35 @@ checked, sees the original bug at tick 921 of the very first war on
 that seed — that is how common the ghosting was. Suite 895/895 twice;
 5-seed gate + systems probe healthy (mixed winners, tickets-era
 tempo, downs 108 / redeploys 89 / rescues 15 on seed 2026).
+
+## 2026-08-09 — the visible body (prompt 220)
+
+"I still have not seen a figure" — and the screenshot probe agreed: the
+prone body was a 0.34-long shadow-coloured sliver, ~8 px on dark ground
+at combat zoom. Technically in the scene, invisible in practice.
+
+- FIGURE REBUILT (asset_factory buildOperatorDown, figure-kit law): the
+  TEAM-PAINTED coat is the dominant mass, arms reach forward — the
+  silhouette says "crawling"; ~2.5x the old footprint; the coat
+  SELF-GLOWS faintly (the lit-windows trick) so it reads through storm
+  dimming; freed POWs keep the pale tint on the same channel.
+- CRAWL READS AS CRAWLING: the mesh faces its direction of travel and
+  wriggles while moving (clock-driven, cosmetic).
+- YOUR body wears a persistent soft green locator ring the whole down
+  (the 3 s spawn ring was easy to miss entirely).
+- __mfDebug.downedMeshInfo() + acceptance now assert the figure exists
+  AT A VISIBLE SIZE — size is contract, because the old body passed
+  every existence check while being unseeable.
+- 2D FALLBACK NEVER DREW BODIES: sprite_renderer read a view field that
+  has never existed (the real name is downedOperators) and its own test
+  fixture used the same wrong name — the wrong-NAME variant of the
+  view-contract class, dead since 14D. Fixed; NEW LINT in
+  view_contract.test.js walks every view.* read in sprite_renderer
+  against buildView's actual return keys (it caught my own comment on
+  first run).
+- debugging/downed_shot.mjs: reusable downed-body screenshot probe
+  (surgery + centre + zoom). Own-goal recorded: an unpinned surgical
+  body CRAWLS HOME (createDowned targets the source hull) — pin
+  targetX/targetY.
+
+Suite 896/896 x2; smoke + acceptance green (incl. the new size check).

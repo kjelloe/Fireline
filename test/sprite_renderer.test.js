@@ -9,7 +9,9 @@ const view = {
   sites: [{ id: 0, owner: 1, cellX: 32, cellY: 63 }],
   mines: [{ team: 0, x: 10 * 256, y: 10 * 256 }],
   standards: [{ team: 0, status: 1, x: 7 * 256, y: 63 * 256 }],
-  downed: [{ team: 1, x: 20 * 256, y: 20 * 256 }],
+  // prompt 220: the REAL view field (the old fixture said `downed`, the
+  // same wrong name the renderer read — test and bug matched, both dead)
+  downedOperators: [{ team: 1, x: 20 * 256, y: 20 * 256 }],
   friendlyAssets: [{ id: 1, team: 0, x: 12 * 256, y: 12 * 256, heading: 64, state: 0, type: 0 }],
   visibleEnemies: [{ id: 9, team: 1, x: 40 * 256, y: 12 * 256, heading: 128, state: 3, type: 1 }],
   drones: [{ team: 1, x: 15 * 256, y: 15 * 256 }],

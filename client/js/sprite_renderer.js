@@ -20,7 +20,11 @@ export function buildDrawList(view) {
   for (const st of view.standards ?? []) {
     push(st.status === 1 ? "standard_upright" : "standard_dropped", st.team, st, 0, 2);
   }
-  for (const d of view.downed ?? []) push("operator_down", d.team, d, 0, 3);
+  // Prompt 220: the view field is downedOperators — the short name this
+  // once read never existed and the ?? [] hid it, so the 2D path drew NO
+  // bodies from the day 14D shipped (view-contract class, wrong-name
+  // variant; lint-pinned in view_contract.test.js).
+  for (const d of view.downedOperators ?? []) push("operator_down", d.team, d, 0, 3);
   for (const a of [...(view.friendlyAssets ?? []), ...(view.visibleEnemies ?? [])]) {
     // visualKeyFor speaks manifest ("unit_tank"); sheets use builder keys.
     push(visualKeyFor(a).replace(/^unit_/, ""), a.team, a, a.heading, 4);

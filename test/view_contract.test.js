@@ -52,3 +52,21 @@ test("view contract: the rack fields the build UI gates on are all present", () 
     assert.ok(projected.has(field), `${field} must ride the view`);
   }
 });
+
+test("view contract: every view field the 2D draw list reads is projected", () => {
+  // Prompt 220, the wrong-NAME variant of the class: sprite_renderer read
+  // `view.downed` (never a real field — it is downedOperators) and the
+  // ?? [] swallowed it, so the 2D fallback drew NO bodies from the day
+  // 14D shipped. Its own test fixture used the same wrong name.
+  const view = readFileSync(new URL("../engine/view.js", import.meta.url), "utf8");
+  const start = view.indexOf("return {", view.indexOf("export function buildView"));
+  assert.ok(start > 0, "found buildView's return (did view.js get restructured?)");
+  const block = view.slice(start, view.indexOf("\n}", start));
+  const projected = new Set(
+    [...block.matchAll(/^\s{4}(?:\.\.\.)?(\w+)[,:]/gm)].map((m) => m[1]));
+  const sprite = readFileSync(new URL("../client/js/sprite_renderer.js", import.meta.url), "utf8");
+  const used = new Set([...sprite.matchAll(/\bview\.(\w+)/g)].map((m) => m[1]));
+  const missing = [...used].filter((f) => !projected.has(f)).sort();
+  assert.deepEqual(missing, [],
+    `the 2D draw list reads view fields the projection never sends: ${missing.join(", ")}`);
+});

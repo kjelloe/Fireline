@@ -242,11 +242,28 @@ function buildWreck(kind) {
 function buildOperatorDown() {
   const g = new THREE.Group();
   const C = colors();
-  const body = box(0.14, 0.09, 0.34, C.hullShadow); body.position.set(0, 0.06, 0);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 5), mat(C.hullPaint));
-  head.position.set(0, 0.08, 0.22);
-  const panel = teamPanel(0.1, 0.03, 0.1); panel.position.set(0, 0.12, -0.05);
-  g.add(body, head, panel);
+  // Prompt 220 ("I still have not seen a figure"): the old prone body
+  // was a 0.34-long near-black sliver — ~8 px of shadow on dark ground
+  // at combat zoom, invisible in practice. Rebuilt on the figure-kit
+  // law (silhouette = identity): the TEAM-PAINTED coat is the dominant
+  // mass and the arms reach forward — the shape says "crawling", and
+  // no weapon geometry exists to misread. team_panel meshes take the
+  // team colour (freed POWs go pale via the same channel).
+  const coat = teamPanel(0.22, 0.1, 0.42); coat.position.set(0, 0.07, -0.02);
+  const legs = box(0.18, 0.07, 0.26, C.hullShadow); legs.position.set(0, 0.05, -0.34);
+  const boots = box(0.16, 0.06, 0.08, C.hullShadow); boots.position.set(0, 0.05, -0.48);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.085, 7, 6), mat("#c9b899"));
+  head.position.set(0, 0.11, 0.24);
+  const helmet = box(0.17, 0.05, 0.17, C.hullPaint); helmet.position.set(0, 0.165, 0.22);
+  const pack = box(0.15, 0.08, 0.15, "#6f6a58"); pack.position.set(0, 0.15, -0.08);
+  g.add(coat, legs, boots, head, helmet, pack);
+  for (const side of [-1, 1]) {
+    const arm = teamPanel(0.06, 0.05, 0.24);
+    arm.position.set(side * 0.15, 0.045, 0.3);
+    const hand = box(0.05, 0.04, 0.05, "#c9b899");
+    hand.position.set(side * 0.15, 0.04, 0.44);
+    g.add(arm, hand);
+  }
   return g;
 }
 

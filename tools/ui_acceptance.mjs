@@ -409,6 +409,14 @@ async function main() {
       return ring;
     });
     check("downed: the green locator ring pulses on the body", ringUp === true);
+    // Prompt 220: the FIGURE itself must exist at a visible size — the
+    // original prone body was technically in the scene and invisible in
+    // practice (a 0.34-long shadow-coloured sliver). Size is contract.
+    const bodyMesh = await page.evaluate(() => window.__mfDebug.downedMeshInfo());
+    const myBody = bodyMesh.find((m) => m.operatorId === opId);
+    check("downed: the prone figure renders at a visible size",
+      !!myBody && myBody.size.z >= 0.5 && myBody.size.x >= 0.25,
+      JSON.stringify(bodyMesh));
 
     // Bodiless-respawn narration (195): redeploy the seat, then walk the
     // status-panel states — countdown, then pick-a-hull/wave-wait.
