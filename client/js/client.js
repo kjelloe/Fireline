@@ -49,7 +49,7 @@ import {
 } from "./touch_model.js";
 import { factionFor } from "../../shared/factions.js";
 import { activePings } from "../../engine/pings.js";
-import { smoothHeading, angleDelta, TURN_RATE_RAD_PER_SEC } from "./heading.js";
+import { smoothHeading, angleDelta, adoptTarget, TURN_RATE_RAD_PER_SEC } from "./heading.js";
 import { buildProcedural, setStyleTokens, applyTeamColor, applyFactionScheme } from "./asset_factory.js";
 import { visualKeyFor, standardVisualKey, resolveVisual, teamToken } from "./asset_resolver.js";
 import {
@@ -1700,7 +1700,7 @@ function showEndScreen() {
     reasonEl.appendChild(d);
   };
   const rd = document.createElement("div");
-  rd.style.cssText = "font-size:19px;color:#ddd;";
+  rd.style.cssText = "font-size:19px;color:#ddd;text-align:center;"; // prompt 223
   rd.innerText = summary.reason;
   reasonEl.appendChild(rd);
   mkSection(t("end.sec_honors"), honors, "#f5e96b");
@@ -1715,14 +1715,20 @@ function showEndScreen() {
   // gentle fade so the next war's opening isn't a hard cut.
   if (endCountdown) clearInterval(endCountdown);
   let secs = 30;
-  const nextEl = document.getElementById("end-next");
-  nextEl.innerText = t("end.next_war", { s: secs });
+  // Prompt 223: label / BIG gold seconds / coaching line — the seconds
+  // were a 13 px gray aside nobody saw.
+  const labelEl = document.getElementById("end-next-label");
+  const secsEl = document.getElementById("end-next-secs");
+  const stayEl = document.getElementById("end-next-stay");
+  labelEl.innerText = t("end.next_war_in");
+  stayEl.innerText = t("end.stay_seated");
+  secsEl.innerText = `${secs}s`;
   endCountdown = setInterval(() => {
     secs -= 1;
     if (secs > 0) {
-      nextEl.innerText = t("end.next_war", { s: secs });
+      secsEl.innerText = `${secs}s`;
     } else {
-      nextEl.innerText = t("end.next_war", { s: 0 });
+      secsEl.innerText = "0s";
       el.style.transition = "opacity 1.2s";
       el.style.opacity = "0";
       clearInterval(endCountdown);
@@ -2058,9 +2064,14 @@ function upsertAssetMesh(a, friendly) {
       if (useMotion) target = motion;
     }
     if (target !== null) {
-      const prev = mesh.userData.smoothedHeading ?? target;
+      // Prompt 222: the STABILITY GATE (heading.js) decides which target
+      // the smoother may even see — sector flapping freezes out, real
+      // turns adopt instantly.
+      mesh.userData.headGate = adoptTarget(mesh.userData.headGate, target);
+      const adopted = mesh.userData.headGate.adopted;
+      const prev = mesh.userData.smoothedHeading ?? adopted;
       const maxStep = TURN_RATE_RAD_PER_SEC / 60;
-      mesh.userData.smoothedHeading = smoothHeading(prev, target, maxStep);
+      mesh.userData.smoothedHeading = smoothHeading(prev, adopted, maxStep);
       mesh.rotation.y = mesh.userData.smoothedHeading;
     }
   }

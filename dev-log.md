@@ -7105,3 +7105,32 @@ beams 3x. AI reads state not pings — sims untouched by the alarm.
 
 Suite 905/905 x2; smoke; acceptance; ai_standoff (5) + intruder_alarm
 (4) + motion_cues updated.
+
+## 2026-08-09 — review round + the wiggle's true fix + the loud countdown (prompts 222-223)
+
+THE WIGGLE (non-direct): grid-stepped travel flaps the engine's ORDERED
+heading ±1 sector (22.5°) tick after tick, and the prompt-160 smoother
+(EMA'd motion heading + hysteretic handover + rate cap) still CHASED
+every ordered-heading flip at full rate — visible wobble on certain
+travel directions. First cut (slow band on small deltas) failed its own
+test: real turns grew a 1 s mushy tail. THE STABILITY GATE
+(heading.js adoptTarget, pure): small target changes are adopted only
+after persisting ~12 frames (a flap never persists → freezes out
+COMPLETELY, amplitude 0 in the test), real turns (>= 0.48 rad) adopt
+instantly (90° in ~21 frames), slow genuine curves track via the
+drifting-candidate rule. 5 tests incl. the by-construction band bounds.
+
+END SCREEN (223): verdict reason centred; the countdown was a 13 px
+gray aside — now label / 52 px GOLD seconds / coaching line, moved
+BELOW the vote panel. The t()-reality lint caught a leftover
+end.next_war in feedback_model — which turned out to be a DEAD FIELD
+(nextWarText, zero consumers since the summary was built): removed.
+
+REVIEW ROUND: CLAUDE.md gained the standoff-breaker doctrine line,
+STANDOFF in the kill-switch list, ledger member 4 (wrong-NAMED view
+field, 220) + the SURGICAL-STATE LAW (219/220); plan-v3 md+html PC
+lane gained the standoff-breaker verification row (convoy re-run +
+STANDOFF A/B); RUNNING.md gained the visible-body/wiggle/end-screen
+bullets; memory current through 221 (222-223 appended at commit).
+
+Suite 910/910 x2; smoke; acceptance.

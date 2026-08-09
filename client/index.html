@@ -224,12 +224,18 @@
     </div>
     <div id="end-overlay" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.8); z-index:9; flex-direction:column; align-items:center; justify-content:center; gap:10px;">
         <h1 id="end-title" style="margin:0; letter-spacing:3px;"></h1>
-        <div id="end-reason" style="color:#bbb;"></div>
+        <div id="end-reason" style="color:#bbb; text-align:center;"></div>
         <div id="end-scores" style="font-size:20px;"></div>
-        <div id="end-next" style="color:#889; font-size:13px;"></div>
         <div id="vote-box" style="display:none; margin-top:10px; text-align:center;">
             <div id="vote-title" style="color:#cdc; font-size:14px; margin-bottom:6px;"></div>
             <div id="vote-buttons" style="display:flex; gap:8px; justify-content:center;"></div>
+        </div>
+        <!-- Prompt 223: the countdown lives BELOW the vote panel, and the
+             seconds are the loudest thing on the screen after the verdict. -->
+        <div id="end-next" style="color:#889; font-size:13px; text-align:center;">
+            <div id="end-next-label" style="letter-spacing:2px;"></div>
+            <div id="end-next-secs" style="font-size:52px; font-weight:bold; color:#f5e96b; line-height:1.1;"></div>
+            <div id="end-next-stay"></div>
         </div>
     </div>
     <style id="mobile-css">

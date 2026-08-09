@@ -476,3 +476,13 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   that is out of supply (cannot fire), pressed against an enemy, and
   stuck retreats home to rearm instead of pushing eternally
   (STANDOFF=0 disables for A/B).
+
+## Prompts 220/222/223 (2026-08-09)
+
+- Downed crews are VISIBLE now: a real prone figure in team colours
+  that crawls, faces its direction of travel, and — for YOUR body —
+  wears a soft green locator ring the whole time you are down.
+- Hulls no longer "wiggle" between facings on grid travel: a heading
+  stability gate freezes sector flapping while real turns stay snappy.
+- End screen: the verdict reason is centred, and the next-war
+  countdown is a BIG gold seconds display below the map vote panel.

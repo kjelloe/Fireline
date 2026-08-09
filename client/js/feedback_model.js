@@ -203,6 +203,7 @@ export function summarizeGameOver(view, myTeam, postgameSeconds = 30) {
     reason: describeWinReason(view.winReason ?? 0),
     scores: view.teamScores ?? [0, 0],
     myTeam,
-    nextWarText: t("end.next_war", { s: postgameSeconds }),
+    // prompt 223: nextWarText retired — no consumer existed; the client
+    // drives the big countdown (end-next-secs) itself.
   };
 }

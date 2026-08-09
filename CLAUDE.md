@@ -61,7 +61,11 @@ outcome. Renderer presents fog-filtered views only.
   `engine/sites.js`, materiel/repair + Slow Manufacture passes in the
   reducer, AI doctrine (roles, capture-seek, rescue, mining, pings) in
   `engine/ai_regency.js` (+ escorts 11x, roleTruck ladder, route-graph
-  consumption, FORMATION party law — rally near own lines, phase latch
+  consumption, STANDOFF-BREAKER 221 — unsupplied+stationary+pressed+
+  siteless 10 s latches retreat-home until supply returns; STANDOFF=0
+  A/B switch, dead-switch tested; the eternal mid-map clot (mutual
+  out-of-supply stalemates, 10k-tick interlocks) died here,
+  FORMATION party law — rally near own lines, phase latch
   in AI memory, escorts lead, fights-on-the-move; the prison raid
   party rides it, Convoy Escort is next). Phase 12-17 modules: `shared/factions.js` (Directorate/
   Outliers identity), `engine/route_graph.js` (13C equivariant Dijkstra
@@ -278,7 +282,14 @@ outcome. Renderer presents fog-filtered views only.
   imported there — the stations slice shipped getUnitStats unimported
   and the WHOLE seat-facing UI threw on first touch from day one. The
   silently-dead-feature ledger: unprojected view field (W4-4), missing
-  validate case (W4-6), unimported helper (202).
+  validate case (W4-6), unimported helper (202), WRONG-NAMED view field
+  (220 — sprite_renderer read `view.downed`, never a real field; its own
+  test fixture used the same wrong name; lint #7 in view_contract now
+  walks every 2D-renderer view read against buildView's return keys).
+  SURGICAL-STATE LAW (219/220): build test fixtures through the REAL
+  command path — a hand-built state the engine never produces pins the
+  author's assumption, not the law (the OP_ACTIVE rider, the un-pinned
+  crawling body); surgery is for starting positions only.
   MOBILE ERA (prompts 211-212): `client/js/keybar_model.js` PURE — the
   on-screen KEY BAR (context-curated ≤8 per embodiment, gray=carried-
   but-unavailable, hidden=never-applicable, blink=banner/tutorial
@@ -350,7 +361,7 @@ outcome. Renderer presents fog-filtered views only.
   engine/vote.js — VOTE_MAPS/VOTE_MODES env at start, GET/POST
   /rotation at runtime (POST loopback-only). MODE FRAMEWORK: see the
   2026-08-01 block above; convoy battery `batch_send.sh convoy`;
-  bisection kill-switches RAIDPARTY=0/POWARC=0 + the `ab` job kind.
+  bisection kill-switches RAIDPARTY=0/POWARC=0/STANDOFF=0 + the `ab` job kind.
   THE RESIDUE, RESOLVED INTO PARTS (2026-08-02, prompt 143): the
   UNDESIGNED root was FRONTIER'S TERRAIN — never cell-symmetric
   (noise drawn whole-map; 1,615/8,192 asymmetric mirror pairs/seed).

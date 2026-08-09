@@ -35,6 +35,7 @@ gates, batteries on the PC lane.
 | Item | Instrument | Status |
 |---|---|---|
 | **Map promotions** | 3 batteries on HEAD (sawtooth/riverline/caldera) + owner feel-checks → COMPLETED_MAPS | 🔜 FIRST PC-LANE SLATE |
+| Standoff-breaker verification | Convoy battery re-run (`batch_send.sh convoy`, escorts press deep by design) + a STANDOFF=0 A/B if standard-war tempo reads slow (5-seed gate showed 2/5 horn endings) | with the slate |
 | **Raid-party census** | hulls committed/lifetime/losses-while-live/rebuild timing per team; names the POWS=2 residual | queued SECOND (ruled Q88) |
 | **Siege prep** | The heist lever (ruled Q87 GO): attacker pre-war emplacements; target 25-40% attacker | after census |
 | MPG wave-timing | B refills earlier despite fewer losses — instrument then fix | filed |
