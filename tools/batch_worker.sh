@@ -208,7 +208,7 @@ handle_job() { # $1 = JSON body
       # new job kind per map. Optional "uniques":1 runs the LIVE game
       # config (16B crewing on) — default stays 0 so old batteries remain
       # comparable; label gains _uq so the two configs never mix in a CSV.
-      local mp mp_mirror mp_uq mp_swap mp_stale mp_op mp_h mp_sl
+      local mp mp_mirror mp_uq mp_swap mp_stale mp_op mp_h mp_sl mp_so
       mp=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('map','frontier_corridor'))" "$body")
       mp_mirror=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('mirror',0))" "$body")
       mp_uq=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('uniques',0))" "$body")
@@ -218,9 +218,12 @@ handle_job() { # $1 = JSON body
       mp_op=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('orderparity',0))" "$body")
       mp_h=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('handicap',''))" "$body")
       mp_sl=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('slide',1))" "$body")
-      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale ORDERPARITY=$mp_op HANDICAP=$mp_h SLIDE=$mp_sl run_sweep \
+      # prompt 226: "standoff":0 disables the prompt-221 standoff-breaker
+      # for A/B (the sawtooth spread hunt) — label gains _nostandoff.
+      mp_so=$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('standoff',1))" "$body")
+      MAP=$mp UNIQUES=$mp_uq FACTIONSWAP=$mp_swap STALEMATE=$mp_stale ORDERPARITY=$mp_op HANDICAP=$mp_h SLIDE=$mp_sl STANDOFF=$mp_so run_sweep \
         "$(python3 -c "import json,sys; print(json.loads(sys.argv[1]).get('count',100))" "$body")" \
-        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_op" = 1 ] && echo _op)$([ -n "$mp_h" ] && echo _h$mp_h)$([ "$mp_sl" = 0 ] && echo _noslide)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
+        "$mp_mirror" 1 "map_${mp}$([ "$mp_uq" = 1 ] && echo _uq)$([ "$mp_swap" = 1 ] && echo _swap)$([ "$mp_stale" = 0 ] && echo _nostale)$([ "$mp_op" = 1 ] && echo _op)$([ -n "$mp_h" ] && echo _h$mp_h)$([ "$mp_sl" = 0 ] && echo _noslide)$([ "$mp_so" = 0 ] && echo _nostandoff)$([ "$mp_mirror" = 1 ] && echo _mirror)" ;;
     uniques)
       # 16B chase: unique crewing ON; body may add "swap":1 or "mirror":1.
       local uq_swap uq_mirror

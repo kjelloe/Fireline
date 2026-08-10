@@ -7134,3 +7134,32 @@ STANDOFF A/B); RUNNING.md gained the visible-body/wiggle/end-screen
 bullets; memory current through 221 (222-223 appended at commit).
 
 Suite 910/910 x2; smoke; acceptance.
+
+## 2026-08-10 — the c54e00a slate returns in 20 minutes (prompt 226)
+
+Batch lane back up after the move (hub verified end-to-end, dev LAN IP
+now 192.168.0.103; worker on c54e00a, suite green, 12 cores). The whole
+8-job slate ran in ~20 min.
+
+VERDICTS (analyze_sweep, n=300/world, live _uq config):
+- **RIVERLINE: FAIR — the battery half of promotion PASSES.** 48.0/53.2,
+  aggregate 50.6% A, flip rate 46.2% (textbook chaos) — better than
+  blackwood's own passing read (52.8/51.1). Remaining gate: the owner
+  bridge-feel playtest.
+- **CALDERA: TEAM BIAS, stays RED.** 46.0/43.3 — B keeps its edge in
+  BOTH worlds (flip rate 6%, same winner 94% of pairs). The ring is
+  still team-keyed; fix-first stands.
+- **SAWTOOTH: a NEW SHAPE — investigate before promotion.** Aggregate
+  52.9% at band edge, but 57.0/48.7 (8.3-pt world spread; was 54.8/54.4
+  flat on a81477c) and flip rate only 14% (86% same-winner pairs =
+  seed×team-keyed). Two sim-affecting deltas landed in between (the
+  ghost-seat fix bc9f79c and the standoff-breaker e35266a), and the
+  low-flip fingerprint also matches the old unique-pair channel.
+  Discriminators QUEUED: n=600 pair (noise), swap pair on HEAD
+  (faction channel; a-era swap CSVs archived as *.a-era.csv), and —
+  after push+update — a STANDOFF=0 pair (new: "standoff" plumbed
+  through batch_send/batch_worker as map arg 11, label _nostandoff).
+- **CONVOY: the standoff-breaker is EXONERATED.** att0 39.3% vs the
+  38.3% r80 baseline (same config, scale 80 now default) — noise. att1
+  first read at scale 80: 44.3% (above the 30-40 band by ~1.5 SE;
+  direction×faction confounded; WATCH, the bar is the designer's).
