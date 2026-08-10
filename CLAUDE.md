@@ -351,7 +351,11 @@ outcome. Renderer presents fog-filtered views only.
   and `targetSandbagId` (ANY gun — bags are cover, not
   infrastructure). ALARM GUARDS (Q38): prison.alarmTicks hashed; the
   watchman is NOT an entity — toTeam ping kind prison_alarm on a 30s
-  cooldown + defender response doctrine in ai_regency. LOBBY
+  cooldown + defender response doctrine in ai_regency. INTRUDER ALARM
+  (221): the 160.2 base watch zone SHOUTS too — stateless tick%300
+  toTeam ping kind intruder_alarm at the lowest-id intruder, klaxon +
+  INTRUDER card client-side; zero new information, nothing hashed,
+  AI-inert. LOBBY
   (prompt 149): transport-level s_lobby broadcast (live per-team human
   counts + server config) to EVERY socket incl. pre-join; fresh joins
   refused at a 2-human imbalance (token reclaims exempt);

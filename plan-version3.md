@@ -34,9 +34,9 @@ gates, batteries on the PC lane.
 
 | Item | Instrument | Status |
 |---|---|---|
-| **Map promotions** | 3 batteries on HEAD (sawtooth/riverline/caldera) + owner feel-checks → COMPLETED_MAPS | 🔜 FIRST PC-LANE SLATE |
-| Standoff-breaker verification | Convoy battery re-run (`batch_send.sh convoy`, escorts press deep by design) + a STANDOFF=0 A/B if standard-war tempo reads slow (5-seed gate showed 2/5 horn endings) | with the slate |
-| **Raid-party census** | hulls committed/lifetime/losses-while-live/rebuild timing per team; names the POWS=2 residual | queued SECOND (ruled Q88) |
+| **Map promotions** | ✅ DONE 2026-08-10: riverline (50.6%/46% flips) + sawtooth (n=600 acquittal) PROMOTED into COMPLETED_MAPS — group playtest via live rotation; caldera stays RED (team bias both worlds, fix-first) | ✅ |
+| Standoff-breaker verification | ✅ DONE: convoy att0 39.3% vs 38.3% baseline (exonerated); att1 first read 44.3% (watch); sawtooth aggregate unchanged | ✅ |
+| **Raid-party census** | hulls committed/lifetime/losses-while-live/rebuild timing per team; names the POWS=2 residual — the census INSTRUMENT is a build task | 🔜 NEXT PC-LANE WORK |
 | **Siege prep** | The heist lever (ruled Q87 GO): attacker pre-war emplacements; target 25-40% attacker | after census |
 | MPG wave-timing | B refills earlier despite fewer losses — instrument then fix | filed |
 | East-pusher residual | +7-13 side-keyed | filed |
@@ -64,7 +64,7 @@ gates, batteries on the PC lane.
 
 ## Sequencing
 
-1. **PC lane now**: promotion batteries ×3 → census.
+1. **PC lane now**: ✅ promotions done (2026-08-10) — next is the raid-party census INSTRUMENT (a build task, then its lane runs).
 2. **Build now**: W4-9 careers (small, warms the live site).
 3. Then: siege prep (battery-gated) → W4-11 Frontline Push (the big one).
 4. Presentation interleaves as externals land (music) and playtests demand.

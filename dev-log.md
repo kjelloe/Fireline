@@ -7207,3 +7207,31 @@ ballot up on redeploy with NO config change. specs/10 gates flipped
 (riverline §2, sawtooth §4-tail) with the acquittal evidence; CLAUDE.md
 profile block updated; RUNNING bullet. Suite 910/910 x2, smoke, vote
 tests green.
+
+## 2026-08-10 — review round + the ballot speaks (prompt 228)
+
+OMISSIONS SWEEP found one real one: **the vote ballot had no map
+display names** — `t("map.<profile>")` falls back to the raw code id,
+so the group-playtest ballot would have offered "riverline" and
+"sawtooth" in lowercase code-speak. Added map.* names for all five
+profiles, BOTH locales (EN: Frontier Corridor/Blackwood/Riverline/
+Sawtooth/Caldera; NO: Grensekorridoren/Svartskogen/Elvelinja/Sagtann/
+Calderaen). Thumbnails were already covered (MAP_PROFILES registry).
+
+Checked-and-clean: premium + offset tables both EMPTY as ruled (and
+today's fair riverline read answers the offset table's own "fresh h0
+pair decides" note — no offset warranted); vote candidates/normalize
+handle four maps; map_symmetry + route-graph + patrol enumeration
+tests already cover the promoted profiles.
+
+PLAYTEST WATCH-ITEM recorded: the prompt-222 heading gate holds
+sub-band target changes 12 frames; a hull turning CONTINUOUSLY at
+0.2-0.34 rad/tick (tank/bike) adopts in ~0.48-rad steps — the
+smoother glides between them (its rate exceeds every turn rate) so it
+should read fluid, but if playtest reports "turning feels steppy",
+the fix is a monotonic-progress rule in adoptTarget, not a band tweak.
+
+Docs synced: plan-v3 Track 3 statuses (promotions ✅, standoff
+verification ✅, census = NEXT as a BUILD task) + sequencing, both
+twins; CLAUDE.md gained the intruder-alarm line beside ALARM GUARDS.
+Suite 910/910 x2, lints, smoke.
