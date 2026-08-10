@@ -7163,3 +7163,36 @@ VERDICTS (analyze_sweep, n=300/world, live _uq config):
   38.3% r80 baseline (same config, scale 80 now default) — noise. att1
   first read at scale 80: 44.3% (above the 30-40 band by ~1.5 SE;
   direction×faction confounded; WATCH, the bar is the designer's).
+
+## 2026-08-10 — sawtooth acquitted by its own discriminators (prompt 226b)
+
+The n=600 pair + swap pair came back (another ~15 min on the lane):
+
+- **The 8.3-pt spread was BLOCK-1 MIRROR SEED LUCK.** Seeds 301-600
+  alone read 55.0/56.5 (flat, upper band); n=600 combined 56.0/52.6,
+  POOLED 54.3% A — statistically identical to the a81477c passing read
+  (54.8/54.4, pooled 54.6). Nothing changed on sawtooth across the
+  ghost-seat + standoff-breaker era.
+- **LOW FLIP RATE IS A MAP PROPERTY, not a bias signature**: 13-15% in
+  EVERY arm — swap, non-swap, both eras — including the arms the
+  analyzer calls dead fair. Sawtooth's tight chokes make wars
+  seed-determined and mirror-robust. (The analyzer's n=600 "TEAM BIAS"
+  line fires on low-flip + 54.3 aggregate; the same pooled value was
+  IN BAND on a81477c.)
+- **The faction channel is NOT the residual lean**: swap on HEAD reads
+  51.1% (a-era archive: 50.8% — unchanged). Decomposition: team-keyed
+  ~2.7 ± 1.25 pts, faction (Sentinel-holder) ~1.6 ± 1.25 pts (not
+  significant). The ~2.7-pt team-A residue matches the KNOWN filed
+  "slight A lean, watch" that frontier's accepted 54.0/52.9 carries —
+  a global engine residue, not sawtooth-specific.
+- The STANDOFF=0 rung is NO LONGER MOTIVATED for sawtooth (aggregate
+  unchanged across the era; convoy already exonerated the breaker).
+  The plumbing stays for future tempo checks.
+
+**PROMOTION BOARD after today: riverline battery-PASSED (50.6%, 46%
+flips), sawtooth battery-UNCHANGED from its passing read (54.3%
+pooled, the global A-lean watch-item noted), caldera RED (team bias
+both worlds, fix-first). Both promotions now wait on OWNER PLAYTESTS
+(riverline bridge-feel, sawtooth choke-feel) + COMPLETED_MAPS
+one-liners. Next PC-lane slice: the raid-party census instrument
+(Q88) — a build task, not a queue entry.**
