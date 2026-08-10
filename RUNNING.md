@@ -486,3 +486,10 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   stability gate freezes sector flapping while real turns stay snappy.
 - End screen: the verdict reason is centred, and the next-war
   countdown is a BIG gold seconds display below the map vote panel.
+
+## Prompt 227 (2026-08-10)
+
+- RIVERLINE and SAWTOOTH are in the map vote rotation (COMPLETED_MAPS)
+  — four maps on the ballot. Riverline: three destructible bridges,
+  fords, the Skimmer's water. Sawtooth: canyon choke lanes, the
+  grinding armor map. Both battery-verified fair on c54e00a.

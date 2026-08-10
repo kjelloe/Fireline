@@ -143,18 +143,19 @@ outcome. Renderer presents fog-filtered views only.
   in `ai_regency.js` PATROLS — all three mirror-closed, enumeration-
   tested): `frontier_corridor` (default), `blackwood` (PROMOTED
   2026-07-31 — battery + corridors + playtest all passed), `riverline`
-  (EXPERIMENTAL; PACING SOLVED prompt 136: layout-declared STALEMATE
+  (PROMOTED 2026-08-10 — c54e00a battery 50.6% agg/46% flips, in
+  rotation for group playtesting; PACING SOLVED prompt 136: layout-declared STALEMATE
   ATTRITION — joined war, nobody at bleed majority → both pools grind
   on `stalemateBleedTicks` — plus heart-relay bleed [bridge pair =
   majority-equivalent; AI-war-redundant by geometry, kept for human
   mutual-crossings]; horn 34%→0 local, post-ladder battery pair
-  pending) + `sawtooth` (**HOLD LIFTS 2026-08-05**:
-  54.8/54.4 on a81477c, IN BAND — the 68-69% was the two phase-lock
-  bugs, which its tight chokes amplified hardest by producing the most
-  head-on meetings per war. Every pre-a81477c sawtooth number is
-  last-era. ITS +25% PREMIUM IS NOW UNCONVICTED and must be pulled —
-  premium.js's own law: an entry without a live conviction is a lie
-  about the map). B3 overtime is CAPPED (prompt 136): hashed `overtime`
+  pending) + `sawtooth` (**PROMOTED 2026-08-10** —
+  n=600 pooled 54.3% = its a81477c passing read; the one scary n=300
+  world was mirror seed luck; low flip rate 13-15% is the map's
+  CHARACTER (chokes make wars seed-determined, every arm shows it);
+  the ~2.7-pt A-lean is the KNOWN global watch-item. Premium pulled
+  2026-08-05, table stays empty. Every pre-a81477c sawtooth number
+  is last-era.) B3 overtime is CAPPED (prompt 136): hashed `overtime`
   counter, 600 ticks total (rules.overtimeCapTicks), fixture v67 —
   an empty pool can no longer be held open forever by capture churn.
   Design of record + hard profile constraints + 6-map bank:

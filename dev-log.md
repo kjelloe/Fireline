@@ -7196,3 +7196,14 @@ both worlds, fix-first). Both promotions now wait on OWNER PLAYTESTS
 (riverline bridge-feel, sawtooth choke-feel) + COMPLETED_MAPS
 one-liners. Next PC-lane slice: the raid-party census instrument
 (Q88) — a build task, not a queue entry.**
+
+## 2026-08-10 — riverline + sawtooth enter the rotation (prompt 227)
+
+Owner's call: promote both battery-passed maps and let the group
+playtest through the LIVE vote rotation (the playtest gate, served).
+COMPLETED_MAPS = frontier_corridor, blackwood, riverline, sawtooth —
+normalizePool defaults to it, so the live server picks the four-map
+ballot up on redeploy with NO config change. specs/10 gates flipped
+(riverline §2, sawtooth §4-tail) with the acquittal evidence; CLAUDE.md
+profile block updated; RUNNING bullet. Suite 910/910 x2, smoke, vote
+tests green.

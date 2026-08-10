@@ -8,7 +8,14 @@
 // Maps that have earned promotion (specs/10 gate). Experimental and
 // held profiles join when they pass — server owners may still opt
 // them in explicitly via VOTE_MAPS.
-export const COMPLETED_MAPS = ["frontier_corridor", "blackwood"];
+// riverline PROMOTED 2026-08-10: c54e00a battery 50.6% agg / 46% flip
+// rate (better than blackwood's passing read); owner opened rotation
+// for group playtesting (prompt 227). sawtooth PROMOTED same day:
+// n=600 pooled 54.3% = its a81477c passing read (the 8-pt scare was
+// block-1 mirror seed luck); low flip rate is the map's character
+// (chokes make wars seed-determined), the ~2.7-pt A-lean is the
+// KNOWN global watch-item, not sawtooth's.
+export const COMPLETED_MAPS = ["frontier_corridor", "blackwood", "riverline", "sawtooth"];
 // "night" is a VARIANT, not a mode — it rides whatever war is running.
 export const ALL_MODES = ["standard", "convoy", "heist", "night"];
 

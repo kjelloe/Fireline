@@ -69,7 +69,12 @@ get identities, one map does not get all terrains.
   edges) completes the §6 "destructible + repairable" pattern.
 - Layout is diamond (outer pairs N/S + bridge pair center) — good per §1.
 - Known lean: west residue collapsed to ~58/42 under the tickets meta;
-  still EXPERIMENTAL pending fine-tuning (backlog).
+  ~~still EXPERIMENTAL pending fine-tuning~~ **PROMOTED 2026-08-10
+  (prompt 227)**: the c54e00a battery read 48.0/53.2, aggregate 50.6%
+  A, flip rate 46.2% — textbook fair chaos, better than blackwood's
+  own passing read. The east curse is gone (the phase-lock fixes +
+  stalemate attrition + heart-relay bleed did their jobs). In
+  COMPLETED_MAPS; owner opened rotation for group playtesting.
 
 **DECISION: no geometry changes to riverline now.** 13E bridges is the
 next riverline slice and may shift its balance anyway — tune once, after.
@@ -207,11 +212,14 @@ be widened if the anchor lean survives.
    worth chasing. **This is a job for the 300-war PC battery, not more
    local sweeps.**
 
-Promotion gate stays CLOSED. Remaining before sawtooth leaves
-experimental: the east-lean question at scale, and a decision on
-whether 60% horn is acceptable identity for a grinding armor map or
-wants a second pacing pull (candidate: cross-lane light patrols so
-enemy lane relays get raided and possession swings more).
+~~Promotion gate stays CLOSED.~~ **PROMOTED 2026-08-10 (prompt 227)**:
+the c54e00a battery era answered both holds — the 68-69% was the
+phase locks (fixed a81477c), and the n=600 acquittal showed pooled
+54.3% A (identical to the passing a81477c read; the one scary
+n=300 world was mirror seed luck). Low flip rate (13-15% every arm)
+is the map's CHARACTER — chokes make wars seed-determined — and the
+residual ~2.7-pt A-lean is the global watch-item, not sawtooth's.
+In COMPLETED_MAPS; owner opened rotation for group playtesting.
 
 **18E — wall sliding changed this map's character completely, and the
 verdict above with it.** Units were pressing their faces against mesas
