@@ -402,6 +402,7 @@ export const CATALOGS = {
     "task.mission_heist_seize": "MISSION: seize the Asset from their vault",
     "task.mission_heist_guard": "MISSION: guard the Asset — they are coming",
     "task.stop_thief": "STOP THE THIEF — our standard is moving",
+    "task.locate_standard": "Scout their standard — touch it once for recognition",
     "task.intruder": "INTRUDER IN THE BASE — drive them out",
     "task.raid_prison": "RAID THEIR PRISON — {count} of ours are held there",
     // W4-4: the placement ghost names WHY a build was refused.
@@ -903,6 +904,7 @@ export const CATALOGS = {
     "task.mission_heist_seize": "OPPDRAG: ta Aktivumet fra hvelvet deres",
     "task.mission_heist_guard": "OPPDRAG: vokt Aktivumet — de kommer",
     "task.stop_thief": "STOPP TYVEN — standarten vår er på vandring",
+    "task.locate_standard": "Speid ut standarten deres — rør den én gang for anerkjennelse",
     "task.intruder": "INNTRENGER I BASEN — driv dem ut",
     "task.raid_prison": "RAID FENGSELET DERES — {count} av våre holdes der",
     // W4-4: plasseringsspøkelset sier HVORFOR bygging ble nektet.

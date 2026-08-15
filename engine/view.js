@@ -173,7 +173,9 @@ export function buildView(state, team) {
       // W4-7: the WALLET is private to your own side. The scoreboard is
       // public by design (recognition is meant to be SEEN), but what you
       // can still afford to spend is not the enemy's business.
-      ...(o.team === team ? { recogAvailable: o.recogAvailable ?? 0 } : {}),
+      ...(o.team === team
+        ? { recogAvailable: o.recogAvailable ?? 0, stdLocated: o.stdLocated ?? 0 }
+        : {}),
     }));
 
   return {

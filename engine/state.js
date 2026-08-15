@@ -105,7 +105,7 @@ function createOperators() {
   for (let id = 0; id < OPERATOR_COUNT; id++) {
     // B4: deeds are per-CATEGORY recognition counts (indices are the
     // reducer's DEED_* constants) — the raw material of category honors.
-    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1, respawnTicks: 0, carrierSpawnAt: 0, deeds: [0, 0, 0, 0, 0, 0, 0, 0], rookie: 0, recogAvailable: 0 });
+    operators.push({ id, team: -1, state: OP_ABSENT, assetId: -1, score: 0, downTimer: 0, lastPingTick: -1000000, autoRescue: 1, respawnTicks: 0, carrierSpawnAt: 0, deeds: [0, 0, 0, 0, 0, 0, 0, 0], rookie: 0, recogAvailable: 0, stdLocated: 0 });
   }
   return operators;
 }

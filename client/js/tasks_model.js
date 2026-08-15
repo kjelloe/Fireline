@@ -38,6 +38,7 @@ const TASK_VALUE = Object.freeze({
   repair_site: 8,       // rebuilding infrastructure, tow-class effort
   resupply: 4,          // keeps someone else scoring; below every rescue
   repair_hull: 4,       // RECOG_FIELD_REPAIR - same support tier
+  locate_standard: 1,   // prompt 232: the sneak's +1 — always last
 });
 function taskValue(task) {
   return TASK_VALUE[task.kind] ?? 0;
@@ -93,6 +94,17 @@ export function tasksFor(view, myOperatorId = null) {
     }
   }
 
+  // Prompt 232: the SECONDARY mission — touch their standard at its
+  // base for +1, once per war. Standard positions are public (8A), and
+  // the once-flag rides the own-team seat projection.
+  const mySeat = (view?.operators ?? []).find((o) => o.id === myOperatorId);
+  if (enemy && enemy.status === 0 && mySeat && mySeat.stdLocated !== 1) {
+    tasks.push({
+      kind: "locate_standard", priority: 8,
+      label: t("task.locate_standard"),
+      cellX: cellOf(enemy.x), cellY: cellOf(enemy.y), ping: "rally",
+    });
+  }
   if (own && own.status === 1) { // STD_CARRIED — by the enemy
     tasks.push({
       kind: "stop_thief", priority: 0,

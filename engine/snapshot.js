@@ -22,6 +22,7 @@ export function hashState(state) {
     for (const d of o.deeds ?? []) w.writeI32LE(d); // added B4 (7 deed counters)
     w.writeU8(o.rookie ?? 0); // added W4-2 (first-war drone grace)
     w.writeI32LE(o.recogAvailable ?? 0); // added W4-7 (the spendable pool)
+    w.writeI32LE(o.stdLocated ?? 0); // added prompt 232 (enemy standard located, once/war)
   }
   for (const a of state.assets) {
     w.writeI32LE(a.id); w.writeI32LE(a.type); w.writeI32LE(a.team);

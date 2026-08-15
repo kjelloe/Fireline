@@ -1902,6 +1902,24 @@ function applyAdvanceTick(next) {
     });
   }
 
+  // Prompt 232: ENEMY STANDARD LOCATED — the sneak's reward. Any crewed
+  // hull that TOUCHES (cheb <= 1 cell) the enemy standard while it
+  // stands AT ITS BASE pays its operator +1 Recognition, once per war
+  // (hashed operator.stdLocated). Deliberately tiny: it rewards the
+  // reconnaissance run itself; the theft is still the 25-point play.
+  for (const st of next.standards) {
+    if (st.status !== STD_AT_BASE) continue;
+    for (const a of next.assets) {
+      if (a.team !== (st.team === 0 ? 1 : 0)) continue; // enemies of the owner
+      if (a.operatorId === -1 || a.state === ASSET_DISABLED || a.state === ASSET_SALVAGED) continue;
+      const seat = next.operators[a.operatorId];
+      if (!seat || seat.stdLocated === 1) continue;
+      if (chebyshevCells(a, st) > 1) continue;
+      seat.stdLocated = 1;
+      awardOperator(next, a.operatorId, 1);
+      next.events.push({ type: "standard_located", operatorId: a.operatorId, team: a.team });
+    }
+  }
   // Anti-deadlock (9A): a standard left dropped long enough returns home.
   for (const st of next.standards) {
     if (st.status !== STD_DROPPED) continue;
