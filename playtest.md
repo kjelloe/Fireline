@@ -117,3 +117,30 @@ fails: note the item number + what you saw (a screenshot helps).
     strong when B attacks (att1 measured 44.3%, first read), and any
     map that produced a "stuck" or "unfair" feeling with WHERE it
     happened.
+
+## H. Round 2 additions — build 04ec621 (2026-08-15)
+
+23. **Crawl stance**: get downed, crawl diagonally.
+    → ONE steady stance facing the diagonal — no flicker between
+    facings (the old bug fired on exactly diagonal crawls).
+24. **The loud respawn**: die and redeploy (R).
+    → Big gold "RESPAWNING AT BASE IN 5…4…3…" mid-screen; at zero the
+    camera JUMPS to a free hull with "NEXT ASSET READY". No hunting.
+25. **Spinning beacons**: drive into the enemy compound again.
+    → Red rotating beacon lights on every guard tower + the HQ, both
+    when YOU intrude (their base lights up in your view) and when
+    defending. Lights die ~30 s after the intruder is downed/leaves.
+26. **The sneak's +1**: slip a scout to the enemy standard and touch
+    it (drive adjacent).
+    → +1 recognition, once per war; the "Scout their standard" card
+    retires for you afterwards.
+27. **Encyclopedia pictures**: ⚙ → Field Encyclopedia.
+    → Every chassis entry shows its unit picture.
+28. **Victory screen v2**: at war end —
+    → score in big team-coloured numbers directly under the verdict;
+    olive/brass military panels; honors list wears 🥇🥈🥉.
+29. **Sandbag walls**: build a run of bags with a truck (N).
+    → Bags are twice as wide and line up as a continuous WALL along
+    the run; the 6th bag while 5 stand is refused with "your 5-bag
+    limit is standing" (and the placement ghost shows red); destroy
+    one and the slot frees.
