@@ -58,6 +58,27 @@
     "operator_down": {
       "frames": 16
     },
+    "guard": {
+      "frames": 16
+    },
+    "pow_figure": {
+      "frames": 16
+    },
+    "landship": {
+      "frames": 16
+    },
+    "farmhand": {
+      "frames": 16
+    },
+    "roadworker": {
+      "frames": 16
+    },
+    "trader": {
+      "frames": 16
+    },
+    "wreck_landship": {
+      "frames": 16
+    },
     "standard_upright": {
       "frames": 1
     },

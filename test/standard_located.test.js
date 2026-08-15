@@ -39,3 +39,22 @@ test("your OWN standard pays nothing, and a carried standard pays nothing", () =
   assert.equal(s.operators[0].score, before, "no award off the base");
   assert.equal(s.operators[0].stdLocated, 0);
 });
+
+// The card side (prompt 232 review): the mission shows until done.
+test("the locate_standard card gates on the own-seat flag", async () => {
+  const { tasksFor } = await import("../client/js/tasks_model.js");
+  const view = {
+    team: 0,
+    operators: [{ id: 0, team: 0, stdLocated: 0 }],
+    standards: [
+      { team: 0, status: 0, x: 5 * 256, y: 5 * 256 },
+      { team: 1, status: 0, x: 60 * 256, y: 60 * 256 },
+    ],
+  };
+  assert.ok(tasksFor(view, 0).some((c) => c.kind === "locate_standard"), "offered while undone");
+  view.operators[0].stdLocated = 1;
+  assert.ok(!tasksFor(view, 0).some((c) => c.kind === "locate_standard"), "retires when done");
+  view.operators[0].stdLocated = 0;
+  view.standards[1].status = 1; // carried — not standing in the camp
+  assert.ok(!tasksFor(view, 0).some((c) => c.kind === "locate_standard"), "only an AT-BASE standard");
+});

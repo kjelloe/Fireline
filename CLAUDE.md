@@ -236,6 +236,10 @@ outcome. Renderer presents fog-filtered views only.
   driver (60 s undefended). No new hashed field — new routes to
   OP_CAPTIVE. Q84 RULED: the deep-down law is HUMAN-ONLY DRAMA (0
   firings in AI wars, accepted); note any change at the code site.
+  STANDARD LOCATED (232, fixture v72): touching the enemy standard AT
+  ITS BASE pays +1 recognition once per war (hashed
+  operator.stdLocated; lowest-value locate_standard card gated on the
+  own-seat flag in the view).
   W4-10 NIGHT WARS (Q80): `rules.nightWar` / `--night` / NIGHT=1 — a
   night war is a STORM THAT NEVER LIFTS (weatherActive returns true
   unconditionally), reusing the 16G sensor halving wholesale so it
@@ -344,7 +348,9 @@ outcome. Renderer presents fog-filtered views only.
   terrain-mutation precedent; placement law in engine/sandbags.js
   incl. ROADS allowed under the TWO-LANE LAW since prompt 145 — a
   road build must leave >=2 open road cells in its column
-  cross-section; destruction restores ground)/ping/
+  cross-section; destruction restores ground; PERSONAL CAP 232: max 5
+  STANDING bags per operator — hashed byOperator on each bag, v73;
+  the cap lives in buildRejection so the W4-4 ghost shows it)/ping/
   board_carrier/unboard/drive/
   deploy_hardpoint/undeploy/transfer_cargo (+ inert call_medic).
   fire(...) also takes `targetBridgeId` (13E, siege chassis only)

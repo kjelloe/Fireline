@@ -194,3 +194,14 @@ hard constraint when bigger bases or outside-base prisons arrive.
 > a gate cell or a road's full width (extends the "shape routes,
 > never invalidate the map" law). Landship AFTER alarm guards/vault.
 > Heist/Extraction mode GO after convoy tunes.
+
+> Owner rulings 2026-08-15 (prompts 232-233): SANDBAG PERSONAL CAP —
+> max 5 STANDING bags per operator (hashed byOperator, fixture v73;
+> a destroyed bag frees the slot; the cap sits in buildRejection so
+> the placement ghost shows it). Bags render 2x wide, oriented along
+> the run — the wall reads as a wall. STANDARD LOCATED (fixture v72):
+> touching the enemy standard AT ITS BASE pays +1 recognition once
+> per war — the sneak's reward, deliberately a footnote next to the
+> 25-point theft. INTRUDER ALARM grew its theatre: spinning red
+> beacons on towers + HQ, per-viewer fog-honest, 30 s decay after the
+> intruder dies or leaves.

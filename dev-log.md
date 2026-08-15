@@ -7278,3 +7278,26 @@ is what fires. AI never builds bags — sim-inert.
 Suite 913/913 x2 (two repins this session: v72 stdLocated, v73
 sandbag byOperator); smoke; acceptance; 5-seed gate identical to
 baseline (E is the only sim-reachable change and reads inert).
+
+## 2026-08-15 — review round: the stale sheets and the over-decorated podium (prompt 234)
+
+OMISSIONS SWEEP found two real ones:
+1. **THE SPRITE SHEETS WERE STALE** — baked before Q42, so the
+   LANDSHIP had NO sheet at all: an empty box in the new encyclopedia
+   card AND the 2D fallback has silently skipped landships since the
+   hull shipped. The operator_down sheet still showed the old
+   invisible sliver. `npm run sprites` rebaked (32 keys x 2 teams —
+   landship_t0/t1 now exist, the 2D body matches the new figure).
+   LESSON: the bake enumerates proceduralKeys(), but nothing WARNS
+   when the registry outgrows the baked assets — candidate lint for
+   the next round: manifest keys ⊇ live chassis keys.
+2. **THE CATEGORY AWARDS WORE MEDALS** — mkSection gave 🥇🥈🥉 to the
+   first three CATEGORY lines, but categories are peers, not places;
+   medals now key on an explicit {medals:true} only the honors podium
+   passes.
+
+Also: locate_standard card pinned by test (offered while undone,
+retires when done, AT-BASE only); #respawn-notice mobile shrink rule;
+CLAUDE.md gained the 232 sandbag-cap + standard-located laws;
+specs/12 gained the 2026-08-15 rulings paragraph. Suite 914/914 x2,
+smoke, acceptance.

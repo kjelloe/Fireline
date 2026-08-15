@@ -1700,7 +1700,7 @@ function showEndScreen() {
   // Prompt 232: the military brush-up — olive field panels with brass
   // borders, and the podium wears gold / silver / bronze.
   const PODIUM = ["#f5d34a", "#c9ced6", "#cd8f52"];
-  const mkSection = (heading, lines, color, lineColors = null) => {
+  const mkSection = (heading, lines, color, { lineColors = null, medals = false } = {}) => {
     if (!lines.length) return;
     const d = document.createElement("div");
     d.style.cssText = "margin-top:14px;padding:10px 22px;text-align:center;" +
@@ -1709,7 +1709,9 @@ function showEndScreen() {
     d.innerHTML = `<div style="color:${color};font-weight:bold;letter-spacing:3px;font-size:16px;margin-bottom:6px;border-bottom:1px solid #3a452a;padding-bottom:4px;">${heading}</div>` +
       lines.map((l, i) => {
         const c = lineColors ? (lineColors[i] ?? "#cfd6bd") : "#cfd6bd";
-        const medal = lineColors && i < 3 ? ["🥇 ", "🥈 ", "🥉 "][i] : "";
+        // Medals mark the RANKED podium only — category winners are
+        // peers, not places (review-round catch: they wore 🥇🥈🥉 too).
+        const medal = medals && i < 3 ? ["🥇 ", "🥈 ", "🥉 "][i] : "";
         return `<div style="font-size:15px;color:${c};">${medal}${l}</div>`;
       }).join("");
     reasonEl.appendChild(d);
@@ -1729,9 +1731,9 @@ function showEndScreen() {
     ` <span style="color:#9aa66b;font-size:16px;letter-spacing:2px;">TEAM B</span>`;
   scoresEl.style.cssText += ";margin-top:2px;";
   reasonEl.appendChild(scoresEl); // relocated: verdict, then the score
-  mkSection(t("end.sec_honors"), honors, "#d9b96a", PODIUM);
+  mkSection(t("end.sec_honors"), honors, "#d9b96a", { lineColors: PODIUM, medals: true });
   mkSection(t("end.sec_awards"), awards, "#d9b96a",
-    honors.length ? awards.map(() => "#d9b96a") : null);
+    { lineColors: awards.map(() => "#d9b96a") });
   el.style.opacity = "1";
   el.style.transition = "";
   el.style.display = "flex";
