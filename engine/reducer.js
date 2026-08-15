@@ -1192,6 +1192,7 @@ function applyBuildSandbag(next, command) {
   truck.sandbagsLeft -= 1;
   next.sandbags.push({
     id: next.nextSandbagId, team: truck.team,
+    byOperator: truck.operatorId, // prompt 232: the 5-bag personal cap
     cellX: command.targetCellX, cellY: command.targetCellY,
     hp: SANDBAG_HP, buildTicks: SANDBAG_BUILD_TICKS,
     prevTerrain: next.map.cells[command.targetCellY * next.map.width + command.targetCellX],

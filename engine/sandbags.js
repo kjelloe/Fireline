@@ -56,9 +56,16 @@ export function runLengthWith(state, cellX, cellY) {
   return seen.size;
 }
 
+// Prompt 232: each PLAYER may keep at most 5 bags STANDING — a
+// destroyed bag frees the slot (the wall is a position, not a carpet).
+export const SANDBAG_OPERATOR_CAP = 5;
+
 export function buildRejection(state, truck, stats, cellX, cellY) {
   if (!stats.canClearMines) return "only a truck builds sandbags";
   if ((truck.sandbagsLeft ?? 0) <= 0) return "sandbag rack empty";
+  const mine = (state.sandbags ?? []).filter(
+    (s) => s.byOperator === truck.operatorId).length;
+  if (mine >= SANDBAG_OPERATOR_CAP) return "your 5-bag limit is standing";
   if (cellX < 0 || cellY < 0 || cellX >= state.map.width || cellY >= state.map.height) {
     return "off the map";
   }

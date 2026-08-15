@@ -55,5 +55,5 @@ export function codexFor(type) {
   if (stats.heavy) traits.push("no trail bonus (heavy)");
   if (stats.amphibious) traits.push("crosses water + races trails (Riverline Drive)");
   if (stats.deployable) traits.push("Deploy Hardpoint");
-  return { type, name, role: ROLES[name] ?? "", lines, traits };
+  return { type, name, key: stats.name, role: ROLES[name] ?? "", lines, traits };
 }

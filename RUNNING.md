@@ -493,3 +493,21 @@ MASTER_URL=http://localhost:8972 PUBLIC_ADDR=your.host:8080 \
   — four maps on the ballot. Riverline: three destructible bridges,
   fords, the Skimmer's water. Sawtooth: canyon choke lanes, the
   grinding armor map. Both battery-verified fair on c54e00a.
+
+## Prompts 232-233 (2026-08-15)
+
+- Downed crawlers hold ONE stance while moving (no more flicker).
+- Death flow: a BIG centre countdown "RESPAWNING AT BASE IN N", and
+  when it hits zero the camera jumps to your waiting free hull.
+- Base alarm: classic SPINNING RED BEACONS on the guard towers and HQ
+  while an intruder stands in the wire — off 30 s after they die or
+  leave. Both sides see the lights.
+- SECONDARY MISSION: touch the enemy standard at its base for +1
+  recognition, once per war ("Scout their standard" card).
+- Field Encyclopedia entries now carry a PICTURE of each chassis.
+- Victory/Defeat screen brushed up: score in big team-coloured
+  numbers right under the verdict, military olive panels, and the
+  honors podium wears gold/silver/bronze.
+- Sandbags read as WALLS (twice as wide, oriented along the run), and
+  each player may keep at most 5 bags standing (a destroyed bag frees
+  the slot; the placement ghost knows the cap).

@@ -7235,3 +7235,46 @@ Docs synced: plan-v3 Track 3 statuses (promotions ✅, standoff
 verification ✅, census = NEXT as a BUILD task) + sequencing, both
 twins; CLAUDE.md gained the intruder-alarm line beside ALARM GUARDS.
 Suite 910/910 x2, lints, smoke.
+
+## 2026-08-15 — playtest round: the sneak's +1, the loud respawn, the spinning beacons (prompts 232-233)
+
+B1 CRAWL FLICKER: axis-decomposed crawl steps alternate pure-x/pure-z,
+so raw per-frame direction flips ±90° (too big for the prompt-222
+adopt gate — different fix): EMA the motion VECTOR; the average points
+the true diagonal and the figure holds one stance.
+
+B2 THE LOUD RESPAWN: big centre countdown (#respawn-notice, both
+locales) while respawnTicks runs; at zero the camera HANDS OFF to the
+first free hull (one jump per respawn, latch resets on seating) +
+"NEXT ASSET READY" notice. Status-panel narration unchanged
+(acceptance untouched).
+
+D SPINNING BEACONS: makeAlarmLamp (post + red bulb + rotating light
+bar) on every tower and the HQ; client-derived per-base alarm — each
+viewer lights what IT can justify (defender sees the intruder by the
+watch law; the intruder sees themselves inside) — with the ruled 30 s
+decay after the intruder dies or leaves. Engine ping unchanged.
+
+E ENEMY STANDARD LOCATED (fixture v72, e8a5e2f): +1 recognition once
+per war for touching the enemy standard AT ITS BASE; hashed
+operator.stdLocated; locate_standard card (lowest value) gated on the
+own-seat flag riding the view.
+
+ENCYCLOPEDIA PICTURES: each unit card carries its sprite (the 2D
+sheets, frame 2, team-0 paint) — codexFor exports the sheet key.
+
+VICTORY BRUSH-UP: score relocated UNDER the verdict in big
+team-coloured monospace; olive field panels with brass borders;
+honors podium in gold/silver/bronze medals; category lines in brass.
+
+SANDBAGS (233, fixture v73): bags render as WALLS — twice as wide,
+oriented along the run (lone bag fills its cell); PERSONAL CAP 5
+standing bags per operator (hashed byOperator on each bag; the cap
+lives in buildRejection so the W4-4 placement ghost shows it red;
+destroyed bags free slots). Team cap 6 + run law unchanged; the old
+team-cap test now hands its run to a second builder so the team limit
+is what fires. AI never builds bags — sim-inert.
+
+Suite 913/913 x2 (two repins this session: v72 stdLocated, v73
+sandbag byOperator); smoke; acceptance; 5-seed gate identical to
+baseline (E is the only sim-reachable change and reads inert).

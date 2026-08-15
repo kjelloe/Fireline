@@ -1,8 +1,8 @@
 {
-  "fixtureVersion": 72,
+  "fixtureVersion": 73,
   "id": "1A_reducer",
   "purpose": "Pinned command sequence through the authoritative reducer. Validates state hashes, event shapes, and rejection behavior.",
-  "note": "fixtureVersion 72 (2026-08-15): prompt 232: operator.stdLocated joins the hash (enemy-standard-located +1, once per war); hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
+  "note": "fixtureVersion 73 (2026-08-15): prompt 232: sandbag byOperator joins the hash (5-bag personal cap); hashes re-pinned, command script verbatim from v1, events still verbatim from v1.",
   "mapSeed": 42,
   "mapProfile": "frontier_corridor",
   "initialStateHash": "34c2a1ad1d471e23",

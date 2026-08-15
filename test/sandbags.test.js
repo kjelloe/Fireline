@@ -83,6 +83,10 @@ test("sandbags: the owner's cap — max contiguous run, hard team limit", () => 
   s.assets[0].x = cellToWorld(25); s.assets[0].y = cellToWorld(row - 1);
   s = build(s, 20, 25, row);
   assert.equal(s.events.at(-1).reason, "wall run too long", "run 5 refused");
+  // Prompt 232: hand the run to ANOTHER builder (starting-position
+  // surgery) so the TEAM limit below is what actually fires — the
+  // personal 5-bag cap has its own test.
+  for (const b of s.sandbags) b.byOperator = 21;
   // Team cap: scattered singles until the hard limit.
   let total = s.sandbags.filter((b) => b.team === 0).length;
   let x = 30;
@@ -146,4 +150,25 @@ test("Q53: roads are buildable, but the two-lane law holds", async () => {
   assert.equal(buildRejection(s, truck, stats, 40, 64), "the road must keep two lanes");
   // A different column is untouched by that choke.
   assert.equal(buildRejection(s, truck, stats, 41, 64), null);
+});
+
+// Prompt 232: the 5-bag PERSONAL cap — a player keeps at most five bags
+// standing; destruction frees the slot.
+test("232: the sixth bag is refused, and a destroyed bag frees the slot", () => {
+  let s = truckWorld(); // narrow bases — the whole-map sandbox default refuses in-base builds
+  s.assets[0].sandbagsLeft = 99;
+  // Corners are diagonal (no contiguous run); one edge makes a legal
+  // run of 3 — five bags standing without tripping the run law.
+  const spots = [[19, 19], [21, 19], [19, 21], [21, 21], [21, 20]];
+  for (const [x, y] of spots) {
+    s = apply(s, { type: "build_sandbag", operatorId: 20, targetCellX: x, targetCellY: y });
+  }
+  assert.equal(s.sandbags.length, 5, "five bags stand");
+  s = apply(s, { type: "build_sandbag", operatorId: 20, targetCellX: 20, targetCellY: 19 });
+  assert.equal(s.sandbags.length, 5, "the sixth is refused");
+  assert.ok(s.events.some((e) => e.type === "rejected" && /5-bag/.test(e.reason ?? "")),
+    "with the honest reason");
+  s.sandbags.shift(); // one wall falls
+  s = apply(s, { type: "build_sandbag", operatorId: 20, targetCellX: 20, targetCellY: 19 });
+  assert.equal(s.sandbags.length, 5, "a freed slot builds again");
 });

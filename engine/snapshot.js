@@ -91,6 +91,7 @@ export function hashState(state) {
     w.writeI32LE(sb.id); w.writeI32LE(sb.team);
     w.writeI32LE(sb.cellX); w.writeI32LE(sb.cellY);
     w.writeI32LE(sb.hp); w.writeI32LE(sb.buildTicks); w.writeI32LE(sb.prevTerrain);
+    w.writeI32LE(sb.byOperator ?? -1); // added prompt 232 (the 5-bag personal cap)
   }
   w.writeI32LE(state.nextCaltropId ?? 0); // added Q45
   for (const c of (state.caltrops ?? [])) {

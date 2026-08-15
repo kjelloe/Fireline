@@ -161,6 +161,9 @@ const freeCam = createCamera({ mapSize: 128 }); // 8G
 const standardMeshes = new Map(); // team -> Mesh (8F/8A)
 const downedMeshes = new Map(); // operatorId -> Mesh (9B)
 let downBodyRing = null; // prompt 220: persistent locator under YOUR body
+let respawnHandoff = false; // prompt 232: one camera hand-off per respawn
+const baseAlarmUntil = [0, 0]; // prompt 232 D: per-team compound alarm decay
+const alarmLamps = []; // rotating red beacons on towers + HQ
 const mineMeshes = new Map(); // mineId -> Mesh (9E)
 const caltropMeshes = new Map(); // caltropId -> Mesh (Q45)
 const sandbagMeshes = new Map(); // sandbagId -> Mesh (Q45/Q50)
@@ -662,6 +665,9 @@ function init3d() {
       encOverlay.style.display = "block";
       const unitCard = (c) =>
         `<div style="background:#181824; border-radius:8px; padding:10px 14px; width:250px;">` +
+        `<div style="float:right; width:64px; height:64px; margin:-2px -4px 4px 6px; ` +
+        `image-rendering:pixelated; border-radius:6px; background:#10101a ` +
+        `url('assets/sprites/${c.key}_t0.png') -128px 0 no-repeat;"></div>` +
         `<b style="color:#f5e96b;">${c.name.toUpperCase()}</b>` +
         `<div style="color:#9ab; font-size:12px; margin:3px 0;">${c.role}</div>` +
         c.lines.map(([k, v]) => `<div style="font-size:12px;">${k}: <b>${v}</b></div>`).join("") +
@@ -1691,23 +1697,41 @@ function showEndScreen() {
   const awards = categoryHonors(view); // B4: per-category honors
   const reasonEl = document.getElementById("end-reason");
   reasonEl.innerHTML = "";
-  const mkSection = (heading, lines, color) => {
+  // Prompt 232: the military brush-up — olive field panels with brass
+  // borders, and the podium wears gold / silver / bronze.
+  const PODIUM = ["#f5d34a", "#c9ced6", "#cd8f52"];
+  const mkSection = (heading, lines, color, lineColors = null) => {
     if (!lines.length) return;
     const d = document.createElement("div");
-    d.style.cssText = "margin-top:14px;padding:10px 18px;border:1px solid #444;border-radius:8px;text-align:center;";
-    d.innerHTML = `<div style="color:${color};font-weight:bold;letter-spacing:2px;font-size:17px;margin-bottom:6px;">${heading}</div>` +
-      lines.map((l) => `<div style="font-size:15px;">${l}</div>`).join("");
+    d.style.cssText = "margin-top:14px;padding:10px 22px;text-align:center;" +
+      "background:#161d10;border:1px solid #55613a;border-radius:6px;" +
+      "box-shadow:inset 0 0 0 1px #2a3320, 0 2px 10px rgba(0,0,0,0.5);";
+    d.innerHTML = `<div style="color:${color};font-weight:bold;letter-spacing:3px;font-size:16px;margin-bottom:6px;border-bottom:1px solid #3a452a;padding-bottom:4px;">${heading}</div>` +
+      lines.map((l, i) => {
+        const c = lineColors ? (lineColors[i] ?? "#cfd6bd") : "#cfd6bd";
+        const medal = lineColors && i < 3 ? ["🥇 ", "🥈 ", "🥉 "][i] : "";
+        return `<div style="font-size:15px;color:${c};">${medal}${l}</div>`;
+      }).join("");
     reasonEl.appendChild(d);
   };
   const rd = document.createElement("div");
   rd.style.cssText = "font-size:19px;color:#ddd;text-align:center;"; // prompt 223
   rd.innerText = summary.reason;
   reasonEl.appendChild(rd);
-  mkSection(t("end.sec_honors"), honors, "#f5e96b");
-  mkSection(t("end.sec_awards"), awards, "#9fd8ff");
+  // Prompt 232: the SCORE moves up under the verdict — big, clear,
+  // stencil-spaced, in the two team colours.
   const scoresEl = document.getElementById("end-scores");
-  scoresEl.innerText = `Team A ${summary.scores[0]} — ${summary.scores[1]} Team B`;
-  scoresEl.style.fontSize = "26px";
+  scoresEl.innerHTML =
+    `<span style="color:#9aa66b;font-size:16px;letter-spacing:2px;">TEAM A</span> ` +
+    `<span style="color:#7fb2ff;font-weight:bold;font-size:38px;font-family:ui-monospace,monospace;">${summary.scores[0]}</span>` +
+    `<span style="color:#77805f;font-size:26px;"> — </span>` +
+    `<span style="color:#ff8f7a;font-weight:bold;font-size:38px;font-family:ui-monospace,monospace;">${summary.scores[1]}</span>` +
+    ` <span style="color:#9aa66b;font-size:16px;letter-spacing:2px;">TEAM B</span>`;
+  scoresEl.style.cssText += ";margin-top:2px;";
+  reasonEl.appendChild(scoresEl); // relocated: verdict, then the score
+  mkSection(t("end.sec_honors"), honors, "#d9b96a", PODIUM);
+  mkSection(t("end.sec_awards"), awards, "#d9b96a",
+    honors.length ? awards.map(() => "#d9b96a") : null);
   el.style.opacity = "1";
   el.style.transition = "";
   el.style.display = "flex";
@@ -2918,7 +2942,15 @@ function updateSandbagMeshes(view) {
       sandbagMeshes.set(sb.id, mesh);
     }
     const building = sb.buildTicks > 0;
-    mesh.scale.set(0.9, building ? 0.25 : 0.55, 0.9);
+    // Prompt 232: bags read as a WALL — twice as wide, oriented along
+    // the run (a lone bag just fills its cell).
+    const bags = view.sandbags ?? [];
+    const runEW = bags.some((o) => o.cellY === sb.cellY && Math.abs(o.cellX - sb.cellX) === 1);
+    const runNS = bags.some((o) => o.cellX === sb.cellX && Math.abs(o.cellY - sb.cellY) === 1);
+    const h = building ? 0.25 : 0.55;
+    if (runEW && !runNS) mesh.scale.set(1.9, h, 0.8);
+    else if (runNS && !runEW) mesh.scale.set(0.8, h, 1.9);
+    else mesh.scale.set(1.2, h, 1.2);
     applyTeamColor(mesh, sb.team === joined?.team ? "#9a8f6a" : "#8a6f4a");
     mesh.position.set(sb.cellX + 0.5, 0, sb.cellY + 0.5);
   }
@@ -3427,12 +3459,40 @@ function updateStatusPanel(view) {
       const line = (myOp?.respawnTicks ?? 0) > 0
         ? t("notice.respawn_count", { s: Math.ceil(myOp.respawnTicks / 10) })
         : freeHull ? t("notice.pick_hull") : t("notice.wave_wait");
+      // Prompt 232 B: the countdown deserves the CENTRE of the screen,
+      // and when it ends the camera HANDS OFF to the waiting hull so
+      // "next asset" needs no hunting.
+      const big = document.getElementById("respawn-notice");
+      if (big) {
+        const secs = Math.ceil((myOp?.respawnTicks ?? 0) / 10);
+        if (secs > 0) {
+          big.style.display = "block";
+          big.textContent = t("notice.respawn_big", { s: secs });
+          respawnHandoff = false;
+        } else {
+          big.style.display = "none";
+          if (!respawnHandoff && freeHull) {
+            respawnHandoff = true;
+            const target = view.friendlyAssets.find(
+              (a) => a.operatorId === -1 && a.state !== STATE_DISABLED && a.state !== 3);
+            if (target) {
+              freeCam.jumpTo(target.x / CELL, target.y / CELL);
+              flashNotice(t("notice.next_ready"), 4200, "#9fe89f", true);
+            }
+          }
+        }
+      }
       if (statusKey !== line) {
         statusKey = line;
         el.style.display = "block";
         el.textContent = line;
       }
       return;
+    }
+    {
+      const big = document.getElementById("respawn-notice");
+      if (big) big.style.display = "none";
+      respawnHandoff = false;
     }
     if (statusKey !== "") { el.style.display = "none"; statusKey = ""; }
     return;
@@ -3902,6 +3962,55 @@ function updatePrisonFigures(view) {
   }
 }
 
+// Prompt 232 D: the classic spinning red beacon — a small post, a red
+// bulb, and a rotating light bar. Lit while the compound alarm is live;
+// each client lights what IT can justify (the defender sees the
+// intruder by the watch law, the intruder sees themselves inside), and
+// the lamp stays on 30 s after the intruder is downed or leaves.
+function makeAlarmLamp(x, y, z, team) {
+  const g = new THREE.Group();
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.1, 5),
+    new THREE.MeshBasicMaterial({ color: 0x222222 }));
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0xff2a1a, transparent: true, opacity: 0.9 }));
+  bulb.position.y = 0.1;
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.03, 0.1),
+    new THREE.MeshBasicMaterial({ color: 0xff5040, transparent: true, opacity: 0.5, depthWrite: false }));
+  bar.position.y = 0.1;
+  g.add(post, bulb, bar);
+  g.position.set(x, y, z);
+  g.visible = false;
+  g.userData.baseTeam = team;
+  alarmLamps.push(g);
+  return g;
+}
+
+function updateBaseAlarms(view, nowMs) {
+  for (const b of view?.bases ?? []) {
+    if (b.team !== 0 && b.team !== 1) continue;
+    if (b.width >= (cachedMap?.width ?? 128)) continue; // no walls, no alarm (160.2)
+    const all = [...(view.friendlyAssets ?? []), ...(view.visibleEnemies ?? [])];
+    const intruder = all.some((a) => {
+      if (a.team === b.team || a.team < 0) return false;
+      if (a.state === STATE_DISABLED || a.state === 3) return false;
+      const cx = Math.floor(a.x / CELL), cy = Math.floor(a.y / CELL);
+      return cx >= b.x - 1 && cx <= b.x + b.width &&
+             cy >= b.y - 1 && cy <= b.y + b.height;
+    });
+    if (intruder) baseAlarmUntil[b.team] = nowMs + 30000;
+  }
+  for (const lamp of alarmLamps) {
+    const on = nowMs < baseAlarmUntil[lamp.userData.baseTeam];
+    lamp.visible = on;
+    if (on) {
+      lamp.rotation.y = nowMs / 140; // the spin
+      const pulse = 0.45 + 0.45 * Math.sin(nowMs / 110);
+      lamp.children[1].material.opacity = 0.5 + pulse * 0.5;
+      lamp.children[2].material.opacity = pulse * 0.6;
+    }
+  }
+}
+
 function updateDownedMeshes(view) {
   const live = new Set();
   const nowMs = performance.now();
@@ -3937,10 +4046,14 @@ function updateDownedMeshes(view) {
     const u = mesh.userData;
     if (u.lastGx !== undefined) {
       const dx = gx - u.lastGx, dz = gz - u.lastGz;
-      if (dx * dx + dz * dz > 1e-8) {
-        u.crawlYaw = Math.atan2(dx, dz);
-        u.crawlingUntilMs = nowMs + 450;
-      }
+      // Prompt 232 B: axis-decomposed crawl steps alternate pure-x and
+      // pure-z, so the raw per-frame direction flips ±90° — the reported
+      // stance flicker. EMA the VECTOR; the average points the true
+      // diagonal and the figure holds one stance.
+      u.vx = (u.vx ?? 0) * 0.85 + dx * 0.15;
+      u.vz = (u.vz ?? 0) * 0.85 + dz * 0.15;
+      if (dx * dx + dz * dz > 1e-8) u.crawlingUntilMs = nowMs + 450;
+      if (u.vx * u.vx + u.vz * u.vz > 1e-6) u.crawlYaw = Math.atan2(u.vx, u.vz);
     }
     u.lastGx = gx; u.lastGz = gz;
     const crawling = nowMs < (u.crawlingUntilMs ?? 0);
@@ -4021,6 +4134,7 @@ function updateWarDressing(view) {
   dressingKey = key;
   if (dressingGroup) scene.remove(dressingGroup);
   dressingGroup = new THREE.Group();
+  alarmLamps.length = 0; // prompt 232 D: lamps live in the dressing
   const dark = new THREE.MeshLambertMaterial({ color: 0x2e2e38 });
   const pale = new THREE.MeshLambertMaterial({ color: 0x8a8a72 });
   for (const s of view.sites ?? []) {
@@ -4117,11 +4231,13 @@ function updateWarDressing(view) {
         beam.position.set(piece.x, 1.6, piece.y);
         beam.userData.phase = (piece.x * 7 + piece.y * 13) % 6.28;
         dressingGroup.add(beam);
+        dressingGroup.add(makeAlarmLamp(piece.x, 1.9, piece.y, b.team));
       }
       if (piece.kind === "hq") { // a roof cap in the faction identity color
         const cap = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 1.7), roof);
         cap.position.set(piece.x, 1.36, piece.y);
         dressingGroup.add(cap);
+        dressingGroup.add(makeAlarmLamp(piece.x, 1.62, piece.y, b.team));
         // Prompt 211: a ridge over the cap — "proper roofs".
         const ridge = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.3, 0.5), roof);
         ridge.rotation.z = 0; ridge.position.set(piece.x, 1.5, piece.y);
@@ -4256,6 +4372,7 @@ function renderBattlefield() {
   for (const site of view.sites ?? []) upsertSiteMesh(site);
   updateWarDressing(view);
   for (const st of view.standards ?? []) upsertStandardMesh(st);
+  updateBaseAlarms(view, performance.now());
   updateDownedMeshes(view);
   updateYouMarker(view); // prompt 197: after downed meshes — it may mark one
   updateMineMeshes(view);
