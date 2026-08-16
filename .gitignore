@@ -10,3 +10,4 @@ reports/sweeps/
 data/autosave.json
 tools/deploy.env
 ops/*
+ops
